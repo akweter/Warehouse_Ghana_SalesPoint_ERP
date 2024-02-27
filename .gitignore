@@ -1,0 +1,14 @@
+# Scripts
+.vscode
+
+# backend
+Backend/node_modules
+Backend/.env
+backend/.eslintrc.json
+backend/package-lock.json
+
+# view
+view/node_modules
+view/.env
+view/.prettierrc
+view/package-lock.json

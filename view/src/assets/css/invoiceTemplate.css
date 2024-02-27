@@ -1,0 +1,14 @@
+.inv_main{
+    padding: 10%;
+}
+
+.inv_main_header_border{
+    height: 10px;
+    width: 100%;
+    background-color:#0f0a67;
+}
+
+.inv_table_body{
+    border: 2px;
+    border-color: black;
+}

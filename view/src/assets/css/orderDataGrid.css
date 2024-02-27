@@ -1,0 +1,16 @@
+.headerName{
+    font-size: '18px';
+    font-weight: 600;
+    color: #5a1106;
+    text-transform: uppercase;
+}
+
+.dataGridheader{
+    /* background-color: #09096a;
+    color: white; */
+    color: #651609;
+    font-size: 16px;
+    text-align: center;
+    font-weight: bolder;
+    background-color: #d5d8da;
+}

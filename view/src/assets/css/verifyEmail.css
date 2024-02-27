@@ -1,0 +1,25 @@
+.body{
+    justify-content: space-around;
+    text-align: justify;
+    margin: 3% 20%;
+    
+}
+
+.paragraph{
+    margin-top: 7%;
+}
+
+#linkCard{
+    padding: 3%;
+    margin: 5% 0;
+    border: 2px solid darkblue;
+    display: inline-block;
+    background: #dcf3f97d;
+    border-radius: 20px;
+    text-align: justify;
+    text-justify: distribute;
+}
+
+#checkSpam{
+    color: red;
+}

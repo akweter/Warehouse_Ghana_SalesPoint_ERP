@@ -1,0 +1,77 @@
+import React, { useState } from 'react';
+import logo from '../../assets/images/logo.webp';
+import InvoiceForm from './invoiceForm';
+import CancelSharpIcon from '@mui/icons-material/CancelSharp';
+import { 
+    Button, 
+    Dialog, 
+    AppBar, 
+    Toolbar, 
+    Stack, 
+    FormControl, 
+    Grid, 
+    Typography} from '@mui/material';
+import Slide from '@mui/material/Slide';
+
+// /* eslint-disable */
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="down" ref={ref} {...props} />;
+});
+
+const MakeNewInvoice = ({ setSubmitted }) =>{
+    const [drop, setDrop] = useState(false);
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => {setOpen(true);};
+    const handleClose = () => {setOpen(false);};
+
+    return (
+        <div>
+            <Button 
+                variant='contained'
+                color='primary'
+                size='medium'
+                sx={{color: 'gold'}} 
+                onClick={handleOpen}
+            >
+                Issue New Invoice
+            </Button>
+            <Dialog
+                fullWidth
+                maxWidth="xl"
+                open={open}
+                TransitionComponent={Transition}
+                transitionDuration={1000}
+            >
+                <AppBar style={{ backgroundColor: '#151B4D' }}>
+                    <Toolbar>
+                        <img src={logo} width={60} height={40} alt='Logo'/>
+                        <Typography 
+                            variant="h2" 
+                            sx={{ 
+                                flex: 1, 
+                                textAlign: 'center',
+                                color: 'white'
+                            }}
+                        >
+                            Make New Invoice
+                        </Typography>
+                        <Grid item>
+                            <FormControl fullWidth>                       
+                                <Stack direction="row" spacing={2}>
+                                    <Button onClick={handleClose} fullWidth color='error' variant="contained" size='small' startIcon={<CancelSharpIcon />}>
+                                        Cancel
+                                    </Button>
+                                </Stack>
+                            </FormControl>
+                        </Grid>
+                    </Toolbar>
+                </AppBar>
+                <div style={{marginTop: '10px'}}>
+                    < InvoiceForm setSubmitted={setSubmitted} setDrop={setDrop} drop={drop} BackdropOpen={setOpen}/>
+                </div>
+            </Dialog>
+        </div>
+    );
+}
+
+export default MakeNewInvoice;

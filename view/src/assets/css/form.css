@@ -1,0 +1,30 @@
+.shadow-box {
+    background-color: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    padding: 16px;
+    font-size: 18px;
+}
+
+.remarkNtax{
+    margin-top: 10%;
+    bottom: 0;
+    width: 100%;
+    cursor: cell;
+}
+
+.table td:first-child {
+    font-weight: 600;
+    font-style: oblique;
+    text-align: left;
+}
+.table td:last-child {
+    orientation: auto;
+    text-align-last: right;
+    text-align: right;
+    justify-content: end;
+}
+
+td{
+    border-bottom: 1px dashed #030655;
+}

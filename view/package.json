@@ -1,0 +1,88 @@
+{
+  "name": "view",
+  "version": "1.4.4",
+  "private": true,
+  "homepage": "https://warehouseghana-erp.netlify.app/",
+  "dependencies": {
+    "@tabler/icons": "^1.72.0",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "react-perfect-scrollbar": "^1.5.8",
+    "react-router": "6.3.0",
+    "react-router-dom": "6.3.0",
+    "react-scripts": "^5.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.21.4",
+    "@babel/eslint-parser": "^7.21.3",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@canvasjs/charts": "^3.7.21",
+    "@canvasjs/stockcharts": "^1.7.21",
+    "@emotion/cache": "^11.9.3",
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
+    "@mui/icons-material": "^5.8.4",
+    "@mui/lab": "^5.0.0-alpha.88",
+    "@mui/material": "^5.8.6",
+    "@mui/system": "^5.8.6",
+    "@mui/utils": "^5.8.6",
+    "@mui/x-charts": "^6.0.0-alpha.12",
+    "@mui/x-data-grid": "^6.15.0",
+    "@mui/x-data-grid-generator": "^6.18.1",
+    "@mui/x-date-pickers": "^6.18.0",
+    "@tabler/icons-react": "^2.35.0",
+    "@woocommerce/woocommerce-rest-api": "^1.0.1",
+    "apexcharts": "^3.35.3",
+    "axios": "^1.5.1",
+    "dayjs": "^1.11.10",
+    "depcheck": "^1.4.6",
+    "dotenv": "^16.4.1",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-flowtype": "^8.0.3",
+    "eslint-plugin-prettier": "^4.2.1",
+    "formik": "^2.4.5",
+    "framer-motion": "^6.3.16",
+    "immutable": "^4.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "material-ui-popup-state": "^4.0.1",
+    "prettier": "^2.8.7",
+    "prop-types": "^15.8.1",
+    "qrcode.react": "^3.1.0",
+    "react-apexcharts": "^1.4.0",
+    "react-bootstrap": "^2.9.0",
+    "react-device-detect": "^2.2.3",
+    "react-dropzone": "^14.2.3",
+    "react-redux": "^8.0.2",
+    "redux": "^4.2.0",
+    "sass": "^1.53.0",
+    "styled-components": "^5.3.11",
+    "xlsx": "^0.18.5",
+    "yup": "^0.32.11"
+  }
+}
