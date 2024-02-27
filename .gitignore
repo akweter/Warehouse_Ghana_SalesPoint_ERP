@@ -1,5 +1,6 @@
 # Scripts
 .vscode
+.gitignore
 
 # backend
 Backend/node_modules
