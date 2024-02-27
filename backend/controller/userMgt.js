@@ -1,5 +1,4 @@
-const db = require("../database/connection");
-const { executeQuery, executeLoginQuery, SignUpNewUser } = require("../database/index");
+const { executeQuery } = require("../database/index");
 
 /******************  GET REQUESTS  *********************/
 
@@ -138,13 +137,13 @@ const loginUser = async (payload) => {
 const signUpUser = async (email, username) => {
   const sql = "SELECT * FROM UserManagement WHERE Usr_email = ? OR Usr_name = ?";
   const values = [email, username];
-  return executeLoginQuery(sql, values);
+  return executeQuery(sql, values);
 };
 
 // Add user onto the system
 const AddNewUser = async (data) => {
   const sql = "INSERT INTO UserManagement (Usr_FName, Usr_LName, Usr_name, Usr_type, Usr_status, Usr_phone, Usr_email, Usr_address, Usr_dept, Usr_reg_date, passwd, activated, Usr_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-  return SignUpNewUser(sql, data);
+  return executeQuery(sql, data);
 };
 
 const allActions = {
