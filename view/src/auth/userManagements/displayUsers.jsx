@@ -30,7 +30,7 @@ const UserRow = ({ user, setSubmitted }) => {
 	const sendEmail = async (event, user) =>{
 		try {
 			event.preventDefault();
-			if (user.Usr_email) {
+			if (user.Usr_email && user.activated === 'no') {
 				await sendEmailToUser(user);
 				setAlert((state) => ({
 					...state,
@@ -40,7 +40,7 @@ const UserRow = ({ user, setSubmitted }) => {
 			} else {
 				setAlert((state) => ({
 					...state,
-					message: `email not appropriate`, color: "error"
+					message: `email:  ${user.Usr_email} already activated`, color: "secondary"
 				}));
 				setOpenAlert(true);
 			}
