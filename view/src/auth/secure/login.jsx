@@ -76,15 +76,6 @@ const Login = () => {
                       alignItems="center" 
                       xs={12}
                     >
-                      {/* <Typography 
-                        component={Link} 
-                        to="/auth/signup" 
-                        variant="subtitle1" 
-                        sx={{ textDecoration: 'none' }}
-                        color='primary'
-                      >
-                        Don&apos;t have an account?
-                      </Typography> */}
                     </Grid>
                   </Grid>
                 </Grid>

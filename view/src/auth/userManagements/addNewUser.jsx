@@ -19,6 +19,8 @@ import {
 import { ShowBackDrop } from 'utilities/backdrop';
 import { AlertError } from 'utilities/errorAlert';
 
+/* eslint-disable */
+
 const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
     const [formData, setFormData] = useState({
         username: '',
@@ -98,6 +100,7 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
             setTimeout(() => {
                 if (response.data.message === 'email_sent') {
                     setAlert((e) => ({...e, message: `Email sent to ${formData.userEmail}`, color: 'success' }));
+                    setOpenAlert(true);
                     setTimeout(() => {
                         setSubmitted(true);
                         closeAddnewUser();
@@ -111,7 +114,7 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
                 }
                 else {
                     setDrop(false);
-                    setAlert({ message: response.data.message, color: 'error' });
+                    setAlert((e) => ({...e, message: response.data.message, color: 'error' }));
                 }
             }, 1000);
         }
@@ -122,7 +125,7 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
 
     return (
         <>
-            {alert.message ? (<AlertError open={openAlert} alert={alert} handleClose={()=>setOpenAlert(false)} />) : null}
+            {alert.message ? (<AlertError open={openAlert} alert={alert} />) : null}
             {drop === true ? <ShowBackDrop open={drop} /> : null}
             <DialogContent>
                 <Box>

@@ -12,7 +12,7 @@ import {
 import MuiAlert from '@mui/material/Alert';
 import { bcndOrigin, viewOrigin } from 'auth/origins';
 
-// /* eslint-disable */
+/* eslint-disable */
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;

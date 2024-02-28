@@ -35,8 +35,9 @@ import { Stack } from '@mui/system';
 import { ShowBackDrop } from 'utilities/backdrop';
 import { AlertError } from 'utilities/errorAlert';
 
+/* eslint-disable */
 
-const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, setSubmiited }) => {
+const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }) => {
 	const [open, setOpen] = useState(false);
 	const [drop, setDrop] = useState(false);
 	const [loading, setLoading] = useState(false);
@@ -67,7 +68,6 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, setSubmiited 
 				Itm_qty,
 				Itm_price,
 				Itm_sup_id,
-				Itm_usr_id,
 				Itm_taxable,
 				itm_date,
 				Itm_UOM,
@@ -247,15 +247,18 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, setSubmiited 
 			const response = await PostNewProducts(productsToBackend);
 			const result = response.status;
 			if (result === 'success') {
-				setSubmiited(true);
-				setDrop(false);
-				setAlert((e) => ({ ...e, message: result, color: 'success' }));
-				setOpen(true);
-				CloseDialog(false);
 				setTimeout(() => {
-					setSubmiited(false);
-					setProducts([]);
-				}, 2000);
+					setDrop(false);
+					setAlert((e) => ({ ...e, message: 'Added successfully', color: 'success' }));
+					setOpen(true);
+					RefreshData(true);
+				
+					setTimeout(() => {
+						setAlert((e) => ({ ...e, message: "", color: "" }));
+						CloseDialog(false);
+						setProducts([]);
+					}, 500);
+				}, 500);
 			}
 		}
 		catch (error) {
@@ -396,7 +399,6 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, setSubmiited 
 										getOptionLabel={(option) => option.SnC_name ? option.SnC_name : "No Supplier"}
 										onChange={(event, selectedSupplier) => {
 											if (selectedSupplier) {
-												const supplierName = selectedSupplier.SnC_name;
 												setFormData((oldValue) => ({
 													...oldValue,
 													productSupId: selectedSupplier.SnC_id,
@@ -500,7 +502,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, setSubmiited 
 											</TableRow>
 										</TableHead>
 										<TableBody>
-											{products.map((e, index) => (
+											{products.map((e) => (
 												<>
 													<TableRow>
 														<TableCell padding='none'>{e.productName}</TableCell>

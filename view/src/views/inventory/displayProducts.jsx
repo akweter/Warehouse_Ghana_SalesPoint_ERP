@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { IconButton, Box, } from '@mui/material';
-import { Edit } from '@mui/icons-material';
+import { EditNote } from '@mui/icons-material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import UploadCSVProducts from './uploadProducts';
+
+/* eslint-disable */
 
 const InventoryProductsTable = ({ products }) => {
     const [open, setOpen] = useState(false);
@@ -135,7 +137,7 @@ const InventoryProductsTable = ({ products }) => {
                 sortable: false,
                 renderCell: (params) => (<>
                     <IconButton title='Edit product/service' onClick={() => handleEditconClick(params.row)}>
-                        <Edit fontSize='small' color='error' />
+                        <EditNote color='error' />
                     </IconButton>
                 </>),
             },

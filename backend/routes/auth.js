@@ -14,15 +14,101 @@ const { SaveNewTokensQuery } = require("../controller/tokens");
 const { Myip } = require('../utils/ipinfo');
 const UUID = require('../utils/generateIDs');
 
+// Send email and save token
+const saveToken_SendEmail = async(userEmail, username, req, res) => {
+	const ipInfo = await Myip();
+	const userAgent = req.get('User-Agent');
+	const emailToken = generateJWTToken(userEmail);
+	const getExp = decodeToken(emailToken);
+	const expTime = getExp.exp;
+	const expPeriod = new Date(expTime * 1000);
+	const generatedTime = new Date();
+
+	const TokenVals = [
+		username,
+		emailToken,
+		expPeriod,
+		generatedTime,
+		'JWT',
+		'unused',
+		ipInfo.ip,
+		ipInfo.country,
+		userAgent,
+		UUID(),
+	];
+
+	try {
+		await SaveNewTokensQuery(TokenVals)
+		.then( async() => {
+			await sendVerificationEmail(userEmail, emailToken, res);
+			logMessage(`"${username}" added!`);
+			return res.json({ status: 'success', message: 'email_sent' });
+		});
+	}
+	catch (err) {
+		logErrorMessages(`Failed to save ${TokenVals} for ${username} to the DB ${JSON.stringify(err)}`);
+		return res.json({ status: 'error', message: 'Oops Something went wrong! Refresh and retry' });
+	}
+}
+
+// Check for valid email
+function isValidEmail(email) {
+	const emailRegex = /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+	return emailRegex.test(email);
+}
+
+// Email transporter
+const sendVerificationEmail = (email, emailToken, res) => {
+	if (isValidEmail(email)) {
+		const mailOptions = {
+			from: EMAIL_USER,
+			to: email,
+			subject: 'Activate Your Account',
+			html: `
+				<div style="text-align: center;">
+				<h2 style="color: #007BFF;">One Time Activation Key</h2>
+				<img src="https://i0.wp.com/www.warehouseghana.com/wp-content/uploads/2022/10/Wg_logo-removebg-preview.png" alt="Warehouse Ghana Logo" width="250" height="150">
+				<address style="font-size: 17px;">Kindly click on the below link to activate your Warehouse Ghana user account:</address>
+				<p>
+					<a target="_blank" href="${origin}/activate?key=${emailToken}" style="cursor: pointer;">
+						<button style="background: #007BFF; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+						Activate Your Account
+						</button>
+					</a>
+				</p>
+				<strong style="color: red; font-size: 12px;">
+					Kindly request another activation email 15 minutes after the initial email has been received
+				</strong>
+				</div>
+			`,
+		};
+
+		transporter.sendMail(mailOptions, (error, info) => {
+			if (error) {
+				logAllMessage(`Email sending error: => ${error}`);
+				return error;
+			} else {
+				logMessage(`Activation email sent to ${JSON.stringify(info.accepted[0])}`);
+				return res.json({ status: 'success', message: 'email_sent' });
+			}
+		});
+	}
+	else {
+		return res.json({ status: 'error', message: 'Please log in with your email instead' });
+	}
+};
+
+// Login
 Auth.post("/login", async (req, res) => {
 	req.activationContext = 'login';
 	const userAgent = req.get('User-Agent');
 	const { email, passwrd } = req.body;
 
-	if ((email === null || email === '') || (passwrd === null || passwrd === '')) {
-		return res.send('All fields required!');
-	}
-	else {
+	if (email === null || email === undefined){
+		return res.send('Invalid required email');
+	} else if (passwrd === null || passwrd === undefined && email) {
+		return res.send(`Please verify your email: ${email}`);
+	} else {
 		const payload = [email, email];
 		try {
 			const output = await loginUser(payload);
@@ -116,8 +202,8 @@ Auth.post("/login", async (req, res) => {
 	}
 });
 
+// sign up | add new user
 Auth.post("/signup", async (req, res) => {
-	const userAgent = req.get('User-Agent');
 	const {
 		fname,
 		lname,
@@ -133,7 +219,6 @@ Auth.post("/signup", async (req, res) => {
 	try {
 		const output = await signUpUser(userEmail, username);
 		if (output.length > 0) {
-			console.log('input',output);
 			logErrorMessages(`Cannot Add: ${username}, ${userEmail}, Already exist`);
 			return res.json({ status: 'error', message: 'Username or Email Exist! Please Log in' });
 		}
@@ -157,40 +242,13 @@ Auth.post("/signup", async (req, res) => {
 			];
 			
 			await AddNewUser(Vals)
-				.then(() => {
-					const emailToken = generateJWTToken(userEmail);
-					const getExp = decodeToken(emailToken);
-					const expTime = getExp.exp;
-					const expPeriod = new Date(expTime * 1000);
-					const generatedTime = new Date();
-
-					const TokenVals = [
-						username,
-						emailToken,
-						expPeriod,
-						generatedTime,
-						'JWT',
-						'unused',
-						ipInfo.ip,
-						ipInfo.country,
-						userAgent,
-						UUID(),
-					];
-					SaveNewTokensQuery(TokenVals)
-						.then(() => {
-							sendVerificationEmail(userEmail, emailToken, res);
-							logMessage(`"${username}" added!`);
-							return res.json({ status: 'success', message: 'email_sent' });
-						})
-						.catch((err) => {
-							logErrorMessages(`Failed to save ${TokenVals} for ${username} to the DB ${JSON.stringify(err)}`);
-							return res.json({ status: 'error', message: 'Oops Something went wrong! Refresh and retry' });
-						});
-				})
-				.catch((err) => {
-					logErrorMessages(`Error adding user: ${username + ` ` + ipInfo.ip + ` ` + err} to the DB`);
-					return res.json({ status: 'error', message: 'Oops Something went wrong! Refresh and retry' });
-				});
+			.then( async () => {
+				await saveToken_SendEmail(userEmail, username, req, res);
+			})
+			.catch((err) => {
+				logErrorMessages(`Error adding user: ${username + ` ` + ipInfo.ip + ` ` + err} to the DB`);
+				return res.json({ status: 'error', message: 'Oops Something went wrong! Refresh and retry' });
+			});
 		}
 	}
 	catch (err) {
@@ -199,48 +257,10 @@ Auth.post("/signup", async (req, res) => {
 	}
 });
 
-function isValidEmail(email) {
-	const emailRegex = /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-	return emailRegex.test(email);
-}
-const sendVerificationEmail = (email, emailToken, res) => {
-	if (isValidEmail(email)) {
-		const mailOptions = {
-			from: EMAIL_USER,
-			to: email,
-			subject: 'Activate Your Account',
-			html: `
-				<div style="text-align: center;">
-				<h2 style="color: #007BFF;">One Time Activation Key</h2>
-				<img src="https://i0.wp.com/www.warehouseghana.com/wp-content/uploads/2022/10/Wg_logo-removebg-preview.png" alt="Warehouse Ghana Logo" width="250" height="150">
-				<address style="font-size: 17px;">Kindly click on the below link to activate your Warehouse Ghana user account:</address>
-				<p>
-					<a target="_blank" href="${origin}/activate?key=${emailToken}" style="cursor: pointer;">
-						<button style="background: #007BFF; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-						Activate Your Account
-						</button>
-					</a>
-				</p>
-				<strong style="color: red; font-size: 12px;">
-					Kindly request another activation email 15 minutes after the initial email has been received
-				</strong>
-				</div>
-			`,
-		};
-
-		transporter.sendMail(mailOptions, (error, info) => {
-			if (error) {
-				logAllMessage(`Email sending error: => ${error}`);
-				return res.status(500).json({ status: 'error', message: 'error' });
-			} else {
-				logMessage(`Activation email sent to ${JSON.stringify(info.accepted[0])}`);
-				return res.json({ status: 'success', message: 'email_sent' });
-			}
-		});
-	}
-	else {
-		return res.json({ status: 'error', message: 'Please log in with your email instead' });
-	}
-};
+// Send verification email
+Auth.post("/sendemail", async (req, res) => {
+	const { Usr_name, Usr_email } = req.body;
+	return await saveToken_SendEmail(Usr_email, Usr_name, req, res);
+});
 
 module.exports = Auth;

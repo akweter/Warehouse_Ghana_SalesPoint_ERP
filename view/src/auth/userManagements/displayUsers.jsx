@@ -15,14 +15,39 @@ import {
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { Dangerous, Verified } from '@mui/icons-material';
-import { updateUserStatus } from 'apiActions/allApiCalls/users';
+import { Dangerous, EditNote, Verified } from '@mui/icons-material';
+import { sendEmailToUser, updateUserStatus } from 'apiActions/allApiCalls/users';
+import { AlertError } from 'utilities/errorAlert';
 
 const UserRow = ({ user, setSubmitted }) => {
-	const [open, setOpen] = React.useState(false);
-	const openData = () => {
-		setOpen(!open);
-	};
+	const [open, setOpen] = useState(false);
+	const [openAlert, setOpenAlert] = useState(false);
+	// const [loadEmail, setLoadEmail] = React.useState(false);
+	const [alert, setAlert] = useState({ message: "", color: "" });
+
+	const openData = () => { setOpen(!open) };
+
+	const sendEmail = async (event, user) =>{
+		try {
+			event.preventDefault();
+			if (user.Usr_email) {
+				await sendEmailToUser(user);
+				setAlert((state) => ({
+					...state,
+					message: `verification email sent to ${user.Usr_email}`, color: "success"
+				}));
+				setOpenAlert(true);
+			} else {
+				setAlert((state) => ({
+					...state,
+					message: `email not appropriate`, color: "error"
+				}));
+				setOpenAlert(true);
+			}
+		} catch (error) {
+			console.log(`error: ${error}`);
+		}
+	}
 
 	const activatAndDisableeUser = async(id, action) => {
 		try {
@@ -33,12 +58,14 @@ const UserRow = ({ user, setSubmitted }) => {
 			}
         }
         catch (error) {
+			console.log('something unexpected happend!');
         }
 	}
 
 	return (
 		<>
-			<TableRow>
+			{alert.message ? (<AlertError open={openAlert} alert={alert} handleClose={()=>setOpenAlert(false)}/>) : null}
+			<TableRow key={user.Usr_id}>
 				<TableCell padding='none'>
 					<IconButton style={{ cursor: 'pointer' }} size="small" onClick={openData}>
 						{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -53,19 +80,23 @@ const UserRow = ({ user, setSubmitted }) => {
 						onClick={() => activatAndDisableeUser(user.Usr_id, user.Usr_status)}
 						variant='outlined'
 						size='small'
-						color={user.Usr_status === 'active' ? 'success' : 'error'}
+						color={user.Usr_status === 'active' ? 'primary' : 'error'}
 					>
 						{user.Usr_status}
 					</Button>
-
 				</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={()=>alert('verufied')} align='center'>
-					<Button variant='text' size='small' color={user.activated === 'yes' ? 'primary' : 'error'}>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} align='center'>
+					<Button 
+						onClick={(event) => sendEmail(event, user)} 
+						variant='text' 
+						size='small' 
+						color={user.activated === 'yes' ? 'success' : 'error'}
+					>
 						{user.activated === 'yes' ? <Verified /> : < Dangerous />}
 					</Button>
 				</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={() => alert(`You are editing ${user.Usr_name}'s profile`)} align='right'>
-					<Button variant='outlined' size='small' sx={{ backgroundColor: '#0C0E81', color: 'white' }}>Edit</Button>
+				<TableCell padding='none' style={{ cursor: 'pointer' }}align='right'>
+					<Button onClick={() => alert(`You are editing ${user.Usr_name}'s profile`)} variant='outlined' size='small'sx={{ color: '#DDAC05'}}><EditNote /></Button>
 				</TableCell>
 			</TableRow>
 
@@ -128,7 +159,7 @@ const DisplayUsers = ({ inData, submission }) => {
 		const currentPageData = inData.slice(startIndex, endIndex);
 
 		return currentPageData.map(data => (
-			<UserRow key={data.id} user={data} setSubmitted={submission}/>
+			<UserRow key={data.Usr_id} user={data} setSubmitted={submission}/>
 		));
 	};
 
