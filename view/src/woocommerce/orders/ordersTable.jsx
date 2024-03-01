@@ -54,6 +54,10 @@ const Row = ({ order }) => {
                                         <TableCell padding='none'>{(order.billing.phone === "" || order.shipping.phone === "") ? 'Unavailable' : (order.billing.phone || order.shipping.phone)}</TableCell>
                                     </TableRow>
                                     <TableRow>
+                                        <TableCell padding='none' align="left">Email:</TableCell>
+                                        <TableCell padding='none'>{(order.billing.email === "" || order.shipping.email === "") ? 'Unavailable' : (order.billing.email || order.shipping.email)}</TableCell>
+                                    </TableRow>
+                                    <TableRow>
                                         <TableCell padding='none' align="left">Date</TableCell>
                                         <TableCell padding='none'>{order.date_created}</TableCell>
                                     </TableRow>

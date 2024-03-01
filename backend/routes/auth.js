@@ -6,16 +6,20 @@ const { EMAIL_USER, origin } = process.env;
 
 // Projects
 const { logMessage, logErrorMessages } = require('../utils/saveLogfile');
-const { loginUser, signUpUser, AddNewUser } = require("../controller/userMgt");
-const { logAllMessage } = require("../utils/saveAllLogs");
 const { transporter } = require("../utils/emails/emailTransporter");
 const { generateJWTToken, decodeToken, } = require("../utils/tokenActions");
 const { SaveNewTokensQuery } = require("../controller/tokens");
 const { Myip } = require('../utils/ipinfo');
 const UUID = require('../utils/generateIDs');
+const {
+	loginUser,
+	signUpUser,
+	AddNewUser,
+	updateUserPSD,
+} = require("../controller/userMgt");
 
 // Send email and save token
-const saveToken_SendEmail = async(userEmail, username, req, res) => {
+const saveToken_SendEmail = async (userEmail, username, req, res) => {
 	const ipInfo = await Myip();
 	const userAgent = req.get('User-Agent');
 	const emailToken = generateJWTToken(userEmail);
@@ -39,11 +43,11 @@ const saveToken_SendEmail = async(userEmail, username, req, res) => {
 
 	try {
 		await SaveNewTokensQuery(TokenVals)
-		.then( async() => {
-			await sendVerificationEmail(userEmail, emailToken, res);
-			logMessage(`"${username}" added!`);
-			return res.json({ status: 'success', message: 'email_sent' });
-		});
+			.then(async () => {
+				await sendVerificationEmail(userEmail, emailToken, res);
+				logMessage(`"${username}" added!`);
+				return res.json({ status: 'success', message: 'email_sent' });
+			});
 	}
 	catch (err) {
 		logErrorMessages(`Failed to save ${TokenVals} for ${username} to the DB ${JSON.stringify(err)}`);
@@ -85,7 +89,7 @@ const sendVerificationEmail = (email, emailToken, res) => {
 
 		transporter.sendMail(mailOptions, (error, info) => {
 			if (error) {
-				logAllMessage(`Email sending error: => ${error}`);
+				logErrorMessages(`Email sending error: => ${error}`);
 				return error;
 			} else {
 				logMessage(`Activation email sent to ${JSON.stringify(info.accepted[0])}`);
@@ -104,7 +108,7 @@ Auth.post("/login", async (req, res) => {
 	const userAgent = req.get('User-Agent');
 	const { email, passwrd } = req.body;
 
-	if (email === null || email === undefined){
+	if (email === null || email === undefined) {
 		return res.send('Invalid required email');
 	} else if (passwrd === null || passwrd === undefined && email) {
 		return res.send(`Please verify your email: ${email}`);
@@ -240,19 +244,35 @@ Auth.post("/signup", async (req, res) => {
 				'no',
 				UUID(),
 			];
-			
+
 			await AddNewUser(Vals)
-			.then( async () => {
-				await saveToken_SendEmail(userEmail, username, req, res);
-			})
-			.catch((err) => {
-				logErrorMessages(`Error adding user: ${username + ` ` + ipInfo.ip + ` ` + err} to the DB`);
-				return res.json({ status: 'error', message: 'Oops Something went wrong! Refresh and retry' });
-			});
+				.then(async () => {
+					await saveToken_SendEmail(userEmail, username, req, res);
+				})
+				.catch((err) => {
+					logErrorMessages(`Error adding user: ${username + ` ` + ipInfo.ip + ` ` + err} to the DB`);
+					return res.json({ status: 'error', message: 'Oops Something went wrong! Refresh and retry' });
+				});
 		}
 	}
 	catch (err) {
 		logErrorMessages(`Error adding user: ${username + `, IP: ` + ipInfo.ip + `, Error: ` + err} to the DB`);
+		return res.status(500).send("Internal server error");
+	}
+});
+
+// Update user password based on the ID
+Auth.put("/psd/:id", async (req, res, next) => {
+	const { id } = req.params;
+	const { psd } = req.body;
+	const data = [psd, id];
+	try {
+		const output = await updateUserPSD(data);
+		logMessage(`${id} update paswword succussful`);
+		return res.status(200).json({ message: 'success' });
+	}
+	catch (err) {
+		logErrorMessages("Internal server error" + err);
 		return res.status(500).send("Internal server error");
 	}
 });

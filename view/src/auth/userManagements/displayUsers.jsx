@@ -12,6 +12,7 @@ import {
 	Paper,
 	Box,
 	Button,
+	CircularProgress,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -21,6 +22,7 @@ import { AlertError } from 'utilities/errorAlert';
 
 const UserRow = ({ user, setSubmitted }) => {
 	const [open, setOpen] = useState(false);
+	const [loadEmail, setLoadEmail] = useState(false);
 	const [openAlert, setOpenAlert] = useState(false);
 	// const [loadEmail, setLoadEmail] = React.useState(false);
 	const [alert, setAlert] = useState({ message: "", color: "" });
@@ -29,18 +31,24 @@ const UserRow = ({ user, setSubmitted }) => {
 
 	const sendEmail = async (event, user) =>{
 		try {
+			setLoadEmail(true);
 			event.preventDefault();
 			if (user.Usr_email && user.activated === 'no') {
-				await sendEmailToUser(user);
-				setAlert((state) => ({
-					...state,
-					message: `verification email sent to ${user.Usr_email}`, color: "success"
-				}));
-				setOpenAlert(true);
+				const data = await sendEmailToUser(user);
+				if (data) {
+					setTimeout(() => {
+						setAlert((state) => ({
+							...state,
+							message: `verification email sent to ${user.Usr_email}`, color: "success"
+						}));
+						setOpenAlert(true);
+						setLoadEmail(false);
+					}, 2000);
+				}
 			} else {
 				setAlert((state) => ({
 					...state,
-					message: `email:  ${user.Usr_email} already activated`, color: "secondary"
+					message: `${user.Usr_email} is already activated`, color: "secondary"
 				}));
 				setOpenAlert(true);
 			}
@@ -92,7 +100,7 @@ const UserRow = ({ user, setSubmitted }) => {
 						size='small' 
 						color={user.activated === 'yes' ? 'success' : 'error'}
 					>
-						{user.activated === 'yes' ? <Verified /> : < Dangerous />}
+						{user.activated === 'yes' ? <Verified /> : (loadEmail === true ? <CircularProgress color='error' size={20}/> : < Dangerous />)}
 					</Button>
 				</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }}align='right'>

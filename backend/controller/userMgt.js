@@ -124,6 +124,11 @@ const updateUserStatus = async (action, id) => {
   return executeQuery(sql, [action, id]);
 };
 
+// Update user password
+const updateUserPSD = async (data) => {
+  const sql = "UPDATE usermanagement SET passwd=? WHERE Usr_id = ?";
+  return await executeQuery(sql, data);
+};
 
 /********************   POST REQUESTS   ****************************/
 
@@ -170,6 +175,7 @@ const allActions = {
   AddNewUser,
   Search,
   updateUserStatus,
+  updateUserPSD,
 };
 
 module.exports = allActions;

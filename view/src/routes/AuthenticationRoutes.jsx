@@ -16,7 +16,7 @@ const AuthenticationRoutes = {
   children: [
     { path: '/auth/login', element: <Login />},
     { path: '/auth/addnewuser', element:<Register />},
-    { path: '/auth/verify', element: <VerifyEmail />},
+    { path: '/auth/verify/:id', element: <VerifyEmail />},
     { path: '/activate', element:  <VerifyToken />},
     { path: '/auth/logout', element: <ProtectedRoute> <LogOut /> </ProtectedRoute>},
     { path: '/403', element: <ProtectedRoute> <ForbiddenPage /> </ProtectedRoute>},

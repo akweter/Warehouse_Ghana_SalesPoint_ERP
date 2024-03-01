@@ -31,7 +31,7 @@ const {
 
 // Get all users
 Router.get("/", async (req, res, next) => {
-  const Cookie = res.cookie( 'authlevel', 'allurs', { expires: new Date(Date.now() + 900000), path: '/users'});
+  const Cookie = res.cookie('authlevel', 'allurs', { expires: new Date(Date.now() + 900000), path: '/users' });
   try {
     const output = await allUsers();
     return await executeRoute(output, res, Cookie);
@@ -265,6 +265,8 @@ Router.get("/:id", async (req, res, next) => {
 
 
 /*********      UPDATE REQUESTS        *********/
+
+// Update user status
 Router.put("/status/:id", async (req, res) => {
   const userID = req.params.id;
   const { action } = req.body;
@@ -280,6 +282,5 @@ Router.put("/status/:id", async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 });
-
 
 module.exports = Router;

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import axios from 'axios';
-import { bcndOrigin } from 'auth/origins';
+import { bcndOrigin, viewOrigin } from 'auth/origins';
 
 /* eslint-disable */
 
@@ -23,7 +23,11 @@ export default function VerifyToken() {
                         sessionStorage.setItem('userInfo', JSON.stringify(response.data.data));
                         sessionStorage.setItem('usrlogstat', '200');
                         sessionStorage.setItem('Authorization', t);
-                        return window.location.href='/';
+                        if (result.data.accountId) {
+                            window.location.href=`${viewOrigin}/auth/verify/${result.data.accountId}`;
+                        } else {
+                            window.alert('try again!');
+                        }
                     }
                     else {
                         alert(result.message);
