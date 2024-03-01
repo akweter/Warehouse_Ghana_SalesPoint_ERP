@@ -57,13 +57,11 @@ const UserRow = ({ user, setSubmitted }) => {
 		}
 	}
 
-	const activatAndDisableeUser = async(id, action) => {
+	const activatAndDisableeUser = async (event, id, user) => {
 		try {
-            const data = await updateUserStatus(id, action);
-			console.log(data);
-			if (data.ok) {
-				setSubmitted();
-			}
+			event.preventDefault();
+			await updateUserStatus(id, user);
+			setSubmitted(true);
         }
         catch (error) {
 			console.log('something unexpected happend!');
@@ -85,7 +83,7 @@ const UserRow = ({ user, setSubmitted }) => {
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{user.Usr_reg_date}</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} align='center'>
 					<Button
-						onClick={() => activatAndDisableeUser(user.Usr_id, user.Usr_status)}
+						onClick={() => activatAndDisableeUser(event, user.Usr_id, user)}
 						variant='outlined'
 						size='small'
 						color={user.Usr_status === 'active' ? 'primary' : 'error'}

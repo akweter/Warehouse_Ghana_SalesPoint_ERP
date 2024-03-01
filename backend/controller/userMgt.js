@@ -119,9 +119,9 @@ const Search = async (prop) => {
 
 /********************   UPDATE REQUESTS   ****************************/
 
-const updateUserStatus = async (action, id) => {
+const updateUserStatus = async (prop) => {
   const sql = "UPDATE usermanagement SET Usr_status = ? WHERE Usr_id = ?";
-  return executeQuery(sql, [action, id]);
+  return executeQuery(sql, prop);
 };
 
 // Update user password

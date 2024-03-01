@@ -19,8 +19,8 @@ export const fetchuserByID = async (id) => {
 };
 
 // Update user status
-export const updateUserStatus = async (id, action) => {
-    const response = await requestMaking(`users/status/${id}`, 'put', action);
+export const updateUserStatus = async (id, data) => {
+    const response = await requestMaking(`users/status/${id}`, 'put', data);
     if (response.ok) {
         return await response.json();
     }

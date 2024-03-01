@@ -31,7 +31,7 @@ const UserManagerment = () => {
             setTimeout(() => {
                 setAllusers(data);
                 setLoading(false);
-            }, 1000);
+            }, 1500);
         }
         catch (error) {
             setLoading(false);
@@ -53,8 +53,9 @@ const UserManagerment = () => {
     return (<>
         {
             loading ?
-                <LoadingSpinner /> :
-                <><Paper>
+            <LoadingSpinner /> :
+            <>
+                <Paper>
                     <Grid container sx={{ justifyContent: 'space-around', paddingBottom: 1 }}>
                         <Button
                             variant='contained'
@@ -71,9 +72,11 @@ const UserManagerment = () => {
                         ) :
                             null}
                     </Box>
-                </Paper><Dialog open={open}>
-                        <AddNewSystemUser closeAddnewUser={handleClose} setSubmitted={setSubmitted} />
-                    </Dialog></>
+                </Paper>
+                <Dialog open={open}>
+                    <AddNewSystemUser closeAddnewUser={handleClose} setSubmitted={setSubmitted} />
+                </Dialog>
+            </>
         }
     </>);
 }

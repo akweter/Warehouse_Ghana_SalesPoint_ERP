@@ -1,7 +1,6 @@
 import MinimalLayout from '../layout/MinimalLayout';
 
 // login option 3 routing
-import Register from '../auth/secure/signup';
 import Login from '../auth/secure/login';
 import VerifyEmail from 'auth/verifyEmail';
 import VerifyToken from 'auth/activateUser';
@@ -15,7 +14,6 @@ const AuthenticationRoutes = {
   element: <MinimalLayout />,
   children: [
     { path: '/auth/login', element: <Login />},
-    { path: '/auth/addnewuser', element:<Register />},
     { path: '/auth/verify/:id', element: <VerifyEmail />},
     { path: '/activate', element:  <VerifyToken />},
     { path: '/auth/logout', element: <ProtectedRoute> <LogOut /> </ProtectedRoute>},
