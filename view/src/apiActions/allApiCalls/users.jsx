@@ -1,5 +1,7 @@
 import requestMaking from "auth/setHeaderToken";
 
+/* ======================================================================================================== */
+
 // Fetch fetch all users
 export const fetchAllUsers = async () => {
     const response = await requestMaking(`users`, 'GET', null)
@@ -17,6 +19,9 @@ export const fetchuserByID = async (id) => {
     }
     return null;
 };
+
+
+/* ======================================================================================================== */
 
 // Update user status
 export const updateUserStatus = async (id, data) => {
@@ -36,9 +41,20 @@ export const updateUserPSD = async (id, data) => {
     return null;
 };
 
+/* ======================================================================================================== */
+
 // Send Email to user
 export const sendEmailToUser = async (user) => {
     const response = await requestMaking(`auth/sendemail`, 'post', user);
+    if (response.ok) {
+        return await response.json();
+    }
+    return null;
+};
+
+// Add New User
+export const postNewUser = async (user) => {
+    const response = await requestMaking(`auth/signup`, 'post', user);
     if (response.ok) {
         return await response.json();
     }

@@ -85,7 +85,6 @@ export default function SignInForm() {
                     return;
                 } else {
                     const t = response.headers.get('Authorization');
-        
                     response.json().then(body => {
                         if (body.statusMessage === 'successLogin') { 
                             setloginStatus('Success');
@@ -105,6 +104,7 @@ export default function SignInForm() {
                             window.location.href = '/auth/verify';
                         }
                         else {
+                            console.log(body);
                             setloginStatus(body.message);
                             setUserId({ passwrd: '' });
                             setOpen(true);

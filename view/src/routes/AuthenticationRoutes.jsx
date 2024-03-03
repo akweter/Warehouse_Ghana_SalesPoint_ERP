@@ -3,6 +3,7 @@ import MinimalLayout from '../layout/MinimalLayout';
 // login option 3 routing
 import Login from '../auth/secure/login';
 import VerifyEmail from 'auth/verifyEmail';
+import ShowEmail from 'auth//emailSent';
 import VerifyToken from 'auth/activateUser';
 import LogOut from 'auth/logout';
 import ProtectedRoute from 'auth/routes';
@@ -15,6 +16,7 @@ const AuthenticationRoutes = {
   children: [
     { path: '/auth/login', element: <Login />},
     { path: '/auth/verify/:id', element: <VerifyEmail />},
+    { path: '/auth/verify/', element: <ShowEmail />},
     { path: '/activate', element:  <VerifyToken />},
     { path: '/auth/logout', element: <ProtectedRoute> <LogOut /> </ProtectedRoute>},
     { path: '/403', element: <ProtectedRoute> <ForbiddenPage /> </ProtectedRoute>},

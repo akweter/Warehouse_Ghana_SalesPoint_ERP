@@ -8,31 +8,25 @@ import {
     Grid,
     FormControl,
     TextField,
-    FormControlLabel,
-    Checkbox,
     InputLabel,
     Select,
     MenuItem,
 } from '@mui/material';
 import { ShowBackDrop } from 'utilities/backdrop';
 import { AlertError } from 'utilities/errorAlert';
-import { postNewUser } from 'apiActions/allApiCalls/users';
 
 /* eslint-disable */
 
-const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
+const UpdateUser = ({ user, closeAddnewUser, setSubmitted }) => {
     const [formData, setFormData] = useState({
-        username: '',
-        userEmail: '',
-        userType: '',
-        UserStatus: 'Active',
-        userPhone: '',
-        staffID: '',
-        userDept: '',
-        userVerified: '',
-        lname: '',
-        fname: '',
-        address: '',
+        fname: user.Usr_FName || '',
+        lname: user.Usr_LName || '',
+        username: user.Usr_name || '',
+        userPhone: user.Usr_phone || '',
+        userType: user.Usr_type || '',
+        userDept: user.Usr_dept || '',
+        staffID: user.Usr_id || '',
+        address: user.Usr_address || '',
     });
     const [errors, setErrors] = useState({});
     const [drop, setDrop] = useState(false);
@@ -44,9 +38,9 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
             case 'username':
                 const userName = /^[A-Za-z0-9._-]{4,}$/;
                 return userName.test(value) ? '' : 'Username must be at least 5 characters long. Alphanumeric Required!';
-            case 'userEmail':
-                const userEmail = /^[a-zA-Z0-9.\-_-]+@[a-zA-Z0-9.\-_-]+\.[a-zA-Z]{2,}$/;
-                return userEmail.test(value) ? '' : 'Invalid email address';
+            case 'userType':
+                const userType = /^[a-zA-Z0-9.\-_-]+@[a-zA-Z0-9.\-_-]+\.[a-zA-Z]{2,}$/;
+                return userType.test(value) ? '' : 'Invalid email address';
             case 'userPhone':
                 const userPhone = /^[0-9]{10}$/;;
                 return userPhone.test(value) ? '' : 'Telephone should be 10 characters. Alphabet and symbol not allowed!';
@@ -71,18 +65,11 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
         setFormData({ ...formData, [name]: value });
     };
 
-    const changeUserStat = () => {
-        setFormData({
-            ...formData,
-            UserStatus: formData.UserStatus === 'Active' ? 'Inactive' : 'Active',
-        });
-    };
-
     const handleFormSubmit = async (e) => {
         e.preventDefault();
 
         const validationErrors = {};
-        Object.keys(formData).forEach(async (name) => {
+        Object.keys(formData).forEach((name) => {
             const value = formData[name];
             const error = validateField(name, value);
             if (error) {
@@ -96,32 +83,44 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
         }
 
         try {
-            // console.log(formData);
-            setDrop(true);
-            const response = await postNewUser(formData);
-            setTimeout(() => {
-                if (response.data.message === 'email_sent') {
-                    setAlert((e) => ({...e, message: `Email sent to ${formData.userEmail}`, color: 'success' }));
-                    setOpenAlert(true);
-                    setTimeout(() => {
-                        setSubmitted(true);
-                        closeAddnewUser();
-                        setFormData((e) => ({
-                            ...e,
-                            fname: '', lname: '', staffID: '', userDept: '', UserStatus: '',
-                            userEmail: '', username: '', userPhone: '', userVerified: '',
-                        }));
-                        setDrop(true);
-                    }, 2000);
-                }
-                else {
-                    setDrop(false);
-                    setAlert((e) => ({...e, message: response.data.message, color: 'error' }));
-                }
-            }, 1000);
+            // setDrop(true);
+            console.log('updating', formData);
+            console.log('incoming', user);
+            // const response = await axios.put(``, formData);
+            // setTimeout(() => {
+            //     if (response.data.message === 'success') {
+            //         setAlert({ message: `User ${formData.username} updated successfully`, color: 'success' });
+            //         setOpenAlert(true);
+
+            //         setTimeout(() => {
+            //             setSubmitted(true);
+            //             closeAddnewUser();
+            //             setFormData({
+            //                 fname: '',
+            //                 lname: '',
+            //                 staffID: '',
+            //                 userDept: '',
+            //                 userType: '',
+            //                 username: '',
+            //                 userPhone: '',
+            //             });
+            //             setDrop(true);
+            //         }, 2000);
+            //     }
+            //     else {
+            //         setDrop(false);
+            //         setAlert({
+            //             message: response.data.message,
+            //             color: 'error',
+            //         });
+            //     }
+            // }, 500)
         }
         catch (error) {
-            setAlert({ message: 'Ooops! Something went wrong. Please refresh and retry', color: 'error' });
+            setAlert({
+                message: 'Oops! Something went wrong. Please refresh and retry',
+                color: 'error',
+            });
         }
     };
 
@@ -131,8 +130,10 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
             {drop === true ? <ShowBackDrop open={drop} /> : null}
             <DialogContent>
                 <Box>
-                    <Typography variant='h3' color="darkred" align='center' paddingBottom={2}>
-                        Add New Staff
+                    <Typography variant='h3' align='center' paddingBottom={2}>
+                        Updating <i style={{ color: 'darkred', backgroundColor: '#E5E6E7', fontSize: 18 }}>
+                            {user.Usr_name ? user.Usr_name : user.Usr_email}
+                        </i>
                     </Typography>
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
@@ -141,7 +142,7 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
                                     label="First Name"
                                     required
                                     name="fname"
-                                    value={formData.fname}
+                                    value={formData.fname || 'Unavailable'}
                                     onChange={handleInputChange}
                                     error={!!errors.fname}
                                     helperText={errors.fname}
@@ -154,7 +155,7 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
                                     label="Last Name"
                                     required
                                     name="lname"
-                                    value={formData.lname}
+                                    value={formData.lname || 'Unavailable'}
                                     onChange={handleInputChange}
                                     error={!!errors.lname}
                                     helperText={errors.lname}
@@ -168,9 +169,7 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
                                     required
                                     name="username"
                                     value={formData.username}
-                                    onChange={handleInputChange}
-                                    error={!!errors.username}
-                                    helperText={errors.username}
+                                    disabled={true}
                                 />
                             </FormControl>
                         </Grid>
@@ -181,37 +180,12 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
                                     required
                                     name="userPhone"
                                     type="number"
-                                    value={formData.userPhone}
+                                    value={formData.userPhone || 0}
                                     onChange={handleInputChange}
                                     error={!!errors.userPhone}
                                     helperText={errors.userPhone}
                                 />
                             </FormControl>
-                        </Grid>
-                        <Grid item xs={8}>
-                            <FormControl fullWidth>
-                                <TextField
-                                    label="Email"
-                                    required
-                                    name="userEmail"
-                                    value={formData.userEmail}
-                                    onChange={handleInputChange}
-                                    error={!!errors.userEmail}
-                                    helperText={errors.userEmail}
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={4}>
-                            <FormControlLabel
-                                label={formData.UserStatus === "Active" ? "Active" : "Inactive"}
-                                control={
-                                    <Checkbox
-                                        checked={formData.UserStatus === "Active"}
-                                        onChange={changeUserStat}
-                                        color="secondary"
-                                    />
-                                }
-                            />
                         </Grid>
                         <Grid item xs={6}>
                             <FormControl fullWidth>
@@ -257,8 +231,9 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
                             <FormControl fullWidth>
                                 <TextField
                                     label="Staff ID"
+                                    required
                                     name="staffID"
-                                    value={formData.staffID}
+                                    value={formData.staffID || 'Unavailable'}
                                     onChange={handleInputChange}
                                 />
                             </FormControl>
@@ -267,8 +242,9 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
                             <FormControl fullWidth>
                                 <TextField
                                     label="GPS Address"
+                                    required
                                     name="address"
-                                    value={formData.address}
+                                    value={formData.address || 'Unavailable'}
                                     onChange={handleInputChange}
                                     error={!!errors.address}
                                     helperText={errors.address}
@@ -279,10 +255,11 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleFormSubmit} variant='contained' color='primary' fullWidth>Submit</Button>
+                <Button onClick={handleFormSubmit} variant='contained' color='primary' fullWidth>Update</Button>
                 <Button onClick={closeAddnewUser} variant='outlined' color='error'>Cancel</Button>
             </DialogActions>
         </>
     );
 }
-export default AddNewSystemUser;
+
+export default UpdateUser;

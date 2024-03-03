@@ -1,6 +1,5 @@
 const Auth = require("express").Router();
 const { logErrorMessages, logMessage } = require("../utils/saveLogfile");
-const { logAllMessage } = require("../utils/saveAllLogs");
 const { executeQuery } = require("../database");
 const { verifyToken, decodeToken } = require("../utils/tokenActions");
 require('dotenv').config();
@@ -42,7 +41,6 @@ Auth.get("/", async (req, res) => {
             if (user.length > 0) {
                 user.map(e=>{
                     if (e.activated === 'no') {
-                        // Grab user information for the frontend.
                         const sanitizedData = {
                             userName: e.Usr_name,
                             accountType: e.Usr_type,
@@ -51,7 +49,8 @@ Auth.get("/", async (req, res) => {
                             regAddress: e.Usr_address,
                             orgDept: e.Usr_dept,
                             regDate: e.Usr_reg_date,
-                            accountId: e.Usr_id
+                            accountId: e.Usr_id,
+                            connect: e.passwd,
                         };
                         activateUser(email)
                         .then(()=>{
@@ -68,7 +67,7 @@ Auth.get("/", async (req, res) => {
                             return res.json({statusMessage: 'successActivate', message: 'Your are activated successfully.', data: sanitizedData});
                         })
                         .catch((err)=>{
-                            logAllMessage(`error 1 while activating ${email} with the error ${JSON.stringify(err)}`);
+                            logErrorMessages(`error 1 while activating ${email} with the error ${JSON.stringify(err)}`);
                             return res.json({status: 'error', message: 'Oops! Something went wrong. Log in again'});
                         });
                     }
@@ -79,18 +78,18 @@ Auth.get("/", async (req, res) => {
                 });
             }
             else{
-                logAllMessage(`Email: ${email} not found from the query result decoding from token`);
+                logErrorMessages(`Email: ${email} not found from the query result decoding from token`);
                 return res.json({status: 'error', message: 'Something went bad. Please sign up again!'});
             }
         }
         else {
-            logAllMessage(`No email found in the token: ${decrypted}`);
-            return res.json({status: 'error', message: 'Oops! Something went wrong. Log in again'});
+            logErrorMessages(`No email found in the token: ${decrypted}`);
+            return res.json({status: 'error', message: 'Oops! We failed to verify your ID. Please ask your administrator for new verification email'});
         }
     }
     else {
-        logAllMessage(`Verifying token error ${token}`);
-        return res.json({status: 'error', message: 'Something bad happend. Please log with your email'});
+        logErrorMessages(`Verifying token error ${token}`);
+        return res.json({status: 'error', message: 'Something bad happend. Please ask your administrator for new verification email'});
     }
 });
 

@@ -45,7 +45,6 @@ const saveToken_SendEmail = async (userEmail, username, req, res) => {
 		await SaveNewTokensQuery(TokenVals)
 			.then(async () => {
 				await sendVerificationEmail(userEmail, emailToken, res);
-				logMessage(`"${username}" added!`);
 				return res.json({ status: 'success', message: 'email_sent' });
 			});
 	}
@@ -70,19 +69,19 @@ const sendVerificationEmail = (email, emailToken, res) => {
 			subject: 'Activate Your Account',
 			html: `
 				<div style="text-align: center;">
-				<h2 style="color: #007BFF;">One Time Activation Key</h2>
-				<img src="https://i0.wp.com/www.warehouseghana.com/wp-content/uploads/2022/10/Wg_logo-removebg-preview.png" alt="Warehouse Ghana Logo" width="250" height="150">
-				<address style="font-size: 17px;">Kindly click on the below link to activate your Warehouse Ghana user account:</address>
+				<h2 style="color: #0B0F63;">One Time Verification Key</h2>
+				<img src="https://i0.wp.com/www.warehouseghana.com/wp-content/uploads/2022/10/Wg_logo-removebg-preview.png" alt="Warehouse Ghana Logo" width="70" height="50">
+				<address style="font-size: 17px;">
+					<small>Click on the button to activate your Warehouse Ghana user account</small>
+				</address>
 				<p>
 					<a target="_blank" href="${origin}/activate?key=${emailToken}" style="cursor: pointer;">
-						<button style="background: #007BFF; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+						<button style="background: #0B0F63; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
 						Activate Your Account
 						</button>
 					</a>
 				</p>
-				<strong style="color: red; font-size: 12px;">
-					Kindly request another activation email 15 minutes after the initial email has been received
-				</strong>
+				<strong style="color: red; font-size: 12px;"> Verification key expires if unused for 15 minutes.</strong>
 				</div>
 			`,
 		};
@@ -92,7 +91,7 @@ const sendVerificationEmail = (email, emailToken, res) => {
 				logErrorMessages(`Email sending error: => ${error}`);
 				return error;
 			} else {
-				logMessage(`Activation email sent to ${JSON.stringify(info.accepted[0])}`);
+				logMessage(`user added | verification key sent to ${JSON.stringify(info.accepted[0])}`);
 				return res.json({ status: 'success', message: 'email_sent' });
 			}
 		});
@@ -212,11 +211,13 @@ Auth.post("/signup", async (req, res) => {
 		fname,
 		lname,
 		username,
-		userType,
+		UserStatus,
 		userPhone,
 		userEmail,
 		staffID,
 		userDept,
+		userType,
+		address,
 	} = req.body;
 	const ipInfo = await Myip();
 
@@ -227,23 +228,32 @@ Auth.post("/signup", async (req, res) => {
 			return res.json({ status: 'error', message: 'Username or Email Exist! Please Log in' });
 		}
 		else {
-			// const hashpsswd = await bcrypt.hash(psd, 12);
 			const date = new Date();
+			const generatedID = () => {
+				if (
+					staffID === null || 
+					staffID === undefined || 
+					staffID === '') {
+						return UUID();
+				}
+				return staffID;
+			}
 			var Vals = [
 				fname,
 				lname,
 				username,
-				'default',
 				userType,
+				UserStatus,
 				userPhone,
 				userEmail,
-				staffID,
+				address,
 				userDept,
 				date,
 				null,
 				'no',
-				UUID(),
+				generatedID(),
 			];
+			console.log(Vals);
 
 			await AddNewUser(Vals)
 				.then(async () => {
@@ -265,7 +275,8 @@ Auth.post("/signup", async (req, res) => {
 Auth.put("/psd/:id", async (req, res, next) => {
 	const { id } = req.params;
 	const { psd } = req.body;
-	const data = [psd, id];
+	const hashpsswd = await bcrypt.hash(psd, 12);
+	const data = [hashpsswd, id];
 	try {
 		const output = await updateUserPSD(data);
 		logMessage(`${id} update paswword succussful`);

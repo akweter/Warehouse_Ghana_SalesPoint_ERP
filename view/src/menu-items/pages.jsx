@@ -46,7 +46,7 @@ const pages = {
     },
     {
       id: 'po-quotes',
-      title: 'P.O & Quote Records',
+      title: 'P.O & Quotations',
       type: 'item',
       url: '/po-quotes',
       icon: IconReportMoney,
@@ -62,7 +62,7 @@ const pages = {
     },
     {
       id: 'users',
-      title: 'Users Management',
+      title: 'Staff Management',
       type: 'item',
       url: '/user',
       icon: IconUsers,

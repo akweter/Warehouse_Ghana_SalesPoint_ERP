@@ -1,6 +1,6 @@
 require('dotenv').config();
 const { verifyToken, generateJWTToken } = require('../utils/tokenActions');
-const publicRoutes = ['/auth/login', '/auth/signup', '/activate', '/woo/order'];
+const publicRoutes = ['/auth/login', '/activate',];
 const { origin } = process.env;
 
 const authenticateToken = async (req, res, next) => {

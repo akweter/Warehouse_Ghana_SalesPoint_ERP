@@ -111,7 +111,7 @@ const CustomersSuppliersTable = ({ inData }) => {
 		const currentPageData = inData.slice(startIndex, endIndex);
 
 		return currentPageData.map(data => (
-			<CusNsupRow key={data.id} cusNsup={data} />
+			<CusNsupRow key={data.SnC_id} cusNsup={data} />
 		));
 	};
 

@@ -13,18 +13,22 @@ import {
 	Box,
 	Button,
 	CircularProgress,
+	Dialog,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Dangerous, EditNote, Verified } from '@mui/icons-material';
 import { sendEmailToUser, updateUserStatus } from 'apiActions/allApiCalls/users';
 import { AlertError } from 'utilities/errorAlert';
+import UpdateUser from './updateUser';
+
+/* eslint-disable */
 
 const UserRow = ({ user, setSubmitted }) => {
 	const [open, setOpen] = useState(false);
 	const [loadEmail, setLoadEmail] = useState(false);
 	const [openAlert, setOpenAlert] = useState(false);
-	// const [loadEmail, setLoadEmail] = React.useState(false);
+	const [updateDialog, setUpdateDialog] = useState(false);
 	const [alert, setAlert] = useState({ message: "", color: "" });
 
 	const openData = () => { setOpen(!open) };
@@ -61,11 +65,19 @@ const UserRow = ({ user, setSubmitted }) => {
 		try {
 			event.preventDefault();
 			await updateUserStatus(id, user);
-			setSubmitted(true);
+			setTimeout(() => {
+				setSubmitted(true);
+			}, 100);
         }
         catch (error) {
-			console.log('something unexpected happend!');
+			setAlert((e) => ({...e, message: 'something unexpected happend!', color: 'error'}));
+			setOpenAlert(true);
         }
+	}
+
+	const handleUpdateUser = (event) => {
+		event.preventDefault();
+		setUpdateDialog(true);
 	}
 
 	return (
@@ -94,15 +106,21 @@ const UserRow = ({ user, setSubmitted }) => {
 				<TableCell padding='none' style={{ cursor: 'pointer' }} align='center'>
 					<Button 
 						onClick={(event) => sendEmail(event, user)} 
-						variant='text' 
-						size='small' 
+						variant='text'
+						size='small'
 						color={user.activated === 'yes' ? 'success' : 'error'}
 					>
 						{user.activated === 'yes' ? <Verified /> : (loadEmail === true ? <CircularProgress color='error' size={20}/> : < Dangerous />)}
 					</Button>
 				</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }}align='right'>
-					<Button onClick={() => alert(`You are editing ${user.Usr_name}'s profile`)} variant='outlined' size='small'sx={{ color: '#DDAC05'}}><EditNote /></Button>
+					<Button 
+						onClick={() => handleUpdateUser(event)}
+						variant='outlined' 
+						size='small'sx={{ color: '#DDAC05'}}
+					>
+						<EditNote />
+					</Button>
 				</TableCell>
 			</TableRow>
 
@@ -142,6 +160,10 @@ const UserRow = ({ user, setSubmitted }) => {
 					</Collapse>
 				</TableCell>
 			</TableRow>
+
+			<Dialog open={updateDialog}>
+                    <UpdateUser user={user} closeAddnewUser={()=>setUpdateDialog(false)} setSubmitted={setSubmitted} />
+            </Dialog>
 		</>
 	);
 };
@@ -183,7 +205,7 @@ const DisplayUsers = ({ inData, submission }) => {
 								<TableCell><Typography variant='h4' color='white'>Registration Date</Typography></TableCell>
 								<TableCell><Typography variant='h4' align='center' color='white'>Status</Typography></TableCell>
 								<TableCell><Typography variant='h4' align='center' color='white'>Verify</Typography></TableCell>
-								<TableCell><Typography variant='h4' color='white' align='right'>Action</Typography></TableCell>
+								<TableCell><Typography variant='h4' color='white' align='right'>Edit</Typography></TableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody>
