@@ -23,6 +23,15 @@ export const fetchuserByID = async (id) => {
 
 /* ======================================================================================================== */
 
+// Update user details
+export const updateUserDetails = async (id, data) => {
+    const response = await requestMaking(`users/${id}`, 'put', data);
+    if (response.ok) {
+        return await response.json();
+    }
+    return null;
+};
+
 // Update user status
 export const updateUserStatus = async (id, data) => {
     const response = await requestMaking(`users/status/${id}`, 'put', data);

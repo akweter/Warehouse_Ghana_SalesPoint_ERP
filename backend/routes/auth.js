@@ -218,6 +218,7 @@ Auth.post("/signup", async (req, res) => {
 		userDept,
 		userType,
 		address,
+		psd,
 	} = req.body;
 	const ipInfo = await Myip();
 
@@ -229,15 +230,7 @@ Auth.post("/signup", async (req, res) => {
 		}
 		else {
 			const date = new Date();
-			const generatedID = () => {
-				if (
-					staffID === null || 
-					staffID === undefined || 
-					staffID === '') {
-						return UUID();
-				}
-				return staffID;
-			}
+			const setPsd = () => (!psd) ? 'test' : psd;
 			var Vals = [
 				fname,
 				lname,
@@ -249,11 +242,11 @@ Auth.post("/signup", async (req, res) => {
 				address,
 				userDept,
 				date,
-				null,
+				setPsd(),
 				'no',
-				generatedID(),
+				staffID,
+				UUID(),
 			];
-			console.log(Vals);
 
 			await AddNewUser(Vals)
 				.then(async () => {

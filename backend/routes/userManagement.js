@@ -27,6 +27,7 @@ const {
   allTemporalUsers,
   Search,
   updateUserStatus,
+  updateUser,
 } = require("../controller/userMgt");
 
 // Get all users
@@ -263,15 +264,48 @@ Router.get("/:id", async (req, res, next) => {
   }
 });
 
-
 /*********      UPDATE REQUESTS        *********/
+
+// Update user
+Router.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const {
+    fname,
+    lname,
+    username,
+    userPhone,
+    userType,
+    userDept,
+    staffID,
+    address,
+  } = req.body;
+
+  const userData = {
+    Usr_FName: fname,
+    Usr_LName: lname,
+    Usr_name: username,
+    Usr_phone: userPhone,
+    Usr_type: userType,
+    Usr_dept: userDept,
+    Usr_StaffID: staffID,
+    Usr_address: address
+  };
+
+  try {
+    const output = await updateUser(userData, id);
+    return res.status(200).json({ message: "success" });
+  }
+  catch (err) {
+    logAllMessage("Internal server error" + err);
+    return res.status(500).json({ message: `Failed to update ${username}` });
+  }
+});
 
 // Update user status
 Router.put("/status/:id", async (req, res) => {
   const { id } = req.params;
   const { Usr_status } = req.body;
   const userStat = Usr_status === 'active' ? 'inactive' : 'active';
-
   const data = [userStat, id];
   try {
     const output = await updateUserStatus(data);

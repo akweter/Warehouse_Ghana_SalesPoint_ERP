@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import axios from 'axios';
-import { bcndOrigin, } from 'auth/origins';
+import { bcndOrigin, viewOrigin } from 'auth/origins';
 
 /* eslint-disable */
 
@@ -13,7 +13,6 @@ export default function VerifyToken() {
         try {
             const urlParams = new URLSearchParams(window.location.search);
             const userParam = urlParams.get('key');
- 
             if (userParam) {
                 await axios.get(`${bcndOrigin}/activate?key=${userParam}`)
                 .then((response)=>{

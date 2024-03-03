@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { ShowBackDrop } from 'utilities/backdrop';
 import { AlertError } from 'utilities/errorAlert';
+import { updateUserDetails } from 'apiActions/allApiCalls/users';
 
 /* eslint-disable */
 
@@ -25,8 +26,9 @@ const UpdateUser = ({ user, closeAddnewUser, setSubmitted }) => {
         userPhone: user.Usr_phone || '',
         userType: user.Usr_type || '',
         userDept: user.Usr_dept || '',
-        staffID: user.Usr_id || '',
+        staffID: user.Usr_StaffID || '',
         address: user.Usr_address || '',
+        userID: user.Usr_id,
     });
     const [errors, setErrors] = useState({});
     const [drop, setDrop] = useState(false);
@@ -35,12 +37,6 @@ const UpdateUser = ({ user, closeAddnewUser, setSubmitted }) => {
 
     const validateField = (name, value) => {
         switch (name) {
-            case 'username':
-                const userName = /^[A-Za-z0-9._-]{4,}$/;
-                return userName.test(value) ? '' : 'Username must be at least 5 characters long. Alphanumeric Required!';
-            case 'userType':
-                const userType = /^[a-zA-Z0-9.\-_-]+@[a-zA-Z0-9.\-_-]+\.[a-zA-Z]{2,}$/;
-                return userType.test(value) ? '' : 'Invalid email address';
             case 'userPhone':
                 const userPhone = /^[0-9]{10}$/;;
                 return userPhone.test(value) ? '' : 'Telephone should be 10 characters. Alphabet and symbol not allowed!';
@@ -50,9 +46,6 @@ const UpdateUser = ({ user, closeAddnewUser, setSubmitted }) => {
             case 'lname':
                 const userLName = /^[A-Za-z -_.]{2,}$/;
                 return userLName.test(value) ? '' : 'Last name must be at least 2 characters long.  Numeric not allowed!';
-            case 'staffID':
-                const staffID = /^[A-Za-z -_.]{2,}$/;
-                return staffID.test(value) ? '' : 'Staff ID must be at least 5 characters long. Alphanumeric Required!';
             default:
                 return '';
         }
@@ -79,44 +72,41 @@ const UpdateUser = ({ user, closeAddnewUser, setSubmitted }) => {
         setErrors(validationErrors);
 
         if (Object.keys(validationErrors).length > 0) {
+            console.log('errors keys',validationErrors);
             return;
         }
 
         try {
-            // setDrop(true);
-            console.log('updating', formData);
-            console.log('incoming', user);
-            // const response = await axios.put(``, formData);
-            // setTimeout(() => {
-            //     if (response.data.message === 'success') {
-            //         setAlert({ message: `User ${formData.username} updated successfully`, color: 'success' });
-            //         setOpenAlert(true);
+            setDrop(true);
+            const response = await updateUserDetails(formData.userID, formData);
+            setTimeout(() => {
+                if (response.message === 'success') {
+                    setAlert({ message: `User ${formData.username} updated successfully`, color: 'success' });
+                    setOpenAlert(true);
 
-            //         setTimeout(() => {
-            //             setSubmitted(true);
-            //             closeAddnewUser();
-            //             setFormData({
-            //                 fname: '',
-            //                 lname: '',
-            //                 staffID: '',
-            //                 userDept: '',
-            //                 userType: '',
-            //                 username: '',
-            //                 userPhone: '',
-            //             });
-            //             setDrop(true);
-            //         }, 2000);
-            //     }
-            //     else {
-            //         setDrop(false);
-            //         setAlert({
-            //             message: response.data.message,
-            //             color: 'error',
-            //         });
-            //     }
-            // }, 500)
+                    setTimeout(() => {
+                        setSubmitted(true);
+                        closeAddnewUser();
+                        setFormData({
+                            fname: '',
+                            lname: '',
+                            staffID: '',
+                            userDept: '',
+                            userType: '',
+                            username: '',
+                            userPhone: '',
+                        });
+                        setDrop(true);
+                    }, 2000);
+                }
+                else {
+                    setDrop(false);
+                    setAlert({ message: response.message, color: 'error' });
+                }
+            }, 500)
         }
         catch (error) {
+            setDrop(false);
             setAlert({
                 message: 'Oops! Something went wrong. Please refresh and retry',
                 color: 'error',
@@ -231,10 +221,11 @@ const UpdateUser = ({ user, closeAddnewUser, setSubmitted }) => {
                             <FormControl fullWidth>
                                 <TextField
                                     label="Staff ID"
-                                    required
                                     name="staffID"
                                     value={formData.staffID || 'Unavailable'}
                                     onChange={handleInputChange}
+                                    error={!!errors.staffID}
+                                    helperText={errors.staffID}
                                 />
                             </FormControl>
                         </Grid>
@@ -242,7 +233,6 @@ const UpdateUser = ({ user, closeAddnewUser, setSubmitted }) => {
                             <FormControl fullWidth>
                                 <TextField
                                     label="GPS Address"
-                                    required
                                     name="address"
                                     value={formData.address || 'Unavailable'}
                                     onChange={handleInputChange}

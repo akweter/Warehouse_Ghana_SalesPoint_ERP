@@ -4,7 +4,7 @@ const { executeQuery } = require("../database/index");
 
 // Return all users
 const allUsers = async () => {
-  const sql = "SELECT * FROM UserManagement";
+  const sql = "SELECT * FROM UserManagement ORDER BY Usr_name ASC";
   return executeQuery(sql);
 };
 
@@ -119,6 +119,13 @@ const Search = async (prop) => {
 
 /********************   UPDATE REQUESTS   ****************************/
 
+// Update user details
+const updateUser = (userData, userId) => {
+  const sql = "UPDATE usermanagement SET ? WHERE Usr_id = ?";
+  return executeQuery(sql, [userData, userId]);
+}
+
+// Update user stats
 const updateUserStatus = async (prop) => {
   const sql = "UPDATE usermanagement SET Usr_status = ? WHERE Usr_id = ?";
   return executeQuery(sql, prop);
@@ -176,6 +183,7 @@ const allActions = {
   Search,
   updateUserStatus,
   updateUserPSD,
+  updateUser,
 };
 
 module.exports = allActions;

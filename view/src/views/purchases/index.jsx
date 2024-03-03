@@ -2,7 +2,7 @@
 export default function Purchases(){
     return(
         <div>
-            <h1>Purchases</h1>
+            <h1>Purchase History</h1>
         </div>
     );
 }

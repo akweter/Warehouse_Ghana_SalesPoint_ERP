@@ -91,7 +91,7 @@ const UserRow = ({ user, setSubmitted }) => {
 				</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} component="th" scope="row" onClick={openData}>{user.Usr_name}</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{user.Usr_email}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{user.Usr_phone === undefined || user.Usr_phone === null ? '-' : user.Usr_phone}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{user.Usr_phone || '-'}</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{user.Usr_reg_date}</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} align='center'>
 					<Button
@@ -132,23 +132,23 @@ const UserRow = ({ user, setSubmitted }) => {
 								<TableHead>
 									<TableRow>
 										<TableCell padding='none'>First Name</TableCell>
-										<TableCell padding='none' align='left'>{user.Usr_FName === null || user.Usr_FName === undefined ? '-' : user.Usr_FName}</TableCell>
+										<TableCell padding='none' align='left'>{user.Usr_FName || '-'}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Last Name</TableCell>
-										<TableCell padding='none' align='left'>{user.Usr_LName === null || user.Usr_LName === undefined ? '-' : user.Usr_LName}</TableCell>
+										<TableCell padding='none' align='left'>{user.Usr_LName || '-'}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Department</TableCell>
-										<TableCell padding='none' align='left'>{user.Usr_dept === null || user.Usr_dept === undefined ? '-' : user.Usr_dept}</TableCell>
+										<TableCell padding='none' align='left'>{user.Usr_dept || '-'}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>User Type</TableCell>
-										<TableCell padding='none'>{user.Usr_type === null || user.Usr_type === undefined ? '-' : user.Usr_type}</TableCell>
+										<TableCell padding='none'>{user.Usr_type || '-'}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Address</TableCell>
-										<TableCell padding='none'>{user.Usr_address === null || user.Usr_address === undefined ? '-' : user.Usr_address}</TableCell>
+										<TableCell padding='none'>{user.Usr_address || '-'}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Activities</TableCell>

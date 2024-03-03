@@ -33,6 +33,7 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
         lname: '',
         fname: '',
         address: '',
+        psd: '',
     });
     const [errors, setErrors] = useState({});
     const [drop, setDrop] = useState(false);
@@ -96,7 +97,6 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
         }
 
         try {
-            // console.log(formData);
             setDrop(true);
             const response = await postNewUser(formData);
             setTimeout(() => {
