@@ -1,6 +1,6 @@
-// import QRCode from "qrcode.react";
 import logo from "../../assets/images/logo.webp"
 
+/* eslint-disable */
 const InvoiceTemplate = ({ data }) => {
 
 	return (
@@ -8,7 +8,7 @@ const InvoiceTemplate = ({ data }) => {
 			<table align="center" border={0} width='100%' cellPadding={8}>
 				<tr>
 					<td><h1>Invoice</h1></td>
-					<td><img src={logo} width={65} height={50} /></td>
+					<td><img src={logo} width={65} height={50} alt="Logo"/></td>
 				</tr>
 			</table>
 			<table cellSpacing="2" cellPadding="2" align="left" width="100%">
@@ -71,7 +71,7 @@ const InvoiceTemplate = ({ data }) => {
 					(<div>Products not available</div>)
 			}
 
-			<table bgcolor="#F9F9F9" cellSpacing="0" cellPadding="4" align="right">
+			<table cellSpacing="0" cellPadding="4" align="right">
 				<thead>
 					<tr>
 						<td><strong>Subtotal:</strong></td>
@@ -118,7 +118,7 @@ const InvoiceTemplate = ({ data }) => {
 							< br />
 							<tr>
 								<td><strong>Delivery:</strong></td>
-								<td>{data.currency}: {(data.Inv_delivery_fee)}</td>
+								<td>{data.Inv_delivery_fee === 'Free' ? null : `${data.currency}:`} {(data.Inv_delivery_fee)}</td>
 							</tr>
 						</>)
 					}

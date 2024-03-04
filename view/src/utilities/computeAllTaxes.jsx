@@ -323,38 +323,72 @@ export const handleRefundExclusiveTaxes = (itemlists, setItemLists, header) => {
     }
 };
 
-// compute Refund total taxes
-// export const computeRefundFinalTaxes = (items, setHeader) => {
-//     if (Array.isArray(items) || items !== undefined && items.length > 0){
-//         const totalLevy = items.reduce((total, item) =>
-//         total +
-//         parseFloat(item.levyAmountA || 0) +
-//         parseFloat(item.levyAmountB || 0) +
-//         parseFloat(item.levyAmountC || 0) +
-//         parseFloat(item.levyAmountD || 0) +
-//         parseFloat(item.levyAmountE || 0),
-//         0);
+const LEVY_RATES = {
+    A: 2.5 / 100,
+    B: 2.5 / 100,
+    C: 1 / 100,
+    D: 5 / 100,
+    E: 1 / 100,
+};
 
-//         const totalVat = items.reduce(
-//         (total, item) => total + parseFloat(item.totalVat || 0), 0);
+// compute general and selective discount
+const handleDiscountSubtotalRef = (items, header) => {
+    const { discountType } = header;
+    const { quantity, unitPrice, discountAmount } = items;
+    return discountType === 'GENERAL' ? quantity * unitPrice - discountAmount : quantity * unitPrice;
+};
 
-//         const totalAmount = items.reduce(
-//         (total, item) => total + parseFloat(item.totalAmount || 0), 0);
+const handleTaxes = (items, isExclusive, header) => {
+    if (items) {
+      return items.map((item) => {
+        const { quantity, unitPrice, itemCategory, discountAmount } = item;
+        const itemSubtotal = handleDiscountSubtotalRef(item, header);
+        const graValue = isExclusive ? itemSubtotal : itemSubtotal / 1.219;
+        
+        const levyAmountA = (itemCategory === "" || itemCategory === "TRSM" || itemCategory === "CST") ? LEVY_RATES.A * itemSubtotal : 0;
+        const levyAmountB = (itemCategory === "" || itemCategory === "TRSM" || itemCategory === "CST") ? LEVY_RATES.B * itemSubtotal : 0;
+        const levyAmountC = (itemCategory === "" || itemCategory === "EXM") ? 0 : LEVY_RATES.C * itemSubtotal;
+        const levyAmountD = (itemCategory === "CST") ? 0 : LEVY_RATES.D * itemSubtotal;
+        const levyAmountE = (itemCategory === "" || itemCategory === "EXM") ? 0 : LEVY_RATES.E * itemSubtotal;
 
-//         const voucherAmount = items.reduce(
-//         (total, item) => total + parseFloat(item.voucherAmount || 0), 0);
+        const levyAmount = levyAmountA + levyAmountB + levyAmountC + levyAmountD + levyAmountE;
+        const totalVat = isExclusive ? 0.15 * (graValue + levyAmount) : 0.15 * (graValue / 1.15 + levyAmount);
+        const updatedItem = {
+          ...item,
+          levyAmountA,
+          levyAmountB,
+          levyAmountC,
+          levyAmountD,
+          levyAmountE,
+          totalLevy: levyAmount,
+          totalVat,
+          discountAmount: discountAmount.toFixed(4),
+          totalAmount: (quantity * unitPrice).toFixed(4),
+        };
+        return updatedItem;
+      });
+    }
+    return [];
+}
 
-//         const discountAmount = items.reduce(
-//         (total, item) => total + parseFloat(item.discountAmount || 0), 0);
-
-//         setHeader((header) => ({
-//             ...header,
-//             totalLevy: totalLevy.toFixed(2),
-//             totalVat: totalVat.toFixed(2),
-//             totalAmount: totalAmount.toFixed(2),
-//             voucherAmount: voucherAmount.toFixed(2),
-//             discountAmount: (discountAmount).toFixed(2),
-//             items: items,
-//         }));
-//     }
-// }
+export const performComputations = (itemlists, header, setHeader) => {
+    const { calculationType } = header;
+    const updatedItems = calculationType === 'INCLUSIVE' ? handleTaxes(itemlists, false, header) : handleTaxes(itemlists, true, header);
+    const computedValues = updatedItems.reduce((acc, item) => ({
+            totalLevy: acc.totalLevy + parseFloat(item.totalLevy || 0),
+            totalVat: acc.totalVat + parseFloat(item.totalVat || 0),
+            totalAmount: acc.totalAmount + parseFloat(item.totalAmount || 0),
+            discountAmount: acc.discountAmount + parseFloat(item.discountAmount || 0),
+    }),
+        { totalLevy: 0, totalVat: 0, totalAmount: 0 }
+    );
+    setHeader((state) => ({
+        ...state,
+        totalLevy: computedValues.totalLevy.toFixed(4),
+        totalVat: computedValues.totalVat.toFixed(4),
+        totalAmount: computedValues.totalAmount.toFixed(4),
+        discountAmount: computedValues.discountAmount.toFixed(4),
+        items: updatedItems,
+    }));
+    // setItemLists((list) => ({ ...list, items: updatedItems }));
+};

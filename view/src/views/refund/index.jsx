@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { v4 as uuidv4 } from 'uuid';
-import { CancelPresentationSharp, Visibility as VisibilityIcon } from '@mui/icons-material';
+import { Visibility as VisibilityIcon } from '@mui/icons-material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { 
     Button,
@@ -28,18 +28,20 @@ import DrawerContent from './showCancelRefunds';
 import { fetchAllCustomers } from 'apiActions/allApiCalls/customer';
 import { fetchAllProducts } from 'apiActions/allApiCalls/product';
 import { fetchRefundInvoices } from 'apiActions/allApiCalls/refund';
+import { IconCreditCardRefund } from '@tabler/icons-react';
 
 /* eslint-disable */
 
 export default function Refund() {
-    const [submitted, setSubmitted] = useState(false);
     const [open, setOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [invoices, setInvoices] = useState([]);
-    const [selectedRow, setSelectedRow] = useState(null);
-    const [refundInv, setRefundInv] = useState([]);
     const [openRefDialog, setOpenRefDialog] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [openGeneralCatch, setOpenGeneralCatch] = useState(false);
+    const [invoices, setInvoices] = useState([]);
+    const [refundInv, setRefundInv] = useState([]);
+    const [selectedRow, setSelectedRow] = useState(null);
     const [alert, setAlert] = useState({message: '', color: ''});
 
     const formatDate = (dateString) => {
@@ -73,7 +75,6 @@ export default function Refund() {
                 productIdToProductMap[product.Itm_id] = {
                     id: product.Itm_id,
                     name: product.Itm_name,
-                    // price: product.Itm_price,
                     category: product.Itm_taxable,
                     itmDiscount: product.Inv_Product_Discount,
                 };
@@ -87,18 +88,20 @@ export default function Refund() {
                 const productPrice = JSON.parse(invoice.Inv_Pro_Price);
                 const invDate = invoice.Inv_date;
 
-                // Map product IDs to their details, including name, quantity, price, and discount
                 const productsWithQty = productIds.map((productId, index) => {
                     const productDetails = productIdToProductMap[productId];
+                    if (!productDetails) {
+                        return null;
+                    }
                     return {
                         id: productDetails.id,
                         name: productDetails.name,
-                        quantity: productQtys[index],
-                        price: productPrice[index],
+                        quantity: parseFloat(productQtys[index]),
+                        price: parseFloat(productPrice[index]),
                         category: productDetails.category,
-                        discount: productDis[index],
+                        discount: parseFloat(productDis[index]),
                     };
-                });                                                      
+                }).filter(product => product !== null);
 
                 return {
                     ...invoice,
@@ -113,12 +116,10 @@ export default function Refund() {
             }, 2000);
         }
         catch (error) {
-            setTimeout(()=>{
-                setInvoices([]);
-                setOpen(true);
-                setAlert((e) => ({...e, message: `Something unexpected happened with\n your connection or server interrupted. \n\n Please log in again if it persist.`, color: 'error'}));
-                setLoading(false);
-            }, 3000);
+            setInvoices([]);
+            setOpenGeneralCatch(true);
+            setAlert((e) => ({...e, message: `Something unexpected happened with\n your connection or server interrupted. \n\n Please log in again if it persist.`, color: 'error'}));
+            setLoading(false);
         }
     };
     
@@ -212,10 +213,10 @@ export default function Refund() {
                 sortable: false,
                 renderCell: (params) => (<>
                     <IconButton title='View Refund' onClick={() => handleViewIconClick(params.row)}>
-                        <VisibilityIcon fontSize='medium' color='primary'/>
+                        <VisibilityIcon fontSize='medium' color='secondary'/>
                     </IconButton>
                     <IconButton title='Cancel Refund' onClick={()=> handleRefundBtnClick(params.row)}>
-                        <CancelPresentationSharp fontSize='small' color='error'/>
+                        <IconCreditCardRefund color='red'/>
                     </IconButton>
                 </>),
             },
@@ -273,7 +274,7 @@ export default function Refund() {
                             },
                         }}
                     />
-                    {alert.message ? <GeneralCatchError alert={alert} handleClose={handleClose} open={open}/> : null}
+                    {alert.message ? <GeneralCatchError alert={alert} open={openGeneralCatch}/> : null}
                     {selectedRow && (
                         <Dialog open={openDialog} onClose={false}>
                             <DialogContent>

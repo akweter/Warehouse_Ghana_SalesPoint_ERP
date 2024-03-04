@@ -50,7 +50,7 @@ const saveToken_SendEmail = async (userEmail, username, req, res) => {
 	}
 	catch (err) {
 		logErrorMessages(`Failed to save ${TokenVals} for ${username} to the DB ${JSON.stringify(err)}`);
-		return res.json({ status: 'error', message: 'Oops Something went wrong! Refresh and retry' });
+		return res.status(500).json({ status: 'error', message: 'Oops Something went wrong! Refresh and retry' });
 	}
 }
 
@@ -107,11 +107,13 @@ Auth.post("/login", async (req, res) => {
 	const userAgent = req.get('User-Agent');
 	const { email, passwrd } = req.body;
 
-	if (email === null || email === undefined) {
+	if (!email) {
 		return res.send('Invalid required email');
-	} else if (passwrd === null || passwrd === undefined && email) {
+	}
+	else if (!passwrd && email) {
 		return res.send(`Please verify your email: ${email}`);
-	} else {
+	}
+	else {
 		const payload = [email, email];
 		try {
 			const output = await loginUser(payload);
@@ -178,7 +180,7 @@ Auth.post("/login", async (req, res) => {
 										})
 										.catch((err) => {
 											logErrorMessages(`Failed to save token to the DB ${JSON.stringify(err)}`);
-											return res.json({ status: 'error', message: 'Oops Something went wrong Refresh and retry' });
+											return res.status(500).json({ status: 'error', message: 'Oops Something went wrong Refresh and retry' });
 										});
 								}
 							}
@@ -188,8 +190,8 @@ Auth.post("/login", async (req, res) => {
 							}
 						})
 						.catch((err) => {
-							logErrorMessages(`login failed => ${JSON.stringify(err)})`);
-							return res.json({ status: 'error', message: 'login failed! Check your internet connection' });
+							logErrorMessages(`login failed: ${JSON.stringify(err)})`);
+							return res.json({ status: 'error', message: 'login failed! Check your connection and try again' });
 						});
 				});
 			}

@@ -52,12 +52,18 @@ const UserRow = ({ user, setSubmitted }) => {
 			} else {
 				setAlert((state) => ({
 					...state,
-					message: `${user.Usr_email} is already activated`, color: "secondary"
+					message: `${user.Usr_email} is already verified`, color: "secondary"
 				}));
 				setOpenAlert(true);
 			}
-		} catch (error) {
+		}
+		catch (error) {
 			console.log(`error: ${error}`);
+			setAlert((state) => ({
+				...state,
+				message: `Something Unexpected happend. please try again`, color: "error"
+			}));
+			setOpenAlert(true);
 		}
 	}
 

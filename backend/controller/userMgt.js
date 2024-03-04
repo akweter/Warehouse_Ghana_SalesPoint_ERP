@@ -116,7 +116,6 @@ const Search = async (prop) => {
   return executeQuery(sql, prop);
 };
 
-
 /********************   UPDATE REQUESTS   ****************************/
 
 // Update user details

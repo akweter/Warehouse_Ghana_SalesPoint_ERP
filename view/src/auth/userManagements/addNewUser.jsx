@@ -100,7 +100,7 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
             setDrop(true);
             const response = await postNewUser(formData);
             setTimeout(() => {
-                if (response.data.message === 'email_sent') {
+                if (response.message === 'email_sent') {
                     setAlert((e) => ({...e, message: `Email sent to ${formData.userEmail}`, color: 'success' }));
                     setOpenAlert(true);
                     setTimeout(() => {
@@ -116,12 +116,14 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
                 }
                 else {
                     setDrop(false);
-                    setAlert((e) => ({...e, message: response.data.message, color: 'error' }));
+                    setAlert((e) => ({...e, message: response.message, color: 'error' }));
+                    setOpenAlert(true);
                 }
             }, 1000);
         }
         catch (error) {
             setAlert({ message: 'Ooops! Something went wrong. Please refresh and retry', color: 'error' });
+            setOpenAlert(true);
         }
     };
 

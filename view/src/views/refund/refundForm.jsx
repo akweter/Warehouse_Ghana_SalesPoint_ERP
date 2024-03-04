@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { 
-    Dialog, 
-    DialogTitle, 
-    DialogContent, 
-    DialogActions, 
-    Button, 
-    TextField, 
-    Grid, 
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    TextField,
+    Grid,
     Typography
 } from '@mui/material';
 import { headerPayload, itemlistPayload, taxPayload } from 'views/payload/payloadStructure';
-import { computeFinalTaxes, handleRefundExclusiveTaxes, handleRefundInclusiveTaxes } from 'utilities/computeAllTaxes';
+import { computeFinalTaxes, performComputations } from 'utilities/computeAllTaxes';
 import { AlertError } from 'utilities/errorAlert';
 import { ShowBackDrop } from 'utilities/backdrop';
 import { getUserName } from 'utilities/getUserName';
 import { Cancel } from '@mui/icons-material';
-import { postRefundInvoice } from 'apiActions/allApiCalls/refund';
+// import { postRefundInvoice } from 'apiActions/allApiCalls/refund';
 
-// /* eslint-disable */
+/* eslint-disable */
 export const RefundDialog = ({ open, handleClose, refundInv, setSubmitted }) => {
     const [openAlert, setOpen] = useState(false);
     const [drop, setDrop] = useState(false);
@@ -26,14 +26,19 @@ export const RefundDialog = ({ open, handleClose, refundInv, setSubmitted }) => 
     const [header, setHeader] = useState(headerPayload);
     const [tax, setTax] = useState(taxPayload);
     const [originalQuantities, setOriginalQuantities] = useState({});
-    const [change, setChange] = useState(false);
     const [final, setFinal] = useState(false);
     const [confirmationOpen, setConfirmationOpen] = useState(false);
-    const [alert, setAlert]= useState({message: '', color: ''});
+    const [alert, setAlert] = useState({ message: '', color: '' });
+
+    function generateRandomNumber() {
+        const length = 10;
+        const randomNumber = Math.floor(Math.random() * Math.pow(10, length));
+        return randomNumber.toString().padStart(length, '0');
+    }
 
     // update the header and item state
     useEffect(() => {
-        if(refundInv !== undefined){
+        if (refundInv) {
             const {
                 Inv_Customer_Tin,
                 Inv_Number,
@@ -50,91 +55,78 @@ export const RefundDialog = ({ open, handleClose, refundInv, setSubmitted }) => 
 
             const dateObject = new Date(invDate);
             const formattedDate = `${dateObject.getFullYear()}-${(dateObject.getMonth() + 1).toString().padStart(2, '0')}-${dateObject.getDate().toString().padStart(2, '0')}`;
-            
-            function generateRandomNumber() {
-                const length = 10;
-                const randomNumber = Math.floor(Math.random() * Math.pow(10, length));
-                return randomNumber.toString().padStart(length, '0');
-            }
 
             // Set header state
-            setHeader((state) =>({
+            setHeader((state) => ({
                 ...state,
                 currency: currency,
-                exchangeRate: Inv_ext_Rate, 
+                exchangeRate: Inv_ext_Rate,
                 invoiceNumber: Inv_Number,
                 totalLevy: "",
                 userName: getUserName(),
                 flag: "PARTIAL_REFUND",
-                calculationType: Inv_Calc_Type, 
+                calculationType: Inv_Calc_Type,
                 totalVat: "",
                 transactionDate: formattedDate,
                 totalAmount: "",
                 voucherAmount: "",
-                businessPartnerName: customerName, 
+                businessPartnerName: customerName,
                 businessPartnerTin: Inv_Customer_Tin,
-                saleType: Inv_Sale_Type, 
+                saleType: Inv_Sale_Type,
                 discountType: Inv_Discount_Type,
                 discountAmount: "",
                 reference: generateRandomNumber(),
-                groupReferenceId: "", 
-                purchaseOrderReference: "", 
+                groupReferenceId: "",
+                purchaseOrderReference: "",
                 items: products,
                 invCusId: Inv_Customer_Tin,
                 remarks: remarks,
-                status: "PARTIAL_REFUND"    
+                status: "PARTIAL_REFUND"
             }));
-            
+
             // Set items state
             if (Array.isArray(products) && products.length > 0) {
                 setItemLists(products.map((e) => ({
                     itemCode: e.id,
                     itemCategory: e.category,
-                    expireDate: "", 
+                    expireDate: "",
                     description: e.name,
                     quantity: e.quantity,
-                    levyAmountA: "", 
-                    levyAmountB: "", 
-                    levyAmountC: "", 
-                    levyAmountD: "", 
-                    levyAmountE: "", 
-                    discountAmount: e.discount, 
-                    batchCode: "", 
-                    unitPrice: e.price, 
-                    itemSubtotal: "", 
-                    totalVat: "", 
-                    totalLevy: "", 
-                    totalAmount: "", 
-                    alt: "", 
+                    levyAmountA: "",
+                    levyAmountB: "",
+                    levyAmountC: "",
+                    levyAmountD: "",
+                    levyAmountE: "",
+                    discountAmount: e.discount,
+                    batchCode: "",
+                    unitPrice: e.price,
+                    itemSubtotal: "",
+                    totalVat: "",
+                    totalLevy: "",
+                    totalAmount: "",
+                    alt: "",
                     refProQty: e.refundedQty,
                 })))
 
                 // set original state
                 setOriginalQuantities(
                     products.reduce((acc, product) => {
-						acc[product.id] = product.quantity;
-						return acc;
+                        acc[product.id] = product.quantity;
+                        return acc;
                     }, {})
                 );
-            }  
+            }
         }
     }, [refundInv]);
-
-    // Set Inclusive & Exclusive tax
-    useEffect(() => {
-        confirmSubmitInvoice();
-        sendPayload();
-    }, [change, final]);
 
     // hanlde quantity change
     const handleQtyChange = (index, newValue) => {
         setItemLists((prevItems) => {
             const updatedItems = [...prevItems];
             const originalQuantity = originalQuantities[updatedItems[index].itemCode];
-            const quantityRefeunded = updatedItems[index].refProQty;
-            const remainingQuantity = originalQuantity - quantityRefeunded;
+            const quantityRefunded = updatedItems[index].refProQty;
+            const remainingQuantity = originalQuantity - (quantityRefunded || 0);
             const validatedQuantity = Math.max(0, Math.min(newValue, remainingQuantity));
-
             if (remainingQuantity < 1) {
                 window.alert('All quantities refunded!');
                 handleClose();
@@ -149,22 +141,10 @@ export const RefundDialog = ({ open, handleClose, refundInv, setSubmitted }) => 
         });
     };
 
-    // compute all taxes
-    const confirmSubmitInvoice = () =>{
-        if (change === true) {
-            if (header.calculationType === "INCLUSIVE") {
-                handleRefundInclusiveTaxes(itemLists, setItemLists, header);
-            } else {
-                handleRefundExclusiveTaxes(itemLists, setItemLists, header);
-            }
-        }
-    }
-    
-    // handle invoice submission
-    const submitInvoice = () =>{
+    // handle invoice item computations
+    const submitInvoice = () => {
+        performComputations(itemLists, header, setHeader);
         handleClose();
-        setChange(true);
-        confirmSubmitInvoice();
         setConfirmationOpen(true);
     }
 
@@ -172,7 +152,7 @@ export const RefundDialog = ({ open, handleClose, refundInv, setSubmitted }) => 
     const handleCancel = () => {
         setConfirmationOpen(false);
     }
-    
+
     // handle proceed method and send payload to backend
     const handleProceed = () => {
         setFinal(true);
@@ -183,113 +163,114 @@ export const RefundDialog = ({ open, handleClose, refundInv, setSubmitted }) => 
     }
 
     // close alert snackbar
-    const closeAlert = () =>{ setOpen(false); }
+    const closeAlert = () => { setOpen(false); }
 
     // method that calls the payloads
-    const sendPayload = () =>{
-        if (final === true) {
-            
-            const { Subtotal, ...newTax} = tax;
-            const invoiceData = {...header, items: itemLists, ...newTax};
+    // const sendPayload = () => {
+    //     if (final) {
+    //         const { Subtotal, ...newTax } = tax;
+    //         const invoiceData = { ...header, items: itemLists, ...newTax };
 
-            setConfirmationOpen(false);
-            setDrop(true);
-            setTimeout( async() => {
-                try {
-                    // Post Refund Invoice
-                    const data = await postRefundInvoice(invoiceData);
-                    if (data.status === "Error") {
-                        const res = JSON.stringify(data.message);
-                        setAlert((e)=> ({...e, message: res, color: 'warning'}));
-                        setOpen(true);
-                    }
-                    else {
-                        setDrop(false);
-                        setAlert((e)=> ({...e, message: `${data.status}! Invoice refunded`, color: 'success'}));
-                        setOpen(true);
-                        setConfirmationOpen(false);
-                        setSubmitted(true);
-                    }
-                }
-                catch (error) {
-                    console.log('Network Error! Please refresh',error);
-                    setDrop(false);
-                    setAlert((e)=> ({...e, message: 'Refunding invoice failed!', color: 'warning'}));
-                    setOpen(true);
-                }
-            }, 1500);
-        }
-    }
+    //         setConfirmationOpen(false);
+    //         setDrop(true);
+    //         setTimeout(async () => {
+    //             try {
+    //                 // Post Refund Invoice
+    //                 const data = await postRefundInvoice(invoiceData);
+    //                 if (data.status === "Error") {
+    //                     const res = JSON.stringify(data.message);
+    //                     setAlert((e) => ({ ...e, message: res, color: 'warning' }));
+    //                     setOpen(true);
+    //                 }
+    //                 else {
+    //                     setDrop(false);
+    //                     setAlert((e) => ({ ...e, message: `${data.status}! Invoice refunded`, color: 'success' }));
+    //                     setOpen(true);
+    //                     setConfirmationOpen(false);
+    //                     setSubmitted(true);
+    //                 }
+    //             }
+    //             catch (error) {
+    //                 console.log('Network Error! Please refresh', error);
+    //                 setDrop(false);
+    //                 setAlert((e) => ({ ...e, message: 'Refunding invoice failed!', color: 'warning' }));
+    //                 setOpen(true);
+    //             }
+    //         }, 1500);
+    //     }
+    // }
+
+    console.log('header', header);
 
     return (
         <>
-            { alert.message ? 
+            {alert.message ?
                 (<AlertError open={openAlert} alert={alert} handleClose={closeAlert} />) :
                 (<ShowBackDrop open={drop} />)
             }
-            <Dialog open={open} sx={{padding: '10px'}}>
-                <Grid container sx={{justifyContent: 'space-around'}}>
-                    <DialogTitle sx={{fontSize: 18}}>Refund Invoice</DialogTitle>
+            <Dialog open={open} sx={{ padding: '10px' }}>
+                <Grid container sx={{ justifyContent: 'space-around' }}>
+                    <DialogTitle sx={{ fontSize: 18 }}>Refund Invoice</DialogTitle>
                     <DialogActions>
                         <Button variant='contained' color='primary'>Full Refund</Button>
                         <Button variant='contained' color='warning' onClick={submitInvoice}>Partial Refund</Button>
-                        < Cancel color='error' onClick={handleClose} fontSize='medium'/>
+                        < Cancel color='error' onClick={handleClose} fontSize='medium' />
                     </DialogActions>
                 </Grid>
                 <DialogContent>
                     {Array.isArray(itemLists) && itemLists.length > 0 ? (
-                        itemLists.map((item, index) => 
-                            (<>
-                                <Grid container key={item.itemCode} spacing={1} marginBottom={2}>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            label='Product'
-                                            readOnly={disable}
-                                            value={item.description}
-                                            size='small'
-                                            fullWidth={true}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={3}>
-                                        <TextField
-                                            label='Unit Price'
-                                            readOnly={disable}
-                                            value={item.unitPrice}
-                                            size='small'
-                                            fullWidth={true}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={3}>
-                                        <TextField
-                                            label='Total Qty'
-                                            readOnly={disable}
-                                            value={originalQuantities[item.itemCode]}
-                                            size='small'
-                                            fullWidth={true}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={3}>
-                                        <TextField
-                                            label='Refunded'
-                                            readOnly={disable}
-                                            value={item.refProQty}
-                                            size='small'
-                                            fullWidth={true}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={3}>
-                                        <TextField
-                                            label='Refund Qty'
-                                            type='number'
-                                            name='quantity'
-                                            // value={item.quantity || 0}
-                                            size='small'
-                                            fullWidth={true}
-                                            onChange={(e) => handleQtyChange(index, e.target.value)}
-                                        />
-                                    </Grid>
+                        itemLists.map((item, index) =>
+                        (<>
+                            <Grid container key={item.itemCode} spacing={1} marginBottom={2}>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        label='Product'
+                                        disabled={true}
+                                        value={item.description}
+                                        size='small'
+                                        fullWidth={true}
+                                    />
                                 </Grid>
-                            </>)
+                                <Grid item xs={3}>
+                                    <TextField
+                                        label='Unit Price'
+                                        disabled={true}
+                                        value={item.unitPrice}
+                                        size='small'
+                                        fullWidth={true}
+                                    />
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <TextField
+                                        label='Total Qty'
+                                        disabled={true}
+                                        value={originalQuantities[item.itemCode]}
+                                        size='small'
+                                        fullWidth={true}
+                                    />
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <TextField
+                                        label='Refunded'
+                                        disabled={true}
+                                        value={item.refProQty}
+                                        size='small'
+                                        fullWidth={true}
+                                    />
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <TextField
+                                        label='Refund Qty'
+                                        type='number'
+                                        name='quantity'
+                                        // value={item.quantity || 0}
+                                        size='small'
+                                        fullWidth={true}
+                                        onChange={(e) => handleQtyChange(index, e.target.value)}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </>)
                         )
                     ) : null}
                 </DialogContent>
