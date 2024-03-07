@@ -36,7 +36,7 @@ export const headerPayload = {
     businessPartnerTin: "",
     saleType: "",
     discountType: "GENERAL",
-    discountAmount: 0.00,
+    discountAmount: "",
     reference: "",
     groupReferenceId: "",
     purchaseOrderReference: "",

@@ -9,24 +9,21 @@ import {
     Grid,
     Typography
 } from '@mui/material';
-import { headerPayload, itemlistPayload, taxPayload } from 'views/payload/payloadStructure';
-import { computeFinalTaxes, performComputations } from 'utilities/computeAllTaxes';
+import { headerPayload, itemlistPayload } from 'views/payload/payloadStructure';
+import { performComputations } from 'utilities/computeAllTaxes';
 import { AlertError } from 'utilities/errorAlert';
 import { ShowBackDrop } from 'utilities/backdrop';
 import { getUserName } from 'utilities/getUserName';
 import { Cancel } from '@mui/icons-material';
-// import { postRefundInvoice } from 'apiActions/allApiCalls/refund';
+import { postRefundInvoice } from 'apiActions/allApiCalls/refund';
 
 /* eslint-disable */
 export const RefundDialog = ({ open, handleClose, refundInv, setSubmitted }) => {
     const [openAlert, setOpen] = useState(false);
     const [drop, setDrop] = useState(false);
-    const [disable, setDisable] = useState(true);
     const [itemLists, setItemLists] = useState(itemlistPayload);
     const [header, setHeader] = useState(headerPayload);
-    const [tax, setTax] = useState(taxPayload);
     const [originalQuantities, setOriginalQuantities] = useState({});
-    const [final, setFinal] = useState(false);
     const [confirmationOpen, setConfirmationOpen] = useState(false);
     const [alert, setAlert] = useState({ message: '', color: '' });
 
@@ -148,59 +145,42 @@ export const RefundDialog = ({ open, handleClose, refundInv, setSubmitted }) => 
         setConfirmationOpen(true);
     }
 
+    const submitFullInvoice = () => {
+        setHeader((state) => ({...state, flag: 'REFUND'}));
+        performComputations(itemLists, header, setHeader);
+        handleClose();
+        setConfirmationOpen(true);
+    }
+
     // handle cancel dialog
-    const handleCancel = () => {
-        setConfirmationOpen(false);
+    const closeAlert = () => setOpen(false);
+
+    // Seend Payload to GRA backend
+    const sendPayload = async () => {
+        try {
+            setDrop(true);
+            setConfirmationOpen(false);
+            const data = await postRefundInvoice(header);
+            setTimeout(() => {
+                setDrop(false);
+                if (data.status === "Error") {
+                    const res = JSON.stringify(data.message);
+                    setAlert((e) => ({ ...e, message: res, color: 'warning' }));
+                    setOpen(true);
+                }
+                else {
+                    setAlert((e) => ({ ...e, message: `${data.status}! Invoice refunded`, color: 'success' }));
+                    setOpen(true);
+                    setSubmitted(true);
+                }
+            }, 1500);
+        }
+        catch (error) {
+            console.log('Network Error! Please refresh', error);
+            setAlert((e) => ({ ...e, message: 'Refunding invoice failed!', color: 'warning' }));
+            setOpen(true);
+        }
     }
-
-    // handle proceed method and send payload to backend
-    const handleProceed = () => {
-        setFinal(true);
-        computeFinalTaxes(itemLists, setHeader, setTax);
-        setTimeout(() => {
-            sendPayload();
-        }, 500);
-    }
-
-    // close alert snackbar
-    const closeAlert = () => { setOpen(false); }
-
-    // method that calls the payloads
-    // const sendPayload = () => {
-    //     if (final) {
-    //         const { Subtotal, ...newTax } = tax;
-    //         const invoiceData = { ...header, items: itemLists, ...newTax };
-
-    //         setConfirmationOpen(false);
-    //         setDrop(true);
-    //         setTimeout(async () => {
-    //             try {
-    //                 // Post Refund Invoice
-    //                 const data = await postRefundInvoice(invoiceData);
-    //                 if (data.status === "Error") {
-    //                     const res = JSON.stringify(data.message);
-    //                     setAlert((e) => ({ ...e, message: res, color: 'warning' }));
-    //                     setOpen(true);
-    //                 }
-    //                 else {
-    //                     setDrop(false);
-    //                     setAlert((e) => ({ ...e, message: `${data.status}! Invoice refunded`, color: 'success' }));
-    //                     setOpen(true);
-    //                     setConfirmationOpen(false);
-    //                     setSubmitted(true);
-    //                 }
-    //             }
-    //             catch (error) {
-    //                 console.log('Network Error! Please refresh', error);
-    //                 setDrop(false);
-    //                 setAlert((e) => ({ ...e, message: 'Refunding invoice failed!', color: 'warning' }));
-    //                 setOpen(true);
-    //             }
-    //         }, 1500);
-    //     }
-    // }
-
-    console.log('header', header);
 
     return (
         <>
@@ -212,9 +192,9 @@ export const RefundDialog = ({ open, handleClose, refundInv, setSubmitted }) => 
                 <Grid container sx={{ justifyContent: 'space-around' }}>
                     <DialogTitle sx={{ fontSize: 18 }}>Refund Invoice</DialogTitle>
                     <DialogActions>
-                        <Button variant='contained' color='primary'>Full Refund</Button>
-                        <Button variant='contained' color='warning' onClick={submitInvoice}>Partial Refund</Button>
-                        < Cancel color='error' onClick={handleClose} fontSize='medium' />
+                        <Button variant='contained' color='primary' onClick={submitFullInvoice}>Full Refund</Button>
+                        <Button variant='contained' color='inherit' onClick={submitInvoice}>Partial Refund</Button>
+                        <Button variant='outlined' color='error' onClick={handleClose}>< Cancel />Close</Button>
                     </DialogActions>
                 </Grid>
                 <DialogContent>
@@ -276,14 +256,14 @@ export const RefundDialog = ({ open, handleClose, refundInv, setSubmitted }) => 
                 </DialogContent>
             </Dialog>
             <Dialog open={confirmationOpen} sx={{ padding: '20px' }}>
-                <DialogTitle variant='h2'>Confirm Refund</DialogTitle>
+                <DialogTitle variant='h3'>Confirm Refund</DialogTitle>
                 <DialogContent>
-                    <Typography variant='h4' align='center' color='darkred'>
+                    <Typography variant='h5' align='center' color='darkred'>
                         Are you sure you want to refund this invoice?</Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCancel} variant='outlined' color='error'>Cancel</Button>
-                    <Button onClick={handleProceed} variant='contained' color='primary'>Proceed</Button>
+                    <Button onClick={() => setConfirmationOpen(false)} variant='outlined' color='error'>Cancel</Button>
+                    <Button onClick={sendPayload} variant='contained' color='primary'>Proceed</Button>
                 </DialogActions>
             </Dialog>
         </>

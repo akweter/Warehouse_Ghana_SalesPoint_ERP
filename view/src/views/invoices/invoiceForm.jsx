@@ -322,10 +322,10 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
             showAlert('Unit price must be positive value', 'error');
             return;
         }
-        else if (discountAmount >= itemSubtotal) {
-            showAlert(`Disount should be less than the subtotal amount: ${itemSubtotal}`, 'error');
-            return;
-        }
+        // else if (discountAmount >= itemSubtotal) {
+        //     showAlert(`Disount should be less than the subtotal amount: ${itemSubtotal}`, 'error');
+        //     return;
+        // }
         else {
             setHeader((prevHeader) => ({
                 ...prevHeader,

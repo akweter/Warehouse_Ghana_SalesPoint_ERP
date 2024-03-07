@@ -32,7 +32,7 @@ const styles = {
             <p style={styles.paragraph}>
                 <h2 style={{textAlign: 'center', color: 'darkblue'}}>User Inactivity Timeout</h2>
                 <div style={styles.linkCard}>
-                    <h3 className='linkCardBody'>Oops! Your authorization has expired or changed</h3>
+                    <h3 className='linkCardBody'>Oops! Your authorization is invalid or has expired</h3>
                     <p>Please <Button variant="outlined" size="small" color="error" onClick={()=>window.location.href='/auth/logout'}>Click here</Button> to log in again</p>
                 </div>
             </p>

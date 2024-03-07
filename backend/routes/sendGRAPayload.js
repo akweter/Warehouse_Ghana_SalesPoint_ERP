@@ -1,5 +1,5 @@
 const { AddNewInvoices, saveRefundInvoice } = require("../controller/salesNinvoices");
-const { logErrorMessages, logSuccessMessages } = require("../utils/saveLogfile");
+const { logErrorMessages, logSuccessMessages, logMessage } = require("../utils/saveLogfile");
 const UUID = require('../utils/generateIDs');
 const express = require("express");
 const axios = require("axios");
@@ -149,7 +149,7 @@ Router.post("/invoice", async (req, res) => {
         return res.json({ status: 'Error', message: 'Invalid data structure', data: Data });
     }
     const sanitizedPayload = sanitizePayload(Data);
-    // logSuccessMessages(JSON.stringify(sanitizedPayload));
+    logSuccessMessages(JSON.stringify(sanitizedPayload));
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, {headers: {'security_key': GRA_KEY}});
         if (response.status === 200) {
@@ -196,6 +196,7 @@ Router.post("/refund", async (req, res) => {
         return res.json({ status: 'Error', message: 'Invalid data structure', data: Data });
     }
     const sanitizedPayload = sanitizePayload(Data);
+    logSuccessMessages(JSON.stringify(sanitizedPayload));
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, {headers: {'security_key': GRA_KEY}});
         if (response.status === 200) {
