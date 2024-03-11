@@ -140,19 +140,24 @@ export default function Invoice() {
                 if (result && invoices.length > 0) {
                     for (const item of result) {
                         const { Inv_Number, Inv_Product_qty_Sum } = item;
-                        const matchingInvoice = invoices.find(invoice => invoice.Inv_Number === Inv_Number);
-                        if (matchingInvoice) {
-                            Inv_Product_qty_Sum.forEach((refundedQty, index) => {
-                                if (matchingInvoice.products && matchingInvoice.products[index]) {
-                                    matchingInvoice.products[index].refundedQty = refundedQty;
-                                }
+                        const matchingInvoices = invoices.filter(invoice => invoice.Inv_Number === Inv_Number);
+                                        console.log(matchingInvoices)
+                        if (matchingInvoices.length > 0) {
+                            matchingInvoices.forEach(matchingInvoice => {
+                                Inv_Product_qty_Sum.forEach((refundedQty, index) => {
+                                    if (matchingInvoice.products && matchingInvoice.products[index]) {
+                                        matchingInvoice.products[index].refundedQty = refundedQty;
+                                    }
+                                });
                             });
                         }
                     }
                 }
             }
         }
-        catch (error) {}
+        catch (error) {
+            console.log('error');
+        }
     }
 
     const formatDate = (dateString) => {

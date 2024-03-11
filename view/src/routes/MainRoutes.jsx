@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
-import ProtectedRoute from 'auth/routes';
+import ProtectedRoute from 'auth/protectedRoute';
 import NullPage from 'views/pages/nullPage';
 import WoocommerceApi from 'woocommerce';
 
@@ -25,7 +25,7 @@ const SalesReport = Loadable(lazy(() => import('views/SalesReport')));
 const CustomerNSupplier = Loadable(lazy(() => import('views/customerSuppliers')));
 const Inventory = Loadable(lazy(() => import('views/inventory')));
 const Refund = Loadable(lazy(() => import('views/refund')));
-const Users = Loadable(lazy(() => import('auth/userManagements/')));
+const Users = Loadable(lazy(() => import('views/userManagements')));
 
 const Auth = Loadable(lazy(() => import('auth')));
 const Woocommerce = Loadable(lazy(() => import('woocommerce')));

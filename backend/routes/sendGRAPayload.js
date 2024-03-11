@@ -1,4 +1,4 @@
-const { AddNewInvoices, saveRefundInvoice } = require("../controller/salesNinvoices");
+const { AddNewInvoices, saveRefundInvoice, saveInInvoiceProduct } = require("../controller/salesNinvoices");
 const { logErrorMessages, logSuccessMessages, logMessage } = require("../utils/saveLogfile");
 const UUID = require('../utils/generateIDs');
 const express = require("express");
@@ -55,10 +55,11 @@ const sanitizePayload = (data) => {
 };
 
 const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
-    const itemCodes = JSON.stringify(sanitizedPayload.items.map(e => e.itemCode));
-    const itemQtys = JSON.stringify(sanitizedPayload.items.map(e => e.quantity));
-    const itemDiscounts = JSON.stringify(sanitizedPayload.items.map(e => e.discountAmount));
-    const itemPrice = JSON.stringify(sanitizedPayload.items.map(e => e.unitPrice));
+    const { items } = sanitizedPayload;
+    const itemCodes = items.map(e => e.itemCode);
+    const itemQtys = items.map(e => e.quantity);
+    const itemDiscounts = items.map(e => e.discountAmount);
+    const itemPrice = items.map(e => e.unitPrice);
 
     const {
         userName,
@@ -88,9 +89,6 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
     const payload = [
         0,
         increment,
-        itemCodes,
-        itemDiscounts,
-        itemPrice,
         userName,
         totalAmount,
         status,
@@ -101,7 +99,6 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
         saleType,
         invoiceNumber,
         businessPartnerTin,
-        itemQtys,
         discountAmount,
         exchangeRate,
         totalVat,
@@ -125,9 +122,33 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
         delivery,
     ];
 
+    items.map( async (item) => {
+        const {
+            itemCode,
+            unitPrice,
+            discountAmount,
+            quantity,
+        } = item;
+
+        const data = [
+            UUID(),
+            invoiceNumber,
+            itemCode,
+            unitPrice,
+            discountAmount,
+            quantity,
+            0,
+        ];
+
+        logSuccessMessages(JSON.stringify(data));
+        await saveInInvoiceProduct(data)
+        .then(()=>logSuccessMessages('products added'))
+        .catch((err)=>logErrorMessages(JSON.stringify(err)));
+    });
+
     try {
         await AddNewInvoices(payload)
-        .then(()=>{
+        .then(async ()=>{
             logSuccessMessages(`${Data.userName} - ${status} ${invoiceNumber} added successfully`);
             return { status: 'success', gra: responseData.response, payload: sanitizedPayload };
         })
@@ -149,7 +170,7 @@ Router.post("/invoice", async (req, res) => {
         return res.json({ status: 'Error', message: 'Invalid data structure', data: Data });
     }
     const sanitizedPayload = sanitizePayload(Data);
-    logSuccessMessages(JSON.stringify(sanitizedPayload));
+    // logSuccessMessages(JSON.stringify(sanitizedPayload));
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, {headers: {'security_key': GRA_KEY}});
         if (response.status === 200) {
@@ -196,7 +217,7 @@ Router.post("/refund", async (req, res) => {
         return res.json({ status: 'Error', message: 'Invalid data structure', data: Data });
     }
     const sanitizedPayload = sanitizePayload(Data);
-    logSuccessMessages(JSON.stringify(sanitizedPayload));
+    // logSuccessMessages(JSON.stringify(sanitizedPayload));
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, {headers: {'security_key': GRA_KEY}});
         if (response.status === 200) {

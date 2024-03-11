@@ -273,19 +273,8 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 
 	return (
 		<>
-			<Grid container sx={{ justifyContent: 'space-around' }}>
-				<Button
-					variant='contained'
-					color='primary'
-					size='medium'
-					sx={{ color: 'gold' }}
-					// onClick={openDialog}
-				>
-					Add New Product
-				</Button>
-			</Grid>
 			<Dialog
-				maxWidth="lg"
+				maxWidth="xl"
 				open={openDialog}
 				TransitionComponent={Slide}
 				transitionDuration={700}

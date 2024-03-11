@@ -182,6 +182,8 @@ export const RefundDialog = ({ open, handleClose, refundInv, setSubmitted }) => 
         }
     }
 
+    console.log('header',header);
+
     return (
         <>
             {alert.message ?

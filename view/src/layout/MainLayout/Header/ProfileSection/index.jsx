@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useTheme } from '@mui/material/styles';
 import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons';
-import { Avatar,
+import {
+  Avatar,
   Box,
   Card,
   CardContent,
@@ -24,10 +25,10 @@ import { Avatar,
   Typography
 } from '@mui/material';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import MainCard from '../../../../ui-component/cards/MainCard';
-import Transitions from '../../../../ui-component/extended/Transitions';
+import MainCard from 'ui-component/cards/MainCard';
+import Transitions from 'ui-component/extended/Transitions';
 import UpgradePlanCard from './UpgradePlanCard';
-import User1 from '../../../../assets/images/users/james.png';
+// import User1 from 'assets/images/users/james.png';
 import { GreetUser } from 'utilities/globalTime';
 
 // ==============================|| PROFILE MENU ||============================== //
@@ -42,10 +43,10 @@ const ProfileSection = () => {
   const [notification, setNotification] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [open, setOpen] = useState(false);
-  
+
   const anchorRef = useRef(null);
   const handleLogout = async () => {
-    window.location.href='/auth/logout';
+    window.location.href = '/auth/logout';
   };
 
   const handleClose = (event) => {
@@ -67,23 +68,23 @@ const ProfileSection = () => {
     setOpen((prevOpen) => !prevOpen);
   };
 
-  const getUserName = () =>{
+  const getUserName = () => {
     const systemUser = window.sessionStorage.getItem('userInfo');
     if (systemUser) {
-        const parseSystemUser = JSON.parse(systemUser);
-        const systemUserName = parseSystemUser.userName;
-        if (systemUserName) {
-            return systemUserName;
-        } else {
-            return 'User';
-        }
+      const parseSystemUser = JSON.parse(systemUser);
+      const systemUserName = parseSystemUser.userName;
+      if (systemUserName) {
+        return systemUserName;
+      } else {
+        return 'User';
+      }
     }
   }
 
   const prevOpen = useRef(open);
   useEffect(() => {
     getUserName();
-    
+
     if (prevOpen.current === true && open === false) {
       anchorRef.current.focus();
     }
@@ -91,15 +92,20 @@ const ProfileSection = () => {
     prevOpen.current = open;
   }, [open]);
 
+  const stringAvatar = (name) => {
+    return name ? name.split(' ').map(part => part.slice(0, 2).toUpperCase()).join('') : 'WG';
+  };
+
   return (
     <>
       <Chip
         sx={{
-          height: '48px',
+          // height: 40,
+          width: 20,
           alignItems: 'center',
           borderRadius: '27px',
           transition: 'all .2s ease-in-out',
-          borderColor: theme.palette.primary.light,
+          borderColor: theme.palette.primary.dark,
           backgroundColor: theme.palette.primary.light,
           '&[aria-controls="menu-list-grow"], &:hover': {
             borderColor: theme.palette.primary.main,
@@ -115,18 +121,15 @@ const ProfileSection = () => {
         }}
         icon={
           <Avatar
-            src={User1}
             sx={{
-              ...theme.typography.mediumAvatar,
-              margin: '8px -8px 8px 8px !important',
               cursor: 'pointer'
             }}
             ref={anchorRef}
-            aria-controls={open ? 'menu-list-grow' : undefined}
-            aria-haspopup="true"
             color="inherit"
             onClick={handleToggle}
-          />
+          >
+            {stringAvatar(getUserName())}
+          </Avatar>
         }
       />
       <Popper

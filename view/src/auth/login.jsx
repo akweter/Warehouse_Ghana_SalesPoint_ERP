@@ -5,11 +5,10 @@ import { useTheme } from '@mui/material/styles';
 import { Divider, Grid, Stack, Typography, useMediaQuery } from '@mui/material';
 
 // project imports
-import AuthWrapper1 from '../../views/pages/AuthWrapper1';
-import AuthCardWrapper from '../../views/pages/AuthCardWrapper';
-import AuthLogin from '../forms/AuthLogin';
-import Logo from '../../ui-component/Logo';
-import SignInForm from '../forms/signInForm';
+import AuthWrapper1 from 'views/pages/AuthWrapper1';
+import AuthCardWrapper from 'views/pages/AuthCardWrapper';
+import Logo from 'ui-component/Logo';
+import SignInForm from './signInForm';
 
 const Login = () => {
   const theme = useTheme();
@@ -60,9 +59,6 @@ const Login = () => {
                         </Stack>
                       </Grid>
                     </Grid>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <AuthLogin />
                   </Grid>
                   <Grid item xs={12}>
                     < SignInForm />

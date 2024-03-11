@@ -334,6 +334,9 @@ const LEVY_RATES = {
 
 // compute general and selective discount
 const handleDiscountSubtotalRef = (items, header) => {
+    if (!header || !header.discountType) {
+        return "GENERAL";
+    }
     const { discountType } = header;
     const { quantity, unitPrice, discountAmount } = items;
     return discountType === 'GENERAL' ? (quantity * unitPrice) - discountAmount : quantity * unitPrice;
@@ -372,64 +375,92 @@ const handleDiscountSubtotalRef = (items, header) => {
 //     return [];
 // }
 
-const handleTaxes = (items, isExclusive, header) => {
-    if (items) {
-        return items.map((item) => {
-            const { quantity, unitPrice, itemCategory, discountAmount } = item;
-            const itemSubtotal = handleDiscountSubtotalRef(item, header);
+// const handleTaxes = (items, isExclusive, header) => {
+//     if (items) {
+//         return items.map((item) => {
+//             const { quantity, unitPrice, itemCategory, discountAmount } = item;
+//             const itemSubtotal = handleDiscountSubtotalRef(item, header);
+//             const graValue = isExclusive ? itemSubtotal : (itemSubtotal / 1.219);
 
-            // Adjust graValue based on itemCategory
-            let graValue;
-            switch (itemCategory) {
-                case "":
-                    graValue = isExclusive ? itemSubtotal : itemSubtotal / 1.219;
-                    break;
-                case "TRSM":
-                    graValue = isExclusive ? itemSubtotal : itemSubtotal / 1.229;
-                    break;
-                case "CST":
-                    graValue = isExclusive ? itemSubtotal : itemSubtotal / 1.2765;
-                    break;
-                default:
-                    graValue = isExclusive ? itemSubtotal : itemSubtotal / 1.219;
-            }
+//             const levyAmountA = (itemCategory === "" || itemCategory === "TRSM" || itemCategory === "CST") ? LEVY_RATES.A * graValue : 0;
+//             const levyAmountB = (itemCategory === "" || itemCategory === "TRSM" || itemCategory === "CST") ? LEVY_RATES.B * graValue : 0;
+//             const levyAmountC = (itemCategory === "" || itemCategory === "TRSM" || itemCategory === "CST") ? LEVY_RATES.C * graValue : 0;
+//             const levyAmountD = (itemCategory === "" || itemCategory === "TRSM" || itemCategory === "EXM") ? 0 : LEVY_RATES.D * graValue;
+//             const levyAmountE = (itemCategory === "" || itemCategory === "CST" || itemCategory === "EXM") ? 0 : LEVY_RATES.E * graValue;
 
-            const levyAmountA = (itemCategory === "" || itemCategory === "TRSM" || itemCategory === "CST") ? LEVY_RATES.A * itemSubtotal : 0;
-            const levyAmountB = (itemCategory === "" || itemCategory === "TRSM" || itemCategory === "CST") ? LEVY_RATES.B * itemSubtotal : 0;
-            const levyAmountC = (itemCategory === "" || itemCategory === "TRSM" || itemCategory === "CST") ? LEVY_RATES.C * itemSubtotal : 0;
-            const levyAmountD = (itemCategory === "" || itemCategory === "TRSM" || itemCategory === "EXM") ? 0 : LEVY_RATES.D * itemSubtotal;
-            const levyAmountE = (itemCategory === "" || itemCategory === "CST" || itemCategory === "EXM") ? 0 : LEVY_RATES.E * itemSubtotal;
+//             const levyAmount = levyAmountA + levyAmountB + levyAmountC + levyAmountD + levyAmountE;
+//             const totalVat = isExclusive ? 0.15 * (graValue + levyAmount) : 0.15 * (graValue / 1.15 + levyAmount);
 
-            const levyAmount = levyAmountA + levyAmountB + levyAmountC + levyAmountD + levyAmountE;
-            const totalVat = isExclusive ? 0.15 * (graValue + levyAmount) : 0.15 * (graValue / 1.15 + levyAmount);
+//             const updatedItem = {
+//                 ...item,
+//                 levyAmountA,
+//                 levyAmountB,
+//                 levyAmountC,
+//                 levyAmountD,
+//                 levyAmountE,
+//                 totalLevy: levyAmount,
+//                 totalVat,
+//                 discountAmount: discountAmount,
+//                 totalAmount: (quantity * unitPrice),
+//             };
 
-            const updatedItem = {
-                ...item,
-                levyAmountA,
-                levyAmountB,
-                levyAmountC,
-                levyAmountD,
-                levyAmountE,
-                totalLevy: levyAmount,
-                totalVat,
-                discountAmount: discountAmount,
-                totalAmount: (quantity * unitPrice),
-            };
-
-            return updatedItem;
-        });
-    }
-    return [];
-}
-
+//             return updatedItem;
+//         });
+//     }
+//     return [];
+// }
 
 function replaceNullOrNaN(value) {
     return isNaN(parseFloat(value)) ? 0 : parseFloat(value);
 }
 
+export const handleTaxes = (items, inclusive = true, header) => {
+    const { quantity, unitPrice, itemCategory, discountAmount } = items;
+    const itemSubtotal = handleDiscountSubtotalRef(items, header);
+
+    const graValue = inclusive ? itemSubtotal / 1.219 : itemSubtotal;
+    const vatRates = {
+        "": { A: 2.5, B: 2.5, C: 1, D: 0, E: 0 },
+        "TRSM": { A: 2.5, B: 2.5, C: 1, D: 0, E: 1 },
+        "CST": { A: 2.5, B: 2.5, C: 1, D: 5, E: 0 }
+    };
+
+    const vatCategory = vatRates[itemCategory || ""] || { A: 0, B: 0, C: 0, D: 0, E: 0 };
+
+    const graValueCategory = itemCategory === "TRSM" ? itemSubtotal / 1.229 : itemCategory === "CST" ? itemSubtotal / 1.2765 : graValue;
+
+    const { A, B, C, D, E } = vatCategory;
+    const levyAmountA = A / 100 * graValueCategory;
+    const levyAmountB = B / 100 * graValueCategory;
+    const levyAmountC = C / 100 * graValueCategory;
+    const levyAmountD = D / 100 * graValueCategory;
+    const levyAmountE = E / 100 * graValueCategory;
+
+    const vatableAmt = graValueCategory + levyAmountA + levyAmountB + levyAmountC + levyAmountD + levyAmountE;
+    const totalVat = inclusive ? 0.15 * vatableAmt : 0;
+    const totalLevy = levyAmountA + levyAmountB + levyAmountC + levyAmountD + levyAmountE;
+
+    const updatedItem = {
+        ...items,
+        levyAmountA: twoDP(levyAmountA),
+        levyAmountB: twoDP(levyAmountB),
+        levyAmountC: twoDP(levyAmountC),
+        levyAmountD: twoDP(levyAmountD),
+        levyAmountE: twoDP(levyAmountE),
+        totalLevy: twoDP(totalLevy),
+        totalVat: twoDP(totalVat),
+        itemSubtotal: twoDP(itemSubtotal),
+        totalAmount: twoDP(quantity * unitPrice),
+        discountAmount: twoDP(discountAmount),
+    };
+
+    return updatedItem;
+};
+
 export const performComputations = (itemlists, header, setHeader) => {
     const { calculationType } = header;
-    const updatedItems = calculationType === 'INCLUSIVE' ? handleTaxes(itemlists, false, header) : handleTaxes(itemlists, true, header);
+    const inclusive = calculationType === 'INCLUSIVE';
+    const updatedItems = itemlists.map(item => handleTaxes(item, inclusive, header));
 
     const computedValues = updatedItems.reduce((acc, item) => ({
         totalLevy: acc.totalLevy + parseFloat(item.totalLevy || 0),
@@ -441,10 +472,10 @@ export const performComputations = (itemlists, header, setHeader) => {
     );
     setHeader((state) => ({
         ...state,
-        totalLevy: computedValues.totalLevy,
-        totalVat: computedValues.totalVat,
-        totalAmount: computedValues.totalAmount,
-        discountAmount: computedValues.discountAmount,
+        totalLevy: twoDP(computedValues.totalLevy),
+        totalVat: twoDP(computedValues.totalVat),
+        totalAmount: twoDP(computedValues.totalAmount),
+        discountAmount: twoDP(computedValues.discountAmount),
         items: updatedItems,
     }));
 };
