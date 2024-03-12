@@ -56,10 +56,6 @@ const sanitizePayload = (data) => {
 
 const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
     const { items } = sanitizedPayload;
-    const itemCodes = items.map(e => e.itemCode);
-    const itemQtys = items.map(e => e.quantity);
-    const itemDiscounts = items.map(e => e.discountAmount);
-    const itemPrice = items.map(e => e.unitPrice);
 
     const {
         userName,
@@ -122,35 +118,34 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
         delivery,
     ];
 
-    items.map( async (item) => {
-        const {
-            itemCode,
-            unitPrice,
-            discountAmount,
-            quantity,
-        } = item;
-
-        const data = [
-            UUID(),
-            invoiceNumber,
-            itemCode,
-            unitPrice,
-            discountAmount,
-            quantity,
-            0,
-        ];
-
-        logSuccessMessages(JSON.stringify(data));
-        await saveInInvoiceProduct(data)
-        .then(()=>logSuccessMessages('products added'))
-        .catch((err)=>logErrorMessages(JSON.stringify(err)));
-    });
-
     try {
         await AddNewInvoices(payload)
         .then(async ()=>{
-            logSuccessMessages(`${Data.userName} - ${status} ${invoiceNumber} added successfully`);
-            return { status: 'success', gra: responseData.response, payload: sanitizedPayload };
+            items.map( async (item) => {
+                const {
+                    itemCode,
+                    unitPrice,
+                    discountAmount,
+                    quantity,
+                } = item;
+                const data = [
+                    UUID(),
+                    invoiceNumber,
+                    itemCode,
+                    unitPrice,
+                    discountAmount,
+                    quantity,
+                    0,
+                ];
+                await saveInInvoiceProduct(data)
+                .then(()=>{null})
+                .catch((err)=>{
+                    logErrorMessages(`Error saving products in invoice: ${invoiceNumber} to Database ${JSON.stringify(err)}`);
+                    return { status: 'error', message: 'Please refresh and Issue new invoice' };
+                });
+                logSuccessMessages(`${Data.userName} - ${status} ${invoiceNumber} added successfully`);
+                return { status: 'success', gra: responseData.response, payload: sanitizedPayload };
+            });
         })
         .catch((error)=>{
             logErrorMessages(`Error saving invoice: ${invoiceNumber} to Database ${JSON.stringify(error)}`)

@@ -145,8 +145,7 @@ const saveRefundInvoice = async (payload) => {
 
 // Save procust for each invoice
 const saveInInvoiceProduct = async (payload) => {
-    const sql = "INSERT INTO invoice_products(Invoice_ID, InvoiceNum_ID, Product_ID, Product_Price, Product_Discount, Product_Quantity, Product_Refunded_Quantity) VALUES (?, ?, ?, ?, ?, ?, ?)";
-	console.log(payload);
+    const sql = "INSERT INTO invoice_products(_ID, InvoiceNum_ID, Product_ID, Product_Price, Product_Discount, Product_Quantity, Product_Refunded_Quantity) VALUES (?, ?, ?, ?, ?, ?, ?)";
 	return executeQuery(sql, payload);
 };
 
