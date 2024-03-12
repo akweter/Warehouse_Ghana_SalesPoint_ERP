@@ -2,12 +2,6 @@ const { executeQuery } = require("../database/index");
 
 /******************  GET REQUESTS  *********************/
 
-// Return all invoice
-const allinvoices = async () => {
-	const sql = "SELECT * FROM invoice WHERE Inv_status = 'INVOICE' OR Inv_status = 'REFUND' OR Inv_status = 'PARTIAL_REFUND' ORDER BY Inv_ID_auto  DESC";
-	return await executeQuery(sql);
-};
-
 // Return first ten invoices
 const tenInvoices = async () => {
 	const sql = "SELECT * FROM invoice WHERE Inv_status = 'INVOICE' ORDER BY Inv_ID_auto DESC LIMIT 10";
@@ -127,30 +121,23 @@ const Searches = async (prop) => {
 /******************  BEGIN POST REQUESTS *****************/
 
 // Save invoices to the DB
-// const AddNewInvoices = async (payload) => {
-//     const sql = "INSERT INTO invoice(Inv_ID_auto, autoIncrementID, Inv_user, Inv_total_amt, Inv_status, Inv_Calc_Type, Inv_date, Inv_Type, currency, Inv_Sale_Type, Inv_Number, Inv_Customer_Tin, Inv_discount, Inv_ext_Rate, Inv_vat, Inv_id, Inv_Reference, remarks, nhil, getfund, covid, cst, tourism, Inv_Discount_Type, ysdcid, ysdcrecnum, ysdcintdata, ysdcregsig, ysdcmrc, ysdcmrctim, ysdctime, qr_code, Inv_delivery_fee) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-//     return executeQuery(sql, payload);
-// };
-
-// Save invoices to the DB
 const AddNewInvoices = async (payload) => {
     const sql = "INSERT INTO invoice(Inv_ID_auto, autoIncrementID, Inv_user, Inv_total_amt, Inv_status, Inv_Calc_Type, Inv_date, Inv_Type, currency, Inv_Sale_Type, Inv_Number, Inv_Customer_Tin, Inv_discount, Inv_ext_Rate, Inv_vat, Inv_id, Inv_Reference, remarks, nhil, getfund, covid, cst, tourism, Inv_Discount_Type, ysdcid, ysdcrecnum, ysdcintdata, ysdcregsig, ysdcmrc, ysdcmrctim, ysdctime, qr_code, Inv_delivery_fee) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    return executeQuery(sql, payload);
+    return await executeQuery(sql, payload);
 };
 
 const saveRefundInvoice = async (payload) => {
     const sql = "INSERT INTO invoice(Inv_ID_auto, autoIncrementID, Inv_user, Inv_total_amt, Inv_status, Inv_Calc_Type, Inv_date, Inv_Type, currency, Inv_Sale_Type, Inv_Number, Inv_Customer_Tin, Inv_discount, Inv_ext_Rate, Inv_vat, Inv_id, Inv_Reference, remarks, nhil, getfund, covid, cst, tourism, Inv_Discount_Type, ysdcid, ysdcrecnum, ysdcintdata, ysdcregsig, ysdcmrc, ysdcmrctim, ysdctime, qr_code, Inv_delivery_fee) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    return executeQuery(sql, payload);
+    return await executeQuery(sql, payload);
 }
 
 // Save procust for each invoice
 const saveInInvoiceProduct = async (payload) => {
     const sql = "INSERT INTO invoice_products(_ID, InvoiceNum_ID, Product_ID, Product_Price, Product_Discount, Product_Quantity, Product_Refunded_Quantity) VALUES (?, ?, ?, ?, ?, ?, ?)";
-	return executeQuery(sql, payload);
+	return await executeQuery(sql, payload);
 };
 
 const allActions = {
-	allinvoices,
 	oneInvoice,
 	Searches,
 	AddNewInvoices,

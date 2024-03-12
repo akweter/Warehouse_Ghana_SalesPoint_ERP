@@ -10,12 +10,9 @@ import MakeNewInvoice from './generateInvoice';
 import { LoadingSpinner } from 'ui-component/loaderAPI';
 import { RefundDialog } from 'views/refund/refundForm';
 import { GeneralCatchError } from 'utilities/errorAlert';
-import { fetchAllSalesInvoices } from 'apiActions/allApiCalls/invoice';
-import { fetchAllCustomers } from 'apiActions/allApiCalls/customer';
-import { fetchAllProducts } from 'apiActions/allApiCalls/product';
+import { fetchAllInvoices } from 'apiActions/allApiCalls/invoice';
 import InvoiceDetails from './invoiceDetails';
 import InvoiceTemplate from './invoiceTemplate';
-import { fetchRefundedProducts } from 'apiActions/allApiCalls/refund';
 
 // /* eslint-disable */
 
@@ -34,79 +31,12 @@ export default function Invoice() {
         fetchData();
     }, [submitted]);
 
-    useEffect(() => {
-        AllRefundProducts();
-    }, [invoices]);
-
     const fetchData = async () => {
         try {
             setLoading(true);
-
-            // Fetch all invoices
-            const invoicesData = await fetchAllSalesInvoices();
-
-            // Fetch all customers
-            const customersData = await fetchAllCustomers();
-
-            const tinToNameMap = {};
-            customersData.forEach(customer => { tinToNameMap[customer.SnC_tin] = customer.SnC_name; });
-
-            // Fetch all products
-            const productsData = await fetchAllProducts();
-
-            const productIdToProductMap = {};
-            productsData.forEach(product => {
-                productIdToProductMap[product.Itm_id] = {
-                    id: product.Itm_id,
-                    name: product.Itm_name,
-                    category: product.Itm_taxable,
-                    itmDiscount: product.Inv_Product_Discount,
-                    uom: product.Itm_UOM,
-                };
-            });
-            // Update invoices with product details
-            const invoicesWithProducts = invoicesData.map(invoice => {
-                try{
-                    const productIds = JSON.parse(invoice.Inv_Product_id);
-                    const productQtys = JSON.parse(invoice.Inv_Product_qty);
-                    const productDis = JSON.parse(invoice.Inv_Product_Discount);
-                    const productPrice = JSON.parse(invoice.Inv_Pro_Price);
-                    const invDate = invoice.Inv_date;
-
-                    const productsWithQty = productIds.map((productId, index) => {
-                        const productDetails = productIdToProductMap[productId];
-                        if (!productDetails) {
-                            return null;
-                        }
-                        return {
-                            id: productDetails.id,
-                            name: productDetails.name,
-                            quantity: parseFloat(productQtys[index]),
-                            price: parseFloat(productPrice[index]),
-                            category: productDetails.category,
-                            discount: parseFloat(productDis[index]),
-                            uom: productDetails.uom,
-                        };
-                    }).filter(product => product !== null);
-
-                    const customerDetails = customersData.find(customer => customer.SnC_tin === invoice.Inv_Customer_Tin) || {};
-                    const totalProducts = productsWithQty.reduce((total, item) => total + parseFloat(item.quantity || 0), 0);
-
-                    return {
-                        ...invoice,
-                        invDate: invDate,
-                        customerName: tinToNameMap[invoice.Inv_Customer_Tin] || 'Cash',
-                        customerPhone: customerDetails.SnC_phone || '',
-                        products: productsWithQty,
-                        productsTotal: totalProducts,
-                    };
-                }
-                catch(mapError){
-                    return null;
-                }
-            }).filter(invoice => invoice !== null);
+            const invoicesData = await fetchAllInvoices();
             setTimeout(() => {
-                setInvoices(invoicesWithProducts);
+                setInvoices(invoicesData);
                 setLoading(false);
             }, 900);
         }
@@ -118,58 +48,23 @@ export default function Invoice() {
         }
     };
 
-    const AllRefundProducts = async () => {
-        try {
-            const data = await fetchRefundedProducts();
-            if (Array.isArray(data) && data.length > 0) {
-                const sumsMap = new Map();
-                data.forEach(item => {
-                    const invNumber = item.Inv_Number;
-                    const productQty = JSON.parse(item.Inv_Product_qty);
-                    if (!sumsMap.has(invNumber)) {
-                        sumsMap.set(invNumber, []);
-                    }
-                    productQty.forEach((qty, index) => {
-                        sumsMap.get(invNumber)[index] = (sumsMap.get(invNumber)[index] || 0) + qty;
-                    });
-                });
-                const result = Array.from(sumsMap.entries()).map(([invNumber, sums]) => ({
-                    Inv_Number: invNumber,
-                    Inv_Product_qty_Sum: sums
-                }));
-                if (result && invoices.length > 0) {
-                    for (const item of result) {
-                        const { Inv_Number, Inv_Product_qty_Sum } = item;
-                        const matchingInvoices = invoices.filter(invoice => invoice.Inv_Number === Inv_Number);
-                                        console.log(matchingInvoices)
-                        if (matchingInvoices.length > 0) {
-                            matchingInvoices.forEach(matchingInvoice => {
-                                Inv_Product_qty_Sum.forEach((refundedQty, index) => {
-                                    if (matchingInvoice.products && matchingInvoice.products[index]) {
-                                        matchingInvoice.products[index].refundedQty = refundedQty;
-                                    }
-                                });
-                            });
-                        }
-                    }
-                }
-            }
-        }
-        catch (error) {
-            console.log('error');
-        }
-    }
-
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
         return new Date(dateString).toLocaleDateString(undefined, options);
+    };
+
+    const Levies = (invoice) => {
+        const { NHIL, GETFund, COVID, CST, Tourism } = invoice;
+        const totalLevies = NHIL + GETFund + COVID + CST + Tourism;
+        return parseFloat(totalLevies);
     };
 
     const rowsWithIds = useMemo(() =>
         invoices.map((invoice, index) => ({
             id: index,
             ...invoice,
-            Inv_date: formatDate(invoice.Inv_date),
+            InvoiceDate: formatDate(invoice.InvoiceDate),
+            Levies: Levies(invoice),
         })),
         [invoices]
     );
@@ -186,7 +81,7 @@ export default function Invoice() {
                 headerClassName: 'dataGridheader',
             },
             {
-                field: 'Inv_user',
+                field: 'IssuerName',
                 headerName: 'Issuer',
                 description: 'Served By',
                 flex: 1,
@@ -194,23 +89,15 @@ export default function Invoice() {
                 headerClassName: 'dataGridheader',
             },
             {
-                field: 'Inv_Number',
+                field: 'InvoiceNumber',
                 headerName: 'Invoice #',
                 description: 'Invoice number',
                 flex: 1,
                 width: 70,
                 headerClassName: 'dataGridheader',
             },
-            // {
-            //     field: 'Inv_Type',
-            //     headerName: 'Type',
-            //     description: 'Invoice Transaction Type',
-            //     flex: 1,
-            //     width: 70,
-            //     headerClassName: 'dataGridheader',
-            // },
             {
-                field: 'Inv_date',
+                field: 'InvoiceDate',
                 headerName: 'Date',
                 description: 'Transaction Date',
                 flex: 1,
@@ -218,7 +105,7 @@ export default function Invoice() {
                 headerClassName: 'dataGridheader',
             },
             {
-                field: 'customerName',
+                field: 'CustomerName',
                 headerName: 'Customer',
                 description: 'Customer Name',
                 flex: 1,
@@ -226,7 +113,7 @@ export default function Invoice() {
                 headerClassName: 'dataGridheader',
             },
             {
-                field: 'Inv_total_amt',
+                field: 'TotalAmount',
                 headerName: 'Total Amt',
                 description: 'Total Invoice Amount',
                 flex: 1,
@@ -234,7 +121,7 @@ export default function Invoice() {
                 headerClassName: 'dataGridheader',
             },
             {
-                field: 'tourism',
+                field: 'Tourism',
                 headerName: 'Tourism',
                 description: 'Total Tourism Tax',
                 flex: 1,
@@ -242,23 +129,15 @@ export default function Invoice() {
                 headerClassName: 'dataGridheader',
             },
             {
-                field: 'Inv_levies',
+                field: 'Levies',
                 headerName: 'Levies',
                 description: 'Total Invoice Levies',
                 flex: 1,
                 width: 40,
-                valueGetter: (params) => {
-                    const cst = parseFloat(params.row.cst) || 0;
-                    const nhil = parseFloat(params.row.nhil) || 0;
-                    const getfund = parseFloat(params.row.getfund) || 0;
-                    const covid = parseFloat(params.row.covid) || 0;
-                    const totalLevies = cst + nhil + getfund + covid;
-                    return totalLevies.toFixed(2);
-                },
                 headerClassName: 'dataGridheader',
             },
             {
-                field: 'Inv_vat',
+                field: 'VatAmount',
                 headerName: 'VAT',
                 description: 'Total Invoice VAT',
                 flex: 1,

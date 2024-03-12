@@ -2,7 +2,7 @@ import requestMaking from "auth/setHeaderToken";
 
 // Fetch all invoice
 export const fetchAllInvoices = async () => {
-    const response = await requestMaking('invoices', 'GET', null);
+    const response = await requestMaking('invoices', 'GET', null); 
     if (response.ok) {
         return await response.json();
     }

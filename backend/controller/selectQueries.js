@@ -1,34 +1,26 @@
 const { executeQuery } = require("../database/index");
 
-// Retrieve all companies
+// Return all invoice
 const one = async () => {
-    const sql = `
-    SELECT * FROM company;
-    `;
-    return await executeQuery(sql);
+	const sql = "SELECT * FROM invoice WHERE Inv_status IN ('INVOICE', 'REFUND', 'PARTIAL_REFUND') ORDER BY Inv_ID_auto DESC";
+	return await executeQuery(sql);
 };
 
 // Retrieve all active inventory items
 const two = async () => {
-    const sql = `
-    SELECT * FROM inventory WHERE Itm_status = 'Active';
-    `;
+    const sql = `SELECT * FROM inventory WHERE Itm_status = 'Active'`;
     return await executeQuery(sql);
 };
 
 // Retrieve all invoices with a total amount greater than 1000
 const three = async () => {
-    const sql = `
-    SELECT * FROM invoice WHERE Inv_total_amt > 1000;
-    `;
+    const sql = ` SELECT * FROM invoice WHERE Inv_total_amt > 1000`;
     return await executeQuery(sql);
 };
 
 // Retrieve all invoice products with a quantity greater than 50
 const four = async () => {
-    const sql = `
-    SELECT * FROM invoice_products WHERE Product_Quantity > 50;
-    `;
+    const sql = `SELECT * FROM invoice_products WHERE Product_Quantity > 50`;
     return await executeQuery(sql);
 };
 
@@ -66,9 +58,7 @@ const eight = async () => {
 
 // Retrieve the invoices with the highest total amount
 const nine = async () => {
-    const sql = `
-    SELECT * FROM invoice ORDER BY Inv_total_amt DESC LIMIT 1;
-    `;
+    const sql = `SELECT * FROM invoice ORDER BY Inv_total_amt DESC LIMIT 1`;
     return await executeQuery(sql);
 };
 
@@ -90,9 +80,7 @@ const eleven = async () => {
 
 // Retrieve the names and total amounts of invoices for a specific user ('James')
 const twelve = async () => {
-    const sql = `
-    SELECT Inv_user, SUM(Inv_total_amt) AS total_amount FROM invoice WHERE Inv_user = 'James' GROUP BY Inv_user;
-    `;
+    const sql = `SELECT Inv_user, SUM(Inv_total_amt) AS total_amount FROM invoice WHERE Inv_user = 'James' GROUP BY Inv_user`;
     return await executeQuery(sql);
 };
 
@@ -114,9 +102,7 @@ const fourteen = async () => {
 
 // Retrieve the invoices with a refund status
 const fifteen = async () => {
-    const sql = `
-    SELECT * FROM invoice WHERE Inv_status IN ('REFUND', 'REFUND_CANCELATION', 'PARTIAL_REFUND');
-    `;
+    const sql = `SELECT * FROM invoice WHERE Inv_status IN ('REFUND', 'REFUND_CANCELATION', 'PARTIAL_REFUND')`;
     return await executeQuery(sql);
 };
 
@@ -130,9 +116,7 @@ const sixteen = async () => {
 
 // Retrieve the suppliers and customers with a 'reliable' rating
 const seventeen = async () => {
-    const sql = `
-    SELECT * FROM suppliersncustomers WHERE SnC_rating = 'reliable';
-    `;
+    const sql = `SELECT * FROM suppliersncustomers WHERE SnC_rating = 'reliable'`;
     return await executeQuery(sql);
 };
 
@@ -144,16 +128,13 @@ const eighteen = async () => {
     JOIN inventory ON invoice_products.Product_ID = inventory.Itm_id
     JOIN invoice ON invoice_products.InvoiceNum_ID = invoice.Inv_Number
     WHERE Inv_date >= NOW() - INTERVAL 1 MONTH
-    GROUP BY Itm_name;
-    `;
+    GROUP BY Itm_name`;
     return await executeQuery(sql);
 };
 
 // Retrieve the invoices with a specific reference
 const nineteen = async () => {
-    const sql = `
-    SELECT * FROM invoice WHERE Inv_Reference IS NOT NULL;
-    `;
+    const sql = `SELECT * FROM invoice WHERE Inv_Reference IS NOT NULL`;
     return await executeQuery(sql);
 };
 
@@ -201,15 +182,63 @@ const twentyThree = async () => {
     return await executeQuery(sql);
 };
 
-// Retrieve the invoices with a refund status and the refunded quantity for each product
+// Retrieve complete invoice from the DB
 const twentyFour = async () => {
     const sql = `
-    SELECT InvoiceNum_ID, Product_ID, SUM(Product_Refunded_Quantity) AS total_refunded_quantity
-    FROM invoice_products
-    JOIN invoice ON invoice_products.InvoiceNum_ID = invoice.Inv_Number
-    WHERE Inv_status IN ('REFUND', 'REFUND_CANCELATION', 'PARTIAL_REFUND')
-    GROUP BY InvoiceNum_ID, Product_ID;
-    `;
+    SELECT
+        invoice.Inv_Number AS InvoiceNumber,
+        invoice.Inv_user AS IssuerName,
+        usermanagement.Usr_type AS IssuerType,
+        usermanagement.Usr_dept AS IssuerDept,
+        suppliersncustomers.SnC_name AS CustomerName,
+        suppliersncustomers.SnC_tin AS CustomerTIN,
+        suppliersncustomers.SnC_status AS CustomerStatus,
+        suppliersncustomers.SnC_exempted AS CustomerExempted,
+        invoice.Inv_status AS InvoiceStatus,
+        invoice.Inv_Calc_Type AS CalculationType,
+        invoice.Inv_date AS InvoiceDate,
+        invoice.Inv_Sale_Type AS SaleType,
+        invoice.Inv_Type AS InvoiceType,
+        invoice.Inv_Reference AS Reference,
+        invoice.remarks AS Remarks,
+        invoice.currency AS Currency,
+        invoice.Inv_ext_Rate AS ExchangeRate,
+        invoice.Inv_Discount_Type AS DiscountType,
+        invoice.Inv_total_amt AS TotalAmount,
+        invoice.Inv_discount AS InvoiceDiscount,
+        invoice.Inv_vat AS VatAmount,
+        invoice.nhil AS NHIL,
+        invoice.getfund AS GETFund,
+        invoice.covid AS COVID,
+        invoice.cst AS CST,
+        invoice.tourism AS Tourism,
+        invoice.ysdcid AS YSDCID,
+        invoice.ysdcrecnum AS YSDCRecNum,
+        invoice.ysdcintdata AS YSDCIntData,
+        invoice.ysdcregsig AS YSDCRegSig,
+        invoice.ysdcmrc AS YSDCMRC,
+        invoice.ysdcmrctim AS YSDCMRCTime,
+        invoice.ysdctime AS YSDCTime,
+        invoice.qr_code AS QRCode,
+        invoice.Inv_delivery_fee AS DeliveryFee,
+        inventory.Itm_name AS ProductName,
+        inventory.Itm_taxable AS ProductCategory,
+        invoice_products.Product_Price AS ProductPrice,
+        invoice_products.Product_Discount AS ProductDiscount,
+        invoice_products.Product_Quantity AS Quantity,
+        invoice_products.Product_Refunded_Quantity AS RefundedQuantity
+    FROM
+        invoice
+    JOIN
+        usermanagement ON invoice.Inv_user = usermanagement.Usr_name
+    JOIN
+        suppliersncustomers ON invoice.Inv_Customer_Tin = suppliersncustomers.SnC_tin
+    LEFT JOIN
+        invoice_products ON invoice.Inv_Number = invoice_products.InvoiceNum_ID
+    LEFT JOIN
+        inventory ON invoice_products.Product_ID = inventory.Itm_id
+    ORDER BY
+        invoice.Inv_date DESC`;
     return await executeQuery(sql);
 };
 
@@ -226,11 +255,9 @@ const twentyFive = async () => {
 
 // Retrieve the invoices with the highest and lowest total amounts
 const twentySix = async () => {
-    const sql = `
-    SELECT * FROM invoice
+    const sql = `SELECT * FROM invoice
     WHERE Inv_total_amt = (SELECT MAX(Inv_total_amt) FROM invoice)
-       OR Inv_total_amt = (SELECT MIN(Inv_total_amt) FROM invoice);
-    `;
+    OR Inv_total_amt = (SELECT MIN(Inv_total_amt) FROM invoice)`;
     return await executeQuery(sql);
 };
 
@@ -334,12 +361,10 @@ const thirtyFour = async () => {
 
 // Retrieve the number of invoices and the total sales amount for each user in the 'sales' department
 const thirtyFive = async () => {
-    const sql = `
-    SELECT Inv_user, COUNT(*) AS num_invoices, SUM(Inv_total_amt) AS total_sales
+    const sql = `SELECT Inv_user, COUNT(*) AS num_invoices, SUM(Inv_total_amt) AS total_sales
     FROM invoice
     WHERE Inv_user IN (SELECT Usr_name FROM usermanagement WHERE Usr_dept = 'sales')
-    GROUP BY Inv_user;
-    `;
+    GROUP BY Inv_user`;
     return await executeQuery(sql);
 };
 
@@ -372,9 +397,7 @@ const thirtyEight = async () => {
     FROM invoice
     JOIN invoice_products ON invoice.Inv_Number = invoice_products.InvoiceNum_ID
     JOIN usermanagement ON invoice.Inv_user = usermanagement.Usr_name
-    GROUP BY Usr_dept, YEAR(Inv_date), MONTH(Inv_date)
-    ORDER BY year DESC, month DESC;
-    `;
+    GROUP BY Usr_dept, YEAR(Inv_date), MONTH(Inv_date)`;
     return await executeQuery(sql);
 };
 
@@ -386,8 +409,7 @@ const thirtyNine = async () => {
     JOIN invoice_products ON inventory.Itm_id = invoice_products.Product_ID
     GROUP BY Itm_name
     ORDER BY avg_price DESC, avg_quantity DESC
-    LIMIT 5;
-    `;
+    LIMIT 5`;
     return await executeQuery(sql);
 };
 
@@ -401,8 +423,6 @@ const forty = async () => {
     `;
     return await executeQuery(sql);
 };
-
-const { executeQuery } = require("../database/index");
 
 // Retrieve the total sales amount and quantity of each product, grouped by month, for the last year
 const fortyOne = async () => {

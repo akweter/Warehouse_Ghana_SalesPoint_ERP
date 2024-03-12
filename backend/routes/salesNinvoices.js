@@ -7,7 +7,6 @@ const { logErrorMessages } = require("../utils/saveLogfile");
 
 // controller
 const {
-  allinvoices,
   oneInvoice,
   Searches,
   purchaseInvoices,
@@ -19,12 +18,17 @@ const {
   YearAllSalesInvoice,
   getAllSalesInvoices,
 } = require("../controller/salesNinvoices");
+const {
+  one, twentyFour,
+} = require("../controller/selectQueries");
+const restructureInvoiceResult = require("../utils/invoiceModifier");
 
-// only all sales invoices numbers
+// All invoices transaction
 Router.get("/", async (req, res) => {
   try {
-    const output = await allinvoices();
-    return await executeRoute(output, res);
+    const output = await twentyFour();
+    const modifiedOutput = restructureInvoiceResult(output);
+    return res.status(200).json(modifiedOutput);
   }
   catch (err) {
     logErrorMessages(`Error fetching all invoices: ${err}`);

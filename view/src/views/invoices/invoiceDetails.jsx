@@ -1,4 +1,3 @@
-import { ThemeProvider } from '@mui/material';
 import {
     Button,
     Dialog,
@@ -12,12 +11,13 @@ import {
     TableBody,
     Paper,
     Typography,
+    Box,
 } from '@mui/material';
 
 const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog }) => {
     return (
-        <ThemeProvider theme='white'>
-            <Dialog open={openDialog} onClose={false}>
+        <Box>
+            <Dialog open={openDialog}>
                 <DialogContent>
                     <Typography sx={{ fontSize: '22px', textAlign: "center", fontWeight: '600', fontStyle: 'italic' }}>Invoice Details</Typography>
                     <TableContainer component={Paper}>
@@ -25,63 +25,56 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog }) => {
                             <TableHead>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Invoice #:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.Inv_Number}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.InvoiceNumber}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Served By:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.Inv_user}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.IssuerName}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Customer Name:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.customerName}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.CustomerName}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Customer TIN:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.Inv_Customer_Tin}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.CustomerTIN}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Transaction Date:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.Inv_date}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.InvoiceDate}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Invoice Type:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.Inv_Type}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.InvoiceType}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Invoice Status:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.Inv_status}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.InvoiceStatus}</TableCell>
                                 </TableRow>
                                 {
-                                    selectedRow.Inv_delivery_fee === null || selectedRow.Inv_delivery_fee === undefined || selectedRow.Inv_delivery_fee === "" || selectedRow.Inv_delivery_fee === 0 ? 
-                                    null : (
+                                    selectedRow.DeliveryFee ? (
                                         <TableRow>
                                             <TableCell component="th" scope="row">Delivery</TableCell>
-                                            <TableCell component="td" scope="row">{selectedRow.Inv_delivery_fee}</TableCell>
+                                            <TableCell component="td" scope="row">{selectedRow.DeliveryFee}</TableCell>
                                         </TableRow>
-                                    )
+                                    ): null
                                 }
                                 <TableRow>
                                     <TableCell component="th" scope="row">Discount:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.currency} {selectedRow.Inv_discount}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.currency} {selectedRow.InvoiceDiscount}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Total VAT:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.currency} {selectedRow.Inv_vat}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.currency} {selectedRow.VatAmount}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Total Levies:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.currency} {(
-                                        parseFloat(selectedRow.cst) +
-                                        parseFloat(selectedRow.nhil) +
-                                        parseFloat(selectedRow.getfund) +
-                                        parseFloat(selectedRow.covid) +
-                                        parseFloat(selectedRow.tourism)
-                                    ).toFixed(2)}
+                                    <TableCell component="td" scope="row">{selectedRow.currency} {(selectedRow.Levies).toFixed(2)}
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Total Amount:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.currency} {selectedRow.Inv_total_amt}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.currency} {selectedRow.TotalAmount}</TableCell>
                                 </TableRow>
                             </TableHead>
                         </Table>
@@ -105,11 +98,11 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog }) => {
                                     {selectedRow.products.map((product, index) => (
                                         <TableRow key={index}>
                                             <TableCell>{index+1}</TableCell>
-                                            <TableCell>{product.name}</TableCell>
-                                            <TableCell>{product.price}</TableCell>
-                                            <TableCell>{product.quantity}</TableCell>
-                                            <TableCell>{product.discount}</TableCell>
-                                            <TableCell>{product.refundedQty}</TableCell>
+                                            <TableCell>{product.ProductName}</TableCell>
+                                            <TableCell>{product.ProductPrice}</TableCell>
+                                            <TableCell>{product.Quantity}</TableCell>
+                                            <TableCell>{product.ProductDiscount}</TableCell>
+                                            <TableCell>{product.RefundedQuantity}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -123,7 +116,7 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog }) => {
                     <Button onClick={handleCloseDialog}>Close</Button>
                 </DialogActions>
             </Dialog>
-        </ThemeProvider>
+        </Box>
     );
 }
 

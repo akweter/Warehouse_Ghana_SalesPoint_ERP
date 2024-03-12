@@ -21,19 +21,19 @@ const InvoiceTemplate = ({ data }) => {
 				</thead>
 				<tbody>
 					<tr>
-						<td>{data.customerName}</td>
+						<td>{data.CustomerName}</td>
 						<td>WAREHOUSE GHANA</td>
-						<td>{data.Inv_Number}</td>
+						<td>{data.InvoiceNumber}</td>
 					</tr>
 					<tr>
-						<td>{data.Inv_Customer_Tin}</td>
+						<td>{data.CustomerTIN}</td>
 						<td><strong>SERVED BY: </strong></td>
 						<td><strong>DATE: </strong></td>
 					</tr>
 					<tr>
 						<td>{data.customerPhone}</td>
-						<td>{data.Inv_user}</td>
-						<td>{data.Inv_date}</td>
+						<td>{data.IssuerName}</td>
+						<td>{data.InvoiceDate}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -58,11 +58,11 @@ const InvoiceTemplate = ({ data }) => {
 							<tbody>
 								{data.products.map((product, index) => (
 									<tr key={index}>
-										<td>{product.name}</td>
+										<td>{product.ProductName}</td>
 										<td>{product.uom}</td>
-										<td>{product.price}</td>
-										<td>{product.quantity}</td>
-										<td>{(product.quantity) * (product.price)}</td>
+										<td>{product.ProductPrice}</td>
+										<td>{product.Quantity}</td>
+										<td>{(product.Quantity) * (product.ProductPrice)}</td>
 									</tr>
 								))}
 							</tbody>
@@ -74,53 +74,60 @@ const InvoiceTemplate = ({ data }) => {
 			<table cellSpacing="0" cellPadding="4" align="right">
 				<thead>
 					<tr>
-						<td><strong>Subtotal:</strong></td>
-						<td>{data.currency}: {(data.Inv_total_amt)}</td>
+						<td><strong>Subtotal</strong></td>
+						<td>{data.Currency}: {(data.TotalAmount)}</td>
 					</tr>
 					<tr>
-						<td><strong>Discount:</strong></td>
-						<td>{data.currency}: {data.Inv_discount}</td>
+						<td><strong>Discount</strong></td>
+						<td>{data.Currency}: {data.InvoiceDiscount}</td>
 					</tr>
 					<tr>
 						<td><strong>GetFund (2.5%)</strong></td>
-						<td>{data.currency}: {data.getfund}</td>
+						<td>{data.Currency}: {data.GETFund}</td>
 					</tr>
 					<tr>
 						<td><strong>NHIL (2.5%)</strong></td>
-						<td>{data.currency}: {data.nhil}</td>
+						<td>{data.Currency}: {data.NHIL}</td>
 					</tr>
 					<tr>
 						<td><strong>Covid (1%)</strong></td>
-						<td>{data.currency}: {data.covid}</td>
+						<td>{data.Currency}: {data.COVID}</td>
 					</tr>
-					{data.tourism === null || data.tourism === undefined || data.tourism === "" ?
-						(<></>) :
+					{data.CST ?
+						(<>
+							<tr>
+								<td><strong>CST (5%)</strong></td>
+								<td>{data.Currency}: {data.CST}</td>
+							</tr>
+						</>) : null
+					}
+					{data.tourism ?
 						(<>
 							<tr>
 								<td><strong>Tourism (1%)</strong></td>
-								<td>{data.currency}: {data.tourism}</td>
+								<td>{data.Currency}: {data.Tourism}</td>
 							</tr>
-						</>)
+						</>) : null
 					}
 					<tr>
 						<td><strong>VAT (15%)</strong></td>
-						<td>{data.currency}: {data.Inv_vat}</td>
+						<td>{data.Currency}: {data.VatAmount}</td>
 					</tr>
 					<tr>
-						<td><strong>Total Amount:</strong></td>
-						<td>{data.currency}: {((data.Inv_total_amt) - (data.Inv_discount))}</td>
+						<td><strong>Total Amount</strong></td>
+						<td>{data.Currency}: {((data.TotalAmount) - (data.InvoiceDiscount))}</td>
 					</tr>
 					< br />
-					{data.Inv_delivery_fee === null || data.Inv_delivery_fee === undefined || data.Inv_delivery_fee === "" || data.Inv_delivery_fee === 0 ?
-						(<></>) :
+					{data.DeliveryFee ? 
 						(<>
 							< br />
 							< br />
 							<tr>
 								<td><strong>Delivery:</strong></td>
-								<td>{data.Inv_delivery_fee === 'Free' ? null : `${data.currency}:`} {(data.Inv_delivery_fee)}</td>
+								<td>{data.DeliveryFee === 'Free' ? null : `${data.Currency}:`} {(data.DeliveryFee)}</td>
 							</tr>
-						</>)
+						</>):
+						(<></>)
 					}
 				</thead>
 			</table>
@@ -149,9 +156,9 @@ const InvoiceTemplate = ({ data }) => {
 					</tr>
 					<tr>
 						<td>SDC ID:</td>
-						<td>{data.ysdcid}</td>
+						<td>{data.YSDCID}</td>
 						<td rowSpan="7">
-							<img src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data.qr_code)}`} alt="qr code" width={160} height={160} />
+							<img src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data.QRCode)}`} alt="qr code" width={160} height={160} />
 						</td>
 					</tr>
 					<tr>
@@ -161,23 +168,23 @@ const InvoiceTemplate = ({ data }) => {
 
 					<tr>
 						<td>Rceipt Number:</td>
-						<td>{data.ysdcrecnum}</td>
+						<td>{data.YSDCRecNum}</td>
 					</tr>
 					<tr>
 						<td>Timestamp:</td>
-						<td>{data.ysdctime}</td>
+						<td>{data.YSDCMRCTime}</td>
 					</tr>
 					<tr>
 						<td>MRC</td>
-						<td>{data.ysdcmrc}</td>
+						<td>{data.YSDCMRC}</td>
 					</tr>
 					<tr>
 						<td>Internal Data:</td>
-						<td>{data.ysdcintdata}</td>
+						<td>{data.YSDCIntData}</td>
 					</tr>
 					<tr>
 						<td>Signature</td>
-						<td>{data.ysdcregsig}</td>
+						<td>{data.YSDCRegSig}</td>
 					</tr>
 				</tbody>
 			</table>
