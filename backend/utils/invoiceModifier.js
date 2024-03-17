@@ -2,7 +2,7 @@
 //     const modifiedResult = [];
 
 //     result.forEach((row) => {
-//         const existingInvoice = modifiedResult.find(item => item.InvoiceID === row.InvoiceID);
+//         const existingInvoice = modifiedResult.find(item => item.InvoiceNumber === row.InvoiceNumber);
 
 //         if (!existingInvoice) {
 //             const newInvoice = {
@@ -36,10 +36,10 @@ const restructureInvoiceResult = (result) => {
     const modifiedResult = [];
 
     result.forEach((row) => {
-        const existingInvoice = modifiedResult.find(item => item.InvoiceID === row.InvoiceID);
+        const existingInvoice = modifiedResult.find(item => item.InvoiceNumber === row.InvoiceNumber);
 
         if (!existingInvoice) {
-            const { ProductName, ProductPrice, ProductDiscount, Quantity, RefundedQuantity, ProductCategory, ...invoiceData } = row;
+            const { ProductName, ProductPrice, ProductDiscount, Quantity, RefundedQuantity, ProductCategory, itemCode, ...invoiceData } = row;
             const newInvoice = {
                 ...invoiceData,
                 products: [{
@@ -49,6 +49,7 @@ const restructureInvoiceResult = (result) => {
                     Quantity,
                     RefundedQuantity,
                     ProductCategory,
+                    itemCode,
                 }]
             };
             modifiedResult.push(newInvoice);
@@ -61,7 +62,8 @@ const restructureInvoiceResult = (result) => {
                     ProductDiscount: row.ProductDiscount,
                     Quantity: row.Quantity,
                     RefundedQuantity: row.RefundedQuantity,
-                    ProductCategory: row.ProductCategory
+                    ProductCategory: row.ProductCategory,
+                    itemCode: row.itemCode,
                 });
             }
         }

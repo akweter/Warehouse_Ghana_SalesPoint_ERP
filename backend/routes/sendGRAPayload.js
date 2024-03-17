@@ -121,31 +121,33 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
     try {
         await AddNewInvoices(payload)
         .then(async ()=>{
-            items.map( async (item) => {
-                const {
-                    itemCode,
-                    unitPrice,
-                    discountAmount,
-                    quantity,
-                } = item;
-                const data = [
-                    UUID(),
-                    invoiceNumber,
-                    itemCode,
-                    unitPrice,
-                    discountAmount,
-                    quantity,
-                    0,
-                ];
-                await saveInInvoiceProduct(data)
-                .then(()=>{null})
-                .catch((err)=>{
-                    logErrorMessages(`Error saving products in invoice: ${invoiceNumber} to Database ${JSON.stringify(err)}`);
-                    return { status: 'error', message: 'Please refresh and Issue new invoice' };
+            if (items) {
+                items.map( async (item) => {
+                    const {
+                        itemCode,
+                        unitPrice,
+                        discountAmount,
+                        quantity,
+                    } = item;
+                    const data = [
+                        UUID(),
+                        invoiceNumber,
+                        itemCode,
+                        unitPrice,
+                        discountAmount,
+                        quantity,
+                        0,
+                    ];
+                    await saveInInvoiceProduct(data)
+                    .then(()=>{null})
+                    .catch((err)=>{
+                        logErrorMessages(`Error saving products in invoice: ${invoiceNumber} to Database ${JSON.stringify(err)}`);
+                        return { status: 'error', message: 'Please refresh and Issue new invoice' };
+                    });
+                    logSuccessMessages(`${Data.userName} - ${status} ${invoiceNumber} added successfully`);
+                    return { status: 'success', gra: responseData.response, payload: sanitizedPayload };
                 });
-                logSuccessMessages(`${Data.userName} - ${status} ${invoiceNumber} added successfully`);
-                return { status: 'success', gra: responseData.response, payload: sanitizedPayload };
-            });
+            }
         })
         .catch((error)=>{
             logErrorMessages(`Error saving invoice: ${invoiceNumber} to Database ${JSON.stringify(error)}`)
@@ -165,7 +167,6 @@ Router.post("/invoice", async (req, res) => {
         return res.json({ status: 'Error', message: 'Invalid data structure', data: Data });
     }
     const sanitizedPayload = sanitizePayload(Data);
-    // logSuccessMessages(JSON.stringify(sanitizedPayload));
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, {headers: {'security_key': GRA_KEY}});
         if (response.status === 200) {
@@ -212,26 +213,27 @@ Router.post("/refund", async (req, res) => {
         return res.json({ status: 'Error', message: 'Invalid data structure', data: Data });
     }
     const sanitizedPayload = sanitizePayload(Data);
-    // logSuccessMessages(JSON.stringify(sanitizedPayload));
+    logSuccessMessages(JSON.stringify(sanitizedPayload));
     try {
-        const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, {headers: {'security_key': GRA_KEY}});
-        if (response.status === 200) {
-            const resultMessage = response.data.response.status;
-            if (resultMessage) {
-                await saveInvoiceToDB(Data, sanitizedPayload, response.data)
-                .then(()=>{
-                    return res.status(200).json({ status: 'success'});
-                })
-                .catch(()=>{
-                    logErrorMessages(`Failed to save invoice to DB: ${sanitizedPayload}`);
-                    return res.json({ status: 'error', message: `Failed to save invoice: ${sanitizedPayload.invoiceNumber} to DB. Try new invoice`});
-                });
-            }
-            else {
-                logErrorMessages(`Unknow GRA error for invoice ${sanitizedPayload}`);
-                return res.json({ status: 'error', message: 'GRA response indicates unknown error' });
-            }
-        }
+        return res.status(200).json({ status: 'success'});
+        // const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, {headers: {'security_key': GRA_KEY}});
+        // if (response.status === 200) {
+        //     const resultMessage = response.data.response.status;
+        //     if (resultMessage) {
+        //         await saveInvoiceToDB(Data, sanitizedPayload, response.data)
+        //         .then(()=>{
+        //             return res.status(200).json({ status: 'success'});
+        //         })
+        //         .catch(()=>{
+        //             logErrorMessages(`Failed to save invoice to DB: ${sanitizedPayload}`);
+        //             return res.json({ status: 'error', message: `Failed to save invoice: ${sanitizedPayload.invoiceNumber} to DB. Try new invoice`});
+        //         });
+        //     }
+        //     else {
+        //         logErrorMessages(`Unknow GRA error for invoice ${sanitizedPayload}`);
+        //         return res.json({ status: 'error', message: 'GRA response indicates unknown error' });
+        //     }
+        // }
     }
     catch (error) {
         if (error.response) {

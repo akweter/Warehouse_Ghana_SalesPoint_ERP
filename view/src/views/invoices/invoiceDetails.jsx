@@ -17,7 +17,7 @@ import {
 const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog }) => {
     return (
         <Box>
-            <Dialog open={openDialog}>
+            <Dialog open={openDialog} maxWidth='lg'>
                 <DialogContent>
                     <Typography sx={{ fontSize: '22px', textAlign: "center", fontWeight: '600', fontStyle: 'italic' }}>Invoice Details</Typography>
                     <TableContainer component={Paper}>

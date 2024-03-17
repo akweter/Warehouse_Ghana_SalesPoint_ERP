@@ -19,14 +19,14 @@ const {
   getAllSalesInvoices,
 } = require("../controller/salesNinvoices");
 const {
-  one, twentyFour,
+  one, twentyFour, thirtySeven,
 } = require("../controller/selectQueries");
 const restructureInvoiceResult = require("../utils/invoiceModifier");
 
 // All invoices transaction
 Router.get("/", async (req, res) => {
   try {
-    const output = await twentyFour();
+    const output = await thirtySeven('INVOICE', 'INVOICE');
     const modifiedOutput = restructureInvoiceResult(output);
     return res.status(200).json(modifiedOutput);
   }

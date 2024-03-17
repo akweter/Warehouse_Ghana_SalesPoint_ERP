@@ -17,6 +17,7 @@ export const itemlistPayload = {
     totalLevy: "",
     totalAmount: "",
     alt: '',
+    refProQty: '',
 }
 
 export const headerPayload = {

@@ -6,11 +6,11 @@ import { CurrencyExchangeSharp, Print as PrintIcon, Visibility as VisibilityIcon
 import { IconButton, Grid, Box } from '@mui/material';
 
 // projects
-import MakeNewInvoice from './generateInvoice';
-import { LoadingSpinner } from 'ui-component/loaderAPI';
-import { RefundDialog } from 'views/refund/refundForm';
 import { GeneralCatchError } from 'utilities/errorAlert';
 import { fetchAllInvoices } from 'apiActions/allApiCalls/invoice';
+import { LoadingSpinner } from 'ui-component/loaderAPI';
+import MakeNewInvoice from './generateInvoice';
+import RefundForms from 'views/refund/refundForm';
 import InvoiceDetails from './invoiceDetails';
 import InvoiceTemplate from './invoiceTemplate';
 
@@ -243,7 +243,7 @@ export default function Invoice() {
                     </>
                 )
             }
-            <RefundDialog
+            <RefundForms
                 open={openRefDialog}
                 handleClose={handleCloseRefDialog}
                 refundInv={refundInv ? refundInv : null}

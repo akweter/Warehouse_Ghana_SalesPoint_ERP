@@ -1,6 +1,6 @@
 import logo from "../../assets/images/logo.webp"
 
-/* eslint-disable */
+// /* eslint-disable */
 const InvoiceTemplate = ({ data }) => {
 
 	return (

@@ -10,20 +10,22 @@ import {
     Typography
 } from '@mui/material';
 import { headerPayload, itemlistPayload } from 'views/payload/payloadStructure';
-import { performComputations } from 'utilities/computeAllTaxes';
+import { computeFinalRefTaxes, /*performComputations*/ } from 'utilities/computeAllTaxes';
 import { AlertError } from 'utilities/errorAlert';
 import { ShowBackDrop } from 'utilities/backdrop';
 import { getUserName } from 'utilities/getUserName';
 import { Cancel } from '@mui/icons-material';
 import { postRefundInvoice } from 'apiActions/allApiCalls/refund';
 
-/* eslint-disable */
-export const RefundDialog = ({ open, handleClose, refundInv, setSubmitted }) => {
+// /* eslint-disable */
+const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
     const [openAlert, setOpen] = useState(false);
     const [drop, setDrop] = useState(false);
     const [itemLists, setItemLists] = useState(itemlistPayload);
     const [header, setHeader] = useState(headerPayload);
+    const [currentQuantities, setCurrentQuantities] = useState({});
     const [originalQuantities, setOriginalQuantities] = useState({});
+    const [quantityErrors, setQuantityErrors] = useState({});
     const [confirmationOpen, setConfirmationOpen] = useState(false);
     const [alert, setAlert] = useState({ message: '', color: '' });
 
@@ -37,117 +39,128 @@ export const RefundDialog = ({ open, handleClose, refundInv, setSubmitted }) => 
     useEffect(() => {
         if (refundInv) {
             const {
-                Inv_Customer_Tin,
-                Inv_Number,
-                Inv_ext_Rate,
-                currency,
-                Inv_Calc_Type,
-                customerName,
+                CustomerTIN,
+                InvoiceNumber,
+                ExchangeRate,
+                Currency,
+                CalculationType,
+                CustomerName,
                 products,
-                remarks,
-                Inv_Sale_Type,
-                Inv_Discount_Type,
-                invDate,
+                Remarks,
+                SaleType,
+                DiscountType,
+                InvoiceDate,
             } = refundInv;
 
-            const dateObject = new Date(invDate);
+            const dateObject = new Date(InvoiceDate);
             const formattedDate = `${dateObject.getFullYear()}-${(dateObject.getMonth() + 1).toString().padStart(2, '0')}-${dateObject.getDate().toString().padStart(2, '0')}`;
 
             // Set header state
             setHeader((state) => ({
                 ...state,
-                currency: currency,
-                exchangeRate: Inv_ext_Rate,
-                invoiceNumber: Inv_Number,
+                currency: Currency,
+                exchangeRate: ExchangeRate,
+                invoiceNumber: InvoiceNumber,
                 totalLevy: "",
                 userName: getUserName(),
                 flag: "PARTIAL_REFUND",
-                calculationType: Inv_Calc_Type,
+                calculationType: CalculationType,
                 totalVat: "",
                 transactionDate: formattedDate,
                 totalAmount: "",
                 voucherAmount: "",
-                businessPartnerName: customerName,
-                businessPartnerTin: Inv_Customer_Tin,
-                saleType: Inv_Sale_Type,
-                discountType: Inv_Discount_Type,
+                businessPartnerName: CustomerName,
+                businessPartnerTin: CustomerTIN,
+                saleType: SaleType,
+                discountType: DiscountType,
                 discountAmount: "",
                 reference: generateRandomNumber(),
                 groupReferenceId: "",
                 purchaseOrderReference: "",
                 items: products,
-                invCusId: Inv_Customer_Tin,
-                remarks: remarks,
+                invCusId: CustomerTIN,
+                remarks: Remarks,
                 status: "PARTIAL_REFUND"
             }));
 
             // Set items state
             if (Array.isArray(products) && products.length > 0) {
-                setItemLists(products.map((e) => ({
-                    itemCode: e.id,
-                    itemCategory: e.category,
-                    expireDate: "",
-                    description: e.name,
-                    quantity: e.quantity,
-                    levyAmountA: "",
-                    levyAmountB: "",
-                    levyAmountC: "",
-                    levyAmountD: "",
-                    levyAmountE: "",
-                    discountAmount: e.discount,
-                    batchCode: "",
-                    unitPrice: e.price,
-                    itemSubtotal: "",
-                    totalVat: "",
-                    totalLevy: "",
-                    totalAmount: "",
-                    alt: "",
-                    refProQty: e.refundedQty,
-                })))
-
-                // set original state
-                setOriginalQuantities(
-                    products.reduce((acc, product) => {
-                        acc[product.id] = product.quantity;
-                        return acc;
-                    }, {})
-                );
+                const updatedItemLists = products.map((e) => {
+                    const originalQuantity = e.Quantity;
+                    setOriginalQuantities((prevQuantities) => ({
+                        ...prevQuantities,
+                        [e.itemCode]: originalQuantity,
+                    }));
+            
+                    setCurrentQuantities((prevQuantities) => ({
+                        ...prevQuantities,
+                        [e.itemCode]: originalQuantity,
+                    }));
+            
+                    return {
+                        itemCode: e.itemCode,
+                        itemCategory: e.ProductCategory,
+                        expireDate: "",
+                        description: e.ProductName,
+                        quantity: originalQuantity, // Set the original quantity
+                        levyAmountA: "",
+                        levyAmountB: "",
+                        levyAmountC: "",
+                        levyAmountD: "",
+                        levyAmountE: "",
+                        discountAmount: e.ProductDiscount,
+                        batchCode: "",
+                        unitPrice: e.ProductPrice,
+                        itemSubtotal: "",
+                        totalVat: "",
+                        totalLevy: "",
+                        totalAmount: "",
+                        alt: "",
+                        refProQty: e.RefundedQuantity,
+                    };
+                });
+            
+                setItemLists(updatedItemLists);
+            
             }
         }
     }, [refundInv]);
 
-    // hanlde quantity change
-    const handleQtyChange = (index, newValue) => {
-        setItemLists((prevItems) => {
-            const updatedItems = [...prevItems];
-            const originalQuantity = originalQuantities[updatedItems[index].itemCode];
-            const quantityRefunded = updatedItems[index].refProQty;
-            const remainingQuantity = originalQuantity - (quantityRefunded || 0);
-            const validatedQuantity = Math.max(0, Math.min(newValue, remainingQuantity));
-            if (remainingQuantity < 1) {
-                window.alert('All quantities refunded!');
-                handleClose();
-            }
-            else {
-                updatedItems[index] = {
-                    ...updatedItems[index],
-                    quantity: validatedQuantity,
-                };
-            }
-            return updatedItems;
-        });
+    // Update product Quantity
+    const updateQuantity = (itemCode, newQuantity) => {
+        const isValidQuantity = /^[+]?\d+([.]\d+)?$/.test(newQuantity);
+        const isQuantityValid = isValidQuantity && parseFloat(newQuantity) <= originalQuantities[itemCode];
+    
+        setCurrentQuantities((prevQuantities) => ({
+            ...prevQuantities,
+            [itemCode]: isQuantityValid ? newQuantity : prevQuantities[itemCode],
+        }));
+    
+        setItemLists((prevItemLists) =>
+            prevItemLists.map((item) =>
+                item.itemCode === itemCode
+                    ? { ...item, quantity: isQuantityValid ? newQuantity : item.quantity }
+                    : item
+            )
+        );
+        setQuantityErrors((prevErrors) => ({
+            ...prevErrors,
+            [itemCode]: !isQuantityValid,
+        }));
     };
-
+    
     // handle invoice item computations
     const submitInvoice = () => {
-        performComputations(itemLists, header, setHeader);
+        // performComputations(itemLists, header, setHeader);
+        computeFinalRefTaxes(itemLists, header, setHeader);
         handleClose();
         setConfirmationOpen(true);
     }
 
     const submitFullInvoice = () => {
         setHeader((state) => ({...state, flag: 'REFUND'}));
-        performComputations(itemLists, header, setHeader);
+        computeFinalRefTaxes(itemLists, header, setHeader);
+        // performComputations(itemLists, header, setHeader);
         handleClose();
         setConfirmationOpen(true);
     }
@@ -181,6 +194,8 @@ export const RefundDialog = ({ open, handleClose, refundInv, setSubmitted }) => 
             setOpen(true);
         }
     }
+
+    console.log('data',refundInv);
     
     return (
         <>
@@ -199,7 +214,7 @@ export const RefundDialog = ({ open, handleClose, refundInv, setSubmitted }) => 
                 </Grid>
                 <DialogContent>
                     {Array.isArray(itemLists) && itemLists.length > 0 ? (
-                        itemLists.map((item, index) =>
+                        itemLists.map((item) =>
                         (<>
                             <Grid container key={item.itemCode} spacing={1} marginBottom={2}>
                                 <Grid item xs={12}>
@@ -243,10 +258,12 @@ export const RefundDialog = ({ open, handleClose, refundInv, setSubmitted }) => 
                                         label='Refund Qty'
                                         type='number'
                                         name='quantity'
-                                        // value={item.quantity || 0}
+                                        value={currentQuantities[item.itemCode]}
                                         size='small'
                                         fullWidth={true}
-                                        onChange={(e) => handleQtyChange(index, e.target.value)}
+                                        error={quantityErrors[item.itemCode]}
+                                        helperText={quantityErrors[item.itemCode] ? 'Invalid quantity' : ''}
+                                        onChange={(e) => updateQuantity(item.itemCode, e.target.value)}
                                     />
                                 </Grid>
                             </Grid>
@@ -269,9 +286,5 @@ export const RefundDialog = ({ open, handleClose, refundInv, setSubmitted }) => 
         </>
     );
 };
-
-const RefundForms = {
-    RefundDialog,
-}
 
 export default RefundForms;

@@ -157,7 +157,6 @@ const twentyOne = async () => {
     return await executeQuery(sql);
 };
 
-
 // Retrieve the top 5 items with the highest total sales amount
 const twentyTwo = async () => {
     const sql = `
@@ -182,62 +181,66 @@ const twentyThree = async () => {
     return await executeQuery(sql);
 };
 
+// Not using more
 // Retrieve complete invoice from the DB
 const twentyFour = async () => {
     const sql = `
-    SELECT
-        invoice.Inv_Number AS InvoiceNumber,
-        invoice.Inv_user AS IssuerName,
-        usermanagement.Usr_type AS IssuerType,
-        usermanagement.Usr_dept AS IssuerDept,
-        suppliersncustomers.SnC_name AS CustomerName,
-        suppliersncustomers.SnC_tin AS CustomerTIN,
-        suppliersncustomers.SnC_status AS CustomerStatus,
-        suppliersncustomers.SnC_exempted AS CustomerExempted,
-        invoice.Inv_status AS InvoiceStatus,
-        invoice.Inv_Calc_Type AS CalculationType,
-        invoice.Inv_date AS InvoiceDate,
-        invoice.Inv_Sale_Type AS SaleType,
-        invoice.Inv_Type AS InvoiceType,
-        invoice.Inv_Reference AS Reference,
-        invoice.remarks AS Remarks,
-        invoice.currency AS Currency,
-        invoice.Inv_ext_Rate AS ExchangeRate,
-        invoice.Inv_Discount_Type AS DiscountType,
-        invoice.Inv_total_amt AS TotalAmount,
-        invoice.Inv_discount AS InvoiceDiscount,
-        invoice.Inv_vat AS VatAmount,
-        invoice.nhil AS NHIL,
-        invoice.getfund AS GETFund,
-        invoice.covid AS COVID,
-        invoice.cst AS CST,
-        invoice.tourism AS Tourism,
-        invoice.ysdcid AS YSDCID,
-        invoice.ysdcrecnum AS YSDCRecNum,
-        invoice.ysdcintdata AS YSDCIntData,
-        invoice.ysdcregsig AS YSDCRegSig,
-        invoice.ysdcmrc AS YSDCMRC,
-        invoice.ysdcmrctim AS YSDCMRCTime,
-        invoice.ysdctime AS YSDCTime,
-        invoice.qr_code AS QRCode,
-        invoice.Inv_delivery_fee AS DeliveryFee,
-        inventory.Itm_name AS ProductName,
-        inventory.Itm_taxable AS ProductCategory,
-        invoice_products.Product_Price AS ProductPrice,
-        invoice_products.Product_Discount AS ProductDiscount,
-        invoice_products.Product_Quantity AS Quantity,
-        invoice_products.Product_Refunded_Quantity AS RefundedQuantity
-    FROM
-        invoice
-    JOIN
-        usermanagement ON invoice.Inv_user = usermanagement.Usr_name
-    JOIN
-        suppliersncustomers ON invoice.Inv_Customer_Tin = suppliersncustomers.SnC_tin
-    LEFT JOIN
-        invoice_products ON invoice.Inv_Number = invoice_products.InvoiceNum_ID
-    LEFT JOIN
-        inventory ON invoice_products.Product_ID = inventory.Itm_id
-    ORDER BY
+//     SELECT
+//         invoice.Inv_Number AS InvoiceNumber,
+//         invoice.Inv_user AS IssuerName,
+//         usermanagement.Usr_type AS IssuerType,
+//         usermanagement.Usr_dept AS IssuerDept,
+//         suppliersncustomers.SnC_name AS CustomerName,
+//         suppliersncustomers.SnC_tin AS CustomerTIN,
+//         suppliersncustomers.SnC_status AS CustomerStatus,
+//         suppliersncustomers.SnC_exempted AS CustomerExempted,
+//         invoice.Inv_status AS InvoiceStatus,
+//         invoice.Inv_Calc_Type AS CalculationType,
+//         invoice.Inv_date AS InvoiceDate,
+//         invoice.Inv_Sale_Type AS SaleType,
+//         invoice.Inv_Type AS InvoiceType,
+//         invoice.Inv_Reference AS Reference,
+//         invoice.remarks AS Remarks,
+//         invoice.currency AS Currency,
+//         invoice.Inv_ext_Rate AS ExchangeRate,
+//         invoice.Inv_Discount_Type AS DiscountType,
+//         invoice.Inv_total_amt AS TotalAmount,
+//         invoice.Inv_discount AS InvoiceDiscount,
+//         invoice.Inv_vat AS VatAmount,
+//         invoice.nhil AS NHIL,
+//         invoice.getfund AS GETFund,
+//         invoice.covid AS COVID,
+//         invoice.cst AS CST,
+//         invoice.tourism AS Tourism,
+//         invoice.ysdcid AS YSDCID,
+//         invoice.ysdcrecnum AS YSDCRecNum,
+//         invoice.ysdcintdata AS YSDCIntData,
+//         invoice.ysdcregsig AS YSDCRegSig,
+//         invoice.ysdcmrc AS YSDCMRC,
+//         invoice.ysdcmrctim AS YSDCMRCTime,
+//         invoice.ysdctime AS YSDCTime,
+//         invoice.qr_code AS QRCode,
+//         invoice.Inv_delivery_fee AS DeliveryFee,
+//         inventory.Itm_id AS itemCode,
+//         inventory.Itm_name AS ProductName,
+//         inventory.Itm_taxable AS ProductCategory,
+//         invoice_products.Product_Price AS ProductPrice,
+//         invoice_products.Product_Discount AS ProductDiscount,
+//         invoice_products.Product_Quantity AS Quantity,
+//         invoice_products.Product_Refunded_Quantity AS RefundedQuantity
+//     FROM
+//         invoice
+//     JOIN
+//         usermanagement ON invoice.Inv_user = usermanagement.Usr_name
+//     JOIN
+//         suppliersncustomers ON invoice.Inv_Customer_Tin = suppliersncustomers.SnC_tin
+//     LEFT JOIN
+//         invoice_products ON invoice.Inv_Number = invoice_products.InvoiceNum_ID
+//     LEFT JOIN
+//         inventory ON invoice_products.Product_ID = inventory.Itm_id
+//     WHERE
+//         Inv_status IN ('INVOICE')
+//     ORDER BY
         invoice.Inv_date DESC`;
     return await executeQuery(sql);
 };
@@ -379,15 +382,67 @@ const thirtySix = async () => {
     return await executeQuery(sql);
 };
 
-// Retrieve the number of items sold and refunded for each product in the last month
-const thirtySeven = async () => {
+// Retrieve all refunded or sales invoices
+const thirtySeven = async (a, b) => {
     const sql = `
-    SELECT Product_ID, SUM(Product_Quantity) AS total_sold, SUM(Product_Refunded_Quantity) AS total_refunded
-    FROM invoice_products
-    WHERE InvoiceNum_ID IN (SELECT Inv_id FROM invoice WHERE Inv_date >= NOW() - INTERVAL 1 MONTH)
-    GROUP BY Product_ID;
-    `;
-    return await executeQuery(sql);
+    SELECT
+        invoice.Inv_Number AS InvoiceNumber,
+        invoice.Inv_user AS IssuerName,
+        usermanagement.Usr_type AS IssuerType,
+        usermanagement.Usr_dept AS IssuerDept,
+        suppliersncustomers.SnC_name AS CustomerName,
+        suppliersncustomers.SnC_tin AS CustomerTIN,
+        suppliersncustomers.SnC_status AS CustomerStatus,
+        suppliersncustomers.SnC_exempted AS CustomerExempted,
+        invoice.Inv_status AS InvoiceStatus,
+        invoice.Inv_Calc_Type AS CalculationType,
+        invoice.Inv_date AS InvoiceDate,
+        invoice.Inv_Sale_Type AS SaleType,
+        invoice.Inv_Type AS InvoiceType,
+        invoice.Inv_Reference AS Reference,
+        invoice.remarks AS Remarks,
+        invoice.currency AS Currency,
+        invoice.Inv_ext_Rate AS ExchangeRate,
+        invoice.Inv_Discount_Type AS DiscountType,
+        invoice.Inv_total_amt AS TotalAmount,
+        invoice.Inv_discount AS InvoiceDiscount,
+        invoice.Inv_vat AS VatAmount,
+        invoice.nhil AS NHIL,
+        invoice.getfund AS GETFund,
+        invoice.covid AS COVID,
+        invoice.cst AS CST,
+        invoice.tourism AS Tourism,
+        invoice.ysdcid AS YSDCID,
+        invoice.ysdcrecnum AS YSDCRecNum,
+        invoice.ysdcintdata AS YSDCIntData,
+        invoice.ysdcregsig AS YSDCRegSig,
+        invoice.ysdcmrc AS YSDCMRC,
+        invoice.ysdcmrctim AS YSDCMRCTime,
+        invoice.ysdctime AS YSDCTime,
+        invoice.qr_code AS QRCode,
+        invoice.Inv_delivery_fee AS DeliveryFee,
+        inventory.Itm_id AS itemCode,
+        inventory.Itm_name AS ProductName,
+        inventory.Itm_taxable AS ProductCategory,
+        invoice_products.Product_Price AS ProductPrice,
+        invoice_products.Product_Discount AS ProductDiscount,
+        invoice_products.Product_Quantity AS Quantity,
+        invoice_products.Product_Refunded_Quantity AS RefundedQuantity
+    FROM
+        invoice
+    JOIN
+        usermanagement ON invoice.Inv_user = usermanagement.Usr_name
+    JOIN
+        suppliersncustomers ON invoice.Inv_Customer_Tin = suppliersncustomers.SnC_tin
+    LEFT JOIN
+        invoice_products ON invoice.Inv_Number = invoice_products.InvoiceNum_ID
+    LEFT JOIN
+        inventory ON invoice_products.Product_ID = inventory.Itm_id
+    WHERE
+        Inv_status IN (?, ?)
+    ORDER BY
+        invoice.Inv_date DESC`;
+    return await executeQuery(sql, [a, b]);
 };
 
 // Retrieve the average number of items sold per month, grouped by the user's department
@@ -562,6 +617,7 @@ const fifty = async () => {
     `;
     return await executeQuery(sql);
 };
+
 // Retrieve the total sales amount and quantity of each product, grouped by the supplier's region
 const fiftyOne = async () => {
     const sql = `
