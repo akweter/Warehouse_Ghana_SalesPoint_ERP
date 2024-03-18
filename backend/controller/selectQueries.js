@@ -382,7 +382,7 @@ const thirtySix = async () => {
     return await executeQuery(sql);
 };
 
-// Retrieve all refunded or sales invoices
+// Retrieve all refunded or sales invoices 
 const thirtySeven = async (a, b) => {
     const sql = `
     SELECT
@@ -392,6 +392,7 @@ const thirtySeven = async (a, b) => {
         usermanagement.Usr_dept AS IssuerDept,
         suppliersncustomers.SnC_name AS CustomerName,
         suppliersncustomers.SnC_tin AS CustomerTIN,
+        suppliersncustomers.SnC_phone AS customerPhone,
         suppliersncustomers.SnC_status AS CustomerStatus,
         suppliersncustomers.SnC_exempted AS CustomerExempted,
         invoice.Inv_status AS InvoiceStatus,

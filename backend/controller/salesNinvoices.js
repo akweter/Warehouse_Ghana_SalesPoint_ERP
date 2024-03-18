@@ -137,11 +137,18 @@ const saveInInvoiceProduct = async (payload) => {
 	return await executeQuery(sql, payload);
 };
 
+// Update products refunded quantity
+const updateRefundProducts = async (payload) => {
+    const sql = "UPDATE invoice_products SET Product_Refunded_Quantity = Product_Refunded_Quantity + ? WHERE Product_ID = ? AND InvoiceNum_ID = ?";
+    return await executeQuery(sql, payload);
+}
+
 const allActions = {
 	oneInvoice,
 	Searches,
 	AddNewInvoices,
 	saveInInvoiceProduct,
+	updateRefundProducts,
 	purchaseInvoices,
 	tenInvoices,
 	allSalesInvNumbers,

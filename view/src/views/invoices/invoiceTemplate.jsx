@@ -96,7 +96,7 @@ const InvoiceTemplate = ({ data }) => {
 					{data.CST ?
 						(<>
 							<tr>
-								<td><strong>CST (5%)</strong></td>
+								<td><strong>Cst (5%)</strong></td>
 								<td>{data.Currency}: {data.CST}</td>
 							</tr>
 						</>) : null
@@ -110,11 +110,11 @@ const InvoiceTemplate = ({ data }) => {
 						</>) : null
 					}
 					<tr>
-						<td><strong>VAT (15%)</strong></td>
+						<td><strong>Vat (15%)</strong></td>
 						<td>{data.Currency}: {data.VatAmount}</td>
 					</tr>
 					<tr>
-						<td><strong>Total Amount</strong></td>
+						<td><strong>TOTAL</strong></td>
 						<td>{data.Currency}: {((data.TotalAmount) - (data.InvoiceDiscount))}</td>
 					</tr>
 					< br />
