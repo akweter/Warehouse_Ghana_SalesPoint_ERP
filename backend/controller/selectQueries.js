@@ -386,6 +386,7 @@ const thirtySix = async () => {
 const thirtySeven = async (a, b) => {
     const sql = `
     SELECT
+        invoice.Inv_ID_auto  AS AutoID,
         invoice.Inv_Number AS InvoiceNumber,
         invoice.Inv_user AS IssuerName,
         usermanagement.Usr_type AS IssuerType,

@@ -293,9 +293,6 @@ Router.post("/refund/cancellation", async (req, res) => {
                 const payload = [
                     null,
                     null,
-                    null,
-                    null,
-                    null,
                     userName,
                     totalAmount,
                     flag,
@@ -305,7 +302,6 @@ Router.post("/refund/cancellation", async (req, res) => {
                     null,
                     null,
                     invoiceNumber,
-                    null,
                     null,
                     null,
                     null,
@@ -332,7 +328,7 @@ Router.post("/refund/cancellation", async (req, res) => {
 
                 await saveRefundInvoice(payload)
                     .then(() => {
-                        logSuccessMessages(`${Data.userName} - performed refund cancellation on invoice: ${JSON.stringify(Data.invoiceNumber)}`)
+                        logSuccessMessages(`${userName} - ${flag} on reference ${reference} for invoice ${invoiceNumber}`);
                         return res.status(200).json({ status: 'success' });
                     })
                     .catch(() => {

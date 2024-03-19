@@ -14,7 +14,7 @@ import RefundForms from 'views/refund/refundForm';
 import InvoiceDetails from './invoiceDetails';
 import InvoiceTemplate from './invoiceTemplate';
 
-// /* eslint-disable */
+/* eslint-disable */
 
 export default function Invoice() {
     const [submitted, setSubmitted] = useState(false)

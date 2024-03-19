@@ -43,7 +43,7 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
             const formattedDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
             return formattedDate;
         }
-    }    
+    }  
 
     // update the header and item state
     useEffect(() => {
@@ -194,7 +194,6 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
             }, 1500);
         }
         catch (error) {
-            console.log('Network Error! Please refresh');
             setAlert((e) => ({ ...e, message: 'Refunding invoice failed!', color: 'warning' }));
             setOpen(true);
         }
@@ -268,6 +267,7 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
                                                 error={quantityErrors[item.itemCode]}
                                                 helperText={quantityErrors[item.itemCode] ? 'Invalid quantity' : ''}
                                                 onChange={(e) => updateQuantity(item.itemCode, e.target.value)}
+                                                disabled={ originalQuantities[item.itemCode] === item.refProQty ? true : false }
                                             />
                                         </Grid>
                                     </Grid>

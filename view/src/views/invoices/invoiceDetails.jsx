@@ -25,56 +25,56 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog }) => {
                             <TableHead>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Invoice #:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.InvoiceNumber}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.InvoiceNumber || 'Unavailable'}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Served By:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.IssuerName}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.IssuerName || 'Unavailable'}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Customer Name:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.CustomerName}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.CustomerName || 'Unavailable'}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Customer TIN:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.CustomerTIN}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.CustomerTIN || 'Unavailable'}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Transaction Date:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.InvoiceDate}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.InvoiceDate || 'Unavailable'}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Invoice Type:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.InvoiceType}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.InvoiceType || 'Unavailable'}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Invoice Status:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.InvoiceStatus}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.InvoiceStatus || 'Unavailable'}</TableCell>
                                 </TableRow>
                                 {
                                     selectedRow.DeliveryFee ? (
                                         <TableRow>
                                             <TableCell component="th" scope="row">Delivery</TableCell>
-                                            <TableCell component="td" scope="row">{selectedRow.DeliveryFee}</TableCell>
+                                            <TableCell component="td" scope="row">{selectedRow.DeliveryFee || 0}</TableCell>
                                         </TableRow>
-                                    ): null
+                                    ) : null
                                 }
                                 <TableRow>
                                     <TableCell component="th" scope="row">Discount:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.currency} {selectedRow.InvoiceDiscount}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.currency} {selectedRow.InvoiceDiscount || 0}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Total VAT:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.currency} {selectedRow.VatAmount}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.currency} {selectedRow.VatAmount || 0}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Total Levies:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.currency} {(selectedRow.Levies).toFixed(2)}
+                                    <TableCell component="td" scope="row">{selectedRow.currency} {(selectedRow.Levies || 0)}
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Total Amount:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.currency} {selectedRow.TotalAmount}</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.currency} {selectedRow.TotalAmount || 0}</TableCell>
                                 </TableRow>
                             </TableHead>
                         </Table>
@@ -97,12 +97,12 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog }) => {
                                 <TableBody>
                                     {selectedRow.products.map((product, index) => (
                                         <TableRow key={index}>
-                                            <TableCell>{index+1}</TableCell>
-                                            <TableCell>{product.ProductName}</TableCell>
-                                            <TableCell>{product.ProductPrice}</TableCell>
-                                            <TableCell>{product.Quantity}</TableCell>
-                                            <TableCell>{product.ProductDiscount}</TableCell>
-                                            <TableCell>{product.RefundedQuantity}</TableCell>
+                                            <TableCell>{index + 1}</TableCell>
+                                            <TableCell>{product.ProductName || 'Unavailable'}</TableCell>
+                                            <TableCell>{product.ProductPrice || 0}</TableCell>
+                                            <TableCell>{product.Quantity || 0}</TableCell>
+                                            <TableCell>{product.ProductDiscount || 0}</TableCell>
+                                            <TableCell>{product.RefundedQuantity || 0}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

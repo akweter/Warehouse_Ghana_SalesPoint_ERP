@@ -26,32 +26,37 @@ export const RefundCancellationForm = ({ open, handleClose, refData, setSubmitte
 
     // update the refundData and item state
     useEffect(() => {
-        if(refData !== undefined){
+        if(refData){
             const {
-                Inv_total_amt,
-                Inv_Number,
-                invDate,
-                Inv_user,
-                Inv_Reference,
+                TotalAmount,
+                InvoiceNumber,
+                InvoiceDate,
+                IssuerName,
+                Reference,
             } = refData;
 
-            const dateObject = new Date(invDate);
-            const formattedDate = `${dateObject.getFullYear()}-${(dateObject.getMonth() + 1).toString().padStart(2, '0')}-${dateObject.getDate().toString().padStart(2, '0')}`;
-            
             // Set refundData state
             setRefundData((state) => ({
                 ...state,
-                flag: "REFUND_CANCELATION",
-                invoiceNumber: Inv_Number,
-                reference: Inv_Reference,
-                totalAmount: Inv_total_amt,
-                transactionDate: formattedDate,
-                userName: Inv_user,
+                flag: 'REFUND_CANCELATION',
+                invoiceNumber: InvoiceNumber,
+                reference: Reference,
+                totalAmount: TotalAmount,
+                transactionDate: formatDate(InvoiceDate),
+                userName: IssuerName,
             }));
-            
         }
     }, [refData]);
 
+    // Set Date value according to GRA API standard
+    const formatDate = (date) => {
+        if (date) {
+            const parts = date.split('/');
+            const formattedDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+            return formattedDate;
+        }
+    } 
+    
     // close alert snackbar
     const closeAlert = () =>{
         setOpen(false);
@@ -78,7 +83,6 @@ export const RefundCancellationForm = ({ open, handleClose, refData, setSubmitte
                 }
             }
             catch (error) {
-                console.log('Network Error! Please refresh',error);
                 setDrop(false);
                 setAlert((e)=> ({...e, message: 'Invoice refund failed. Please refresh and try again', color: 'info'}));
                 setOpen(true);
