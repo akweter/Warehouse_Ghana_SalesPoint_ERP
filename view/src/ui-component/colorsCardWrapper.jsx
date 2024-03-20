@@ -195,3 +195,10 @@ export const BlackCardWrapperEffect = styled(MainCard)(({ theme }) => ({
     right: -130
   }
 }));
+
+export const CardWrapper = styled(MainCard)(({ theme }) => ({
+	backgroundColor: theme,
+	color: '#fff',
+	overflow: 'hidden',
+	position: 'relative',
+}));

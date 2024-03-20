@@ -443,7 +443,7 @@ const thirtySeven = async (a, b) => {
     WHERE
         Inv_status IN (?, ?)
     ORDER BY
-        invoice.Inv_date DESC`;
+        invoice.Inv_ID_auto DESC`;
     return await executeQuery(sql, [a, b]);
 };
 

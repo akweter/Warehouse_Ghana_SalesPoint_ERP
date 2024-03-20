@@ -150,11 +150,11 @@ const Dashboard = () => {
 			<Typography variant='h1' color={'#082295'} padding={'10px 0 0 10px'}>Dashboard</Typography>
 			<HomeDarkCard cancelRefunds={cancelRefunds} invoices={invoices} refunds={refunds} />
 
-			<Grid container display='flex' flexDirection='row' pt={2} spacing={2}>
-				<Grid item xs={3}><TotalCsutomersCard isLoading={isLoading} /></Grid>
-				<Grid item xs={3}><TotalTaxes isLoading={isLoading} levies={totalLevies} vats={totalVAT} /></Grid>
-				<Grid item xs={3}><TotalSalesCard isLoading={isLoading} customers={customers} products={products} /></Grid>
-				<Grid item xs={3}><TotalSuppliersCard isLoading={isLoading} foreign={fSuppliers.length} local={lSuppliers.length} /></Grid>
+			<Grid container spacing={2}>
+				<Grid item xs={12} sm={6} md={3}><TotalCsutomersCard isLoading={isLoading} /></Grid>
+				<Grid item xs={12} sm={6} md={3}><TotalTaxes isLoading={isLoading} levies={totalLevies} vats={totalVAT} /></Grid>
+				<Grid item xs={12} sm={6} md={3}><TotalSalesCard isLoading={isLoading} customers={customers} products={products} /></Grid>
+				<Grid item xs={12} sm={6} md={3}><TotalSuppliersCard isLoading={isLoading} foreign={fSuppliers.length} local={lSuppliers.length} /></Grid>
 			</Grid>
 			<Box
 				sx={{

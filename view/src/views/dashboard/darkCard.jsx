@@ -63,9 +63,10 @@ const HomeDarkCard = ({ isLoading, invoices, refunds, cancelRefunds, }) => {
                 <Box
                     sx={{
                         borderRadius: 2,
-                        bgcolor: 'background.default',
+                        bgcolor: '#F4FCFC',
                         display: 'grid',
                         flexDirection: 'row',
+                        gap: 2,
                         gridTemplateColumns: { md: '1.0fr 1.0fr 1.0fr 1.0fr  1.0fr' },
                     }}
                 >

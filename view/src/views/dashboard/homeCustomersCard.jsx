@@ -1,10 +1,19 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { styled, useTheme } from '@mui/material/styles';
-import { Avatar, Box, Grid, Menu, MenuItem, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import {
+	Avatar,
+	Box,
+	Grid,
+	Menu,
+	MenuItem,
+	Typography
+} from '@mui/material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { Analytics, CalendarMonth, Today } from '@mui/icons-material';
 import { CalendarIcon } from '@mui/x-date-pickers';
+
+/* eslint-disable */
 
 // Projects
 import MainCard from '../../ui-component/cards/MainCard';
@@ -16,13 +25,9 @@ import {
 	fetchAllYearSalesInvoices,
 } from 'apiActions/allApiCalls/invoice';
 import { formatCurrencyNumber } from 'utilities/formatAmount';
+import { CardWrapper } from 'ui-component/colorsCardWrapper';
 
-const CardWrapper = styled(MainCard)(({ theme }) => ({
-	backgroundColor: '#060905',
-	color: '#fff',
-	overflow: 'hidden',
-	position: 'relative',
-}));
+
 
 const TotalCustomersCard = ({ isLoading }) => {
 	const theme = useTheme();
@@ -56,22 +61,22 @@ const TotalCustomersCard = ({ isLoading }) => {
 					} else {
 						setInvoice([]);
 					}
-				break;
+					break;
 				case 'week':
 					const week = await fetchAllWeekSalesInvoices();
 					setInvoice(week);
 					setPeriod("This Week Transactions");
-				break;
+					break;
 				case 'month':
 					const month = await fetchAllMonthSalesInvoices();
 					setInvoice(month);
 					setPeriod("This Month Transactions");
-				break;
+					break;
 				case 'year':
 					const year = await fetchAllYearSalesInvoices();
 					setInvoice(year);
 					setPeriod("This Year transactions");
-				break;
+					break;
 			}
 		}
 		catch (error) {
@@ -88,7 +93,7 @@ const TotalCustomersCard = ({ isLoading }) => {
 			{isLoading ? (
 				<SkeletonEarningCard />
 			) : (
-				<CardWrapper border={false} content={false}>
+				<CardWrapper theme={'#2238A2'}>
 					<Box sx={{ p: 2, height: '200px', justifyContent: "space-between" }}>
 						<Grid container columnSpacing={2} direction="column">
 							<Grid item>
@@ -139,8 +144,8 @@ const TotalCustomersCard = ({ isLoading }) => {
 							<Grid item>
 								<Grid container alignItems="center" justifyContent='center' justifyItems='center' flexDirection='column'>
 									<Grid item>
-										<Typography 
-											sx={{ 
+										<Typography
+											sx={{
 												color: 'gold',
 												padding: 2,
 												fontSize: '23px',
@@ -154,7 +159,7 @@ const TotalCustomersCard = ({ isLoading }) => {
 									</Grid>
 									<Grid item>
 										<Typography
-											sx={{ 
+											sx={{
 												color: 'lightpink',
 												fontSize: '18px',
 												textAlign: 'center',
@@ -165,7 +170,7 @@ const TotalCustomersCard = ({ isLoading }) => {
 								</Grid>
 							</Grid>
 						</Grid>
-						<Typography sx={{bottom: 0, textAlign: 'center' }}>{period}</Typography>
+						<Typography sx={{ bottom: 0, textAlign: 'center' }}>{period}</Typography>
 					</Box>
 				</CardWrapper>
 			)}

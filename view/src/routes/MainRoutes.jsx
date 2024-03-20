@@ -2,7 +2,6 @@ import { lazy } from 'react';
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
 import ProtectedRoute from 'auth/protectedRoute';
-import NullPage from 'views/pages/nullPage';
 import WoocommerceApi from 'woocommerce';
 
 // Oll projects
@@ -38,15 +37,6 @@ const MainRoutes = {
     {
       path: '/',
       element: <ProtectedRoute><DashboardDefault /></ProtectedRoute>
-    },
-    {
-      path: '',
-      children: [
-        {
-          path: '*',
-          element: <ProtectedRoute><NullPage /></ProtectedRoute>,
-        }
-      ]
     },
     {
       path: 'account',

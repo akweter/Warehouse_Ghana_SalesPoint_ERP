@@ -193,7 +193,7 @@ Router.post("/invoice", async (req, res) => {
     // logSuccessMessages(JSON.stringify(sanitizedPayload));
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, { headers: { 'security_key': GRA_KEY } });
-        if (response.status === 200) {
+        if (response && response.status === 200) {
             const resultMessage = response.data.response.status;
             if (resultMessage) {
                 await saveInvoiceToDB(Data, sanitizedPayload, response.data)
@@ -206,7 +206,7 @@ Router.post("/invoice", async (req, res) => {
             }
             else {
                 logErrorMessages(`Unknow GRA error for invoice ${sanitizedPayload}`);
-                return res.json({ status: 'error', message: 'GRA response indicates unknown error' });
+                return res.json({ status: 'error', message: 'Request GRA response indicates unknown error' });
             }
         }
     }
@@ -240,7 +240,7 @@ Router.post("/refund", async (req, res) => {
     // logSuccessMessages(JSON.stringify(sanitizedPayload));
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, { headers: { 'security_key': GRA_KEY } });
-        if (response.status === 200) {
+        if (response && response.status === 200) {
             const resultMessage = response.data.response.status;
             if (resultMessage) {
                 await saveInvoiceToDB(Data, sanitizedPayload, response.data)
@@ -286,7 +286,7 @@ Router.post("/refund/cancellation", async (req, res) => {
     }
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/cancellation`, Data, { headers: { 'security_key': GRA_KEY } });
-        if (response.status === 200) {
+        if (response && response.status === 200) {
             const resultMessage = response.data.response.status;
             if (resultMessage) {
                 const { invoiceNumber, reference, userName, flag, transactionDate, totalAmount } = Data;
