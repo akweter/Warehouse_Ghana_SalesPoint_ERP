@@ -12,7 +12,7 @@ const ThisMonthTaxes = {
     dataLabels: {
       enabled: false
     },
-    colors: ['#fff'],
+    colors: ['#700BAE'],
     fill: {
       type: 'solid',
       opacity: 1

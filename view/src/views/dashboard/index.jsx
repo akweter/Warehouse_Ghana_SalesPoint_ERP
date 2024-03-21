@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Grid, Typography, Box } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 
 // project imports
 import TotalSalesCard from './homeSalesReportCard';
@@ -144,37 +144,31 @@ const Dashboard = () => {
 		setLoading(false);
 	}, [invoices, isLoading]);
 
-
 	return (
 		<ThemeProvider theme={Screens.lightTheme}>
-			<Typography variant='h1' color={'#082295'} padding={'10px 0 0 10px'}>Dashboard</Typography>
-			<HomeDarkCard cancelRefunds={cancelRefunds} invoices={invoices} refunds={refunds} />
-
-			<Grid container spacing={2}>
-				<Grid item xs={12} sm={6} md={3}><TotalCsutomersCard isLoading={isLoading} /></Grid>
-				<Grid item xs={12} sm={6} md={3}><TotalTaxes isLoading={isLoading} levies={totalLevies} vats={totalVAT} /></Grid>
-				<Grid item xs={12} sm={6} md={3}><TotalSalesCard isLoading={isLoading} customers={customers} products={products} /></Grid>
-				<Grid item xs={12} sm={6} md={3}><TotalSuppliersCard isLoading={isLoading} foreign={fSuppliers.length} local={lSuppliers.length} /></Grid>
-			</Grid>
-			<Box
-				sx={{
-					borderRadius: 2,
-					bgcolor: 'background.default',
-					display: 'grid',
-					flexDirection: 'row',
-					gridTemplateColumns: { md: '2.2fr 0.8fr' },
-				}}
-			>
-				<Grid container spacing={2}>
-					<Grid item xs={12}><HomeRecentOrders isLoading={isLoading} /></Grid>
+			<Grid container>
+				<Grid container marginBottom={3}>
+					<HomeDarkCard cancelRefunds={cancelRefunds} invoices={invoices} refunds={refunds} />
 				</Grid>
-				<Grid container spacing={2} padding={2}>
-					<Grid item xs={12}>
+
+				<Grid container spacing={3} marginBottom={3}>
+					<Grid item xs={12} sm={6} md={3}><TotalCsutomersCard isLoading={isLoading} /></Grid>
+					<Grid item xs={12} sm={6} md={3}><TotalTaxes isLoading={isLoading} levies={totalLevies} vats={totalVAT} /></Grid>
+					<Grid item xs={12} sm={6} md={3}><TotalSalesCard isLoading={isLoading} customers={customers} products={products} /></Grid>
+					<Grid item xs={12} sm={6} md={3}><TotalSuppliersCard isLoading={isLoading} foreign={fSuppliers.length} local={lSuppliers.length} /></Grid>
+				</Grid>
+				<Grid container marginBottom={3}>
+					<Grid item xs={12} sm={10} md={8}>
+						<HomeRecentOrders isLoading={isLoading} />
+					</Grid>
+					
+					<Grid item xs={12} sm={6} md={4}>
 						<Typography variant='h3' color='#082295'>Sidebar</Typography>
 					</Grid>
 				</Grid>
-			</Box>
-			<h1>Continued...</h1>
+					
+				<h1>Continued...</h1>
+			</Grid>
 		</ThemeProvider>
 	);
 };

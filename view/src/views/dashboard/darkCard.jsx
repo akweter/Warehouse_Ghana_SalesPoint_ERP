@@ -1,7 +1,7 @@
 import React, {  } from 'react';
 import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material/styles';
-import { Avatar, Box, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
+import { Avatar, Box, Grid, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 import TotalIncomeCard from '../../ui-component/cards/Skeleton/TotalIncomeCard';
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
 import {
@@ -60,83 +60,84 @@ const HomeDarkCard = ({ isLoading, invoices, refunds, cancelRefunds, }) => {
             {isLoading ? (
                 <TotalIncomeCard />
             ) : (
-                <Box
-                    sx={{
-                        borderRadius: 2,
-                        bgcolor: '#F4FCFC',
-                        display: 'grid',
-                        flexDirection: 'row',
-                        gap: 2,
-                        gridTemplateColumns: { md: '1.0fr 1.0fr 1.0fr 1.0fr  1.0fr' },
-                    }}
-                >
-                    <OrangeCardWrapperEffect border={false} content={false}>
-                        <Box sx={{ p: 1 }}>
-                            <List sx={{ py: 0 }}>
-                                <CustomListItem
-                                    avatarBackgroundColor={theme.palette.background.default}
-                                    avatarIcon={<LocalOfferOutlinedIcon fontSize="small" />}
-                                    primaryText={`# ${invoices.length}`}
-                                    secondaryText="Invoices Count"
-                                />
-                            </List>
-                        </Box>
-                    </OrangeCardWrapperEffect>
-                    <YellowCardWrapperEffect border={false} content={false}>
-                        <Box sx={{ p: 1 }}>
-                            <List sx={{ py: 0 }}>
-                                <CustomListItem
-                                    avatarBackgroundColor={theme.palette.background.default}
-                                    avatarIcon={< Discount />}
-                                    primaryText={`¢${formatCurrencyNumber(invoices.reduce((e, invoice) => {
-                                        return e + parseFloat(invoice.Inv_discount);
-                                    }, 0).toFixed(2))}`}
-                                    secondaryText="Today's Discounts"
-                                />
-                            </List>
-                        </Box>
-                    </YellowCardWrapperEffect>
-                    <BlueCardWrapperEffect border={false} content={false}>
-                        <Box sx={{ p: 1 }}>
-                            <List sx={{ py: 0 }}>
-                                <CustomListItem
-                                    avatarBackgroundColor={theme.palette.background.default}
-                                    avatarIcon={< IconReportMoney />}
-                                    primaryText={`# ${refunds.length}`}
-                                    secondaryText="Refunds Count"
-                                />
-                            </List>
-                        </Box>
-                    </BlueCardWrapperEffect>
-                    <BlackCardWrapperEffect border={false} content={false}>
-                        <Box sx={{ p: 1 }}>
-                            <List sx={{ py: 0 }}>
-                                <CustomListItem
-                                    avatarBackgroundColor={theme.palette.background.default}
-                                    avatarIcon={< IconReceiptRefund />}
-                                    primaryText={`¢${formatCurrencyNumber(refunds.reduce((e, invoice) => {
-                                        return e + parseFloat(invoice.Inv_total_amt);
-                                    }, 0).toFixed(2))}`}
-                                    secondaryText="Today Refunds "
-                                />
-                            </List>
-                        </Box>
-                    </BlackCardWrapperEffect>
-                    <GreenCardWrapperEffect border={false} content={false}>
-                        <Box sx={{ p: 1 }}>
-                            <List sx={{ py: 0 }}>
-                                <CustomListItem
-                                    avatarBackgroundColor={theme.palette.background.default}
-                                    avatarIcon={< Cancel color='error'/>}
-                                    primaryText={`¢${formatCurrencyNumber(cancelRefunds.reduce((e, invoice) => {
-                                        return e + parseFloat(invoice.Inv_total_amt);
-                                    }, 0).toFixed(2))}`}
-                                    secondaryText="Cancelled Refunds"
-                                />
-                            </List>
-                        </Box>
-                    </GreenCardWrapperEffect>
-                </Box>
+                <Grid container spacing={1}>
+                    <Grid item sx={6} sm={4} md={2}>
+                        <OrangeCardWrapperEffect border={false} content={false}>
+                            <Box sx={{ p: 1 }}>
+                                <List sx={{ py: 0 }}>
+                                    <CustomListItem
+                                        avatarBackgroundColor={theme.palette.background.default}
+                                        avatarIcon={<LocalOfferOutlinedIcon fontSize="small" />}
+                                        primaryText={`# ${invoices.length}`}
+                                        secondaryText="Invoices"
+                                    />
+                                </List>
+                            </Box>
+                        </OrangeCardWrapperEffect>
+                    </Grid>
+                    <Grid item sx={6} sm={4} md={2.5}>
+                        <YellowCardWrapperEffect border={false} content={false}>
+                            <Box sx={{ p: 1 }}>
+                                <List sx={{ py: 0 }}>
+                                    <CustomListItem
+                                        avatarBackgroundColor={theme.palette.background.default}
+                                        avatarIcon={< Discount />}
+                                        primaryText={`¢${formatCurrencyNumber(invoices.reduce((e, invoice) => {
+                                            return e + parseFloat(invoice.Inv_discount);
+                                        }, 0).toFixed(2))}`}
+                                        secondaryText="Today's Discounts"
+                                    />
+                                </List>
+                            </Box>
+                        </YellowCardWrapperEffect>
+                    </Grid>
+                    <Grid item sx={6} sm={4} md={2.5}>
+                        <BlueCardWrapperEffect border={false} content={false}>
+                            <Box sx={{ p: 1 }}>
+                                <List sx={{ py: 0 }}>
+                                    <CustomListItem
+                                        avatarBackgroundColor={theme.palette.background.default}
+                                        avatarIcon={< IconReportMoney />}
+                                        primaryText={`# ${refunds.length}`}
+                                        secondaryText="Refunds Count"
+                                    />
+                                </List>
+                            </Box>
+                        </BlueCardWrapperEffect>
+                    </Grid>
+                    <Grid item sx={6} sm={4} md={2.5}>
+                        <BlackCardWrapperEffect border={false} content={false}>
+                            <Box sx={{ p: 1 }}>
+                                <List sx={{ py: 0 }}>
+                                    <CustomListItem
+                                        avatarBackgroundColor={theme.palette.background.default}
+                                        avatarIcon={< IconReceiptRefund />}
+                                        primaryText={`¢${formatCurrencyNumber(refunds.reduce((e, invoice) => {
+                                            return e + parseFloat(invoice.Inv_total_amt);
+                                        }, 0).toFixed(2))}`}
+                                        secondaryText="Today Refunds "
+                                    />
+                                </List>
+                            </Box>
+                        </BlackCardWrapperEffect>
+                    </Grid>
+                    <Grid item sx={6} sm={4} md={2.5}>
+                        <GreenCardWrapperEffect border={false} content={false}>
+                            <Box sx={{ p: 1 }}>
+                                <List sx={{ py: 0 }}>
+                                    <CustomListItem
+                                        avatarBackgroundColor={theme.palette.background.default}
+                                        avatarIcon={< Cancel color='error'/>}
+                                        primaryText={`¢${formatCurrencyNumber(cancelRefunds.reduce((e, invoice) => {
+                                            return e + parseFloat(invoice.Inv_total_amt);
+                                        }, 0).toFixed(2))}`}
+                                        secondaryText="Cancelled Refunds"
+                                    />
+                                </List>
+                            </Box>
+                        </GreenCardWrapperEffect>
+                    </Grid>
+                </Grid>
             )}
         </>
     );

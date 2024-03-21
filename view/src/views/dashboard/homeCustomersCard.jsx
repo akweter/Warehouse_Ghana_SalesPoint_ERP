@@ -5,6 +5,7 @@ import {
 	Avatar,
 	Box,
 	Grid,
+	List,
 	Menu,
 	MenuItem,
 	Typography
@@ -12,11 +13,11 @@ import {
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { Analytics, CalendarMonth, Today } from '@mui/icons-material';
 import { CalendarIcon } from '@mui/x-date-pickers';
+import sales from '../../assets/images/icons/sales.png'
 
 /* eslint-disable */
 
 // Projects
-import MainCard from '../../ui-component/cards/MainCard';
 import SkeletonEarningCard from '../../ui-component/cards/Skeleton/EarningCard';
 import {
 	fetchAllMonthSalesInvoices,
@@ -25,7 +26,7 @@ import {
 	fetchAllYearSalesInvoices,
 } from 'apiActions/allApiCalls/invoice';
 import { formatCurrencyNumber } from 'utilities/formatAmount';
-import { CardWrapper } from 'ui-component/colorsCardWrapper';
+import { CardWrapper, CustomLLogo } from 'ui-component/colorsCardWrapper';
 
 
 
@@ -94,84 +95,90 @@ const TotalCustomersCard = ({ isLoading }) => {
 				<SkeletonEarningCard />
 			) : (
 				<CardWrapper theme={'#2238A2'}>
-					<Box sx={{ p: 2, height: '200px', justifyContent: "space-between" }}>
-						<Grid container columnSpacing={2} direction="column">
-							<Grid item>
-								<Grid container justifyContent="space-between">
-									<Grid item>
-										<Typography variant="h3" color="white" align="center" mt={1} gutterBottom>Sales</Typography>
-									</Grid>
-									<Grid item>
-										<Avatar
-											variant="rounded"
-											sx={{
-												...theme.typography.commonAvatar,
-												...theme.typography.mediumAvatar,
-												backgroundColor: theme.palette.secondary.dark,
-												color: theme.palette.secondary[200],
-												zIndex: 1
-											}}
-											onClick={handleClick}
-										>
-											<MoreHorizIcon fontSize="inherit" />
-										</Avatar>
-										<Menu
-											id="menu-earning-card"
-											anchorEl={anchorEl}
-											keepMounted
-											open={Boolean(anchorEl)}
-											onClose={handleClose}
-											variant="selectedMenu"
-											anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-											transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-										>
-											<MenuItem onClick={() => handleMenuItemClick('today')}>
-												<Today sx={{ mr: 1.75 }} /> Today
-											</MenuItem>
-											<MenuItem onClick={() => handleMenuItemClick('week')}>
-												<CalendarIcon sx={{ mr: 1.75 }} /> This Week
-											</MenuItem>
-											<MenuItem onClick={() => handleMenuItemClick('month')}>
-												<CalendarMonth sx={{ mr: 1.75 }} /> This Month
-											</MenuItem>
-											<MenuItem onClick={() => handleMenuItemClick('year')}>
-												<Analytics sx={{ mr: 1.75 }} /> This Year
-											</MenuItem>
-										</Menu>
-									</Grid>
+					<Grid container columnSpacing={0} direction="column" borderLeft={1}>
+						<Grid item>
+							<Grid container justifyContent="space-between">
+								<Grid item>
+									<Box sx={{ p: 1 }}>	
+										<List sx={{ py: 0 }}>
+											<CustomLLogo
+												border={0}
+												avatarIcon={sales}
+											/>
+										</List>
+									</Box>
 								</Grid>
-							</Grid>
-							<Grid item>
-								<Grid container alignItems="center" justifyContent='center' justifyItems='center' flexDirection='column'>
-									<Grid item>
-										<Typography
-											sx={{
-												color: 'gold',
-												padding: 2,
-												fontSize: '23px',
-												textAlign: 'center',
-											}}
-										>
-											¢{formatCurrencyNumber(invoice.reduce((e, invoice) => {
-												return e + parseFloat(invoice.Inv_total_amt);
-											}, 0))}
-										</Typography>
-									</Grid>
-									<Grid item>
-										<Typography
-											sx={{
-												color: 'lightpink',
-												fontSize: '18px',
-												textAlign: 'center',
-												paddingBottom: 3,
-											}}
-										>{`[ `}{invoice.length}{` ]`}</Typography>
-									</Grid>
+								<Grid item>
+									<Typography variant="h3" color="#7008AF" align="center">Sales</Typography>
+								</Grid>
+								<Grid item>
+									<Avatar
+										variant="rounded"
+										sx={{
+											...theme.typography.commonAvatar,
+											...theme.typography.mediumAvatar,
+											backgroundColor: theme.palette.secondary.dark,
+											color: theme.palette.secondary[200],
+											zIndex: 1
+										}}
+										onClick={handleClick}
+									>
+										<MoreHorizIcon fontSize="inherit" />
+									</Avatar>
+									<Menu
+										id="menu-earning-card"
+										anchorEl={anchorEl}
+										keepMounted
+										open={Boolean(anchorEl)}
+										onClose={handleClose}
+										variant="selectedMenu"
+										anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+										transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+									>
+										<MenuItem onClick={() => handleMenuItemClick('today')}>
+											<Today sx={{ mr: 1.75 }} /> Today
+										</MenuItem>
+										<MenuItem onClick={() => handleMenuItemClick('week')}>
+											<CalendarIcon sx={{ mr: 1.75 }} /> This Week
+										</MenuItem>
+										<MenuItem onClick={() => handleMenuItemClick('month')}>
+											<CalendarMonth sx={{ mr: 1.75 }} /> This Month
+										</MenuItem>
+										<MenuItem onClick={() => handleMenuItemClick('year')}>
+											<Analytics sx={{ mr: 1.75 }} /> This Year
+										</MenuItem>
+									</Menu>
 								</Grid>
 							</Grid>
 						</Grid>
-						<Typography sx={{ bottom: 0, textAlign: 'center' }}>{period}</Typography>
-					</Box>
+						<Grid item>
+							<Grid container alignItems="center" justifyContent='center' justifyItems='center' flexDirection='column'>
+								<Grid item>
+									<Typography
+										sx={{
+											color: 'gold',
+											fontSize: '23px',
+											textAlign: 'center',
+										}}
+									>
+										¢{formatCurrencyNumber(invoice.reduce((e, invoice) => {
+											return e + parseFloat(invoice.Inv_total_amt);
+										}, 0))}
+									</Typography>
+								</Grid>
+								<Grid item>
+									<Typography
+										sx={{
+											color: '#7008AF',
+											fontSize: '18px',
+											textAlign: 'center',
+										}}
+									>[ {invoice.length} ]</Typography>
+								</Grid>
+							</Grid>
+						</Grid>
+					</Grid>
+					<Typography sx={{ bottom: 0, textAlign: 'center' }}>{period}</Typography>
 				</CardWrapper>
 			)}
 		</>
