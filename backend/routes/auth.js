@@ -117,7 +117,7 @@ Auth.post("/login", async (req, res) => {
 		const payload = [email, email];
 		try {
 			const output = await loginUser(payload);
-			// const ipInfo = await Myip();
+			const ipInfo = await Myip();
 
 			if (output.length > 0) {
 				output.map((e) => {
@@ -142,7 +142,7 @@ Auth.post("/login", async (req, res) => {
 						.then((result) => {
 							if (result === true) {
 								if (status === 'yes') {
-									// logMessage(`${userEmail} login succussful with ip ${ipInfo.ip}`);
+									logMessage(`${userEmail} login succussful with ip ${ipInfo.ip}`);
 
 									res.setHeader('Access-Control-Allow-Origin', `${origin}`);
 									res.setHeader('Content-Type', 'application/json');

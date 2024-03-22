@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { Button, Grid, Typography } from '@mui/material';
+import { Box, Button, Grid, List, Typography } from '@mui/material';
 import Chart from 'react-apexcharts';
+import graph from '../../assets/images/icons/graph.png'
 
 // project imports
 import SkeletonTotalOrderCard from '../../ui-component/cards/Skeleton/EarningCard';
 import ThisMonthTaxes from './chart-data/thisMonthlyTaxes';
 import ChartDataYear from './chart-data/total-order-year-line-chart';
-import { CardWrapper } from 'ui-component/colorsCardWrapper';
+import { CardWrapper, CustomLLogo } from 'ui-component/colorsCardWrapper';
 
 const TotalTaxes = ({ isLoading, vats, levies }) => {
 	const [timeValue, setTimeValue] = useState(false);
@@ -22,11 +23,18 @@ const TotalTaxes = ({ isLoading, vats, levies }) => {
 				<SkeletonTotalOrderCard />
 			) : (
 				<CardWrapper theme={'#040452'}>
-					<Grid container direction="column" borderBottom={2}>
+					<Grid container direction="column" borderBottom='3px dashed gold'>
 						<Grid item>
 							<Grid container justifyContent="space-between">
 								<Grid item>
-									<Typography variant="h3" color="white" align="center" mt={1} gutterBottom>Taxes</Typography>
+									<Box>
+										<List>
+											<CustomLLogo
+												border={0}
+												avatarIcon={graph}
+											/>
+										</List>
+									</Box>
 								</Grid>
 								<Grid item>
 									<Button
@@ -50,12 +58,9 @@ const TotalTaxes = ({ isLoading, vats, levies }) => {
 								</Grid>
 							</Grid>
 						</Grid>
-						<Grid item>
+						<Grid item marginTop={-2}>
 							<Grid container alignItems="center">
 								<Grid item xs={6}>
-									<Grid container display='unset'>
-										Here
-									</Grid>
 									<Grid container alignItems="center">
 										<Grid item>
 											{timeValue ? (

@@ -29,7 +29,6 @@ import { formatCurrencyNumber } from 'utilities/formatAmount';
 import { CardWrapper, CustomLLogo } from 'ui-component/colorsCardWrapper';
 
 
-
 const TotalCustomersCard = ({ isLoading }) => {
 	const theme = useTheme();
 
@@ -95,7 +94,7 @@ const TotalCustomersCard = ({ isLoading }) => {
 				<SkeletonEarningCard />
 			) : (
 				<CardWrapper theme={'#2238A2'}>
-					<Grid container columnSpacing={0} direction="column" borderLeft={1}>
+					<Grid container columnSpacing={0} direction="column" borderLeft='3px dashed gold'>
 						<Grid item>
 							<Grid container justifyContent="space-between">
 								<Grid item>
@@ -151,7 +150,7 @@ const TotalCustomersCard = ({ isLoading }) => {
 								</Grid>
 							</Grid>
 						</Grid>
-						<Grid item>
+						<Grid item marginTop={-2}>
 							<Grid container alignItems="center" justifyContent='center' justifyItems='center' flexDirection='column'>
 								<Grid item>
 									<Typography

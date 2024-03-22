@@ -2,7 +2,7 @@
 
 const chartData = {
   type: 'line',
-  height: 90,
+  // height: 90,
   options: {
     chart: {
       sparkline: {

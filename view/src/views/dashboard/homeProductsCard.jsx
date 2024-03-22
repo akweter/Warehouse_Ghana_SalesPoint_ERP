@@ -18,12 +18,12 @@ const TotalSuppliersCard = ({ isLoading, foreign, local }) => {
 			{isLoading ? (
 				<SkeletonTotalOrderCard />
 			) : (
-				<CardWrapper theme={'#097305'}>
+				<CardWrapper theme={'#2238A2'}>
 					<Grid container direction="column">
 						<Grid item>
 							<Grid container justifyContent="space-between">
 								<Grid item>
-									<Typography variant="h3" color="white" align="center" mt={1} gutterBottom>Suppliers</Typography>
+									<Typography variant="h3" align="center" mt={1} gutterBottom>Suppliers</Typography>
 								</Grid>
 								<Grid item>
 									<Button

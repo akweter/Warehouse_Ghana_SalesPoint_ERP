@@ -1,7 +1,14 @@
 import PropTypes from 'prop-types';
-import { Grid, Typography } from '@mui/material';
+import { 
+	Box, 
+	Grid, 
+	List, 
+	Typography,
+} from '@mui/material';
 import SkeletonEarningCard from '../../ui-component/cards/Skeleton/EarningCard';
-import { CardWrapper } from 'ui-component/colorsCardWrapper';
+import { CardWrapper, CustomLLogo } from 'ui-component/colorsCardWrapper';
+import product from '../../assets/images/icons/product.png';
+import customer from '../../assets/images/icons/customers.png'
 
 const TotalSalesCard = ({ isLoading, customers, products }) => {
 	return (
@@ -9,15 +16,43 @@ const TotalSalesCard = ({ isLoading, customers, products }) => {
 			{isLoading ? (
 				<SkeletonEarningCard />
 			) : (
-				<CardWrapper theme={'#771404'}>
-					<Grid container spacing={3} textAlign='center' flexDirection='column-reverse'>
-						<Grid item gap={2}>
-							<Typography sx={{ fontWeight: 250 }} variant='h3' color='white'>Customers</Typography>
-							<Typography sx={{ fontWeight: 300 }} variant='h3' color='white'>[ {customers.length} ]</Typography>
+				<CardWrapper theme={'#2238A2'}>
+					<Grid container textAlign='center' flexDirection='column-reverse'>
+						<Grid item>
+							<Grid container>
+								<Grid item>
+									<Box sx={{ p: 1 }}>	
+										<List sx={{ py: 0 }}>
+											<CustomLLogo
+												border={0}
+												avatarIcon={customer}
+											/>
+										</List>
+									</Box>
+								</Grid>
+								<Grid item>
+									<Typography sx={{ fontWeight: 250 }} variant='h3'>Customers</Typography>
+									<Typography sx={{ fontWeight: 300 }} variant='h3'>[ {customers.length} ]</Typography>
+								</Grid>
+							</Grid>
 						</Grid>
-						<Grid item gap={2}>
-							<Typography sx={{ fontWeight: 250 }} variant='h3' color='white'>Products</Typography>
-							<Typography sx={{ fontWeight: 300 }} variant='h3' color='white'>[ {products.length} ]</Typography>
+						<Grid item borderTop='3px dashed gold'>
+							<Grid container>
+								<Grid item>
+									<Box sx={{ p: 1 }}>	
+										<List sx={{ py: 0 }}>
+											<CustomLLogo
+												border={0}
+												avatarIcon={product}
+											/>
+										</List>
+									</Box>
+								</Grid>
+								<Grid item>
+									<Typography sx={{ fontWeight: 250 }} variant='h3'>Products</Typography>
+									<Typography sx={{ fontWeight: 300 }} variant='h3'>[ {products.length} ]</Typography>
+								</Grid>
+							</Grid>
 						</Grid>
 					</Grid>
 				</CardWrapper>
