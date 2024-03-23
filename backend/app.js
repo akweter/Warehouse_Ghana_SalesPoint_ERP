@@ -24,7 +24,7 @@ const Inventory = require('./routes/inventory');
 const SalesNInvoices = require('./routes/salesNinvoices');
 const Refunds = require('./routes/refund');
 const GRAPayload = require('./routes/sendGRAPayload');
-const Test = require('./routes/test');
+const Company = require('./routes/company');
 const Forbidden = require('./auth/globalHeaderToken');
 
 const corsOriginSetup = {
@@ -82,7 +82,7 @@ server.use('/products', Inventory);
 server.use('/invoices', SalesNInvoices);
 server.use('/refunds', Refunds);
 server.use('/gra', GRAPayload);
-server.use('/test', Test);
+server.use('/company', Company);
 
 server.use((req, res, next) => { next(createError(404)); });
 

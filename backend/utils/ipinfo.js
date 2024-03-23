@@ -8,10 +8,8 @@ const { IP_INFO } = process.env;
 async function GetMyIpInfo() {
   try {
     const response = await axios.get(`https://ipinfo.io?token=${IP_INFO}`);
-    const newData = response.data;
-    return newData;
+    return await response.data;
   } catch (err) {
-    logErrorMessages(`Error making a log with ip: ${JSON.stringify(err)}`);
     return null;
   }
 }

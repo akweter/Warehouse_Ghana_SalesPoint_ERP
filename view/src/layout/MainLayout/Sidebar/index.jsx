@@ -33,7 +33,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
           <MenuList />
           {/* <MenuCard /> */}
           <Stack direction="row" justifyContent="center" sx={{ mb: 2 }}>
-            <Chip label="Warehouse Ghana" disabled chipcolor="primary" style={{fontWeight: 600, fontSize: "20px", color: "darkblue" }} sx={{ cursor: 'pointer' }} />
+            <Chip label="Warehouse Ghana" disabled chipcolor="primary" style={{ fontWeight: 600, fontSize: "20px", color: "darkblue" }} sx={{ cursor: 'pointer' }} />
           </Stack>
         </PerfectScrollbar>
       </BrowserView>
