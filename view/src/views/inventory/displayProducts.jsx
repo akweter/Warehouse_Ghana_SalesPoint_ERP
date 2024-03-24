@@ -21,23 +21,13 @@ const InventoryProductsTable = ({ products }) => {
         if (value) {
             switch (value) {
                 case "TRSM":
-                    let value;
-                    value = "TOURISM";
-                    return value;
+                    return "TOURISM";
                 case "EXM":
-                    let data;
-                    data = "EXEMPTED";
-                    return data;
+                    return "EXEMPTED";
                 case "CST":
-                    let input;
-                    input = "CST";
-                    return input;
-                case "" || null || undefined:
-                    let normal;
-                    normal = "STANDARD";
-                    return normal;
+                    return "CST";
                 default:
-                    return value;
+                    return "STANDARD";
             }
         }
     }

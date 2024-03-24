@@ -18,8 +18,6 @@ import { fetchAllForeignSuppliers, fetchAllLocalSuppliers } from 'apiActions/all
 import { fetchAllTodayRefundsInvoices, fetchTodayRefundsCancelledInvoices } from 'apiActions/allApiCalls/refund';
 import DashboardBarChart from 'views/SalesReport/chart/dashboardBarChart';
 import DashBoardPieChart from 'views/SalesReport/chart/dashboardPieChart';
-import Addons from './addons';
-import DashboardSalesGraph from './DashboardSalesGraph';
 
 const Dashboard = () => {
 	const [isLoading, setLoading] = useState(true);
@@ -151,18 +149,18 @@ const Dashboard = () => {
 	return (
 		<ThemeProvider theme={Screens.lightTheme}>
 			<Grid container>
-				<Grid container marginBottom={3}>
+				<Grid container marginBottom={2}>
 					<HomeDarkCard cancelRefunds={cancelRefunds} invoices={invoices} refunds={refunds} />
 				</Grid>
 
-				<Grid container spacing={3} marginBottom={3}>
+				<Grid container spacing={2} marginBottom={2}>
 					<Grid item sx={12} sm={6} md={3}><TotalCsutomersCard isLoading={isLoading} /></Grid>
 					<Grid item sx={12} sm={6} md={3}><TotalTaxes isLoading={isLoading} levies={totalLevies} vats={totalVAT} /></Grid>
 					<Grid item sx={12} sm={6} md={3}><TotalSalesCard isLoading={isLoading} customers={customers} products={products} /></Grid>
 					<Grid item sx={12} sm={6} md={3}><TotalSuppliersCard isLoading={isLoading} foreign={fSuppliers.length} local={lSuppliers.length} /></Grid>
 				</Grid>
 
-				<Grid container marginBottom={3}>
+				<Grid container spacing={2}>
 					<Grid item sx={12} sm={10} md={8}>
 						<DashboardBarChart />
 					</Grid>
@@ -174,18 +172,6 @@ const Dashboard = () => {
 				<Grid container>
 					<Grid item sx={12}>
 						<HomeRecentOrders isLoading={isLoading} />
-					</Grid>
-				</Grid>
-
-				<Grid container>
-					<Grid item sx={12}>
-						<Addons isLoading={isLoading} />
-					</Grid>
-				</Grid>
-				
-				<Grid container>
-					<Grid item sx={12}>
-						<DashboardSalesGraph isLoading={isLoading} />
 					</Grid>
 				</Grid>
 			</Grid>

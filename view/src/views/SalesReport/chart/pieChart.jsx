@@ -12,7 +12,7 @@ import { fNumber } from 'utilities/numerals';
 
 // ----------------------------------------------------------------------
 
-const CHART_HEIGHT = 400;
+const CHART_HEIGHT = 350;
 
 const LEGEND_HEIGHT = 72;
 
@@ -23,7 +23,7 @@ const StyledChart = styled(chart)(({ theme }) => ({
   },
   '& .apexcharts-legend': {
     height: LEGEND_HEIGHT,
-    borderTop: `dashed 1px ${theme.palette.divider}`,
+    borderTop: `dashed 2px ${theme.palette.divider}`,
     top: `calc(${CHART_HEIGHT - LEGEND_HEIGHT}px) !important`,
   },
 }));
@@ -34,7 +34,6 @@ export default function AppCurrentVisits({ title, subheader, chart, ...other }) 
   const theme = useTheme();
 
   const { colors, series, options } = chart;
-
   const chartSeries = series.map((i) => i.value);
 
   const chartOptions = useChart({
@@ -69,7 +68,7 @@ export default function AppCurrentVisits({ title, subheader, chart, ...other }) 
       },
     },
     plotOptions: {
-      pie: {
+      donut: {
         donut: {
           labels: {
             show: false,
@@ -82,11 +81,11 @@ export default function AppCurrentVisits({ title, subheader, chart, ...other }) 
 
   return (
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} sx={{ mb: 5 }} />
+      <CardHeader title={title} subheader={subheader}/>
 
       <StyledChart
         dir="ltr"
-        type="pie"
+        type="donut"
         series={chartSeries}
         options={chartOptions}
         width="100%"

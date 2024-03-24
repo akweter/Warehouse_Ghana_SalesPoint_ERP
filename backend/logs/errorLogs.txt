@@ -1,0 +1,42 @@
+24/03/2024, 1:31:14 am: Querying failed Error: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'SUM(cst) AS totalCST
+			SUM(tourism) AS totalTourism
+		FROM
+			invoice
+		WHER...' at line 6
+24/03/2024, 1:31:14 am: Error fetching this month taxes Temporal server error. Try again
+24/03/2024, 1:31:18 am: Querying failed Error: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'SUM(cst) AS totalCST
+			SUM(tourism) AS totalTourism
+		FROM
+			invoice
+		WHER...' at line 6
+24/03/2024, 1:31:18 am: Error fetching this month taxes Temporal server error. Try again
+24/03/2024, 1:31:57 am: Querying failed Error: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'SUM(cst) AS totalCST
+			SUM(tourism) AS totalTourism
+		FROM
+			invoice
+		WHER...' at line 6
+24/03/2024, 1:31:57 am: Error fetching this month taxes Temporal server error. Try again
+24/03/2024, 1:32:09 am: Querying failed Error: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'SUM(cst) AS totalCST
+			SUM(tourism) AS totalTourism
+		FROM
+			invoice
+		WHER...' at line 6
+24/03/2024, 1:32:09 am: Error fetching this month taxes Temporal server error. Try again
+24/03/2024, 1:33:03 am: Querying failed Error: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'SUM(cst) AS totalCST
+			SUM(tourism) AS totalTourism
+		FROM
+			invoice
+		WHER...' at line 6
+24/03/2024, 1:33:03 am: Error fetching this month taxes Temporal server error. Try again
+24/03/2024, 1:34:08 am: Querying failed Error: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'SUM(cst) AS totalCST
+			SUM(tourism) AS totalTourism
+		FROM
+			invoice
+		WHER...' at line 6
+24/03/2024, 1:34:08 am: Error fetching this month taxes Temporal server error. Try again
+24/03/2024, 1:34:31 am: Querying failed Error: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'SUM(cst) AS totalCST
+			SUM(tourism) AS totalTourism
+		FROM
+			invoice
+		WHER...' at line 6
+24/03/2024, 1:34:31 am: Error fetching this month taxes Temporal server error. Try again

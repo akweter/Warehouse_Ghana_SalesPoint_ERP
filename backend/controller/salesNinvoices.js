@@ -76,6 +76,25 @@ const TodayRefundsCancellationInvoice = async () => {
 	return await executeQuery(sql);
 }
 
+// Various tax component for this month
+const ThisMonthTaxes = async () => {
+	const sql = `
+		SELECT
+			SUM(Inv_vat) AS totalVat,
+			SUM(nhil) AS totalNHIL,
+			SUM(covid) AS totalCovid,
+			SUM(getfund) AS totalGetfund,
+			SUM(cst) AS totalCST,
+			SUM(tourism) AS totalTourism
+		FROM
+			invoice
+		WHERE
+			MONTH(Inv_date) = MONTH(CURRENT_DATE())
+			AND YEAR(Inv_date) = YEAR(CURRENT_DATE());
+	`
+	return await executeQuery(sql);
+}
+
 // Return all purchase invoice
 const refundInvoices = async () => {
 	const sql = "SELECT * FROM invoice WHERE Inv_status = 'REFUND' OR Inv_status = 'PARTIAL_REFUND' ORDER BY Inv_ID_auto DESC";
@@ -159,7 +178,7 @@ const updateRefundProducts = async (payload) => {
     return await executeQuery(sql, payload);
 }
 
-const allActions = {
+module.exports = {
 	oneInvoice,
 	Searches,
 	AddNewInvoices,
@@ -182,6 +201,5 @@ const allActions = {
 	getAllSalesInvoices,
 	countALlrefundInvoices,
 	allRefundedProducts,
+	ThisMonthTaxes,
 };
-
-module.exports = allActions;

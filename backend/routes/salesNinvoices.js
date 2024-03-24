@@ -17,9 +17,10 @@ const {
   MonthAllSalesInvoice,
   YearAllSalesInvoice,
   getAllSalesInvoices,
+  ThisMonthTaxes,
 } = require("../controller/salesNinvoices");
 const {
-  one, twentyFour, thirtySeven,
+  thirtySeven,
 } = require("../controller/selectQueries");
 const restructureInvoiceResult = require("../utils/invoiceModifier");
 
@@ -68,6 +69,18 @@ Router.get("/sales", async (req, res) => {
   }
   catch (err) {
     logErrorMessages(`Error fetching today invoices ${err}`);
+    return res.status(500).send("Temporal server error. Kindly refresh");
+  }
+});
+
+// Get all this month taxes
+Router.get("/tax/month", async (req, res) => {
+  try {
+    const output = await ThisMonthTaxes();
+    res.status(200).json(output);
+  }
+  catch (err) {
+    logErrorMessages(`Error fetching this month taxes ${err}`);
     return res.status(500).send("Temporal server error. Kindly refresh");
   }
 });

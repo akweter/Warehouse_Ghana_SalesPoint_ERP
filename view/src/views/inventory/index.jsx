@@ -66,26 +66,28 @@ const Inventory = () => {
         <div>
             {
                 loading ?
-                <LoadingSpinner /> :
-                <>
-                    <Grid container sx={{ justifyContent: 'space-around' }}>
-                        <Button
-                            variant='contained'
-                            color='primary'
-                            size='medium'
-                            sx={{ color: 'gold' }}
-                            onClick={handleOpen}
-                        >
-                            Add New Product
-                        </Button>
-                    </Grid>
-                    <Box>
-                        {products.length > 0 || submitted ?
-                            <InventoryProductsTable products={products} /> :
-                            <ProductPlaceholder />}
-                    </Box>
-                    <UploadCSVProducts openDialog={open} CloseDialog={handleClose} RefreshData={setSubmitted} />
-                </>
+                    <LoadingSpinner /> :
+                    <>
+                        <Grid container sx={{ justifyContent: 'space-around' }}>
+                            <Button
+                                variant='contained'
+                                color='primary'
+                                size='medium'
+                                sx={{ color: 'gold' }}
+                                onClick={handleOpen}
+                            >
+                                Add New Product
+                            </Button>
+                        </Grid>
+                        <Box>
+                            {
+                                products.length > 0 || submitted ?
+                                <InventoryProductsTable products={products} /> :
+                                <ProductPlaceholder />
+                            }
+                        </Box>
+                        <UploadCSVProducts openDialog={open} CloseDialog={handleClose} RefreshData={setSubmitted} />
+                    </>
             }
         </div>
     );

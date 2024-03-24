@@ -18,6 +18,15 @@ export const fetchAllSalesInvoices = async () => {
     return null;
 };
 
+// Fetch all taxes for this montth
+export const fetchAllThisMonthTaxes = async () => {
+    const response = await requestMaking('invoices/tax/month', 'GET', null);
+    if (response.ok) {
+        return await response.json();
+    }
+    return null;
+};
+
 // Fetch all today sales invoices
 export const fetchAllTodaySalesInvoices = async () => {
     const response = await requestMaking('invoices/today/sales', 'GET', null);

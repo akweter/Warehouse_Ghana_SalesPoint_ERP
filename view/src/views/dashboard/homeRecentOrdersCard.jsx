@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { Tabs, Tab, Box, Typography } from '@mui/material';
 import DashBoardInvoice from 'views/invoices/dashboard/InvoicesCard';
-import Addons from './addons';
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -53,7 +52,6 @@ const HomeRecentOrders = () => {
         <Tab label="Leads" />
         <Tab label="Insight" />
         <Tab label="Pricing Chart" />
-        <Tab label="Addons" />
       </Tabs>
 
       <TabPanel value={value} index={0}>
@@ -70,10 +68,6 @@ const HomeRecentOrders = () => {
       </TabPanel>
       <TabPanel value={value} index={4}>
         <Typography variant='h1'>Pricing Dashboard</Typography>
-      </TabPanel>
-      <TabPanel value={value} index={5}>
-        <Typography variant='h3'>System Tools</Typography>
-        < Addons />
       </TabPanel>
     </Box>
   );
