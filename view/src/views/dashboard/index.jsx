@@ -170,7 +170,7 @@ const Dashboard = () => {
 				</Grid>
 
 				<Grid container>
-					<Grid item sx={12}>
+					<Grid item xs={12}>
 						<HomeRecentOrders isLoading={isLoading} />
 					</Grid>
 				</Grid>

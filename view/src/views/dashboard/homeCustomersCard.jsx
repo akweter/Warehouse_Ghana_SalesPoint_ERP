@@ -80,7 +80,7 @@ const TotalCustomersCard = ({ isLoading }) => {
 			}
 		}
 		catch (error) {
-			console.log(error);
+			return null;
 		}
 	}
 
@@ -177,7 +177,11 @@ const TotalCustomersCard = ({ isLoading }) => {
 							</Grid>
 						</Grid>
 					</Grid>
-					<Typography sx={{ bottom: 0, textAlign: 'center' }}>{period}</Typography>
+					<Grid container justifyContent='center'>
+						<Grid item>
+							<Typography>{period}</Typography>
+						</Grid>
+					</Grid>
 				</CardWrapper>
 			)}
 		</>

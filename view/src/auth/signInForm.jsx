@@ -104,7 +104,6 @@ export default function SignInForm() {
                             window.location.href = '/auth/verify';
                         }
                         else {
-                            console.log(body);
                             setloginStatus(body.message);
                             setUserId({ passwrd: '' });
                             setOpen(true);

@@ -12,8 +12,8 @@ const WooOrders = () => {
         .then((data) => {
             setOrders(data);
         })
-        .catch((err) => {
-            console.log(err);
+        .catch(() => {
+            return null;
         });
     }, []);
 

@@ -8,10 +8,6 @@ import useChart from './use-chart';
 import chart from './chart';
 import { fNumber } from 'utilities/numerals';
 
-// import Chart, { useChart } from 'src/components/chart';
-
-// ----------------------------------------------------------------------
-
 const CHART_HEIGHT = 350;
 
 const LEGEND_HEIGHT = 72;

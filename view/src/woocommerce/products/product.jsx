@@ -14,8 +14,8 @@ const WooProducts = () => {
         .then((data) => {
             setProducts(data);
         })
-        .catch((err) => {
-            console.log(err);
+        .catch(() => {
+            return null;
         })
     }, []);
 

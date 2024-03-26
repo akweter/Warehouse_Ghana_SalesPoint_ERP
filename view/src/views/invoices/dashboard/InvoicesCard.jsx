@@ -1,12 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 import { Visibility as VisibilityIcon } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { GeneralCatchError } from 'utilities/errorAlert';
 import { fetchAllInvoices } from 'apiActions/allApiCalls/invoice';
 import InvoiceDetails from '../invoiceDetails';
-import ProductPlaceholder from 'ui-component/cards/Skeleton/ProductPlaceholder';
 
 /* eslint-disable */
 
@@ -27,7 +25,8 @@ export default function DashBoardInvoice() {
             const invoicesData = await fetchAllInvoices();
             setTimeout(() => {
                 setInvoices(invoicesData);
-                setLoading(false);
+                const ten = invoicesData.slice(0, 10);
+                setInvoices(ten);
             }, 1000);
         }
         catch (error) {
@@ -73,48 +72,48 @@ export default function DashBoardInvoice() {
                 headerName: 'User Name',
                 description: 'Served By',
                 flex: 1,
-                width: 100,
+                width: 70,
             },
             {
                 field: 'InvoiceNumber',
                 headerName: 'Invoice #',
                 description: 'Invoice number',
                 flex: 1,
-                width: 100,
+                width: 70,
             },
             {
                 field: 'CustomerName',
                 headerName: 'Customer',
                 description: 'Customer Name',
                 flex: 1,
-                width: 150,
+                width: 100,
             },
             {
                 field: 'TotalAmount',
                 headerName: 'Total Amt',
                 description: 'Total Invoice Amount',
                 flex: 1,
-                width: 50,
+                width: 70,
             },
             {
                 field: 'Levies',
                 headerName: 'Levies',
                 description: 'Total Invoice Levies',
                 flex: 1,
-                width: 40,
+                width: 90,
             },
             {
                 field: 'VatAmount',
                 headerName: 'VAT',
                 description: 'Total Invoice VAT',
                 flex: 1,
-                width: 80,
+                width: 90,
             },
             {
                 field: 'actions',
                 headerName: 'View',
-                flex: 1,
-                width: 50,
+                // flex: 1,
+                width: 10,
                 sortable: false,
                 renderCell: (params) => (<>
                     <IconButton title='View Invoice' onClick={() => handleViewIconClick(params.row)}>
@@ -130,43 +129,37 @@ export default function DashBoardInvoice() {
         setOpenDialog(true);
     };
 
-    const handleCloseDialog = () => {
-        setOpenDialog(false);
-    };
+    const handleCloseDialog = () => {  setOpenDialog(false) };
 
     return (
-        <div>
+        <>
             {
                 alert.message ?
                     <GeneralCatchError alert={alert} handleClose={handleCloseDialog} open={openDialog} /> :
                     null
             }
-            {
-                loading ?
-                    <ProductPlaceholder /> :
-                    <Box sx={{ height: 300, width: '100%' }}>
-                        <DataGrid
-                            rows={rowsWithIds}
-                            columns={columns}
-                            density='compact'
-                            hideFooter={true}
-                            hideFooterPagination={true}
-                            disableRowSelectionOnClick={true}
-                            hideFooterSelectedRowCount={true}
-                            filterMode='server'
-                            slotProps={{
-                                toolbar: {
-                                    showQuickFilter: true,
-                                },
-                            }}
-                        />
-                        {selectedRow && (
-                            <>
-                                < InvoiceDetails selectedRow={selectedRow} openDialog={openDialog} handleCloseDialog={handleCloseDialog} />
-                            </>
-                        )}
-                    </Box>
-            }
-        </div>
+            <DataGrid
+                rows={rowsWithIds}
+                columns={columns}
+                sx={{height: 300, minWidth: '100%'}}
+                density='compact'
+                loading={loading}
+                hideFooter={true}
+                hideFooterPagination={true}
+                disableRowSelectionOnClick={true}
+                hideFooterSelectedRowCount={true}
+                filterMode='server'
+                slotProps={{
+                    toolbar: {
+                        showQuickFilter: true,
+                    },
+                }}
+            />
+            {selectedRow && (
+                <>
+                    < InvoiceDetails selectedRow={selectedRow} openDialog={openDialog} handleCloseDialog={handleCloseDialog} />
+                </>
+            )}
+        </>
     );
 }

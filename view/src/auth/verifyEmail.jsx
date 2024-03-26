@@ -34,7 +34,7 @@ const VerifyEmail = () => {
             setUserData(data);
         }
         catch (error) {
-            console.log(error);
+            return null;
         }
     }
 

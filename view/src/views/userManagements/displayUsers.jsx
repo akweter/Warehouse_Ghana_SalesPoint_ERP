@@ -58,12 +58,12 @@ const UserRow = ({ user, setSubmitted }) => {
 			}
 		}
 		catch (error) {
-			console.log(`error: ${error}`);
 			setAlert((state) => ({
 				...state,
 				message: `Something Unexpected happend. please try again`, color: "error"
 			}));
 			setOpenAlert(true);
+			return null;
 		}
 	}
 

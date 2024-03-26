@@ -40,7 +40,8 @@ export const GeneralCatchError = ({ alert, open, handleClose }) => {
             // autoHideDuration={8000}
             onClose={handleClose}
             TransitionComponent={Slide}
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            transitionDuration={1000}
         >
             <Card sx={{ minWidth: 350, minHeight: 200, backgroundColor: '#EA9282' }}>
                 <CardContent sx={{ backgroundColor: '#F0F0F0' }}>
@@ -50,8 +51,8 @@ export const GeneralCatchError = ({ alert, open, handleClose }) => {
                     </Typography>
                 </CardContent>
                 <CardActions sx={{ justifyContent: 'center' }}>
-                    <Button size="medium" color='warning' variant='contained' onClick={() => { window.location.href = "/auth/logout" }}>Log In Again</Button>
-                    <Button size="medium" color='secondary' variant='contained' onClick={() => { window.location.reload() }}>Refresh</Button>
+                    <Button size="medium" color='warning' variant='contained' onClick={() => window.location.href = "/auth/logout" }>Log In Again</Button>
+                    <Button size="medium" color='secondary' variant='contained' onClick={() => window.location.reload()}>Refresh</Button>
                 </CardActions>
             </Card>
         </Snackbar>

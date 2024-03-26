@@ -72,7 +72,6 @@ const UpdateUser = ({ user, closeAddnewUser, setSubmitted }) => {
         setErrors(validationErrors);
 
         if (Object.keys(validationErrors).length > 0) {
-            console.log('errors keys',validationErrors);
             return;
         }
 

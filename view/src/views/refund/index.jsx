@@ -153,7 +153,6 @@ export default function Refund() {
 
     const handleViewIconClick = (row) => {
         setSelectedRow(row);
-        console.log('sending',row);
         setOpenDialog(true);
     };
 

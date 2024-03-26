@@ -34,16 +34,16 @@ export default function Invoice() {
         try {
             setLoading(true);
             const invoicesData = await fetchAllInvoices();
+            setInvoices(invoicesData);
             setTimeout(() => {
-                setInvoices(invoicesData);
                 setLoading(false);
-            }, 900);
+            }, 1900);
         }
         catch (error) {
             setInvoices([]);
             setOpen(true);
             setAlert((e) => ({ ...e, message: `Something unexpected happened with\n your connection. \n\n Please log in again if it persist.`, color: 'error' }));
-            setLoading(false);
+            setLoading(true);
         }
     };
 

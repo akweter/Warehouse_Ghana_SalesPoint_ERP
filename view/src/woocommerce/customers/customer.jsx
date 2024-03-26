@@ -14,7 +14,7 @@ const WooCustomers = () => {
                 setCustomers(data);
             }
             catch (error) {
-                console.log(error);
+                return null;
             }
         }
         fetData();
