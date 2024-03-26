@@ -20,7 +20,7 @@ const TotalSuppliersCard = ({ isLoading, foreign, local }) => {
 				<SkeletonTotalOrderCard />
 			) : (
 				<CardWrapper theme={'#2238A2'}>
-					<Grid container borderRight='3px dashed gold'>
+					<Grid container flexDirection='column' borderRight='3px dashed gold'>
 						<Grid item>
 							<Grid container>
 								<Grid item>
@@ -56,16 +56,16 @@ const TotalSuppliersCard = ({ isLoading, foreign, local }) => {
 							</Grid>
 						</Grid>
 						<Grid item>
-							<Grid container>
+							<Grid container justifyContent='space-around'>
 								<Grid item>
 									{timeValue ? (
-										<Typography sx={{ fontSize: '2.125rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>{local}</Typography>
+										<Typography sx={{ fontSize: '2.125rem', fontWeight: 500,}}>{local}</Typography>
 									) : (
-										<Typography sx={{ fontSize: '2.125rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>{foreign}</Typography>
+										<Typography sx={{ fontSize: '2.125rem', fontWeight: 500,}}>{foreign}</Typography>
 									)}
 								</Grid>
 								<Grid item>
-									<Typography variant="h3">Suppliers</Typography>
+									<Typography sx={{ fontWeight: 300 }} color="#7008AF" variant='h3'>Suppliers</Typography>
 								</Grid>
 							</Grid>
 						</Grid>

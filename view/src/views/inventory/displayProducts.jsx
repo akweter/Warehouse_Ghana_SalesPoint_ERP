@@ -6,7 +6,7 @@ import UploadCSVProducts from './uploadProducts';
 
 /* eslint-disable */
 
-const InventoryProductsTable = ({ products }) => {
+const InventoryProductsTable = ({ products, loading }) => {
     const [open, setOpen] = useState(false);
     const [row, setRow] = useState([]);
 
@@ -145,6 +145,7 @@ const InventoryProductsTable = ({ products }) => {
                 <DataGrid
                     rows={rows.map((row, index) => ({ ...row, id: index }))}
                     columns={columns}
+                    loading={loading ? loading : null}
                     density='compact'
                     pageSize={5}
                     disableRowSelectionOnClick={true}

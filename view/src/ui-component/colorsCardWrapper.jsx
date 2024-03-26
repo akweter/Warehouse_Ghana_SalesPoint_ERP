@@ -207,7 +207,7 @@ export const CardWrapper = styled(MainCard)(({ theme }) => ({
   color: '#7008AF',
   overflow: 'hidden',
   position: 'relative',
-  height: 180
+  height: 180,
 }));
 
 export const CustomLLogo = ({ border, avatarIcon }) => {

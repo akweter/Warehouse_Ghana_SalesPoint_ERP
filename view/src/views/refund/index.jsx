@@ -8,7 +8,6 @@ import {
     Grid,
     Drawer,
 } from '@mui/material';
-import { LoadingSpinner } from 'ui-component/loaderAPI';
 import { GeneralCatchError } from 'utilities/errorAlert';
 import RefundCancellationForm from './refundCancelation';
 import DrawerContent from './showCancelRefunds';
@@ -28,7 +27,7 @@ export default function Refund() {
     const [invoices, setInvoices] = useState([]);
     const [refundInv, setRefundInv] = useState([]);
     const [selectedRow, setSelectedRow] = useState(null);
-    const [alert, setAlert] = useState({message: '', color: ''});
+    const [alert, setAlert] = useState({ message: '', color: '' });
 
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
@@ -43,10 +42,16 @@ export default function Refund() {
         try {
             setLoading(true);
             const invoicesData = await fetchRefundInvoices();
+            const updatedInvoices = invoicesData.map((invoice, index) => ({
+                ...invoice,
+                id: index,
+                InvoiceDate: formatDate(invoice.InvoiceDate),
+                Quantity: Quantity(invoice.TotalAmount, invoice.products),
+            }));
+            setInvoices(updatedInvoices);
             setTimeout(() => {
-                setInvoices(invoicesData);
                 setLoading(false);
-            }, 900);
+            }, 1000);
         }
         catch (error) {
             setInvoices([]);
@@ -56,21 +61,16 @@ export default function Refund() {
         }
     };
     
-    const Levies = (invoice) => {
-        const { NHIL, GETFund, COVID, CST, Tourism } = invoice;
-        const totalLevies = NHIL + GETFund + COVID + CST + Tourism;
-        return parseFloat(totalLevies);
-    };
-
-    const rowsWithIds = useMemo(() =>
-        invoices.map((invoice, index) => ({
-            id: index,
-            ...invoice,
-            InvoiceDate: formatDate(invoice.InvoiceDate),
-            Levies: Levies(invoice),
-        })),
-        [invoices]
-    );
+    const Quantity = (totalAmount, products) => {
+        if (totalAmount && products && products.length > 0) {
+            const productPrice = parseFloat(products[0].ProductPrice);
+            if (productPrice !== 0) {
+                const quantity = Math.floor(parseFloat(totalAmount) / productPrice);
+                return quantity > 0 ? quantity : 1;
+            }
+        }
+        return null;
+    }
 
     const columns = useMemo(() => {
         return [
@@ -78,10 +78,11 @@ export default function Refund() {
                 field: 'id',
                 headerName: '#',
                 width: 10,
+                headerClassName: 'dataGridheader',
                 renderCell: (params) => {
                     return params.row.id + 1;
                 },
-                headerClassName: 'dataGridheader',
+                flex: 1,
             },
             {
                 field: 'IssuerName',
@@ -140,10 +141,10 @@ export default function Refund() {
                 headerClassName: 'dataGridheader',
                 renderCell: (params) => (<>
                     <IconButton title='View Refund' onClick={() => handleViewIconClick(params.row)}>
-                        <VisibilityIcon fontSize='medium' color='secondary'/>
+                        <VisibilityIcon fontSize='medium' color='secondary' />
                     </IconButton>
-                    <IconButton title='Cancel Refund' onClick={()=> handleRefundBtnClick(params.row)}>
-                        <IconCreditCardRefund color='red'/>
+                    <IconButton title='Cancel Refund' onClick={() => handleRefundBtnClick(params.row)}>
+                        <IconCreditCardRefund color='red' />
                     </IconButton>
                 </>),
             },
@@ -152,67 +153,59 @@ export default function Refund() {
 
     const handleViewIconClick = (row) => {
         setSelectedRow(row);
+        console.log('sending',row);
         setOpenDialog(true);
     };
-    
+
     const handleRefundBtnClick = (row) => {
         setRefundInv(row);
         setOpenRefDialog(true);
     }
 
-    const handleCloseRefDialog = () => {
-        setOpenRefDialog(false);
-    };
-
-    const handleCloseDialog = () =>{
-        setOpenDialog(false);
-    }
-
-    const toggleDrawer = (status) => () => {
-        setOpen(status);
-    };
+    const handleCloseRefDialog = () => setOpenRefDialog(false);
+    const handleCloseDialog = () => setOpenDialog(false);
+    const toggleDrawer = (status) => () => setOpen(status);
+    const getRowId = (row) => row.AutoID;
 
     return (
         <div>
-            <Grid container sx={{justifyContent: 'space-between'}}>
+            <Grid container sx={{ justifyContent: 'space-between' }}>
                 <h2>Refund Transactions</h2>
                 <IconButton onClick={toggleDrawer(true)} size='large' edge="end" color="secondary">
-                    <MenuIcon color='secondary'/>
+                    <MenuIcon color='secondary' />
                 </IconButton>
             </Grid>
-            {
-                loading ?
-                <LoadingSpinner /> :
-                <Box sx={{ height: 600, width: '100%' }}>
-                    <DataGrid
-                        rows={rowsWithIds}
-                        columns={columns}
-                        density='compact'
-                        pageSize={5}
-                        disableRowSelectionOnClick={true}
-                        slots={{ toolbar: GridToolbar }}
-                        hideFooterSelectedRowCount={true}
-                        filterMode='client'
-                        slotProps={{
-                            toolbar: {
-                                showQuickFilter: true,
-                            },
-                        }}
-                    />
-                    {
-                        alert.message ? <GeneralCatchError alert={alert} open={openGeneralCatch}/> : null
-                    }
-                    {
-                        selectedRow && (<>< InvoiceDetails selectedRow={selectedRow} openDialog={openDialog} handleCloseDialog={handleCloseDialog} /></>)
-                    }
-                </Box>
-            }
+            <Box sx={{ height: 600, width: '100%' }}>
+                <DataGrid
+                    rows={invoices}
+                    columns={columns}
+                    loading={loading ? loading : null}
+                    getRowId={getRowId}
+                    density='compact'
+                    pageSize={5}
+                    disableRowSelectionOnClick={true}
+                    slots={{ toolbar: GridToolbar }}
+                    hideFooterSelectedRowCount={true}
+                    filterMode='client'
+                    slotProps={{
+                        toolbar: {
+                            showQuickFilter: true,
+                        },
+                    }}
+                />
+                {
+                    alert.message ? <GeneralCatchError alert={alert} open={openGeneralCatch} /> : null
+                }
+                {
+                    selectedRow && (<>< InvoiceDetails selectedRow={selectedRow} openDialog={openDialog} handleCloseDialog={handleCloseDialog} /></>)
+                }
+            </Box>
             <Drawer anchor="right" open={open} onClose={toggleDrawer(false)}>
                 < DrawerContent />
             </Drawer>
-            <RefundCancellationForm 
+            <RefundCancellationForm
                 open={openRefDialog}
-                handleClose={handleCloseRefDialog} 
+                handleClose={handleCloseRefDialog}
                 refData={refundInv ? refundInv : null}
                 setSubmitted={setSubmitted}
             />

@@ -27,6 +27,15 @@ export const fetchAllThisMonthTaxes = async () => {
     return null;
 };
 
+// Fetch all invoice total amount and for this montth
+export const fetchAllThisMonthDailyInvoiceAmount = async () => {
+    const response = await requestMaking('invoices/day/invoice', 'GET', null);
+    if (response.ok) {
+        return await response.json();
+    }
+    return null;
+};
+
 // Fetch all today sales invoices
 export const fetchAllTodaySalesInvoices = async () => {
     const response = await requestMaking('invoices/today/sales', 'GET', null);

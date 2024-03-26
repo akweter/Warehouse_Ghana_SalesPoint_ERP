@@ -18,6 +18,7 @@ const {
   YearAllSalesInvoice,
   getAllSalesInvoices,
   ThisMonthTaxes,
+  ThisMonthTotalInvoicenDate,
 } = require("../controller/salesNinvoices");
 const {
   thirtySeven,
@@ -77,6 +78,18 @@ Router.get("/sales", async (req, res) => {
 Router.get("/tax/month", async (req, res) => {
   try {
     const output = await ThisMonthTaxes();
+    res.status(200).json(output);
+  }
+  catch (err) {
+    logErrorMessages(`Error fetching this month taxes ${err}`);
+    return res.status(500).send("Temporal server error. Kindly refresh");
+  }
+});
+
+// Get all this month taxes
+Router.get("/day/invoice", async (req, res) => {
+  try {
+    const output = await ThisMonthTotalInvoicenDate();
     res.status(200).json(output);
   }
   catch (err) {

@@ -160,7 +160,7 @@ const twentyOne = async () => {
 // Retrieve the top 5 items with the highest total sales amount
 const twentyTwo = async () => {
     const sql = `
-    SELECT Itm_name, SUM(Product_Price * Product_Quantity) AS total_sales
+    SELECT Itm_name, SUM(Product_Price * Product_Quantity) AS totalSales
     FROM inventory
     JOIN invoice_products ON inventory.Itm_id = invoice_products.Product_ID
     GROUP BY Itm_name

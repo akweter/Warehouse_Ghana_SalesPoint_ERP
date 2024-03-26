@@ -94,7 +94,7 @@ const TotalCustomersCard = ({ isLoading }) => {
 				<SkeletonEarningCard />
 			) : (
 				<CardWrapper theme={'#2238A2'}>
-					<Grid container columnSpacing={0} direction="column" borderLeft='3px dashed gold'>
+					<Grid container direction="column" borderLeft='3px dashed gold'>
 						<Grid item>
 							<Grid container justifyContent="space-between">
 								<Grid item>

@@ -25,7 +25,7 @@ const DashBoardPieChart = () => {
             {
                 taxes.length > 0 ?
                     <AppCurrentVisits
-                        title="THIS MONTH TAXES"
+                        title="This Month"
                         chart={{
                             series: [
                                 { label: 'VAT', value: parseFloat(taxes[0].totalVat) },

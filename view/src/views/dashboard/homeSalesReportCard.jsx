@@ -31,8 +31,8 @@ const TotalSalesCard = ({ isLoading, customers, products }) => {
 									</Box>
 								</Grid>
 								<Grid item>
-									<Typography sx={{ fontWeight: 250 }} variant='h3'>Customers</Typography>
-									<Typography sx={{ fontWeight: 300 }} variant='h3'>[ {customers.length} ]</Typography>
+									<Typography sx={{ fontWeight: 250 }} color="#7008AF" variant='h3'>Customers</Typography>
+									<Typography sx={{ fontWeight: 300 }} color="gold" variant='h3'>[ {customers.length} ]</Typography>
 								</Grid>
 							</Grid>
 						</Grid>
@@ -49,8 +49,8 @@ const TotalSalesCard = ({ isLoading, customers, products }) => {
 									</Box>
 								</Grid>
 								<Grid item>
-									<Typography sx={{ fontWeight: 250 }} variant='h3'>Products</Typography>
-									<Typography sx={{ fontWeight: 300 }} variant='h3'>[ {products.length} ]</Typography>
+									<Typography sx={{ fontWeight: 250 }} color="#7008AF" variant='h3'>Products</Typography>
+									<Typography sx={{ fontWeight: 300 }} color="gold" variant='h3'>[ {products.length} ]</Typography>
 								</Grid>
 							</Grid>
 						</Grid>

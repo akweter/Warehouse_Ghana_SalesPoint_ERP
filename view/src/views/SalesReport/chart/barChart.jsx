@@ -31,7 +31,7 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
       y: {
         formatter: (value) => {
           if (typeof value !== 'undefined') {
-            return `${value.toFixed(0)} visits`;
+            return `${value.toFixed(0)}`;
           }
           return value;
         },
@@ -44,14 +44,14 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
     <Card {...other}>
       <CardHeader title={title} subheader={subheader} />
 
-      <Box sx={{ p: 3, pb: 1 }}>
+      <Box sx={{ p: 2}}>
         <Chart
           dir="ltr"
           type="line"
           series={series}
           options={chartOptions}
           width="100%"
-          height={364}
+          height={280}
         />
       </Box>
     </Card>

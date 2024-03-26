@@ -8,7 +8,6 @@ import { IconButton, Grid, Box } from '@mui/material';
 // projects
 import { GeneralCatchError } from 'utilities/errorAlert';
 import { fetchAllInvoices } from 'apiActions/allApiCalls/invoice';
-import { LoadingSpinner } from 'ui-component/loaderAPI';
 import MakeNewInvoice from './generateInvoice';
 import RefundForms from 'views/refund/refundForm';
 import InvoiceDetails from './invoiceDetails';
@@ -210,27 +209,26 @@ export default function Invoice() {
             <Grid container sx={{ justifyContent: 'space-around' }}>
                 < MakeNewInvoice setSubmitted={setSubmitted} />
             </Grid>
-            {
-                loading ?
-                    <LoadingSpinner /> || submitted :
-                    <Box sx={{ height: 600, width: '100%' }}>
-                        <DataGrid
-                            rows={rowsWithIds}
-                            columns={columns}
-                            density='compact'
-                            pageSize={5}
-                            disableRowSelectionOnClick={true}
-                            slots={{ toolbar: GridToolbar }}
-                            hideFooterSelectedRowCount={true}
-                            filterMode='client'
-                            slotProps={{
-                                toolbar: {
-                                    showQuickFilter: true,
-                                },
-                            }}
-                        />
-                    </Box>
-            }
+            <Box sx={{ height: 600, width: '100%' }}>
+                <DataGrid
+                    rows={rowsWithIds}
+                    columns={columns}
+                    loading={loading ? loading : null}
+                    density='compact'
+                    editMode='cell'
+                    isCellEditable={true}
+                    pageSize={5}
+                    disableRowSelectionOnClick={true}
+                    slots={{ toolbar: GridToolbar }}
+                    hideFooterSelectedRowCount={true}
+                    filterMode='client'
+                    slotProps={{
+                        toolbar: {
+                            showQuickFilter: true,
+                        },
+                    }}
+                />
+            </Box>
             {
                 alert.message ?
                     <GeneralCatchError alert={alert} handleClose={handleClose} open={open} /> :

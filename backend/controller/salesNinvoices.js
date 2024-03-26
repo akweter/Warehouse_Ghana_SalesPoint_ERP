@@ -95,6 +95,45 @@ const ThisMonthTaxes = async () => {
 	return await executeQuery(sql);
 }
 
+// Total amount and date for this month
+const ThisMonthTotalInvoicenDate = async () => {
+	const sql = `
+		SELECT 
+			ip.Inv_date AS Date,
+			SUM(ip.Inv_total_amt) AS totalAmount,
+			GROUP_CONCAT(inv_num.invoice_number) AS invoiceList,
+			SUM(ip.Inv_total_amt - (ip.nhil + ip.getfund + ip.covid + ip.cst + ip.tourism) - ipd.total_discount) AS Dailyprofit
+		FROM 
+			invoice ip
+		JOIN 
+			(
+				SELECT 
+					InvoiceNum_ID,
+					SUM(Product_Discount) AS total_discount
+				FROM 
+					invoice_products
+				GROUP BY 
+					InvoiceNum_ID
+			) ipd ON ip.Inv_Number = ipd.InvoiceNum_ID
+		JOIN
+			(
+				SELECT 
+					Inv_ID_auto,
+					Inv_Number,
+					ROW_NUMBER() OVER (ORDER BY Inv_date) AS invoice_number
+				FROM 
+					invoice
+			) inv_num ON ip.Inv_ID_auto = inv_num.Inv_ID_auto
+		WHERE 
+			MONTH(ip.Inv_date) = MONTH(CURRENT_DATE())
+			AND YEAR(ip.Inv_date) = YEAR(CURRENT_DATE())
+		GROUP BY 
+			ip.Inv_date
+		LIMIT 0, 25;
+	`
+	return await executeQuery(sql);
+}
+
 // Return all purchase invoice
 const refundInvoices = async () => {
 	const sql = "SELECT * FROM invoice WHERE Inv_status = 'REFUND' OR Inv_status = 'PARTIAL_REFUND' ORDER BY Inv_ID_auto DESC";
@@ -202,4 +241,5 @@ module.exports = {
 	countALlrefundInvoices,
 	allRefundedProducts,
 	ThisMonthTaxes,
+	ThisMonthTotalInvoicenDate,
 };

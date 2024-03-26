@@ -100,7 +100,7 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog }) => {
                                             <TableCell>{index + 1}</TableCell>
                                             <TableCell>{product.ProductName || 'Unavailable'}</TableCell>
                                             <TableCell>{product.ProductPrice || 0}</TableCell>
-                                            <TableCell>{product.Quantity || 0}</TableCell>
+                                            <TableCell>{selectedRow.Quantity || product.Quantity || 0}</TableCell>
                                             <TableCell>{product.ProductDiscount || 0}</TableCell>
                                             <TableCell>{product.RefundedQuantity || 0}</TableCell>
                                         </TableRow>

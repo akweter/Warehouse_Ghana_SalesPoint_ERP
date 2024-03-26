@@ -3,10 +3,10 @@ import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 import { Visibility as VisibilityIcon } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
-import { LoadingSpinner } from 'ui-component/loaderAPI';
 import { GeneralCatchError } from 'utilities/errorAlert';
 import { fetchAllInvoices } from 'apiActions/allApiCalls/invoice';
 import InvoiceDetails from '../invoiceDetails';
+import ProductPlaceholder from 'ui-component/cards/Skeleton/ProductPlaceholder';
 
 /* eslint-disable */
 
@@ -28,7 +28,7 @@ export default function DashBoardInvoice() {
             setTimeout(() => {
                 setInvoices(invoicesData);
                 setLoading(false);
-            }, 900);
+            }, 1000);
         }
         catch (error) {
             setInvoices([]);
@@ -143,7 +143,7 @@ export default function DashBoardInvoice() {
             }
             {
                 loading ?
-                    <LoadingSpinner /> :
+                    <ProductPlaceholder /> :
                     <Box sx={{ height: 300, width: '100%' }}>
                         <DataGrid
                             rows={rowsWithIds}
