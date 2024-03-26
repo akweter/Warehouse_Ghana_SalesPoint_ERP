@@ -40,7 +40,7 @@ const HomeRecentOrders = () => {
 
   return (
     <Box padding={3}>
-      <Typography variant='h3' color='#082295'>Recent History</Typography>
+      <Typography variant='h3' textAlign='center' color='#082295'>Recent History</Typography>
       <Tabs
         value={value}
         onChange={handleChange}

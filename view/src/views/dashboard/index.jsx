@@ -18,6 +18,7 @@ import { fetchAllForeignSuppliers, fetchAllLocalSuppliers } from 'apiActions/all
 import { fetchAllTodayRefundsInvoices, fetchTodayRefundsCancelledInvoices } from 'apiActions/allApiCalls/refund';
 import DashboardBarChart from 'views/SalesReport/chart/dashboardBarChart';
 import DashBoardPieChart from 'views/SalesReport/chart/dashboardPieChart';
+import { FooterPage } from 'ui-component/footer';
 
 const Dashboard = () => {
 	const [isLoading, setLoading] = useState(true);

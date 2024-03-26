@@ -127,6 +127,7 @@ const ThisMonthTotalInvoicenDate = async () => {
 		WHERE 
 			MONTH(ip.Inv_date) = MONTH(CURRENT_DATE())
 			AND YEAR(ip.Inv_date) = YEAR(CURRENT_DATE())
+			AND Inv_status IN ('INVOICE')
 		GROUP BY 
 			ip.Inv_date
 		LIMIT 0, 25;

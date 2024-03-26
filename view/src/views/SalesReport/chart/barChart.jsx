@@ -15,7 +15,7 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
     colors,
     plotOptions: {
       bar: {
-        columnWidth: '16%',
+        columnWidth: '20%',
       },
     },
     fill: {

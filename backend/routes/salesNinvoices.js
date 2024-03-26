@@ -28,7 +28,7 @@ const restructureInvoiceResult = require("../utils/invoiceModifier");
 // All invoices transaction
 Router.get("/", async (req, res) => {
   try {
-    const output = await thirtySeven('INVOICE', 'INVOICE');
+    const output = await thirtySeven('INVOICE', 'INVOICE', 'INVOICE');
     const modifiedOutput = restructureInvoiceResult(output);
     return res.status(200).json(modifiedOutput);
   }
@@ -38,10 +38,10 @@ Router.get("/", async (req, res) => {
   }
 });
 
-// 10 recent invoice only
+// 10 recent transactions only
 Router.get("/ten", async (req, res) => {
   try {
-    const output = await tenInvoices();
+    const output = await thirtySeven('INVOICE','PARTIAL_REFUND', 'REFUND');
     return await executeRoute(output, res);
   }
   catch (err) {

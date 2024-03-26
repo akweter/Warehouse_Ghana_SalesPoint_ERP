@@ -383,7 +383,7 @@ const thirtySix = async () => {
 };
 
 // Retrieve all refunded or sales invoices 
-const thirtySeven = async (a, b) => {
+const thirtySeven = async (a, b, c) => {
     const sql = `
     SELECT
         invoice.Inv_ID_auto  AS AutoID,
@@ -441,10 +441,10 @@ const thirtySeven = async (a, b) => {
     LEFT JOIN
         inventory ON invoice_products.Product_ID = inventory.Itm_id
     WHERE
-        Inv_status IN (?, ?)
+        Inv_status IN (?, ?, ?)
     ORDER BY
         invoice.Inv_ID_auto DESC`;
-    return await executeQuery(sql, [a, b]);
+    return await executeQuery(sql, [a, b, c]);
 };
 
 // Retrieve the average number of items sold per month, grouped by the user's department

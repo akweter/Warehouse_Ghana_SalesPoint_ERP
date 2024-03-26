@@ -3,7 +3,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Visibility as VisibilityIcon } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { GeneralCatchError } from 'utilities/errorAlert';
-import { fetchAllInvoices } from 'apiActions/allApiCalls/invoice';
+import { fetchTenInvoices } from 'apiActions/allApiCalls/invoice';
 import InvoiceDetails from '../invoiceDetails';
 
 /* eslint-disable */
@@ -22,18 +22,18 @@ export default function DashBoardInvoice() {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const invoicesData = await fetchAllInvoices();
+            const invoicesData = await fetchTenInvoices();
+            setInvoices(invoicesData);
+            const ten = invoicesData.slice(0, 10);
+            setInvoices(ten);
             setTimeout(() => {
-                setInvoices(invoicesData);
-                const ten = invoicesData.slice(0, 10);
-                setInvoices(ten);
+                setLoading(false);
             }, 1000);
         }
         catch (error) {
             setInvoices([]);
-            setOpen(true);
             setAlert((e) => ({ ...e, message: `Something unexpected happened with\n your connection. \n\n Please log in again if it persist.`, color: 'error' }));
-            setLoading(false);
+            setLoading(true);
         }
     };
 
@@ -110,6 +110,13 @@ export default function DashBoardInvoice() {
                 width: 90,
             },
             {
+                field: 'InvoiceStatus',
+                headerName: 'Transaction',
+                description: 'Type of transaction',
+                flex: 1,
+                width: 100,
+            },
+            {
                 field: 'actions',
                 headerName: 'View',
                 // flex: 1,
@@ -127,6 +134,7 @@ export default function DashBoardInvoice() {
     const handleViewIconClick = (row) => {
         setSelectedRow(row);
         setOpenDialog(true);
+        console.log('row',row);
     };
 
     const handleCloseDialog = () => {  setOpenDialog(false) };

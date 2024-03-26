@@ -14,7 +14,7 @@ const DashboardBarChart = () => {
             const invoicesData = await fetchAllThisMonthDailyInvoiceAmount();
             setData(invoicesData);
         } catch (error) {
-            console.error('Error fetching data');
+            return null;
         }
     };
 
