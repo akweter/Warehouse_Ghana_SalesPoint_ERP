@@ -9,8 +9,6 @@ import {
 import UploadCSVProducts from "./uploadProducts";
 import InventoryProductsTable from './displayProducts';
 import { fetchAllProducts } from 'apiActions/allApiCalls/product';
-import { fetchAllSupplier } from 'apiActions/allApiCalls/supplier';
-import { fetchAllUsers } from 'apiActions/allApiCalls/users';
 
 const Inventory = () => {
     const [submitted, setSubmitted] = useState(false);
@@ -28,25 +26,8 @@ const Inventory = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
-
             const products = await fetchAllProducts();
-            const users = await fetchAllUsers();
-            const suppliers = await fetchAllSupplier();
-            const updatedProductsWithUsers = products.map(product => {
-                const user = users.find(user => user.Usr_id === product.Itm_usr_id);
-                if (user) {
-                    product.Itm_usr_id = user.Usr_name;
-                }
-                return product;
-            });
-            const updatedProductsWithSuppliers = updatedProductsWithUsers.map(product => {
-                const supplier = suppliers.find(supplier => supplier.SnC_id === product.Itm_SnC_id);
-                if (supplier) {
-                    product.Itm_SnC_id = supplier.SnC_name;
-                }
-                return product;
-            });
-            setProducts(updatedProductsWithSuppliers);
+            setProducts(products);
             setTimeout(() => {
                 setLoading(false);
             }, 1000);

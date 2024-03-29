@@ -81,7 +81,7 @@ const CusNsupRow = ({ cusNsup }) => {
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Products Bought/supplied</TableCell>
-										<TableCell padding='none'>Milk{/*{cusNsup.tags.map(e => e.Itm_name).join(', ')}*/}</TableCell>
+										<TableCell padding='none'>Milk{/*{cusNsup.tags.map(e => e.productName).join(', ')}*/}</TableCell>
 									</TableRow>
 								</TableHead>
 							</Table>

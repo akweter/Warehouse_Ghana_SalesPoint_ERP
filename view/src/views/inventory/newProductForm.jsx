@@ -45,9 +45,9 @@ const NewProductForm = ({products}) => {
                             </TableHead>
                             <TableBody>
                                 <TableRow key={index}>
-                                    <TableCell>{product.Itm_name}</TableCell>
-                                    <TableCell>{product.Itm_qty}</TableCell>
-                                    <TableCell>{product.Itm_price}</TableCell>
+                                    <TableCell>{product.productName}</TableCell>
+                                    <TableCell>{product.stockQTY}</TableCell>
+                                    <TableCell>{product.unitPrice}</TableCell>
                                     <TableCell>
                                         <Button variant="outlined" color="primary" onClick={() => handleEdit(index)}>
                                             Edit

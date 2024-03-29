@@ -158,7 +158,7 @@ const UserRow = ({ user, setSubmitted }) => {
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Activities</TableCell>
-										<TableCell padding='none'><Button variant='text'>Click Here</Button>{/*{user.tags.map(e => e.Itm_name).join(', ')}*/}</TableCell>
+										<TableCell padding='none'><Button variant='text'>Click Here</Button>{/*{user.tags.map(e => e.productName).join(', ')}*/}</TableCell>
 									</TableRow>
 								</TableHead>
 							</Table>

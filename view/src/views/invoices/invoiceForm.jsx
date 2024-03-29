@@ -592,18 +592,18 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                     id="product-search"
                                     options={allSearch.product}
                                     loading={loading}
-                                    getOptionLabel={(option) => option.Itm_name ? option.Itm_name : ''}
+                                    getOptionLabel={(option) => option.productName ? option.productName : ''}
                                     disabled={header.calculationType ? false : true}
                                     onChange={(event, selectedProduct) => {
                                         if (selectedProduct) {
-                                            const newPrice = selectedProduct.Itm_price;
+                                            const newPrice = selectedProduct.unitPrice;
                                             setItemLists((oldValue) => ({
                                                 ...oldValue,
                                                 unitPrice: newPrice,
-                                                description: selectedProduct.Itm_name,
-                                                itemCode: selectedProduct.Itm_id,
-                                                itemCategory: selectedProduct.Itm_taxable,
-                                                alt: selectedProduct.Itm_autoincrement,
+                                                description: selectedProduct.productName,
+                                                itemCode: selectedProduct.productID,
+                                                itemCategory: selectedProduct.taxType,
+                                                alt: selectedProduct.productIncrement,
                                             }));
                                         }
                                     }}

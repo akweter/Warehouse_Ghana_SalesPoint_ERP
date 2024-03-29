@@ -62,30 +62,30 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 	useEffect(() => {
 		if (productLine) {
 			const {
-				Itm_cat,
-				Itm_name,
+				productCategory,
+				productName,
 				Itm_status,
-				Itm_qty,
-				Itm_price,
+				stockQTY,
+				unitPrice,
 				Itm_sup_id,
-				Itm_taxable,
+				taxType,
 				itm_date,
-				Itm_UOM,
+				productUOM,
 				Itm_img,
 			} = productLine;
 
 			setFormData((state) => ({
 				...state,
-				productCategory: Itm_cat,
-				productName: Itm_name,
+				productCategory: productCategory,
+				productName: productName,
 				productStatus: Itm_status,
 				productImage: Itm_img,
-				productStockQty: Itm_qty,
-				productUnitPrice: Itm_price,
+				productStockQty: stockQTY,
+				productUnitPrice: unitPrice,
 				productSupId: Itm_sup_id,
-				productTaxType: Itm_taxable,
+				productTaxType: taxType,
 				productAddDate: itm_date,
-				productUOM: Itm_UOM
+				productUOM: productUOM
 			}));
 		}
 	}, [productLine]);
@@ -112,7 +112,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 			productStatus: formData.productStatus === "Active" ? "Inactive" : "Active",
 		});
 	};
-
+ 
 	// handle product excel drop
 	const handleDrop = useCallback((acceptedFiles) => {
 		acceptedFiles.forEach((file) => {

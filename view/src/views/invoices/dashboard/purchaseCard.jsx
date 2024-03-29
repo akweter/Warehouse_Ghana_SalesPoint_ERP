@@ -55,7 +55,7 @@ export default function DashboardPurchase() {
                             
                             const productIdToProductMap = {};
                             productsData.forEach(product => {
-                                productIdToProductMap[product.Itm_id] = product.Itm_name;
+                                productIdToProductMap[product.productID] = product.productName;
                             });
 
                             // Update invoices with product details

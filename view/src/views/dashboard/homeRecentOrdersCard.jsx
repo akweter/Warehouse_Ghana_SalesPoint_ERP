@@ -41,34 +41,36 @@ const HomeRecentOrders = () => {
   return (
     <Box padding={3}>
       <Typography variant='h3' textAlign='center' color='#082295'>Recent History</Typography>
-      <Tabs
-        value={value}
-        onChange={handleChange}
-        variant="scrollable"
-        scrollButtons="auto"
-      >
-        <Tab label="Transactions" />
-        <Tab label="Quotations" />
-        <Tab label="Leads" />
-        <Tab label="Insight" />
-        <Tab label="Pricing Chart" />
-      </Tabs>
+      <Box border={1} borderColor='#082295'>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          variant="scrollable"
+          scrollButtons="auto"
+        >
+          <Tab label="Transactions" />
+          <Tab label="Quotations" />
+          <Tab label="Leads" />
+          <Tab label="Insight" />
+          <Tab label="Pricing Chart" />
+        </Tabs>
 
-      <TabPanel value={value} index={0}>
-        <DashBoardInvoice />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <Typography variant='h1'>Quotations</Typography>
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-        <Typography variant='h1'>Follow Ups/Leads</Typography>
-      </TabPanel>
-      <TabPanel value={value} index={3}>
-        <Typography variant='h1'>Business Insight</Typography>
-      </TabPanel>
-      <TabPanel value={value} index={4}>
-        <Typography variant='h1'>Pricing Dashboard</Typography>
-      </TabPanel>
+        <TabPanel value={value} index={0}>
+          <DashBoardInvoice />
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <Typography variant='h1'>Quotations</Typography>
+        </TabPanel>
+        <TabPanel value={value} index={2}>
+          <Typography variant='h1'>Follow Ups/Leads</Typography>
+        </TabPanel>
+        <TabPanel value={value} index={3}>
+          <Typography variant='h1'>Business Insight</Typography>
+        </TabPanel>
+        <TabPanel value={value} index={4}>
+          <Typography variant='h1'>Pricing Dashboard</Typography>
+        </TabPanel>
+      </Box>
     </Box>
   );
 }

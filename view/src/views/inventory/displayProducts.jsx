@@ -35,8 +35,8 @@ const InventoryProductsTable = ({ products, loading }) => {
     const rows = useMemo(() =>
         products.map((product) => ({
             ...product,
-            itm_date: formatDate(product.itm_date),
-            Itm_taxable: ChangeTaxType(product.Itm_taxable),
+            dateAdded: formatDate(product.dateAdded),
+            taxType: ChangeTaxType(product.taxType),
         })),
         [products]
     );
@@ -53,7 +53,7 @@ const InventoryProductsTable = ({ products, loading }) => {
                 headerClassName: 'dataGridheader',
             },
             {
-                field: 'Itm_name',
+                field: 'productName',
                 headerName: 'Product/Service Name',
                 description: 'Product/Service details',
                 width: 300,
@@ -61,35 +61,35 @@ const InventoryProductsTable = ({ products, loading }) => {
                 flex: 2,
             },
             {
-                field: 'Itm_cat',
+                field: 'productCategory',
                 headerName: 'Category',
                 description: 'Product/Service category, class or group',
                 width: 120,
                 headerClassName: 'dataGridheader',
             },
             {
-                field: 'Itm_UOM',
+                field: 'productUOM',
                 headerName: 'UOM',
                 description: 'product unit of measurement',
                 width: 70,
                 headerClassName: 'dataGridheader',
             },
             {
-                field: 'Itm_qty',
+                field: 'stockQTY',
                 headerName: 'UOM QTY',
                 description: 'Quantity of UOM available',
                 width: 100,
                 headerClassName: 'dataGridheader',
             },
             {
-                field: 'Itm_price',
+                field: 'unitPrice',
                 headerName: 'Unit Price',
                 description: 'Product/Service Unit Price',
                 width: 100,
                 headerClassName: 'dataGridheader',
             },
             {
-                field: 'Itm_usr_id',
+                field: 'userName',
                 headerName: 'Added By',
                 description: 'User added Product/service',
                 width: 120,
@@ -97,7 +97,7 @@ const InventoryProductsTable = ({ products, loading }) => {
                 flex: 1,
             },
             {
-                field: 'Itm_sup_id',
+                field: 'supplierName',
                 headerName: 'Supplier',
                 description: 'Product/Service provider or supplier',
                 width: 200,
@@ -105,7 +105,7 @@ const InventoryProductsTable = ({ products, loading }) => {
                 flex: 1,
             },
             {
-                field: 'Itm_taxable',
+                field: 'taxType',
                 headerName: 'Tax type',
                 description: 'Class of tax the service/product belong',
                 width: 70,
@@ -113,7 +113,7 @@ const InventoryProductsTable = ({ products, loading }) => {
                 headerClassName: 'dataGridheader',
             },
             {
-                field: 'itm_date',
+                field: 'dateAdded',
                 headerName: 'Date',
                 description: 'Date added',
                 width: 100,
@@ -151,7 +151,7 @@ const InventoryProductsTable = ({ products, loading }) => {
                     disableRowSelectionOnClick={true}
                     slots={{ toolbar: GridToolbar }}
                     hideFooterSelectedRowCount={true}
-                    getRowId={(row) => row.Itm_id}
+                    getRowId={(row) => row.productID}
                     filterMode='client'
                     slotProps={{
                         toolbar: {
