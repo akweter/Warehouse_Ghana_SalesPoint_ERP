@@ -361,4 +361,13 @@ Router.post("/refund/cancellation", async (req, res) => {
     }
 });
 
+// Check gra server status
+Router.get("/status", async (req, res) => {
+    const response = await axios.get(`${GRA_ENDPOINT}/health`, { headers: { 'security_key': GRA_KEY } });
+    if (response.data) {
+        res.status(200).json({ status: response.data.status });
+    }
+    res.status(500).json({ status: 'down' });
+});
+
 module.exports = Router;

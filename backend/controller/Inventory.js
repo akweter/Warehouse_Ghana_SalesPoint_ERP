@@ -4,13 +4,60 @@ const { executeQuery} = require("../database/index");
 
 // Return all inventory
 const allProducts = async () => {
-  const sql = "SELECT * FROM inventory";
+  const sql = `
+  SELECT 
+    i.Itm_autoincrement AS productIncrement,
+    i.Itm_id AS productID,
+    i.Itm_name AS productName,
+    i.Itm_cat AS productCategory,
+    i.Itm_status AS productStatus,
+    i.Itm_UOM AS productUOM,
+    i.Itm_qty AS stockQTY,
+    i.Itm_price AS unitPrice,
+    i.Itm_taxable AS taxType,
+    i.itm_date AS dateAdded,
+    s.SnC_name AS supplierName,
+    s.SnC_id AS supplierID,
+    u.Usr_name AS userName,
+    u.Usr_id AS userID
+  FROM 
+    inventory AS i
+  LEFT JOIN 
+    suppliersncustomers AS s ON i.Itm_sup_id = s.SnC_id 
+  LEFT JOIN 
+    usermanagement AS u ON i.Itm_usr_id = u.Usr_id
+  `;
   return await executeQuery(sql);
 };
 
 //searchOnlyProduct
 const searchOnlyProduct = async (product) => {
-  const sql = "SELECT * FROM inventory WHERE Itm_status <> 'Inactive' AND (Itm_name LIKE ?) LIMIT 10";
+  const sql = `
+  SELECT 
+    i.Itm_autoincrement AS productIncrement,
+    i.Itm_id AS productID,
+    i.Itm_name AS productName,
+    i.Itm_cat AS productCategory,
+    i.Itm_status AS productStatus,
+    i.Itm_UOM AS productUOM,
+    i.Itm_qty AS stockQTY,
+    i.Itm_price AS unitPrice,
+    i.Itm_taxable AS taxType,
+    i.itm_date AS dateAdded,
+    s.SnC_name AS supplierName,
+    s.SnC_id AS supplierID,
+    u.Usr_name AS userName,
+    u.Usr_id AS userID
+  FROM 
+    inventory AS i
+  LEFT JOIN 
+    suppliersncustomers AS s ON i.Itm_sup_id = s.SnC_id 
+  LEFT JOIN 
+    usermanagement AS u ON i.Itm_usr_id = u.Usr_id
+  WHERE
+    Itm_status <> 'Inactive' AND (Itm_name LIKE ?) LIMIT 10
+  `;
+  // "SELECT * FROM inventory WHERE Itm_status <> 'Inactive' AND (Itm_name LIKE ?) LIMIT 10";
   return await executeQuery(sql, product);
 };
 

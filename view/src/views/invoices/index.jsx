@@ -7,7 +7,7 @@ import { IconButton, Grid, Box } from '@mui/material';
 
 // projects
 import { GeneralCatchError } from 'utilities/errorAlert';
-import { fetchAllInvoices } from 'apiActions/allApiCalls/invoice';
+import { checkGRAServerStatus, fetchAllInvoices } from 'apiActions/allApiCalls/invoice';
 import MakeNewInvoice from './generateInvoice';
 import RefundForms from 'views/refund/refundForm';
 import InvoiceDetails from './invoiceDetails';
@@ -16,7 +16,8 @@ import InvoiceTemplate from './invoiceTemplate';
 /* eslint-disable */
 
 export default function Invoice() {
-    const [submitted, setSubmitted] = useState(false)
+    const [submitted, setSubmitted] = useState(false);
+    const [status, setStatus] = useState(false);
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [openRefDialog, setOpenRefDialog] = useState(false);
@@ -28,8 +29,10 @@ export default function Invoice() {
 
     useEffect(() => {
         fetchData();
-    }, [submitted]);
+        testServer();
+    }, [submitted, status]);
 
+    // Fetch Invoices data from Database
     const fetchData = async () => {
         try {
             setLoading(true);
@@ -45,6 +48,17 @@ export default function Invoice() {
             setAlert((e) => ({ ...e, message: `Something unexpected happened with\n your connection. \n\n Please log in again if it persist.`, color: 'error' }));
             setLoading(true);
         }
+    };
+
+    // Test GRA Server Up
+    const testServer = async () => {
+        try {
+            const res = await checkGRAServerStatus();
+            setStatus(true);
+        }
+        catch (error) {
+            console.log('response',error);
+            setStatus(false); }
     };
 
     const formatDate = (dateString) => {
@@ -207,7 +221,7 @@ export default function Invoice() {
     return (
         <div>
             <Grid container sx={{ justifyContent: 'space-around' }}>
-                < MakeNewInvoice setSubmitted={setSubmitted} />
+                < MakeNewInvoice setSubmitted={setSubmitted} status={status}/>
             </Grid>
             <Box sx={{ height: 600, width: '100%' }}>
                 <DataGrid
