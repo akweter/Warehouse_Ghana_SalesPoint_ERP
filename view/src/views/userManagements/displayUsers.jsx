@@ -211,7 +211,7 @@ const DisplayUsers = ({ inData, submission }) => {
 								<TableCell><Typography variant='h4' color='white'>Registration Date</Typography></TableCell>
 								<TableCell><Typography variant='h4' align='center' color='white'>Status</Typography></TableCell>
 								<TableCell><Typography variant='h4' align='center' color='white'>Verify</Typography></TableCell>
-								<TableCell><Typography variant='h4' color='white' align='right'>Edit</Typography></TableCell>
+								<TableCell><Typography variant='h4' align='right' color='white'>Edit</Typography></TableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody>

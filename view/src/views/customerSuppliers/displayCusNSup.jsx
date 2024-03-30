@@ -12,6 +12,7 @@ import {
 	Paper,
 	Box,
 	Button,
+	Rating,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -36,6 +37,9 @@ const CusNsupRow = ({ cusNsup }) => {
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.SnC_tin}</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.SnC_region}</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.SnC_status}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>
+					<Rating name="read-only" value={cusNsup.SnC_rating} readOnly />
+				</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={() => alert('édited')} align='right'>
 					<Button variant='outlined' sx={{ backgroundColor: '#0C0E81', color: 'white' }}>Edit</Button>
 				</TableCell>
@@ -128,6 +132,7 @@ const CustomersSuppliersTable = ({ inData }) => {
 								<TableCell><Typography variant='h4' color='white'>TIN</Typography></TableCell>
 								<TableCell><Typography variant='h4' color='white'>Region</Typography></TableCell>
 								<TableCell><Typography variant='h4' color='white'>Status</Typography></TableCell>
+								<TableCell><Typography variant='h4' color='white'>Rating</Typography></TableCell>
 								<TableCell><Typography variant='h4' color='white' align='right'>Action</Typography></TableCell>
 							</TableRow>
 						</TableHead>
