@@ -7,7 +7,7 @@ import {
     Paper,
 } from "@mui/material";
 
-/* eslint-disable */
+// /* eslint-disable */
 
 // Projects
 import { fetchAllCustomersNSuppliers } from 'apiActions/allApiCalls/customer';
@@ -45,32 +45,32 @@ const CusNSupp = () => {
         <>
             {
                 loading ?
-                <LoadingSpinner /> : 
-                <>
-                    <Paper>
-                        <Grid container sx={{ justifyContent: 'space-around', paddingBottom: 1 }}>
-                            <Button
-                                variant='contained'
-                                color='primary'
-                                size='medium'
-                                onClick={handleOpen}
-                            >
-                                Add New User
-                            </Button>
-                        </Grid>
-                        <Box>
-                            {
-                                customersNsuppliers.length > 0 ? (
-                                    < CustomersSuppliersTable inData={customersNsuppliers} />
-                                ) :
-                                    null
-                            }
-                        </Box>
-                    </Paper>
-                    <Dialog open={open}>
-                        <AddSupnCustomers closeAddnewUser={handleClose} setSubmitted={setSubmitted} />
-                    </Dialog>
-                </>
+                    <LoadingSpinner /> :
+                    <>
+                        <Paper>
+                            <Grid container sx={{ justifyContent: 'space-around', paddingBottom: 1 }}>
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    size='medium'
+                                    onClick={handleOpen}
+                                >
+                                    Add New User
+                                </Button>
+                            </Grid>
+                            <Box>
+                                {
+                                    customersNsuppliers.length > 0 ? (
+                                        < CustomersSuppliersTable inData={customersNsuppliers} />
+                                    ) :
+                                        null
+                                }
+                            </Box>
+                        </Paper>
+                        <Dialog open={open}>
+                            <AddSupnCustomers closeAddnewUser={handleClose} setSubmitted={setSubmitted} />
+                        </Dialog>
+                    </>
             }
         </>
     );

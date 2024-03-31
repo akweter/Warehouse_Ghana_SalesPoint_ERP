@@ -74,6 +74,7 @@ const WoocommerceApi = () => {
                         case 'Order':
                             const data = await FetchWooSearchOrder(searchTerm);
                             setResults(data);
+                            break;
                         default:
                             setResults([]);
                             break;

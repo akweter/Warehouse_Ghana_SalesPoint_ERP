@@ -23,48 +23,44 @@ import requestMaking from 'auth/setHeaderToken';
 /* eslint-disable */
 
 const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
-    const [formData, setFormData] = useState({
-        username: '',
-        userEmail: '',
-        userType: 'Active',
-        userPhone: '',
-        staffID: '',
-        userDept: '',
-        userVerified: '',
-        userRating: '',
-        lname: '',
-        fname: '',
-    });
     const [errors, setErrors] = useState({});
     const [drop, setDrop] = useState(false);
     const [alert, setAlert] = useState({ message: '', color: '' });
     const [openAlert, setOpenAlert] = useState(false);
+    const [formData, setFormData] = useState({
+        userEmail: '',
+        userActive: 'Active',
+        userPhone: '',
+        userAddress: '',
+        userRegion: 'Local',
+        userType: '',
+        userRating: '',
+        userTIN: '',
+        userName: '',
+        userExemption: 'Taxable',
+    });
 
+    // Validate user input in fields
     const validateField = (name, value) => {
         switch (name) {
-            case 'username':
-                const userName = /^[A-Za-z0-9._-]{4,}$/;
-                return userName.test(value) ? '' : 'Username must be at least 4 characters long. Alphanumeric Required!';
             case 'userEmail':
                 const userEmail = /^[a-zA-Z0-9.\-_-]+@[a-zA-Z0-9.\-_-]+\.[a-zA-Z]{2,}$/;
                 return userEmail.test(value) ? '' : 'Invalid email address';
             case 'userPhone':
-                const userPhone = /^[0-9]{10}$/;;
+                const userPhone = /^[0-9]{10}$/;
                 return userPhone.test(value) ? '' : 'Telephone should be 10 characters. Alphabet and symbol not allowed!';
-            case 'fname':
-                const userFName = /^[A-Za-z._-]{2,}$/;
-                return userFName.test(value) ? '' : 'First name must be at least 2 characters long.  Numeric not allowed!';
-            case 'lname':
-                const userLName = /^[A-Za-z -_.]{2,}$/;
-                return userLName.test(value) ? '' : 'Last name must be at least 2 characters long.  Numeric not allowed!';
-            case 'staffID':
-                const staffID = /^[A-Za-z -_.]{2,}$/;
-                return staffID.test(value) ? '' : 'Staff ID must be at least 5 characters long. Alphanumeric Required!';
+            case 'userName':
+                const userName = /^[A-Za-z._ -]{4,}$/;
+                return userName.test(value) ? '' : 'Full name must be at least 4 characters long!';
+            case 'userTIN':
+                const userTIN = /^[A-Za-z0-9-]{10,}$/;
+                return userTIN.test(value) ? '' : 'TIN must be at least 10 characters long!';
             default:
                 return '';
         }
     };
 
+    // Handle form user input
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         const validationError = validateField(name, value);
@@ -72,16 +68,33 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
         setFormData({ ...formData, [name]: value });
     };
 
-    const changeUserStat = () => {
-        setFormData({
-            ...formData,
-            userType: formData.userType === 'Active' ? 'Inactive' : 'Active',
-        });
+    // handle check inputs
+    const changeUserStat = (event) => {
+        const { name, checked } = event.target;
+        let value;
+        
+        switch (name) {
+            case 'userActive':
+                value = checked ? 'Inactive' : 'Active';
+                break;
+            case 'userRegion':
+                value = checked ? 'Foreign' : 'Local';
+                break;
+            case 'userExemption':
+                value = checked ? 'Exempted' : 'Taxable';
+                break;
+            default:
+                value = '';
+        }
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            [name]: value
+        }));
     };
 
+    // Submit form to backend
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-
         const validationErrors = {};
         Object.keys(formData).forEach(async (name) => {
             const value = formData[name];
@@ -108,8 +121,15 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                         closeAddnewUser();
                         setFormData((e) => ({
                             ...e,
-                            fname: '', lname: '', staffID: '', userDept: '', userType: '',
-                            userEmail: '', username: '', userPhone: '', userVerified: '',
+                            userEmail: '',
+                            userActive: '',
+                            userPhone: '',
+                            userAddress: '',
+                            userRegion: '',
+                            userType: '',
+                            userRating: '',
+                            userTIN: '',
+                            userName: '',
                         }));
                         setDrop(true);
                     }, 2000);
@@ -125,52 +145,93 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
         }
     };
 
+    console.log(formData);
+    
     return (
         <>
             {alert.message ? (<AlertError open={openAlert} alert={alert} />) : null}
-            {drop === true ? <ShowBackDrop open={drop} /> : null}
+            {drop ? <ShowBackDrop open={drop} /> : null}
             <DialogContent>
                 <Box>
                     <Typography variant='h3' color="darkred" align='center' paddingBottom={2}>
-                        Add New User
+                        Add New Supplier or Customer
                     </Typography>
                     <Grid container spacing={2}>
-                        <Grid item xs={6}>
+                        <Grid item xs={3}>
+                            <FormControlLabel
+                                label={formData.userActive === "Active" ? "Active" : "Inactive"}
+                                control={
+                                    <Checkbox
+                                        onChange={changeUserStat}
+                                        color="secondary"
+                                        name='userActive'
+                                    />
+                                }
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <FormControlLabel
+                                label={formData.userRegion === "Local" ? "Local" : "Foreign"}
+                                control={
+                                    <Checkbox
+                                        onChange={changeUserStat}
+                                        color="primary"
+                                        name='userRegion'
+                                    />
+                                }
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <FormControlLabel
+                                label={formData.userExemption === "Taxable" ? "Taxable" : "Exempted"}
+                                control={
+                                    <Checkbox
+                                        onChange={changeUserStat}
+                                        color="success"
+                                        name='userExemption'
+                                    />
+                                }
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
                             <FormControl fullWidth>
-                                <TextField
-                                    label="First Name"
-                                    required
-                                    name="fname"
-                                    value={formData.fname}
+                                Rating
+                                <Slider
+                                    min={0} 
+                                    max={5} 
+                                    defaultValue={3}
                                     onChange={handleInputChange}
-                                    error={!!errors.fname}
-                                    helperText={errors.fname}
+                                    valueLabelDisplay='on'
+                                    name='userRating'
+                                    color='error'
+                                    error={!!errors.userRating}
+                                    helperText={errors.userRating}
                                 />
                             </FormControl>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={7}>
                             <FormControl fullWidth>
                                 <TextField
-                                    label="Last Name"
+                                    label="Full Name"
                                     required
-                                    name="lname"
-                                    value={formData.lname}
+                                    name="userName"
+                                    value={formData.userName}
                                     onChange={handleInputChange}
-                                    error={!!errors.lname}
-                                    helperText={errors.lname}
+                                    error={!!errors.userName}
+                                    helperText={errors.userName}
                                 />
                             </FormControl>
                         </Grid>
                         <Grid item xs={5}>
                             <FormControl fullWidth>
                                 <TextField
-                                    label="Username"
+                                    label="TIN or ID Number"
                                     required
-                                    name="username"
-                                    value={formData.username}
+                                    name="userTIN"
+                                    value={formData.userTIN}
                                     onChange={handleInputChange}
-                                    error={!!errors.username}
-                                    helperText={errors.username}
+                                    error={!!errors.userTIN}
+                                    helperText={errors.userTIN}
                                 />
                             </FormControl>
                         </Grid>
@@ -187,27 +248,7 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                 />
                             </FormControl>
                         </Grid>
-                        <Grid item xs={6}>
-                            <FormControl fullWidth>
-                                <InputLabel>Department</InputLabel>
-                                <Select
-                                    name="userDept"
-                                    required
-                                    value={formData.userDept}
-                                    onChange={handleInputChange}
-                                >
-                                    <MenuItem value="accounts">Accounts</MenuItem>
-                                    <MenuItem value="procurement">Procurement</MenuItem>
-                                    <MenuItem value="sales">Sales</MenuItem>
-                                    <MenuItem value="marketing">Marketing & Advertisement</MenuItem>
-                                    <MenuItem value="hr">Human Resource</MenuItem>
-                                    <MenuItem value="legal">Legal</MenuItem>
-                                    <MenuItem value="logistic">Logistics & Supply</MenuItem>
-                                    <MenuItem value="IT">Information Technology</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={5}>
                             <FormControl fullWidth>
                                 <TextField
                                     label="Telephone"
@@ -221,41 +262,31 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                 />
                             </FormControl>
                         </Grid>
-                        <Grid item xs={3}>
-                            <FormControlLabel
-                                label={formData.userType === "Active" ? "Active" : "Inactive"}
-                                control={
-                                    <Checkbox
-                                        checked={formData.userType === "Active"}
-                                        onChange={changeUserStat}
-                                        color="secondary"
-                                    />
-                                }
-                            />
-                        </Grid>
-                        <Grid item xs={3}>
+                        <Grid item xs={7}>
                             <FormControl fullWidth>
-                                Rating
-                                <Slider
-                                    min={0} 
-                                    max={5} 
+                                <TextField
+                                    label="Address"
+                                    required
+                                    name="userAddress"
+                                    value={formData.userAddress}
                                     onChange={handleInputChange}
-                                    valueLabelDisplay='on'
-                                    name='userRating'
-                                    error={!!errors.userRating}
-                                    helperText={errors.userRating}
+                                    error={!!errors.userAddress}
+                                    helperText={errors.userAddress}
                                 />
                             </FormControl>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={5}>
                             <FormControl fullWidth>
-                                <TextField
-                                    label="Staff ID"
+                                <InputLabel>User Type</InputLabel>
+                                <Select
+                                    name="userType"
                                     required
-                                    name="staffID"
-                                    value={formData.staffID}
+                                    value={formData.userType}
                                     onChange={handleInputChange}
-                                />
+                                >
+                                    <MenuItem value="supplier">Supplier</MenuItem>
+                                    <MenuItem value="customer">Customer</MenuItem>
+                                </Select>
                             </FormControl>
                         </Grid>
                     </Grid>

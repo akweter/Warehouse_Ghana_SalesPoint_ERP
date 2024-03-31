@@ -134,7 +134,6 @@ export default function DashBoardInvoice() {
     const handleViewIconClick = (row) => {
         setSelectedRow(row);
         setOpenDialog(true);
-        console.log('row',row);
     };
 
     const handleCloseDialog = () => {  setOpenDialog(false) };

@@ -1,5 +1,5 @@
 // material-ui
-import { Box, CardContent, Grid, Paper, Skeleton, Stack } from '@mui/material';
+import { Box, CardContent, Grid, Skeleton } from '@mui/material';
 
 // project import
 import MainCard from '../MainCard';

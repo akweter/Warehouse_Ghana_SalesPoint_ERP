@@ -230,7 +230,6 @@ export default function Invoice() {
                     loading={loading ? loading : null}
                     density='compact'
                     editMode='cell'
-                    isCellEditable={true}
                     pageSize={5}
                     disableRowSelectionOnClick={true}
                     slots={{ toolbar: GridToolbar }}

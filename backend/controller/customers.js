@@ -70,9 +70,26 @@ const queryProduct = async (user) => {
 
 // Sales Dept customers
 const Searches = async (prop) => {
-  const sql = "SELECT SnC_id, SnC_name, SnC_Type, SnC_tin, SnC_region FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'customer' AND (SnC_name LIKE ? OR SnC_tin LIKE ? OR SnC_phone LIKE ? OR SnC_email LIKE ?); ";
+  const sql = `
+    SELECT
+      SnC_id, SnC_name, SnC_Type, SnC_tin, SnC_region
+    FROM 
+      suppliersncustomers 
+    WHERE 
+      SnC_status = 'active' AND SnC_Type = 'customer' AND (SnC_name LIKE ? OR SnC_tin LIKE ? OR SnC_phone LIKE ? OR SnC_email LIKE ?)`;
   return await executeQuery(sql, prop);
 };
+
+const AddCustomerSupplier = async (prop) => {
+  const sql = `
+    INSERT INTO suppliersncustomers(
+      SnC_Type, SnC_name, SnC_tin, SnC_address, SnC_phone, SnC_region, SnC_status, SnC_email, SnC_pro_id, SnC_exempted, SnC_rating, SnC_id
+    )
+    VALUES ( 
+      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? 
+    )`;
+  return await executeQuery(sql, prop);
+}
 
 const allActions = {
   CustomerByTIn,
@@ -87,6 +104,7 @@ const allActions = {
   Searches,
   Region,
   allCustomersNSuplliers,
+  AddCustomerSupplier,
 };
 
 module.exports = allActions;

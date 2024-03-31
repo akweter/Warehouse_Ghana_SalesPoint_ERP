@@ -12,7 +12,6 @@ import {
     Stack,
     Chip} from '@mui/material';
 import Slide from '@mui/material/Slide';
-import { CheckCircle } from '@mui/icons-material';
 
 // /* eslint-disable */
 const Transition = React.forwardRef(function Transition(props, ref) {

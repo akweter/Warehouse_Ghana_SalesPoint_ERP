@@ -843,51 +843,48 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                             <tbody>
                                                 <tr>
                                                     <td style={{ textAlign: 'left' }}>SUB-TOTAL</td>
-                                                    <td style={{ textAlign: 'right' }}>{tax.Subtotal ? tax.Subtotal : 0.00}</td>
+                                                    <td style={{ textAlign: 'right' }}>{tax.Subtotal || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
                                                     <td>DISOCUNT</td>
-                                                    <td>{header.discountAmount ? header.discountAmount : 0.00}</td>
+                                                    <td>{header.discountAmount || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
                                                     <td>NHIL (2.5%)</td>
-                                                    <td>{tax.nhil ? tax.nhil : 0.00}</td>
+                                                    <td>{tax.nhil || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
                                                     <td>GETFUND (2.5%)</td>
-                                                    <td>{tax.getfund ? tax.getfund : 0.00}</td>
+                                                    <td>{tax.getfund || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
                                                     <td>COVID (1%)</td>
-                                                    <td>{tax.covid ? tax.covid : 0.00}</td>
+                                                    <td>{tax.covid || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
                                                     <td>CST (5%)</td>
-                                                    <td>{tax.cst ? tax.cst : 0.00}</td>
+                                                    <td>{tax.cst || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
                                                     <td>TOURISM (1%)</td>
-                                                    <td>{tax.tourism ? tax.tourism : 0.00}</td>
+                                                    <td>{tax.tourism || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
                                                     <td>VAT (15%)</td>
-                                                    <td>{header.totalVat ? header.totalVat : 0.00}</td>
+                                                    <td>{header.totalVat || 0.00}</td>
                                                 </tr>
-                                            </tbody>
-                                            <tr>
-                                                <span
+                                                <tr
                                                     style={{
                                                         marginTop: '10px',
-                                                        display: 'flex',
-                                                        flexDirection: 'row',
                                                         justifyContent: 'space-between',
-                                                        fontSize: '18px',
+                                                        fontSize: '17px',
                                                         color: 'darkred',
-                                                    }}>
-                                                    <strong>TOTAL</strong>
-                                                    <strong>{header.currency ? header.currency : null} {header.currency ? header.totalAmount : 0.00}</strong>
-                                                </span>
-                                            </tr>
+                                                    }}
+                                                >
+                                                    <td>TOTAL</td>
+                                                    <td>{header.currency || 'GHS'}: {header.totalAmount || 0.00}</td>
+                                                </tr>
+                                            </tbody>
                                         </table>
                                     </Screens.Item>
                                 </Box>
