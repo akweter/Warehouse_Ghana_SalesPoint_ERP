@@ -94,10 +94,10 @@ export default function SignInForm() {
                                 sessionStorage.setItem('Authorization', t);
                                 const redirectUrl = sessionStorage.getItem('userActiveURL');
                                 if (redirectUrl === null || redirectUrl === undefined || redirectUrl === "") {
-                                    window.location.href="/";
+                                    window.location.href = window.location.origin;
                                 } else {
-                                    window.location.href=`${viewOrigin}${redirectUrl}`;
-                                }
+                                    window.location.href = `${window.location.origin}${redirectUrl}`;
+                                }                                
                             }, 1000);
                         }
                         else if (body.message === 'email_sent') {

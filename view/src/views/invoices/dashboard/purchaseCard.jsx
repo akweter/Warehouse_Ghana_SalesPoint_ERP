@@ -45,7 +45,7 @@ export default function DashboardPurchase() {
 
                         const tinToNameMap = {};
                         customersData.forEach(customer => {
-                            tinToNameMap[customer.SnC_tin] = customer.SnC_name;
+                            tinToNameMap[customer.userTIN] = customer.userName;
                         });
 
                         // Fetch products

@@ -7,7 +7,7 @@ import {
     Paper,
 } from "@mui/material";
 
-// /* eslint-disable */
+/* eslint-disable */
 
 // Projects
 import { fetchAllCustomersNSuppliers } from 'apiActions/allApiCalls/customer';
@@ -38,6 +38,9 @@ const CusNSupp = () => {
             }, 1500);
         }
         catch (error) {
+            setTimeout(() => {
+                setLoading(false);
+            }, 5000);
         }
     }
 
@@ -45,32 +48,32 @@ const CusNSupp = () => {
         <>
             {
                 loading ?
-                    <LoadingSpinner /> :
-                    <>
-                        <Paper>
-                            <Grid container sx={{ justifyContent: 'space-around', paddingBottom: 1 }}>
-                                <Button
-                                    variant='contained'
-                                    color='primary'
-                                    size='medium'
-                                    onClick={handleOpen}
-                                >
-                                    Add New User
-                                </Button>
-                            </Grid>
-                            <Box>
-                                {
-                                    customersNsuppliers.length > 0 ? (
-                                        < CustomersSuppliersTable inData={customersNsuppliers} />
-                                    ) :
-                                        null
-                                }
-                            </Box>
-                        </Paper>
-                        <Dialog open={open}>
-                            <AddSupnCustomers closeAddnewUser={handleClose} setSubmitted={setSubmitted} />
-                        </Dialog>
-                    </>
+                <LoadingSpinner /> :
+                <>
+                    {
+                        customersNsuppliers.length > 0 ? (<>
+                            <Paper>
+                                <Grid container sx={{ justifyContent: 'space-around', paddingBottom: 1 }}>
+                                    <Button
+                                        variant='contained'
+                                        color='primary'
+                                        size='medium'
+                                        onClick={handleOpen}
+                                    >
+                                        Add New User
+                                    </Button>
+                                </Grid>
+                                <Box>
+                                    < CustomersSuppliersTable inData={customersNsuppliers} setSubmitted={setSubmitted} />
+                                </Box>
+                            </Paper>
+                            <Dialog open={open}>
+                                <AddSupnCustomers closeAddnewUser={handleClose} setSubmitted={setSubmitted} />
+                            </Dialog>
+                        </>) :
+                            null
+                    }
+                </>
             }
         </>
     );

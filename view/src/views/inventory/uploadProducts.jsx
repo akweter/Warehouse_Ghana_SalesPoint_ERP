@@ -393,7 +393,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 											id="supplier-search"
 											options={allSearch}
 											loading={loading}
-											getOptionLabel={(option) => option.SnC_name ? option.SnC_name : "No Supplier"}
+											getOptionLabel={(option) => option.userName ? option.userName : "No Supplier"}
 											onChange={(event, selectedSupplier) => {
 												if (selectedSupplier) {
 													setFormData((oldValue) => ({

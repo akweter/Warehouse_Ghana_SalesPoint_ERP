@@ -37,3 +37,12 @@ export const postCustomerSupplier = async (data) => {
         return null;
     });
 };
+
+// Update supplier or customer details
+export const updateSupplierCustomer = async (id, data) => {
+    const response = await requestMaking(`customers/${id}`, 'put', data);
+    if (response.ok) {
+        return await response.json();
+    }
+    return null;
+};

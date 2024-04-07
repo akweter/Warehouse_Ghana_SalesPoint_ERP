@@ -8,36 +8,38 @@ import {
     Grid,
     FormControl,
     TextField,
-    FormControlLabel,
-    Checkbox,
     InputLabel,
     Select,
     MenuItem,
+    FormControlLabel,
+    Checkbox,
     Slider,
     CircularProgress,
 } from '@mui/material';
+import { ShowBackDrop } from 'utilities/backdrop';
 import { AlertError } from 'utilities/errorAlert';
-import { postCustomerSupplier } from 'apiActions/allApiCalls/customer';
+import { updateSupplierCustomer } from 'apiActions/allApiCalls/customer';
 
 // /* eslint-disable */
 
-const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
+const UpdateCusNSup = ({ user, closeAddnewUser, setSubmitted }) => {
+    const [formData, setFormData] = useState({
+        userEmail: user.userEmail || '',
+        userActive: user.userStatus || '',
+        userPhone: user.userPhone || '',
+        userAddress: user.userAddress || '',
+        userRegion: user.userRegion || '',
+        userType: user.userType || '',
+        userRating: user.userRating || '',
+        userTIN: user.userTIN || '',
+        userName: user.userName || '',
+        userExemption: user.userExemption || '',
+        userAddedDate: user.userAddedDate || new Date(),
+    });
     const [errors, setErrors] = useState({});
     const [drop, setDrop] = useState(false);
     const [alert, setAlert] = useState({ message: '', color: '' });
     const [openAlert, setOpenAlert] = useState(false);
-    const [formData, setFormData] = useState({
-        userEmail: '',
-        userActive: 'Active',
-        userPhone: '',
-        userAddress: '',
-        userRegion: 'Local',
-        userType: '',
-        userRating: '',
-        userTIN: '',
-        userName: '',
-        userExemption: 'Taxable',
-    });
 
     // Validate user input in fields
     const validateField = (name, value) => {
@@ -59,7 +61,7 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
         }
     };
 
-    // Handle form user input
+    // Change user change
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         const validationError = validateField(name, value);
@@ -74,13 +76,13 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
         
         switch (name) {
             case 'userActive':
-                value = checked ? 'Inactive' : 'Active';
+                value = checked ? 'Active' : 'Inactive';
                 break;
             case 'userRegion':
-                value = checked ? 'Foreign' : 'Local';
+                value = checked ? 'Local' : 'Foreign';
                 break;
             case 'userExemption':
-                value = checked ? 'Exempted' : 'Taxable';
+                value = checked ? 'Taxable' : 'Exempted';
                 break;
             default:
                 value = '';
@@ -94,56 +96,72 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
     // Submit form to backend
     const handleFormSubmit = async (e) => {
         e.preventDefault();
+
         const validationErrors = {};
-        Object.keys(formData).forEach(async (name) => {
+        Object.keys(formData).forEach((name) => {
             const value = formData[name];
             const error = validateField(name, value);
-            if (error) { validationErrors[name] = error }
+            if (error) {
+                validationErrors[name] = error;
+            }
         });
         setErrors(validationErrors);
+
         if (Object.keys(validationErrors).length > 0) { return }
+        
 
         try {
             setDrop(true);
-            const response = await postCustomerSupplier(formData);
-
+            const response = await updateSupplierCustomer(user.userID, formData);
             setTimeout(() => {
-                setAlert((e) => ({...e, message: `You've done it!`, color: 'success' }));
-                setOpenAlert(true);
+                if (response.message === 'success') {
+                    setTimeout(() => {
+                        setAlert({ message: `${formData.userName || formData.userEmail} updated successfully`, color: 'success' });
+                        setOpenAlert(true);
 
-                setTimeout(() => {
-                    setDrop(true);
-                    closeAddnewUser();
-                    setSubmitted(true);
-                    setFormData((e) => ({
-                        ...e,
-                        userEmail: '',
-                        userActive: '',
-                        userPhone: '',
-                        userAddress: '',
-                        userRegion: '',
-                        userType: '',
-                        userRating: '',
-                        userTIN: '',
-                        userName: '',
-                        userExemption: '',
-                    }));
-                }, 1000);
-            }, 2000);
+                        setTimeout(() => {
+                            setSubmitted(true);
+                            closeAddnewUser();
+                            setFormData((e) => ({
+                                ...e,
+                                userEmail: '',
+                                userActive: '',
+                                userPhone: '',
+                                userAddress: '',
+                                userRegion: '',
+                                userType: '',
+                                userRating: '',
+                                userTIN: '',
+                                userName: '',
+                                userExemption: '',
+                            }));
+                            setDrop(true);
+                        }, 1000);
+                    }, 2000);
+                }
+                else {
+                    setDrop(false);
+                    setAlert({ message: response.message, color: 'error' });
+                }
+            }, 500)
         }
         catch (error) {
-            setAlert({ message: 'Ooops! Something went wrong. Please refresh and retry', color: 'error' });
-            setOpenAlert(true);
+            setDrop(false);
+            setAlert({
+                message: 'Oops! Something went wrong. Please refresh and retry',
+                color: 'error',
+            });
         }
     };
-    
+
     return (
         <>
             {alert.message ? (<AlertError open={openAlert} alert={alert} />) : null}
+            {drop ? <ShowBackDrop open={drop} /> : null}
             <DialogContent>
                 <Box>
-                    <Typography variant='h3' color="darkred" align='center' paddingBottom={2}>
-                        Add New Supplier or Customer
+                    <Typography variant='h4' color="darkred" align='center' paddingBottom={2}>
+                       You are Updating <i style={{color: 'darkblue'}}>{formData.userName ? formData.userName || formData.userEmail : formData.userName}</i>
                     </Typography>
                     <Grid container spacing={2}>
                         <Grid item xs={3}>
@@ -154,6 +172,7 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                         onChange={changeUserStat}
                                         color="secondary"
                                         name='userActive'
+                                        value={formData.userActive || ""}
                                     />
                                 }
                             />
@@ -166,6 +185,7 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                         onChange={changeUserStat}
                                         color="primary"
                                         name='userRegion'
+                                        value={formData.userRegion || ""}
                                     />
                                 }
                             />
@@ -178,6 +198,7 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                         onChange={changeUserStat}
                                         color="error"
                                         name='userExemption'
+                                        value={formData.userExemption || ""}
                                     />
                                 }
                             />
@@ -188,7 +209,7 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                 <Slider
                                     min={0} 
                                     max={5} 
-                                    defaultValue={3}
+                                    value={formData.userRating || 0}
                                     onChange={handleInputChange}
                                     valueLabelDisplay='on'
                                     name='userRating'
@@ -279,9 +300,10 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
             </DialogContent>
             <DialogActions>
                 <Button onClick={closeAddnewUser} variant='outlined' color='error'>Cancel</Button>
-                <Button onClick={handleFormSubmit} variant='outlined' color='primary'>{drop ? <CircularProgress open={drop} size='25px' /> : 'Submit'}</Button>
+                <Button onClick={handleFormSubmit} variant='outlined' color='primary'>{drop ? <CircularProgress open={drop} size='25px' /> : 'Update'}</Button>
             </DialogActions>
         </>
     );
 }
-export default AddSupnCustomers;
+
+export default UpdateCusNSup;

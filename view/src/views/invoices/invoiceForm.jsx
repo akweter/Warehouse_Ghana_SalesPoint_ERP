@@ -451,14 +451,14 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                     id="customer-search"
                                     options={allSearch.customer}
                                     loading={loading}
-                                    getOptionLabel={(option) => header.businessPartnerName !== 'Cash' ? option.SnC_name : ''}
+                                    getOptionLabel={(option) => header.businessPartnerName !== 'Cash' ? option.userName : ''}
                                     onChange={(event, selecteduser) => {
                                         if (selecteduser) {
-                                            const customerName = selecteduser.SnC_name;
+                                            const customerName = selecteduser.userName;
                                             setHeader((oldValue) => ({
                                                 ...oldValue,
                                                 businessPartnerName: customerName,
-                                                businessPartnerTin: selecteduser.SnC_tin,
+                                                businessPartnerTin: selecteduser.userTIN,
                                                 invCusId: selecteduser.SnC_id,
                                             }));
                                         }

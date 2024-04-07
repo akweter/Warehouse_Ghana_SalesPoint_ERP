@@ -4,7 +4,22 @@ const { executeQuery} = require("../database/index");
 
 // Return all customers and suppliers
 const allCustomersNSuplliers = async () => {
-  const sql = "SELECT * FROM suppliersncustomers";
+  const sql = `
+    SELECT
+      SnC_Type as userType, 
+      SnC_name as userName, 
+      SnC_tin as userTIN, 
+      SnC_address as userAddress, 
+      SnC_phone as userPhone, 
+      SnC_region as userRegion, 
+      SnC_status as userStatus, 
+      SnC_email as userEmail,
+      SnC_exempted as userExemption, 
+      SnC_rating as userRating, 
+      SnC_id as userID, 
+      SnC_date as userAddedDate
+    FROM suppliersncustomers
+    ORDER BY SnC_date DESC`;
   return await executeQuery(sql);
 };
 
@@ -64,7 +79,25 @@ const oneRating = async (prop) => {
 
 // Return Search Customer
 const queryProduct = async (user) => {
-  const sql = "SELECT * FROM suppliersncustomers WHERE SnC_status  <> 'inactive' AND SnC_Type = 'customer' AND (SnC_name LIKE ?) LIMIT 10";
+  const sql = `
+    SELECT 
+      SnC_Type as userType, 
+      SnC_name as userName, 
+      SnC_tin as userTIN, 
+      SnC_address as userAddress, 
+      SnC_phone as userPhone, 
+      SnC_region as userRegion, 
+      SnC_status as userStatus, 
+      SnC_email as userEmail,
+      SnC_exempted as userExemption, 
+      SnC_rating as userRating, 
+      SnC_id as userID, 
+      SnC_date as userAddedDate
+    FROM 
+      suppliersncustomers 
+    WHERE 
+      SnC_status  <> 'inactive' AND SnC_Type = 'customer' AND (SnC_name LIKE ?) 
+    LIMIT 10`;
   return executeQuery(sql, user);
 };
 
@@ -72,7 +105,18 @@ const queryProduct = async (user) => {
 const Searches = async (prop) => {
   const sql = `
     SELECT
-      SnC_id, SnC_name, SnC_Type, SnC_tin, SnC_region
+      SnC_Type as userType, 
+      SnC_name as userName, 
+      SnC_tin as userTIN, 
+      SnC_address as userAddress, 
+      SnC_phone as userPhone, 
+      SnC_region as userRegion, 
+      SnC_status as userStatus, 
+      SnC_email as userEmail,
+      SnC_exempted as userExemption, 
+      SnC_rating as userRating, 
+      SnC_id as userID, 
+      SnC_date as userAddedDate
     FROM 
       suppliersncustomers 
     WHERE 
@@ -80,18 +124,25 @@ const Searches = async (prop) => {
   return await executeQuery(sql, prop);
 };
 
+// Add new custoner or supplier
 const AddCustomerSupplier = async (prop) => {
   const sql = `
     INSERT INTO suppliersncustomers(
-      SnC_Type, SnC_name, SnC_tin, SnC_address, SnC_phone, SnC_region, SnC_status, SnC_email, SnC_pro_id, SnC_exempted, SnC_rating, SnC_id
+      SnC_Type, SnC_name, SnC_tin, SnC_address, SnC_phone, SnC_region, SnC_status, SnC_email, SnC_exempted, SnC_rating, SnC_id, SnC_date
     )
     VALUES ( 
-      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? 
+      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
     )`;
   return await executeQuery(sql, prop);
 }
 
-const allActions = {
+// Update customer or supplier
+const updateCustomerNSupplier = (userData, userId) => {
+  const sql = "UPDATE suppliersncustomers SET ? WHERE SnC_id = ?";
+  return executeQuery(sql, [userData, userId]);
+}
+
+module.exports = {
   CustomerByTIn,
   allCustomers,
   status,
@@ -105,6 +156,5 @@ const allActions = {
   Region,
   allCustomersNSuplliers,
   AddCustomerSupplier,
+  updateCustomerNSupplier,
 };
-
-module.exports = allActions;

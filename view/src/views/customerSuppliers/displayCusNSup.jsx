@@ -13,16 +13,21 @@ import {
 	Box,
 	Button,
 	Rating,
+	Dialog,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import UpdateCusNSup from './updateSupNCus';
 
-const CusNsupRow = ({ cusNsup }) => {
-	const [open, setOpen] = React.useState(false);
+const CusNsupRow = ({ cusNsup, setSubmitted }) => {
+	const [updateDialog, setUpdateDialog] = useState(false);
+	const [open, setOpen] = useState(false);
 
-	const openData = () => {
-		setOpen(!open);
-	};
+	const openData = () => setOpen(!open);
+	
+	const handleUpdateUser = () => {
+		setUpdateDialog(true);
+	}
 
 	return (
 		<>
@@ -32,19 +37,18 @@ const CusNsupRow = ({ cusNsup }) => {
 						{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
 					</IconButton>
 				</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} component="th" scope="row" onClick={openData}>{cusNsup.SnC_Type}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.SnC_name}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.SnC_tin}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.SnC_region}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.SnC_status}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} component="th" scope="row" onClick={openData}>{cusNsup.userType}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userName}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userTIN}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userRegion}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userStatus}</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>
-					<Rating name="read-only" value={cusNsup.SnC_rating} readOnly />
+					<Rating name="read-only" value={cusNsup.userRating} readOnly />
 				</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={() => alert('édited')} align='right'>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={() => handleUpdateUser()} align='right'>
 					<Button variant='outlined' sx={{ backgroundColor: '#0C0E81', color: 'white' }}>Edit</Button>
 				</TableCell>
 			</TableRow>
-
 			<TableRow>
 				<TableCell padding='none' style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
 					<Collapse in={open} timeout="auto" unmountOnExit>
@@ -53,35 +57,35 @@ const CusNsupRow = ({ cusNsup }) => {
 								<TableHead>
 									<TableRow>
 										<TableCell padding='none'>TIN</TableCell>
-										<TableCell padding='none' align='left'>{cusNsup.SnC_tin}</TableCell>
+										<TableCell padding='none' align='left'>{cusNsup.userTIN}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Email</TableCell>
-										<TableCell padding='none'>{cusNsup.SnC_email}</TableCell>
+										<TableCell padding='none'>{cusNsup.userEmail}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Telephone</TableCell>
-										<TableCell padding='none'>{cusNsup.SnC_phone}</TableCell>
+										<TableCell padding='none'>{cusNsup.userPhone}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Tax Status</TableCell>
-										<TableCell padding='none'>{cusNsup.SnC_status}</TableCell>
+										<TableCell padding='none'>{cusNsup.userStatus}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Address</TableCell>
-										<TableCell padding='none'>{cusNsup.SnC_address}</TableCell>
+										<TableCell padding='none'>{cusNsup.userAddress}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Date Added</TableCell>
-										<TableCell padding='none'>{cusNsup.SnC_Date}</TableCell>
+										<TableCell padding='none'>{cusNsup.userAddedDate}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Rating</TableCell>
-										<TableCell padding='none'>{cusNsup.SnC_rating}</TableCell>
+										<TableCell padding='none'>{cusNsup.userRating}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Exemption</TableCell>
-										<TableCell padding='none'>{cusNsup.SnC_exempted}</TableCell>
+										<TableCell padding='none'>{cusNsup.userExemption}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Products Bought/supplied</TableCell>
@@ -93,11 +97,15 @@ const CusNsupRow = ({ cusNsup }) => {
 					</Collapse>
 				</TableCell>
 			</TableRow>
+
+			<Dialog open={updateDialog}>
+                    <UpdateCusNSup user={cusNsup} closeAddnewUser={()=>setUpdateDialog(false)} setSubmitted={setSubmitted} />
+            </Dialog>
 		</>
 	);
 };
 
-const CustomersSuppliersTable = ({ inData }) => {
+const CustomersSuppliersTable = ({ inData, setSubmitted }) => {
 	const itemsPerPage = 25;
 	const [currentPage, setCurrentPage] = useState(1);
 
@@ -115,7 +123,7 @@ const CustomersSuppliersTable = ({ inData }) => {
 		const currentPageData = inData.slice(startIndex, endIndex);
 
 		return currentPageData.map(data => (
-			<CusNsupRow key={data.SnC_id} cusNsup={data} />
+			<CusNsupRow key={data.userID} cusNsup={data} setSubmitted={setSubmitted}/>
 		));
 	};
 
@@ -147,6 +155,5 @@ const CustomersSuppliersTable = ({ inData }) => {
 		</>
 	);
 };
-
 
 export default CustomersSuppliersTable;

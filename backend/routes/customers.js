@@ -21,8 +21,9 @@ const {
   Region,
   allCustomersNSuplliers,
   AddCustomerSupplier,
+  updateCustomerNSupplier,
 } = require("../controller/customers");
-const { logErrorMessages } = require("../utils/saveLogfile");
+const { logErrorMessages, logSuccessMessages } = require("../utils/saveLogfile");
 
 // all customers and suppliers
 Router.get("/customersnsuppliers", async (req, res, next) => {
@@ -54,7 +55,7 @@ Router.get("/query", async (req, res, next) => {
   const result = '%' + query + '%'
   try {
     const output = await queryProduct(result);
-    return executeRoute(output, res);
+    res.status(200).json(output);
   }
   catch (err) {
     logAllMessage("Internal server error" + err);
@@ -193,7 +194,7 @@ Router.post("/addsnc", async (req, res, next) => {
     userTIN,
     userName,
   } = req.body;
-  
+
   const payload = [
     userType,
     userName,
@@ -203,18 +204,58 @@ Router.post("/addsnc", async (req, res, next) => {
     userRegion,
     userActive,
     userEmail,
-    null,
     userExemption,
     userRating,
     UUID(),
+    new Date(),
   ];
+  
   try {
     const output = await AddCustomerSupplier(payload);
-    res.status(200).json(output);
+    res.status(200).json({status: 'success', data: output});
   }
   catch (err) {
     logErrorMessages("Internal server error" + err);
-    res.status(500).send("Internal server error");
+    res.status(500).send("Adding new user failed!");
+  }
+});
+
+// Update user
+Router.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const {
+    userType,
+    userName,
+    userTIN,
+    userAddress,
+    userPhone,
+    userRegion,
+    userActive,
+    userEmail,
+    userExemption,
+    userRating,
+  } = req.body;
+
+  const userData = {
+    SnC_email: userEmail,
+    SnC_status: userActive,
+    SnC_name: userName,
+    SnC_phone: userPhone,
+    SnC_Type: userType,
+    SnC_exempted: userExemption,
+    SnC_tin: userTIN,
+    SnC_address: userAddress,
+    SnC_region: userRegion,
+    SnC_rating: userRating,
+  };
+
+  try {
+    const output = await updateCustomerNSupplier(userData, id);
+    return res.status(200).json({ message: "success" });
+  }
+  catch (err) {
+    logAllMessage("Internal server error" + err);
+    return res.status(500).json({ message: `Failed to update ${username}` });
   }
 });
 
