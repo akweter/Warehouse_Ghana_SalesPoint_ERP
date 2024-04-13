@@ -60,7 +60,7 @@ const CusNSupp = () => {
                                         size='medium'
                                         onClick={handleOpen}
                                     >
-                                        Add New User
+                                        Add New Supplier or Customer
                                     </Button>
                                 </Grid>
                                 <Box>

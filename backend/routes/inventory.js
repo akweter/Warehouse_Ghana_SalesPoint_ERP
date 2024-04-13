@@ -8,7 +8,6 @@ const { executeRoute } = require("../utils/handler");
 const {
 	allProducts,
 	oneProduct,
-	taxOnProduct,
 	addedUser,
 	productSupplier,
 	dateAdded,
@@ -17,13 +16,14 @@ const {
 	searchOnlyProduct,
 	oneProductAutoIncrement,
 	addExcelProducts,
+	updateProduct,
 } = require("../controller/Inventory");
 const { logAllMessage } = require("../utils/saveAllLogs");
-const { logSuccessMessages, logErrorMessages, logMessage } = require("../utils/saveLogfile");
+const { logSuccessMessages, logErrorMessages } = require("../utils/saveLogfile");
 const generateUUID = require("../utils/generateIDs");
 
 // all products
-Router.get("/", async (req, res, next) => {
+Router.get("/", async (req, res) => {
 	try {
 		const output = await allProducts();
 		return await executeRoute(output, res);
@@ -35,7 +35,7 @@ Router.get("/", async (req, res, next) => {
 });
 
 // Search product names
-Router.get("/query", async (req, res, next) => {
+Router.get("/query", async (req, res) => {
 	const result = req.query.query;
 	const query = '%' + result + '%'
 	try {
@@ -49,7 +49,7 @@ Router.get("/query", async (req, res, next) => {
 });
 
 // user who added the product
-Router.get("/user", async (req, res, next) => {
+Router.get("/user", async (req, res) => {
 	const stat = req.body.user;
 	try {
 		const output = await addedUser(stat);
@@ -62,7 +62,7 @@ Router.get("/user", async (req, res, next) => {
 });
 
 // product supplier
-Router.get("/supplier", async (req, res, next) => {
+Router.get("/supplier", async (req, res) => {
 	const stat = req.body.supplier;
 	try {
 		const output = await productSupplier(stat);
@@ -75,7 +75,7 @@ Router.get("/supplier", async (req, res, next) => {
 });
 
 // Exempted products
-Router.get("/taxable", async (req, res, next) => {
+Router.get("/taxable", async (req, res) => {
 	const stat = req.body.taxable;
 	try {
 		const output = await Exempt(stat);
@@ -88,7 +88,7 @@ Router.get("/taxable", async (req, res, next) => {
 });
 
 // Date Range
-Router.get("/date", async (req, res, next) => {
+Router.get("/date", async (req, res) => {
 	const { date1, date2 } = req.body;
 	if (date1 === null || date1 === '') {
 		return date2 = date1;
@@ -105,7 +105,7 @@ Router.get("/date", async (req, res, next) => {
 });
 
 // All Searches
-Router.get("/search", async (req, res, next) => {
+Router.get("/search", async (req, res) => {
 	const { search } = req.body;
 	const searchTerm = '%' + search + '%';
 	const Value = [searchTerm, searchTerm, searchTerm];
@@ -120,7 +120,7 @@ Router.get("/search", async (req, res, next) => {
 });
 
 // Get single product information based on the product auto increment
-Router.get("/alt/:id", async (req, res, next) => {
+Router.get("/alt/:id", async (req, res) => {
 	const PID = req.params.id;
 	try {
 		const output = await oneProductAutoIncrement(PID);
@@ -133,7 +133,7 @@ Router.get("/alt/:id", async (req, res, next) => {
 });
 
 // Get single product information based on the product ID
-Router.get("/:id", async (req, res, next) => {
+Router.get("/:id", async (req, res) => {
 	const PID = req.params.id;
 	try {
 		const output = await oneProduct(PID);
@@ -147,10 +147,10 @@ Router.get("/:id", async (req, res, next) => {
 
 
 /**************  POST REQUEST  ******************/
-Router.post("/add", (req, res, next) => {
+Router.post("/add", (req, res) => {
 	const Data = req.body;
-	Data.map( async (e) => {
-		
+	Data.map(async (e) => {
+
 		const {
 			productCategory,
 			productName,
@@ -163,7 +163,7 @@ Router.post("/add", (req, res, next) => {
 			productAddDate,
 			productUOM,
 		} = e;
-			
+
 		const Payload = [
 			0,
 			productCategory,
@@ -182,7 +182,7 @@ Router.post("/add", (req, res, next) => {
 
 		try {
 			await addExcelProducts(Payload);
-			logSuccessMessages(`Products added succesfully`);
+			logSuccessMessages(`Product: ${productName} added succesfully`);
 			res.status(200).json({ status: "success", message: `Products added succesfully` });
 		}
 		catch (error) {
@@ -190,6 +190,44 @@ Router.post("/add", (req, res, next) => {
 			res.json({ status: "error", message: `Adding products failed` })
 		}
 	})
+});
+
+
+/**************** UPDATE REQUEST ************************** */
+// Update product
+Router.put("/:id", async (req, res) => {
+	const { id } = req.params;
+	const {
+		productCategory,
+		productName,
+		productStatus,
+		productStockQty,
+		productUnitPrice,
+		productSupId,
+		productTaxType,
+		productUOM,
+	} = req.body[0];
+
+	const payload = {
+		Itm_cat: productCategory,
+		Itm_name: productName,
+		Itm_status: productStatus,
+		Itm_qty: productStockQty,
+		Itm_price: productUnitPrice,
+		Itm_sup_id: productSupId,
+		Itm_taxable: productTaxType,
+		Itm_UOM: productUOM,
+	};
+	
+	try {
+		await updateProduct(payload, id);
+		logSuccessMessages(`Product: ${productName} updated succesfully`);
+		res.status(200).json({ status: "success", message: `Product updated succesfully` });
+	}
+	catch (err) {
+		logAllMessage("Internal server error" + err);
+		return res.status(500).json({ status: 'error', message: `Failed to update ${productName}` });
+	}
 });
 
 module.exports = Router;

@@ -27,7 +27,7 @@ import {
 	Dialog,
 	Slide,
 } from '@mui/material';
-import { PostNewProducts } from 'apiActions/allApiCalls/product';
+import { PostNewProducts, UpdateProduct } from 'apiActions/allApiCalls/product';
 import { CancelSharp, Delete, Edit } from '@mui/icons-material';
 import { fetchSupplierNameSearch } from 'apiActions/allApiCalls/supplier';
 import ProductTemplate from './productTemplate';
@@ -35,9 +35,9 @@ import { Stack } from '@mui/system';
 import { ShowBackDrop } from 'utilities/backdrop';
 import { AlertError } from 'utilities/errorAlert';
 
-/* eslint-disable */
+// /* eslint-disable */
 
-const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }) => {
+const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData, action }) => {
 	const [open, setOpen] = useState(false);
 	const [drop, setDrop] = useState(false);
 	const [loading, setLoading] = useState(false);
@@ -54,7 +54,8 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 		productSupId: '',
 		productTaxType: '',
 		productAddDate: '',
-		productUOM: ''
+		productID: '',
+		productUOM: '',
 	});
 	const [alert, setAlert] = useState({ message: '', color: '' });
 
@@ -72,6 +73,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 				itm_date,
 				productUOM,
 				Itm_img,
+				productID,
 			} = productLine;
 
 			setFormData((state) => ({
@@ -85,7 +87,8 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 				productSupId: Itm_sup_id,
 				productTaxType: taxType,
 				productAddDate: itm_date,
-				productUOM: productUOM
+				productUOM: productUOM,
+				productID: productID,
 			}));
 		}
 	}, [productLine]);
@@ -203,6 +206,9 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 		});
 	};
 
+	const { getRootProps, getInputProps } = useDropzone({ onDrop: handleDrop });
+	const handleClose = (event, reason) => { if (reason === 'clickaway') { return; } setOpen(false); };
+
 	// When Delete button clicked
 	const handleDelete = (index) => {
 		// Remove the item from the table based on the key
@@ -232,26 +238,46 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 		}
 	}
 
-	// Submit product to server
-	const submitProducts = async () => {
+	// Clear products from the state and close dialog
+	const clearData = () => {
+		CloseDialog();
+		setProducts([]);
+	}
+
+	// Post new product or update product
+	const UpdateOrPost = async () => {
 		const trimProducts = products.filter((product) => product.key !== 0);
 		const productsToBackend = setProductDate(trimProducts);
+		const { productID } = productsToBackend[0];
 
+		if (action && action === 'edit') {
+			const result = await UpdateProduct(productID, productsToBackend);
+			setAlert((e) => ({ ...e, message: 'Update successfully', color: 'success' }));
+			setOpen(true);
+			return result;
+		}
+		const result = await PostNewProducts(productsToBackend);
+		setAlert((e) => ({ ...e, message: 'Added successfully', color: 'success' }))
+		setOpen(true);
+		return result;
+	}
+
+	// Submit product to server
+	const submitProducts = async () => {
 		try {
 			await new Promise((resolve) => {
-				setAlert((e) => ({ ...e, message: '', color: '' }));
+				setAlert((e) => ({ ...e, message: null, color: null }));
 				setDrop(true);
 				setTimeout(resolve, 2000);
 			});
 
-			const response = await PostNewProducts(productsToBackend);
+			const response = await UpdateOrPost();
 			const result = response.status;
 			if (result === 'success') {
 				setTimeout(() => {
 					setDrop(false);
-					setAlert((e) => ({ ...e, message: 'Added successfully', color: 'success' }));
-					setOpen(true);
-					RefreshData(true);
+					// RefreshData(true);
+					window.location.reload();
 				
 					setTimeout(() => {
 						setAlert((e) => ({ ...e, message: "", color: "" }));
@@ -267,9 +293,6 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 			setOpen(false);
 		}
 	};
-
-	const { getRootProps, getInputProps } = useDropzone({ onDrop: handleDrop });
-	const handleClose = (event, reason) => { if (reason === 'clickaway') { return; } setOpen(false); };
 
 	return (
 		<>
@@ -303,7 +326,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 						<Grid item>
 							<FormControl fullWidth>
 								<Stack direction="row" spacing={2}>
-									<Button onClick={CloseDialog} fullWidth color='error' variant="contained" size='small' startIcon={<CancelSharp />}>Cancel</Button>
+									<Button onClick={clearData} fullWidth color='error' variant="contained" size='small' startIcon={<CancelSharp />}>Cancel</Button>
 								</Stack>
 							</FormControl>
 						</Grid>
@@ -331,7 +354,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 											label="Product Name"
 											required
 											name="productName"
-											value={formData.productName}
+											value={formData.productName || ''}
 											onChange={handleInputChange}
 										/>
 									</FormControl>
@@ -343,7 +366,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 											required
 											name="productUnitPrice"
 											type='number'
-											value={formData.productUnitPrice}
+											value={formData.productUnitPrice || ''}
 											onChange={handleInputChange}
 										/>
 									</FormControl>
@@ -355,7 +378,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 											required
 											name="productStockQty"
 											type="number"
-											value={formData.productStockQty}
+											value={formData.productStockQty || ''}
 											onChange={handleInputChange}
 										/>
 									</FormControl>
@@ -366,13 +389,13 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 										<Select
 											name="productTaxType"
 											// required
-											value={formData.productTaxType}
+											value={formData.productTaxType || ''}
 											onChange={handleInputChange}
 										>
-											<MenuItem value="">Standard</MenuItem>
+											<MenuItem value="">STANDARD</MenuItem>
 											<MenuItem value="CST">CST</MenuItem>
-											<MenuItem value="TRSM">Tourism</MenuItem>
-											<MenuItem value="EXM">Exempted</MenuItem>
+											<MenuItem value="TRSM">TOURISM</MenuItem>
+											<MenuItem value="EXM">EXEMPTED</MenuItem>
 										</Select>
 									</FormControl>
 								</Grid>
@@ -382,7 +405,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 											label="Item Category"
 											required
 											name="productCategory"
-											value={formData.productCategory}
+											value={formData.productCategory || ''}
 											onChange={handleInputChange}
 										/>
 									</FormControl>
@@ -393,7 +416,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 											id="supplier-search"
 											options={allSearch}
 											loading={loading}
-											getOptionLabel={(option) => option.userName ? option.userName : "No Supplier"}
+											getOptionLabel={(option) => option.SnC_name ? option.SnC_name : "No Supplier found"}
 											onChange={(event, selectedSupplier) => {
 												if (selectedSupplier) {
 													setFormData((oldValue) => ({
@@ -442,29 +465,22 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 										<Select
 											name="productUOM"
 											required
-											value={formData.productUOM}
+											value={formData.productUOM || ''}
 											onChange={handleInputChange}
 										>
-											<MenuItem value="BKT">Bucket</MenuItem>
-											<MenuItem value="BOX">Box</MenuItem>
-											<MenuItem value="CM³">Cubic Centimeter</MenuItem>
-											<MenuItem value="FT">Foot</MenuItem>
-											<MenuItem value="GAL">Gallon</MenuItem>
-											<MenuItem value="KM">Kilometer</MenuItem>
-											<MenuItem value="KW">Kilowatt</MenuItem>
-											<MenuItem value="LTR">Liter</MenuItem>
-											<MenuItem value="M">Meter</MenuItem>
-											<MenuItem value="ML">Milliliter (ml)</MenuItem>
-											<MenuItem value="MM">Milimeter (mm)</MenuItem>
-											<MenuItem value="LBS">Pound</MenuItem>
-											<MenuItem value="PC">Piece</MenuItem>
-											<MenuItem value="SH">Sheet</MenuItem>
-											<MenuItem value="SINGLE">Single</MenuItem>
-											<MenuItem value="SQFT">Square Foot</MenuItem>
-											<MenuItem value="SQM">Square Meter</MenuItem>
-											<MenuItem value="TIER">Tier</MenuItem>
-											<MenuItem value="YARD">Yard</MenuItem>
-
+											<MenuItem value="BND">BUNDLE</MenuItem>
+											<MenuItem value="CTN">CARTON</MenuItem>
+											<MenuItem value="KG">KILOGRAM</MenuItem>
+											<MenuItem value="LTR">LITER</MenuItem>
+											<MenuItem value="M">MITER</MenuItem>
+											<MenuItem value="ML">MILLIMETER (ML)</MenuItem>
+											<MenuItem value="PC">PIECE</MenuItem>
+											<MenuItem value="PKT">PACKET</MenuItem>
+											<MenuItem value="PND">POUND</MenuItem>
+											<MenuItem value="ROLL">ROLL</MenuItem>
+											<MenuItem value="SG">SINGLE</MenuItem>
+											<MenuItem value="TIER">TIER</MenuItem>
+											<MenuItem value="YD">YARD</MenuItem>
 										</Select>
 									</FormControl>
 								</Grid>
@@ -496,17 +512,24 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData }
 													<TableCell padding='none'>Unit Price</TableCell>
 													<TableCell padding='none'>Tax Type</TableCell>
 													<TableCell padding='none'>UOM</TableCell>
+													{/* <TableCell padding='none'>Status</TableCell> */}
+													{/* <TableCell padding='none'>Edit | Del</TableCell> */}
 												</TableRow>
 											</TableHead>
 											<TableBody>
 												{products.map((e) => (
 													<>
 														<TableRow>
-															<TableCell padding='none'>{e.productName}</TableCell>
-															<TableCell padding='none'>{e.productStockQty}</TableCell>
-															<TableCell padding='none'>{e.productUnitPrice}</TableCell>
-															<TableCell padding='none'>{e.productTaxType === "" ? 'STANDARD' : e.productTaxType}</TableCell>
-															<TableCell padding='none'>{e.productUOM}</TableCell>
+															<TableCell padding='none'>{e.productName || ''}</TableCell>
+															<TableCell padding='none'>{e.productStockQty || ''}</TableCell>
+															<TableCell padding='none'>{e.productUnitPrice || ''}</TableCell>
+															<TableCell padding='none'>{e.productTaxType === "" ? 'STANDARD' : e.productTaxType || ''}</TableCell>
+															<TableCell padding='none'>{e.productUOM || ''}</TableCell>
+															<TableCell padding='none'>
+																<Button size='small' variant='outlined' color={e.productStatus && e.productStatus === "Active" ? "success" : "error"}>
+																	{e.productStatus || 'Inactive'}
+																</Button>
+															</TableCell>
 															<TableCell padding='none'>
 																<Edit fontSize='small' onClick={() => handleEdit(e.key)} color='primary' sx={{ cursor: 'pointer' }} />
 																<Delete fontSize='small' onClick={() => handleDelete(e.key)} color='error' sx={{ cursor: 'pointer' }} />

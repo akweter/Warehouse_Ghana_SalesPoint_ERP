@@ -20,7 +20,7 @@ import { ShowBackDrop } from 'utilities/backdrop';
 import { AlertError } from 'utilities/errorAlert';
 import { updateSupplierCustomer } from 'apiActions/allApiCalls/customer';
 
-// /* eslint-disable */
+/* eslint-disable */
 
 const UpdateCusNSup = ({ user, closeAddnewUser, setSubmitted }) => {
     const [formData, setFormData] = useState({

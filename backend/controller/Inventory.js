@@ -118,6 +118,14 @@ const addExcelProducts = async (prop) => {
   return await executeQuery(sql, prop);
 };
 
+/***********  UPDATE PRODUCT  ***********/
+
+// Update product
+const updateProduct = (payload, id) => {
+  const sql = "UPDATE inventory SET ? WHERE Itm_id = ?";
+  return executeQuery(sql, [payload, id]);
+}
+
 
 const allActions = {
   allProducts,
@@ -131,6 +139,7 @@ const allActions = {
   Exempt,
   searchOnlyProduct,
   addExcelProducts,
+  updateProduct,
 };
 
 module.exports = allActions;

@@ -6,9 +6,10 @@ import UploadCSVProducts from './uploadProducts';
 
 /* eslint-disable */
 
-const InventoryProductsTable = ({ products, loading }) => {
+const InventoryProductsTable = ({ products, loading, RefreshData }) => {
     const [open, setOpen] = useState(false);
     const [row, setRow] = useState([]);
+    const [action, setAction] = useState(null);
 
     const handleClose = () => { setOpen(false) }
 
@@ -136,6 +137,7 @@ const InventoryProductsTable = ({ products, loading }) => {
 
     const handleEditconClick = (row) => {
         setRow(row);
+        setAction('edit');
         setOpen(true)
     }
 
@@ -160,7 +162,7 @@ const InventoryProductsTable = ({ products, loading }) => {
                     }}
                 />
             </Box>
-            < UploadCSVProducts CloseDialog={handleClose} openDialog={open} productLine={row} />
+            < UploadCSVProducts CloseDialog={handleClose} openDialog={open} productLine={row} action={action}/>
         </>
     );
 };

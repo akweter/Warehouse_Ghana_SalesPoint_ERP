@@ -250,7 +250,7 @@ Router.put("/:id", async (req, res) => {
   };
 
   try {
-    const output = await updateCustomerNSupplier(userData, id);
+    await updateCustomerNSupplier(userData, id);
     return res.status(200).json({ message: "success" });
   }
   catch (err) {

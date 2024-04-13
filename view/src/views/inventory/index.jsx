@@ -51,7 +51,7 @@ const Inventory = () => {
                 </Button>
             </Grid>
             <Box>
-                <InventoryProductsTable products={products} loading={loading} />
+                <InventoryProductsTable products={products} loading={loading} RefreshData={setSubmitted}/>
             </Box>
             <UploadCSVProducts openDialog={open} CloseDialog={handleClose} RefreshData={setSubmitted} />
         </>

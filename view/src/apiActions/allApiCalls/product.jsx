@@ -19,8 +19,17 @@ export const fetchProductNameSearch = async (data) => {
 };
 
 // Add new products
-export const PostNewProducts = async (data) => {
-    const response = await requestMaking('products/add', 'POST', data);
+export const PostNewProducts = async (payload) => {
+    const response = await requestMaking('products/add', 'POST', payload);
+    if (response.ok) {
+        return await response.json();
+    }
+    return null;
+};
+
+// Update product
+export const UpdateProduct = async (id, payload) => {
+    const response = await requestMaking(`products/${id}`, 'PUT', payload);
     if (response.ok) {
         return await response.json();
     }
