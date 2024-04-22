@@ -47,18 +47,19 @@ import Screens from 'ui-component/cardDivision';
 import dayjs from 'dayjs';
 
 // Projects
-import { computeFinalTaxes, handleExclusiveTaxes, handleInclusiveTaxes } from '../../utilities/computeAllTaxes';
-import { headerPayload, itemlistPayload, taxPayload } from 'views/payload/payloadStructure';
+import { headerPayload, itemlistPayload } from 'views/payload/payloadStructure';
 import { AlertError } from 'utilities/errorAlert';
 import { ShowBackDrop } from 'utilities/backdrop';
 import { postNewInvoice } from 'apiActions/allApiCalls/invoice';
 import { fetchProductNameSearch } from 'apiActions/allApiCalls/product';
 import { fetchCustomerNameSearch } from 'apiActions/allApiCalls/customer';
+import { computeTaxes } from 'utilities/computeAllTaxes';
 
 /* eslint-disable */
 
 const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
     const [open, setOpen] = useState(false);
+    const [compute, setCompute] = useState(false);
     const [loading, setLoading] = useState(false);
     const [disableCustomer, setDisableCustomer] = useState(false);
     const [editIndex, setEditIndex] = useState(null);
@@ -66,12 +67,10 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
     const [allSearch, SetAllSearch] = useState({ product: ([]), customer: ([]) });
     const [header, setHeader] = useState(headerPayload);
     const [itemlists, setItemLists] = useState(itemlistPayload);
-    const [tax, setTax] = useState(taxPayload);
     const [alert, setAlert] = useState({ message: '', color: 'success' });
 
     // Call and set new invoice number
     useEffect(() => {
-        // Update user information
         const systemUser = window.sessionStorage.getItem('userInfo');
         if (systemUser) {
             const parseSystemUser = JSON.parse(systemUser);
@@ -169,21 +168,15 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
         }
     }, [header.businessPartnerName, header.currency, header.exchangeRate]);
 
-    // Set Inclusive & Exclusive tax
-    useEffect(() => {
-        if (header.calculationType === "INCLUSIVE") {
-            handleInclusiveTaxes(itemlists, setItemLists, handleDiscountSubtotal())
-        } else {
-            handleExclusiveTaxes(itemlists, setItemLists, handleDiscountSubtotal());
-        }
-    }, [header.calculationType, itemlists.quantity, itemlists.unitPrice, itemlists.discountAmount]);
-
     // Compute final/total taxes and levies
     useEffect(() => {
-        if (header.items) {
-            computeFinalTaxes(header.items, setHeader, setTax);
+        if (compute === true) {
+            computeTaxes(header.items, header, setHeader);
         }
-    }, [header.items]);
+        setTimeout(() => {
+            setCompute(false);
+        }, 1000);
+    }, [compute]);
 
     // edit item function
     const handleEdit = (index) => {
@@ -198,7 +191,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
         const updatedItems = [...header.items];
         updatedItems[editIndex] = { ...itemlists };
 
-        const { description, unitPrice, quantity, discountAmount, itemSubtotal } = itemlists;
+        const { description, unitPrice, quantity, discountAmount } = itemlists;
 
         if (description === "" || description === null) {
             setAlert((e) => ({ ...e, message: 'Product name cannot be empty', color: 'error' }));
@@ -212,8 +205,8 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
             setAlert((e) => ({ ...e, message: 'Only positive quantity value is allowed', color: 'error' }));
             return setOpen(true);
         }
-        else if (discountAmount >= itemSubtotal) {
-            setAlert((e) => ({ ...e, message: `Disount should be less than the subtotal ${itemSubtotal}`, color: 'error' }));
+        else if (discountAmount >= (quantity * unitPrice)) {
+            setAlert((e) => ({ ...e, message: `Disount should be less than the subtotal ${quantity * unitPrice}`, color: 'error' }));
             return setOpen(true);
         }
         else {
@@ -260,7 +253,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
             invCusId: "cashid"
         });
         setDisableCustomer(true);
-        // setAutocompleteValue('');
+        setCompute(false);
     };
 
     // handle header onchange
@@ -268,6 +261,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
         const { name, value } = event.target;
         setHeader({ ...header, [name]: value });
         setItemLists({ ...itemlists, [name]: value });
+        setCompute(false);
     };
 
     // Discount Type onChnage
@@ -279,24 +273,8 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
             ...prevHeader,
             discountType: updatedDiscountType,
         }));
+        setCompute(false);
     };
-
-    // handle general and selective discount
-    const handleDiscountSubtotal = () => {
-        const { discountType } = header;
-        const { quantity, unitPrice, discountAmount } = itemlists;
-        let itemSubtotal;
-
-        if (discountType === "GENERAL") {
-            itemSubtotal = (quantity * unitPrice) - discountAmount;
-            return itemSubtotal;
-        } else if (discountType === "SELECTIVE") {
-            itemSubtotal = (quantity * unitPrice);
-            return itemSubtotal;
-        } else {
-            return (quantity * unitPrice) - discountAmount;
-        }
-    }
 
     // Show alert function.
     const showAlert = (message, color) => {
@@ -308,7 +286,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
 
     // Add items to the basket
     const addItemsToBasket = () => {
-        const { description, unitPrice, quantity, discountAmount, itemSubtotal } = itemlists;
+        const { description, unitPrice, quantity, discountAmount } = itemlists;
 
         if (!isPositiveNumber(quantity)) {
             showAlert('Quantity must be a positive number', 'error');
@@ -322,15 +300,16 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
             showAlert('Unit price must be positive value', 'error');
             return;
         }
-        // else if (discountAmount >= itemSubtotal) {
-        //     showAlert(`Disount should be less than the subtotal amount: ${itemSubtotal}`, 'error');
-        //     return;
-        // }
+        else if (discountAmount >= (quantity * unitPrice)) {
+            showAlert(`Disount should be less than the subtotal amount: ${quantity * unitPrice}`, 'error');
+            return;
+        }
         else {
             setHeader((prevHeader) => ({
                 ...prevHeader,
                 items: [...prevHeader.items, { ...itemlists }],
             }));
+            setCompute(true);
             setItemLists({
                 ...itemlists,
                 itemCode: "",
@@ -379,9 +358,6 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
             return setOpen(true);
         }
 
-        const { Subtotal, ...newTax } = tax;
-        const invoiceData = { ...header, ...newTax };
-
         try {
             await new Promise((resolve) => {
                 setAlert((e) => ({ ...e, message: '', color: '' }));
@@ -389,7 +365,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                 setTimeout(resolve, 2000);
             });
 
-            const data = await postNewInvoice(invoiceData);
+            const data = await postNewInvoice(header);
             if (data.status === "Error") {
                 const res = JSON.stringify(data.message);
                 setAlert((e) => ({ ...e, message: res, color: 'warning' }));
@@ -843,7 +819,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                             <tbody>
                                                 <tr>
                                                     <td style={{ textAlign: 'left' }}>SUB-TOTAL</td>
-                                                    <td style={{ textAlign: 'right' }}>{tax.Subtotal || 0.00}</td>
+                                                    <td style={{ textAlign: 'right' }}>{header.totalAmount || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
                                                     <td>DISOCUNT</td>
@@ -851,23 +827,23 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                                 </tr>
                                                 <tr className='table'>
                                                     <td>NHIL (2.5%)</td>
-                                                    <td>{tax.nhil || 0.00}</td>
+                                                    <td>{header.nhil || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
                                                     <td>GETFUND (2.5%)</td>
-                                                    <td>{tax.getfund || 0.00}</td>
+                                                    <td>{header.getfund || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
                                                     <td>COVID (1%)</td>
-                                                    <td>{tax.covid || 0.00}</td>
+                                                    <td>{header.covid || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
                                                     <td>CST (5%)</td>
-                                                    <td>{tax.cst || 0.00}</td>
+                                                    <td>{header.cst || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
                                                     <td>TOURISM (1%)</td>
-                                                    <td>{tax.tourism || 0.00}</td>
+                                                    <td>{header.tourism || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
                                                     <td>VAT (15%)</td>
@@ -882,7 +858,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                                     }}
                                                 >
                                                     <td>TOTAL</td>
-                                                    <td>{header.currency || 'GHS'}: {header.totalAmount || 0.00}</td>
+                                                    <td>{header.currency || 'GHS'}: {header.totalAmount - header.discountAmount || 0.00}</td>
                                                 </tr>
                                             </tbody>
                                         </table>

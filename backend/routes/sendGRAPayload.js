@@ -208,6 +208,8 @@ Router.post("/invoice", async (req, res) => {
                 logErrorMessages(`Unknow GRA error for invoice ${sanitizedPayload}`);
                 return res.json({ status: 'error', message: 'Request GRA response indicates unknown error' });
             }
+        } else {
+            return res.json({ status: 'error', message: `Sending invoice: ${sanitizedPayload.invoiceNumber} to GRA Failed!` });
         }
     }
     catch (error) {
@@ -256,6 +258,8 @@ Router.post("/refund", async (req, res) => {
                 logErrorMessages(`Unknow GRA error for invoice ${sanitizedPayload}`);
                 return res.json({ status: 'error', message: 'GRA response indicates unknown error' });
             }
+        } else {
+            return res.json({ status: 'error', message: `Sending invoice: ${sanitizedPayload.invoiceNumber} to GRA Failed!` });
         }
     }
     catch (error) {
@@ -340,6 +344,8 @@ Router.post("/refund/cancellation", async (req, res) => {
                 logErrorMessages(`Unknow GRA error for invoice`);
                 return res.json({ status: 'error', message: 'GRA response indicates unknown error' });
             }
+        } else {
+            return res.json({ status: 'error', message: `Sending invoice: ${sanitizedPayload.invoiceNumber} to GRA Failed!` });
         }
     }
     catch (error) {

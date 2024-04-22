@@ -63,7 +63,7 @@ const UserManagerment = () => {
                             size='medium'
                             onClick={handleOpen}
                         >
-                            Add New User
+                            Add New System User
                         </Button>
                     </Grid>
                     <Box>

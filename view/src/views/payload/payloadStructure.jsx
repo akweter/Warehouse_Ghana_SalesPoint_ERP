@@ -1,3 +1,4 @@
+// GRA Item payload structure
 export const itemlistPayload = {
     itemCode: "",
     itemCategory: "",
@@ -20,6 +21,7 @@ export const itemlistPayload = {
     refProQty: '',
 }
 
+// GRA header payload structure
 export const headerPayload = {
     increment: "",
     currency: "",
@@ -46,13 +48,4 @@ export const headerPayload = {
     remarks: "",
     status: "",
     delivery: "",
-}
-
-export const taxPayload = {
-    nhil: 0, 
-    getfund: 0, 
-    covid: 0, 
-    cst: 0, 
-    tourism: 0, 
-    Subtotal: 0
 }

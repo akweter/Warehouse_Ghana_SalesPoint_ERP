@@ -81,7 +81,10 @@ export const fetchAllWooProducts = async () => {
 // Search term/query
 export const FetchWooSearchProduct = async (input) => {
     const queryTerm = `products?search=${input}&context=edit`;
-    return await FetchWooData(queryTerm);
+    if(queryTerm.ok){
+        return await FetchWooData(queryTerm);
+    }
+    return null;
 };
 
 

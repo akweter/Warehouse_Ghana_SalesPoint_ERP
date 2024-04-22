@@ -10,7 +10,7 @@ import {
     Typography
 } from '@mui/material';
 import { headerPayload, itemlistPayload } from 'views/payload/payloadStructure';
-import { computeFinalRefTaxes, } from 'utilities/computeAllTaxes';
+import { computeTaxes, } from 'utilities/computeAllTaxes';
 import { AlertError } from 'utilities/errorAlert';
 import { ShowBackDrop } from 'utilities/backdrop';
 import { getUserName } from 'utilities/getUserName';
@@ -158,14 +158,14 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
     
     // handle invoice item computations
     const submitInvoice = () => {
-        computeFinalRefTaxes(itemLists, header, setHeader);
+        computeTaxes(itemLists, header, setHeader);
         handleClose();
         setConfirmationOpen(true);
     }
-
+ 
     const submitFullInvoice = () => {
         setHeader((state) => ({...state, flag: 'REFUND'}));
-        computeFinalRefTaxes(itemLists, header, setHeader);
+        computeTaxes(itemLists, header, setHeader);
         handleClose();
         setConfirmationOpen(true);
     }
