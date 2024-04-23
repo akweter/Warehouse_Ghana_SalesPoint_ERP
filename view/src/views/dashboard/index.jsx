@@ -154,17 +154,17 @@ const Dashboard = () => {
 				</Grid>
 
 				<Grid container spacing={2} marginBottom={2}>
-					<Grid item sx={12} sm={6} md={3}><TotalCsutomersCard isLoading={isLoading} /></Grid>
-					<Grid item sx={12} sm={6} md={3}><TotalTaxes isLoading={isLoading} levies={totalLevies} vats={totalVAT} /></Grid>
-					<Grid item sx={12} sm={6} md={3}><TotalSalesCard isLoading={isLoading} customers={customers} products={products} /></Grid>
-					<Grid item sx={12} sm={6} md={3}><TotalSuppliersCard isLoading={isLoading} foreign={fSuppliers.length} local={lSuppliers.length} /></Grid>
+					<Grid item xs={12} sm={6} md={3}><TotalCsutomersCard isLoading={isLoading} /></Grid>
+					<Grid item xs={12} sm={6} md={3}><TotalTaxes isLoading={isLoading} levies={totalLevies} vats={totalVAT} /></Grid>
+					<Grid item xs={12} sm={6} md={3}><TotalSalesCard isLoading={isLoading} customers={customers} products={products} /></Grid>
+					<Grid item xs={12} sm={6} md={3}><TotalSuppliersCard isLoading={isLoading} foreign={fSuppliers.length} local={lSuppliers.length} /></Grid>
 				</Grid>
 
 				<Grid container spacing={2}>
-					<Grid item sx={12} sm={10} md={8}>
+					<Grid item xs={12} sm={10} md={8}>
 						<DashboardBarChart />
 					</Grid>
-					<Grid item sx={12} sm={6} md={4}>
+					<Grid item xs={12} sm={6} md={4}>
 						<DashBoardPieChart />
 					</Grid>
 				</Grid>

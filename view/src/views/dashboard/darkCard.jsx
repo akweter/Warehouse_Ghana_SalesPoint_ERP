@@ -61,7 +61,7 @@ const HomeDarkCard = ({ isLoading, invoices, refunds, cancelRefunds, }) => {
                 <TotalIncomeCard />
             ) : (
                 <Grid container spacing={1}>
-                    <Grid item sx={6} sm={4} md={2}>
+                    <Grid item xs={6} sm={4} md={2}>
                         <OrangeCardWrapperEffect border={false} content={false}>
                             <Box sx={{ p: 1 }}>
                                 <List sx={{ py: 0 }}>
@@ -75,7 +75,7 @@ const HomeDarkCard = ({ isLoading, invoices, refunds, cancelRefunds, }) => {
                             </Box>
                         </OrangeCardWrapperEffect>
                     </Grid>
-                    <Grid item sx={6} sm={4} md={2.5}>
+                    <Grid item xs={6} sm={4} md={2.5}>
                         <YellowCardWrapperEffect border={false} content={false}>
                             <Box sx={{ p: 1 }}>
                                 <List sx={{ py: 0 }}>
@@ -91,7 +91,7 @@ const HomeDarkCard = ({ isLoading, invoices, refunds, cancelRefunds, }) => {
                             </Box>
                         </YellowCardWrapperEffect>
                     </Grid>
-                    <Grid item sx={6} sm={4} md={2.5}>
+                    <Grid item xs={6} sm={4} md={2.5}>
                         <BlueCardWrapperEffect border={false} content={false}>
                             <Box sx={{ p: 1 }}>
                                 <List sx={{ py: 0 }}>
@@ -105,7 +105,7 @@ const HomeDarkCard = ({ isLoading, invoices, refunds, cancelRefunds, }) => {
                             </Box>
                         </BlueCardWrapperEffect>
                     </Grid>
-                    <Grid item sx={6} sm={4} md={2.5}>
+                    <Grid item xs={6} sm={4} md={2.5}>
                         <BlackCardWrapperEffect border={false} content={false}>
                             <Box sx={{ p: 1 }}>
                                 <List sx={{ py: 0 }}>
@@ -121,7 +121,7 @@ const HomeDarkCard = ({ isLoading, invoices, refunds, cancelRefunds, }) => {
                             </Box>
                         </BlackCardWrapperEffect>
                     </Grid>
-                    <Grid item sx={6} sm={4} md={2.5}>
+                    <Grid item xs={6} sm={4} md={2.5}>
                         <GreenCardWrapperEffect border={false} content={false}>
                             <Box sx={{ p: 1 }}>
                                 <List sx={{ py: 0 }}>

@@ -211,6 +211,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
         }
         else {
             setHeader((head) => ({ ...head, items: updatedItems }));
+            setCompute(true);
             setItemLists((prevState) => ({
                 ...prevState,
                 quantity: '',
