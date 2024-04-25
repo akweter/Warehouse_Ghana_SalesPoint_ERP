@@ -3,6 +3,7 @@ const UUID = require('../utils/generateIDs');
 const express = require("express");
 const axios = require("axios");
 require('dotenv').config();
+
 const {
     AddNewInvoices,
     saveRefundInvoice,
@@ -81,21 +82,20 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
         calculationType,
         saleType,
         discountType,
-        status,
         increment,
         reference,
         delivery,
+        invoiceType,
     } = Data;
-
+ 
     const payload = [
         0,
         increment,
         userName,
         totalAmount,
-        status,
+        invoiceType,
         calculationType,
         transactionDate,
-        'ORIGINAL',
         currency,
         saleType,
         invoiceNumber,
@@ -151,7 +151,7 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
                             invoiceNumber,
                         ]
 
-                        if (status === 'INVOICE') {
+                        if (invoiceType === 'Invoice') {
                             await saveInInvoiceProduct(data)
                                 .then(() => { null })
                                 .catch((err) => {
@@ -159,7 +159,7 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
                                     return { status: 'error', message: 'Please refresh and Issue new invoice' };
                                 })
                         }
-                        else if (status === 'REFUND' || status === 'PARTIAL_REFUND') {
+                        else if (invoiceType === 'REFUND' || invoiceType === 'Partial_Refund') {
                             await updateRefundProducts(update)
                                 .then(() => { null })
                                 .catch((err) => {
@@ -169,7 +169,7 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
                         }
                     });
                 }
-                logSuccessMessages(`${Data.userName} - ${status} ${invoiceNumber} added successfully`);
+                logSuccessMessages(`${Data.userName} - ${invoiceType} ${invoiceNumber} added successfully`);
                 return { status: 'success', gra: responseData.response, payload: sanitizedPayload };
             })
             .catch((error) => {
@@ -181,6 +181,44 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
         return `Error saving invoice: "${invoiceNumber}"`;
     }
 };
+
+// Check gra server status
+Router.get("/status", async (req, res) => {
+    const response = await axios.get(`${GRA_ENDPOINT}/health`, { headers: { 'security_key': GRA_KEY } });
+    if (response.data) {
+        res.status(200).json({ status: response.data.status });
+    }
+    res.status(500).json({ status: 'down' });
+});
+
+// Post Quotation invoices
+Router.post("/quote", async (req, res) => {
+    const Data = req.body;
+    const sanitizedPayload = sanitizePayload(Data);
+    const message = {
+        responseData: {
+            response: {
+                message: {
+                    ysdcid: "",
+                    ysdcrecnum: "",
+                    ysdcintdata: "",
+                    ysdcregsig: "",
+                    ysdcmrc: "",
+                    ysdcmrctim: "",
+                    ysdctime: "",
+                },
+                qr_code: "",
+            },
+        }
+    }
+    try {
+        await saveInvoiceToDB(Data, sanitizedPayload, message);
+        return res.status(200).json({ status: 'success' });
+    }
+    catch (error) {
+        return res.json({ status: 'error', message: `Failed to save invoice: ${sanitizedPayload.invoiceNumber} to DB. Try new invoice` });
+    }
+});
 
 // Post and save invoice records
 Router.post("/invoice", async (req, res) => {
@@ -302,7 +340,6 @@ Router.post("/refund/cancellation", async (req, res) => {
                     flag,
                     null,
                     transactionDate,
-                    'ORIGINAL',
                     null,
                     null,
                     invoiceNumber,
@@ -365,15 +402,6 @@ Router.post("/refund/cancellation", async (req, res) => {
             return res.json({ status: 'error', message: `Oops! Something went wrong. Please reflesh and retry.` });
         }
     }
-});
-
-// Check gra server status
-Router.get("/status", async (req, res) => {
-    const response = await axios.get(`${GRA_ENDPOINT}/health`, { headers: { 'security_key': GRA_KEY } });
-    if (response.data) {
-        res.status(200).json({ status: response.data.status });
-    }
-    res.status(500).json({ status: 'down' });
 });
 
 module.exports = Router;

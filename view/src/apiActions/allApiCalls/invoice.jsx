@@ -1,12 +1,11 @@
 import requestMaking from "auth/setHeaderToken";
-import axios from "axios";
 
 /*------------------------------------------------------------------------------*/
-                        /*CHECK GRA SERVER STATUS*/
+/*CHECK GRA SERVER STATUS*/
 export const checkGRAServerStatus = async () => {
     const response = await requestMaking('gra/status', 'GET', null);
     try {
-        if(response){
+        if (response) {
             return response;
         }
     }
@@ -119,7 +118,8 @@ export const fetchAutocompleteId = async () => {
 
 // post gra new invoice
 export const postNewInvoice = async (data) => {
-    const response = await requestMaking(`gra/invoice`, 'POST', data);
+    const endpoint = data.invoiceType === "Quotation" ? "gra/quote" : "gra/invoice";
+    const response = await requestMaking(endpoint, 'POST', data);
     if (response.ok) {
         return await response.json();
     }

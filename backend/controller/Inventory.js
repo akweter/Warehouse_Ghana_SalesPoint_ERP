@@ -64,49 +64,89 @@ const searchOnlyProduct = async (product) => {
 // Return inventory based on the inventory status
 const oneProduct = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_id = ?";
-  return await executeQuery(sql, prop);
+  try {
+		return await executeQuery(sql);
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 // Return products based on auto increment
 const oneProductAutoIncrement = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_autoincrement = ?";
-  return await executeQuery(sql, prop);
+  try {
+		return await executeQuery(sql);
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 // Return exempted products
 const Exempt = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND  Itm_taxable = ?";
-  return await executeQuery(sql, prop);
+  try {
+		return await executeQuery(sql);
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 // Return products based on tax value
 const taxOnProduct = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND  Itm_taxable = ?";
-  return await executeQuery(sql, prop);
+  try {
+		return await executeQuery(sql);
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 // Return products/product based the user who add the product
 const addedUser = async (prop) => {
     const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND  Itm_usr_id = ?";
-    return await executeQuery(sql, prop);
+    try {
+		return await executeQuery(sql);
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 // Return products/product based on product supplier
 const productSupplier = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND  Itm_sup_id = ?";
-  return await executeQuery(sql, prop);
+  try {
+		return await executeQuery(sql);
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 // Return products/product based on date selection
 const dateAdded = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND  Itm_date >= ? AND Itm_date <= ?";
-  return await executeQuery(sql, prop);
+  try {
+		return await executeQuery(sql);
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 // Return search products/product
 const searchProduct = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND (Itm_name LIKE ? OR Itm_price LIKE ? OR itm_date LIKE ?); ";
-  return await executeQuery(sql, prop);
+  try {
+		return await executeQuery(sql);
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 
@@ -115,7 +155,12 @@ const searchProduct = async (prop) => {
 // add s using excel
 const addExcelProducts = async (prop) => {
   const sql = "INSERT INTO inventory (Itm_autoincrement, Itm_cat, Itm_name, Itm_status, Itm_img, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date, Itm_id, Itm_UOM) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-  return await executeQuery(sql, prop);
+  try {
+		return await executeQuery(sql);
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 /***********  UPDATE PRODUCT  ***********/

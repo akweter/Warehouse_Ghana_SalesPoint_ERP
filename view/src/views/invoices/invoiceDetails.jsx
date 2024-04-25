@@ -45,10 +45,6 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog }) => {
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Invoice Type:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.InvoiceType || 'Unavailable'}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell component="th" scope="row">Invoice Status:</TableCell>
                                     <TableCell component="td" scope="row">{selectedRow.InvoiceStatus || 'Unavailable'}</TableCell>
                                 </TableRow>
                                 {

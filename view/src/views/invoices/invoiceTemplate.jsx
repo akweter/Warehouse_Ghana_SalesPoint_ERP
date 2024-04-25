@@ -7,7 +7,7 @@ const InvoiceTemplate = ({ data }) => {
 		<div>
 			<table align="center" border={0} width='100%' cellPadding={8}>
 				<tr>
-					<td><h1>Invoice</h1></td>
+					<td><h1>{"Official "+data.InvoiceStatus || "Official Invoice"}</h1></td>
 					<td><img src={logo} width={65} height={50} alt="Logo"/></td>
 				</tr>
 			</table>

@@ -6,6 +6,7 @@ const { executeRoute } = require("../utils/handler");
 const { logErrorMessages } = require("../utils/saveLogfile");
 
 // controller
+const restructureInvoiceResult = require("../utils/invoiceModifier");
 const {
   oneInvoice,
   Searches,
@@ -19,16 +20,16 @@ const {
   getAllSalesInvoices,
   ThisMonthTaxes,
   ThisMonthTotalInvoicenDate,
+  getAllQuoteInvoices,
 } = require("../controller/salesNinvoices");
 const {
   thirtySeven,
 } = require("../controller/selectQueries");
-const restructureInvoiceResult = require("../utils/invoiceModifier");
 
 // All invoices transaction
 Router.get("/", async (req, res) => {
   try {
-    const output = await thirtySeven('INVOICE', 'INVOICE', 'INVOICE');
+    const output = await thirtySeven('Invoice', 'Invoice', 'Invoice');
     const modifiedOutput = restructureInvoiceResult(output);
     return res.status(200).json(modifiedOutput);
   }
@@ -41,8 +42,8 @@ Router.get("/", async (req, res) => {
 // 10 recent transactions only
 Router.get("/ten", async (req, res) => {
   try {
-    const output = await thirtySeven('INVOICE','PARTIAL_REFUND', 'REFUND');
-    return await executeRoute(output, res);
+    const output = await thirtySeven('Invoice','Partial_Refund', 'Refund');
+    return res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(`Error fetching tenInvoices: ${err}`);
@@ -54,7 +55,7 @@ Router.get("/ten", async (req, res) => {
 Router.get("/all", async (req, res) => {
   try {
     const output = await allSalesInvNumbers();
-    return await executeRoute(output, res);
+    return res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(`Error fetching allSalesInvNumbers: ${err}`);
@@ -66,10 +67,22 @@ Router.get("/all", async (req, res) => {
 Router.get("/sales", async (req, res) => {
   try {
     const output = await getAllSalesInvoices();
-    return await executeRoute(output, res);
+    return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages(`Error fetching today invoices ${err}`);
+    logErrorMessages(`Error fetching today sales invoices ${err}`);
+    return res.status(500).send("Temporal server error. Kindly refresh");
+  }
+});
+
+// Get all today invoices
+Router.get("/quote", async (req, res) => {
+  try {
+    const output = await getAllQuoteInvoices();
+    return res.status(200).json(output);
+  }
+  catch (err) {
+    logErrorMessages(`Error fetching quotation invoices ${err}`);
     return res.status(500).send("Temporal server error. Kindly refresh");
   }
 });
@@ -78,7 +91,7 @@ Router.get("/sales", async (req, res) => {
 Router.get("/tax/month", async (req, res) => {
   try {
     const output = await ThisMonthTaxes();
-    res.status(200).json(output);
+    return res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(`Error fetching this month taxes ${err}`);
@@ -90,7 +103,7 @@ Router.get("/tax/month", async (req, res) => {
 Router.get("/day/invoice", async (req, res) => {
   try {
     const output = await ThisMonthTotalInvoicenDate();
-    res.status(200).json(output);
+    return res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(`Error fetching this month taxes ${err}`);
@@ -102,10 +115,10 @@ Router.get("/day/invoice", async (req, res) => {
 Router.get("/today/sales", async (req, res) => {
   try {
     const output = await getSalesCurDay();
-    return await executeRoute(output, res);
+    return res.status(200).json(output);
   }
-  catch (err) {
-    logErrorMessages(`Error fetching today invoices ${err}`);
+  catch (error) {
+    logErrorMessages(`Error fetching today sales invoices ${err}`);
     return res.status(500).send("Temporal server error. Kindly refresh");
   }
 });
@@ -114,10 +127,10 @@ Router.get("/today/sales", async (req, res) => {
 Router.get("/week/sales", async (req, res) => {
   try {
     const output = await WeekAllSalesInvoice();
-    return await executeRoute(output, res);
+    return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages(`Error fetching today invoices ${err}`);
+    logErrorMessages(`Error fetching week sales invoices ${err}`);
     return res.status(500).send("Temporal server error. Kindly refresh");
   }
 });
@@ -126,10 +139,10 @@ Router.get("/week/sales", async (req, res) => {
 Router.get("/month/sales", async (req, res) => {
   try {
     const output = await MonthAllSalesInvoice();
-    return await executeRoute(output, res);
+    return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages(`Error fetching today invoices ${err}`);
+    logErrorMessages(`Error fetching month sales invoices ${err}`);
     return res.status(500).send("Temporal server error. Kindly refresh");
   }
 });
@@ -138,10 +151,10 @@ Router.get("/month/sales", async (req, res) => {
 Router.get("/year/sales", async (req, res) => {
   try {
     const output = await YearAllSalesInvoice();
-    return await executeRoute(output, res);
+    return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages(`Error fetching today invoices ${err}`);
+    logErrorMessages(`Error fetching year sales today invoices ${err}`);
     return res.status(500).send("Temporal server error. Kindly refresh");
   }
 });
@@ -150,7 +163,7 @@ Router.get("/year/sales", async (req, res) => {
 Router.get("/purchase", async (req, res) => {
   try {
     const output = await purchaseInvoices();
-    return await executeRoute(output, res);
+    return res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(`Error fetching purchase invoices: ${err}`);

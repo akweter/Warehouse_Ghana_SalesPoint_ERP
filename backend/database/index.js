@@ -6,8 +6,8 @@ const executeQuery = (sql, id) => {
   return new Promise((resolve, reject) => {
     db.query(sql, id, (err, result) => {
       if (err) {
-        logErrorMessages("Querying failed " + err);
-        reject("Temporal server error. Try again");
+        logErrorMessages("Execution failed " + err);
+        reject("Operation failed. Please try again!");
       }
       else {
         resolve(result);
@@ -16,6 +16,4 @@ const executeQuery = (sql, id) => {
   });
 };
 
-const EXE = { executeQuery };
-
-module.exports = EXE;
+module.exports = { executeQuery };

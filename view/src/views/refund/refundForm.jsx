@@ -87,7 +87,7 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
                 items: products,
                 invCusId: CustomerTIN,
                 remarks: Remarks,
-                status: "PARTIAL_REFUND"
+                status: "Partial_Refund"
             }));
 
             // Set items state

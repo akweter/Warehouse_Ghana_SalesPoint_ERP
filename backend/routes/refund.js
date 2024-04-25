@@ -19,13 +19,13 @@ const { thirtySeven } = require("../controller/selectQueries");
 // all refund Invoices
 Router.get("/", async (req, res) => {
     try {
-        const output = await thirtySeven('PARTIAL_REFUND', 'REFUND', 'REFUND');
+        const output = await thirtySeven('Partial_Refund', 'Refund', 'Refund');
         const modifiedOutput = restructureInvoiceResult(output);
         return res.status(200).json(modifiedOutput);
     }
     catch (err) {
-        logErrorMessages(`Error fetching refundInvoices ${err}`);
-        return res.status(500).send("Temporal server error. Kindly refresh");
+        logErrorMessages(`Error fetching all refunded Invoices ${err}`);
+        return res.status(500).send("Operations failed. Kindly refresh");
     }
 });
 
@@ -33,11 +33,11 @@ Router.get("/", async (req, res) => {
 Router.get("/today", async (req, res) => {
     try {
         const output = await TodayAllRefundsInvoice();
-        return await executeRoute(output, res);
+        return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching today invoices ${err}`);
-        return res.status(500).send("Temporal server error. Kindly refresh");
+        logErrorMessages(`Error fetching today refunds ${err}`);
+        return res.status(500).send("Operations failed. Kindly refresh");
     }
 });
 
@@ -45,11 +45,11 @@ Router.get("/today", async (req, res) => {
 Router.get("/today/cancelled", async (req, res) => {
     try {
         const output = await TodayRefundsCancellationInvoice();
-        return await executeRoute(output, res);
+        return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching today invoices ${err}`);
-        return res.status(500).send("Temporal server error. Kindly refresh");
+        logErrorMessages(`Error fetching today cancelled refunds ${err}`);
+        return res.status(500).send("Operations failed. Kindly refresh");
     }
 });
 
@@ -57,11 +57,11 @@ Router.get("/today/cancelled", async (req, res) => {
 Router.get("/products", async (req, res) => {
     try {
         const output = await allRefundedProducts();
-        return await executeRoute(output, res);
+        return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching refundInvoices ${err}`);
-        return res.status(500).send("Temporal server error. Kindly refresh");
+        logErrorMessages(`Error fetching refund products ${err}`);
+        return res.status(500).send("Operations failed. Kindly refresh");
     }
 });
 
@@ -69,11 +69,11 @@ Router.get("/products", async (req, res) => {
 Router.get("/countall", async (req, res) => {
     try {
         const output = await countALlrefundInvoices();
-        return await executeRoute(output, res);
+        return res.status(200).json(output);
     }
     catch (err) {
         logErrorMessages(`Error fetching count refund Invoices with products: ${err}`);
-        return res.status(500).send("Temporal server error. Kindly refresh");
+        return res.status(500).send("Operations failed. Kindly refresh");
     }
 });
 
@@ -81,11 +81,11 @@ Router.get("/countall", async (req, res) => {
 Router.get("/cancelled", async (req, res) => {
     try {
         const output = await cancelledRefundInvoices();
-        return await executeRoute(output, res);
+        return res.status(200).json(output);
     }
     catch (err) {
         logErrorMessages(`Error fetching refund cancellation invoices: ${err}`);
-        return res.status(500).send("Temporal server error. Kindly refresh");
+        return res.status(500).send("Operations failed. Kindly refresh");
     }
 });
 

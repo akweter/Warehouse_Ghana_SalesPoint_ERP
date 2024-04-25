@@ -46,6 +46,6 @@ export const headerPayload = {
     items: [],
     invCusId: "",
     remarks: "",
-    status: "",
+    invoiceType: "",
     delivery: "",
 }

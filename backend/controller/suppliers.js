@@ -32,19 +32,34 @@ const localSuppliers = async () => {
 // Retrieve Suppliers by ID
 const oneSupplier = async (id) => {
 	const sql = "SELECT * FROM suppliersncustomers WHERE SnC_Type = 'supplier' AND SnC_id = ?";
-	return await executeQuery(sql, id);
+	try {
+		return await executeQuery(sql, id);
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 // Retrieve Active/Non Active Suppliers
 const supplierStats = async (id) => {
 	const sql = "SELECT * FROM suppliersncustomers WHERE SnC_Type = 'supplier' SnC_status = ?";
-	return await executeQuery(sql, id);
+	try {
+		return await executeQuery(sql, id);
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 // Retrieve Suppliers by Type
 const suppliersByType = async (id) => {
 	const sql = "SELECT * FROM suppliersncustomers WHERE SnC_Type = 'supplier' WHERE SnC_region = ?";
-	return await executeQuery(sql, id);
+	try {
+		return await executeQuery(sql, id);
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 // Retrieve Suppliers by Rating
@@ -56,19 +71,34 @@ const suppliersByRating = async (rating) => {
 // Retrieve Suppliers by Product ID:
 const suppliersByProduct = async (id) => {
 	const sql = "SELECT SnC_name, SnC_tin, SnC_region, SnC_status FROM suppliersncustomers WHERE SnC_Type = 'supplier' SnC_pro_sell_id = ?";
-	return await executeQuery(sql, id);
+	try {
+		return await executeQuery(sql, id);
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 // Retrieve Suppliers by Exemption Status
 const suppliersByExemption = async (id) => {
 	const sql = "SELECT SnC_name, SnC_tin, SnC_region, SnC_status FROM suppliersncustomers WHERE SnC_Type = 'supplier' AND Sup_exempted = ?";
-	return await executeQuery(sql, id);
+	try {
+		return await executeQuery(sql, id);
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 // Retrieve Suppliers by Tin Number
 const suppliersByTin = async (id) => {
 	const sql = "SELECT * FROM suppliersncustomers WHERE SnC_Type = 'supplier' AND SnC_tin = ?";
-	return await executeQuery(sql, id);
+	try {
+		return await executeQuery(sql, id);
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 // Retrieve Suppliers by Email
@@ -80,19 +110,44 @@ const suppliersByEmail = async (email) => {
 // Retrieve Suppliers by Status = active and Type = ?
 const activeSupplierByType = async (id) => {
 	const sql = "SELECT SnC_name, SnC_tin, SnC_region, SnC_status FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'supplier' AND SnC_region = ?";
-	return await executeQuery(sql, id);
+	try {
+		try {
+		return await executeQuery(sql, id);
+	}
+	catch (error) {
+		return error;
+	}
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 // Retrieve Suppliers by Status = inactive and Type = ?
 const inactiveSuppliersByType = async (id) => {
 	const sql = "SELECT SnC_name, SnC_tin, SnC_region, SnC_status Suppliers WHERE SnC_status = 'inactive' AND SnC_Type = 'supplier' AND SnC_region = ?";
-	return await executeQuery(sql, id);
+	try {
+		try {
+		return await executeQuery(sql, id);
+	}
+	catch (error) {
+		return error;
+	}
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 // Retrieve active Suppliers with specific Rating
 const activeSuppliersByRating = async (prop) => {
 	const sql = "SELECT SnC_name, SnC_rating, SnC_region FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'supplier' AND SnC_rating = ?";
-	return await executeQuery(sql, prop);
+	try {
+		return await executeQuery(sql);
+	}
+	catch (error) {
+		return error;
+	}
 };
 
 // Retrieve inactive Suppliers with specific Rating

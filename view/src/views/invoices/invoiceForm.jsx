@@ -477,7 +477,6 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                     size='small'
                                 >
                                     <MenuItem value='NORMAL'>Normal</MenuItem>
-                                    {/* <MenuItem value='EXEMPTED'>Exempted</MenuItem> */}
                                     <MenuItem value='EXPORT'>Export</MenuItem>
                                 </Select>
                             </FormControl>
@@ -522,6 +521,23 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                         </Grid>
                         <Grid item xs={6}>
                             <FormControl fullWidth>
+                                <InputLabel id="invoiceType">Transaction Type</InputLabel>
+                                <Select
+                                    labelId="invoiceType"
+                                    id="invoiceType"
+                                    label="invoiceType"
+                                    name="invoiceType"
+                                    size='small'
+                                    onChange={handleMainChange}
+                                    value={header.invoiceType}
+                                >
+                                    <MenuItem value='Invoice'>Invoice</MenuItem>
+                                    <MenuItem value='Quotation'>Quotation</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <FormControl fullWidth>
                                 <TextField
                                     label="Exchange Rate"
                                     type="number"
@@ -539,15 +555,28 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                         name="transactionDate"
                                         value={header.transactionDate || null}
                                         format='YYYY-MM-DD'
+                                        label="Invoice Date"
+                                        sx={{height: '10px'}}
                                         maxDate={dayjs()}
                                         onChange={(e) => {
                                             const selectedDate = e.$d;
                                             const formattedDate = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
                                             setHeader({ ...header, transactionDate: formattedDate });
                                         }}
-                                        label="Invoice Date"
                                     />
                                 </LocalizationProvider>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <FormControl fullWidth>
+                                <TextField
+                                    label="Delivery/Shipping"
+                                    type="text"
+                                    value={header.delivery}
+                                    name='delivery'
+                                    size='small'
+                                    onChange={handleMainChange}
+                                />
                             </FormControl>
                         </Grid>
                         <Grid item xs={6}>
@@ -663,7 +692,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                 </AccordionDetails>
                             </Accordion>
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={6}>
                             <FormControl fullWidth>
                                 <Stack direction="row" spacing={2}>
                                     <Button onClick={addItemsToBasket} fullWidth color='primary' variant="contained" size='large' startIcon={<AddShoppingCartOutlinedIcon />}>
@@ -672,25 +701,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                 </Stack>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={4}>
-                            <FormControl fullWidth>
-                                <Stack direction="row" spacing={2}>
-                                    {/* <Button fullWidth color='warning' variant="contained" size='large' startIcon={<SaveAsSharpIcon />}>
-                                        Draft
-                                    </Button> */}
-                                    <TextField
-                                        label="Delivery/Shipping"
-                                        type="text"
-                                        value={header.delivery}
-                                        name='delivery'
-                                        size='small'
-                                        onChange={handleMainChange}
-                                        sx={{backgroundColor: '#FFC300', color: '#F1FFFF'}}
-                                    />
-                                </Stack>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={6}>
                             <FormControl fullWidth>
                                 <Stack direction="row" spacing={2}>
                                     <Button onClick={submitFormToGRA} fullWidth color='success' variant="contained" size='large' startIcon={<SendSharpIcon />}>
@@ -819,7 +830,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                             <tbody>
                                                 <tr>
-                                                    <td style={{ textAlign: 'left' }}>SUB-TOTAL</td>
+                                                    <td style={{ textAlign: 'left' }}>GROSS TOTAL</td>
                                                     <td style={{ textAlign: 'right' }}>{header.totalAmount || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
@@ -858,7 +869,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                                         color: 'darkred',
                                                     }}
                                                 >
-                                                    <td>TOTAL</td>
+                                                    <td>NET TOTAL</td>
                                                     <td>{header.currency || 'GHS'}: {header.totalAmount - header.discountAmount || 0.00}</td>
                                                 </tr>
                                             </tbody>

@@ -61,8 +61,7 @@ const MakeNewInvoice = ({ setSubmitted, status }) => {
                         <Stack direction="row" spacing={1}>
                             <Chip 
                                 variant="filled" 
-                                color={status === true ? 'primary' : 'error'} 
-                                // icon={status === true ? <CheckCircle /> : <CancelSharpIcon />}
+                                color={status === true ? 'primary' : 'error'}
                                 label={status === true ? 'GRA UP' : 'GRA DOWN'}
                             />
                         </Stack>
