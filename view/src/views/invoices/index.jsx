@@ -8,7 +8,7 @@ import {
     SendRounded,
     Visibility as VisibilityIcon 
 } from '@mui/icons-material';
-import { IconButton, Grid, Box } from '@mui/material';
+import { IconButton, Grid, Box, CircularProgress } from '@mui/material';
 
 // projects
 import { 
@@ -30,6 +30,7 @@ const Invoice = () => {
     const [status, setStatus] = useState(false);
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [loadQuote, setLoadQuote] = useState(false);
     const [openRefDialog, setOpenRefDialog] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
     const [invoices, setInvoices] = useState([]);
@@ -196,7 +197,7 @@ const Invoice = () => {
                             <CurrencyExchangeSharp fontSize='small' color='secondary' />
                         </IconButton> :
                         <IconButton title='Refund Invoice' onClick={() => handleQuoteToInvoiceBtnClick(params.row)}>
-                            <SendRounded fontSize='small' color='secondary' />
+                            { loadQuote === true ? <CircularProgress size={20} color='secondary'/> : <SendRounded fontSize='small' color='secondary' />  }
                         </IconButton>
                     }
                 </>),
@@ -236,9 +237,20 @@ const Invoice = () => {
         const payload = useFullPayload(row);
         if (window.confirm('Do you want to invoice it?')) {
             try {
+                await new Promise((resolve) => {
+                    setNotify((e) => ({ ...e, message: '', color: '' }));
+                    setLoadQuote(true);
+                    setTimeout(resolve, 2000);
+                });
                 await postNewInvoice(payload);
                 setNotify((e) => ({...e, message: "Invoice submitted to GRA success!", color: 'success'}));
                 setOpen(true);
+
+                setTimeout(() => {
+                    setLoading(true);
+                    setSubmitted(true);
+                    setStatus(true);
+                }, 1000);
             }
             catch (error) {
                 setNotify((e) => ({...e, message: "Invoice submitted to GRA failed!", color: 'error'}));
@@ -246,7 +258,7 @@ const Invoice = () => {
             }
         }
         else {
-            setNotify((e) => ({...e, message: "Cancelled!", color: 'warning'}));
+            setNotify((e) => ({...e, message: "Transaction cancelled!", color: 'error'}));
             setOpen(true);
         }        
     }
@@ -290,9 +302,7 @@ const Invoice = () => {
             { notify.message ? <AlertError alert={notify} handleClose={handleClose} open={open} /> : null }
             {
                 selectedRow && (
-                    <>
-                        < InvoiceDetails selectedRow={selectedRow} openDialog={openDialog} handleCloseDialog={handleCloseDialog} />
-                    </>
+                    <>< InvoiceDetails selectedRow={selectedRow} openDialog={openDialog} handleCloseDialog={handleCloseDialog} /></>
                 )
             }
             <RefundForms
