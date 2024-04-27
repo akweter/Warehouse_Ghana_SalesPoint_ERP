@@ -24,6 +24,15 @@ export const fetchAllInvoices = async () => {
     return null;
 };
 
+// Fetch all invoice
+export const fetchAllQuotations = async () => {
+    const response = await requestMaking('invoices/quote', 'GET', null);
+    if (response.ok) {
+        return await response.json();
+    }
+    return null;
+};
+
 // Fetch all today sales invoices
 export const fetchAllSalesInvoices = async () => {
     const response = await requestMaking('invoices/sales', 'GET', null);
@@ -120,6 +129,7 @@ export const fetchAutocompleteId = async () => {
 export const postNewInvoice = async (data) => {
     const endpoint = data.invoiceType === "Quotation" ? "gra/quote" : "gra/invoice";
     const response = await requestMaking(endpoint, 'POST', data);
+    console.log(response);
     if (response.ok) {
         return await response.json();
     }

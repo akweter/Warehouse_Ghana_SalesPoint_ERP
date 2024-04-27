@@ -10,12 +10,12 @@ import {
     Typography
 } from '@mui/material';
 import { headerPayload, itemlistPayload } from 'views/payload/payloadStructure';
-import { computeTaxes, } from 'utilities/computeAllTaxes';
 import { AlertError } from 'utilities/errorAlert';
 import { ShowBackDrop } from 'utilities/backdrop';
 import { getUserName } from 'utilities/getUserName';
 import { Cancel } from '@mui/icons-material';
 import { postRefundInvoice } from 'apiActions/allApiCalls/refund';
+import { computeStandardTaxes } from 'utilities/computeAllTaxes';
 
 /* eslint-disable */
 const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
@@ -126,9 +126,10 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
                         refProQty: e.RefundedQuantity,
                     };
                 });
-            
-                setItemLists(updatedItemLists);
-            
+                setHeader((state) => ({
+                    ...state,
+                    items: updatedItemLists
+                }));
             }
         }
     }, [refundInv]);
@@ -158,14 +159,63 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
     
     // handle invoice item computations
     const submitInvoice = () => {
-        computeTaxes(itemLists, header, setHeader);
+    const result = computeStandardTaxes(header);
+        const {
+            totalLevy,
+            totalAmount,
+            voucherAmount,
+            discountAmount,
+            nhil,
+            getfund,
+            covid,
+            cst,
+            tourism,
+            items,
+        } = result;
+        setHeader((state) => ({
+            ...state,
+            totalAmount: totalAmount,
+            voucherAmount: voucherAmount,
+            discountAmount: discountAmount,
+            totalLevy: totalLevy,
+            nhil: nhil,
+            getfund: getfund,
+            tourism: tourism,
+            covid: covid,
+            items: items,
+            cst: cst
+        }));
         handleClose();
         setConfirmationOpen(true);
     }
  
     const submitFullInvoice = () => {
-        setHeader((state) => ({...state, flag: 'REFUND'}));
-        computeTaxes(itemLists, header, setHeader);
+    const result = computeStandardTaxes(header);
+        const {
+            totalLevy,
+            totalAmount,
+            voucherAmount,
+            discountAmount,
+            nhil,
+            getfund,
+            covid,
+            cst,
+            tourism,
+            items,
+        } = result;
+        setHeader((state) => ({...state,
+            totalAmount: totalAmount,
+            voucherAmount: voucherAmount,
+            discountAmount: discountAmount,
+            totalLevy: totalLevy,
+            nhil: nhil,
+            getfund: getfund,
+            tourism: tourism,
+            covid: covid,
+            items: items,
+            cst: cst,
+            flag: 'REFUND',
+        }));
         handleClose();
         setConfirmationOpen(true);
     }

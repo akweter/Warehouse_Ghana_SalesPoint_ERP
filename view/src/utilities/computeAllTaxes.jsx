@@ -119,9 +119,9 @@ export const ExclusiveTax = (item, header) => {
 };
 
 // handle compute total refund
-export const computeTaxes = (itemlists, header, setHeader) => {
-    const { calculationType } = header;
-    const updatedItems = itemlists.map(item =>  calculationType === 'EXCLUSIVE' ? ExclusiveTax(item, header) : InclusiveTax(item, header));
+export const computeStandardTaxes = (header) => {
+    const { calculationType, items } = header;
+    const updatedItems =  calculationType === 'EXCLUSIVE' ? items.map(item => ExclusiveTax(item, header)) : items.map(item => InclusiveTax(item, header));
 
     const totalLevy = updatedItems.reduce((total, item) =>
         total +
@@ -141,9 +141,8 @@ export const computeTaxes = (itemlists, header, setHeader) => {
     const covid = updatedItems.reduce((total, item) => total + parseFloat(item.levyAmountC || 0), 0);
     const cst = updatedItems.reduce((total, item) => total + parseFloat(item.levyAmountD || 0), 0);
     const tourism = updatedItems.reduce((total, item) => total + parseFloat(item.levyAmountE || 0), 0);
-
-    setHeader((header) => ({
-        ...header,
+    
+    const setHeader = {
         totalLevy: totalLevy.toFixed(2),
         totalVat: totalVat.toFixed(2),
         totalAmount: totalAmount.toFixed(2),
@@ -155,5 +154,6 @@ export const computeTaxes = (itemlists, header, setHeader) => {
         cst: cst === 0 ? 0.00 : cst.toFixed(2),
         tourism: tourism === 0 ? 0.00 : tourism.toFixed(2),
         items: updatedItems,
-    }));
+    }
+    return setHeader;
 }

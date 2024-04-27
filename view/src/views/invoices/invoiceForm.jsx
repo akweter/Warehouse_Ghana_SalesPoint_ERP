@@ -53,9 +53,9 @@ import { ShowBackDrop } from 'utilities/backdrop';
 import { postNewInvoice } from 'apiActions/allApiCalls/invoice';
 import { fetchProductNameSearch } from 'apiActions/allApiCalls/product';
 import { fetchCustomerNameSearch } from 'apiActions/allApiCalls/customer';
-import { computeTaxes } from 'utilities/computeAllTaxes';
+import { computeStandardTaxes } from 'utilities/computeAllTaxes';
 
-/* eslint-disable */
+// /* eslint-disable */
 
 const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
     const [open, setOpen] = useState(false);
@@ -171,7 +171,31 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
     // Compute final/total taxes and levies
     useEffect(() => {
         if (compute === true) {
-            computeTaxes(header.items, header, setHeader);
+            const result = computeStandardTaxes(header);
+            const {
+                totalLevy,
+                totalAmount,
+                voucherAmount,
+                discountAmount,
+                nhil,
+                getfund,
+                covid,
+                cst,
+                tourism,
+                items,
+            } = result;
+            setHeader((state) => ({...state,
+                totalAmount: totalAmount,
+                voucherAmount: voucherAmount,
+                discountAmount: discountAmount,
+                totalLevy: totalLevy,
+                nhil: nhil,
+                getfund: getfund,
+                tourism: tourism,
+                covid: covid,
+                items: items,
+                cst: cst
+            }));
         }
         setTimeout(() => {
             setCompute(false);

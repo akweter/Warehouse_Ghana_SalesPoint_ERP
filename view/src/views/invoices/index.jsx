@@ -2,20 +2,30 @@ import React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { CurrencyExchangeSharp, Print as PrintIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
+import { 
+    CurrencyExchangeSharp,
+    Print as PrintIcon, 
+    SendRounded,
+    Visibility as VisibilityIcon 
+} from '@mui/icons-material';
 import { IconButton, Grid, Box } from '@mui/material';
 
 // projects
-import { GeneralCatchError } from 'utilities/errorAlert';
-import { checkGRAServerStatus, fetchAllInvoices } from 'apiActions/allApiCalls/invoice';
+import { 
+    checkGRAServerStatus, 
+    fetchAllInvoices, 
+    postNewInvoice,
+} from 'apiActions/allApiCalls/invoice';
 import MakeNewInvoice from './generateInvoice';
 import RefundForms from 'views/refund/refundForm';
 import InvoiceDetails from './invoiceDetails';
 import InvoiceTemplate from './invoiceTemplate';
+import { AlertError, GeneralCatchError } from 'utilities/errorAlert';
+import { useFullPayload } from './invoiceQuotePayload';
 
 /* eslint-disable */
 
-export default function Invoice() {
+const Invoice = () => {
     const [submitted, setSubmitted] = useState(false);
     const [status, setStatus] = useState(false);
     const [open, setOpen] = useState(false);
@@ -26,6 +36,7 @@ export default function Invoice() {
     const [selectedRow, setSelectedRow] = useState(null);
     const [refundInv, setRefundInv] = useState([]);
     const [alert, setAlert] = useState({ message: '', color: '' });
+    const [notify, setNotify] = useState({ message: '', color: '' });
 
     useEffect(() => {
         fetchData();
@@ -44,8 +55,8 @@ export default function Invoice() {
         }
         catch (error) {
             setInvoices([]);
-            setOpen(true);
             setAlert((e) => ({ ...e, message: `Something unexpected happened with\n your connection. \n\n Please log in again if it persist.`, color: 'error' }));
+            setOpen(true);
             setLoading(true);
         }
     };
@@ -110,6 +121,14 @@ export default function Invoice() {
                 headerClassName: 'dataGridheader',
             },
             {
+                field: 'InvoiceStatus',
+                headerName: 'Transaction',
+                description: 'Transaction Type',
+                flex: 1,
+                width: 70,
+                headerClassName: 'dataGridheader',
+            },
+            {
                 field: 'InvoiceDate',
                 headerName: 'Date',
                 description: 'Transaction Date',
@@ -163,6 +182,7 @@ export default function Invoice() {
                 flex: 1,
                 width: 150,
                 sortable: false,
+                headerClassName: 'dataGridheader',
                 renderCell: (params) => (<>
                     <IconButton title='View Invoice' onClick={() => handleViewIconClick(params.row)}>
                         <VisibilityIcon fontSize='medium' color='primary' />
@@ -170,11 +190,16 @@ export default function Invoice() {
                     <IconButton title='Print Invoice' onClick={() => handlePrintIcon(params.row)}>
                         <PrintIcon fontSize='small' color='error' />
                     </IconButton>
-                    <IconButton title='Refund Invoice' onClick={() => handleRefundBtnClick(params.row)}>
-                        <CurrencyExchangeSharp fontSize='small' color='secondary' />
-                    </IconButton>
+                    {
+                        params.row.InvoiceStatus === "Invoice" ?
+                        <IconButton title='Refund Invoice' onClick={() => handleRefundBtnClick(params.row)}>
+                            <CurrencyExchangeSharp fontSize='small' color='secondary' />
+                        </IconButton> :
+                        <IconButton title='Refund Invoice' onClick={() => handleQuoteToInvoiceBtnClick(params.row)}>
+                            <SendRounded fontSize='small' color='secondary' />
+                        </IconButton>
+                    }
                 </>),
-                headerClassName: 'dataGridheader',
             },
         ]
     });
@@ -205,6 +230,25 @@ export default function Invoice() {
     const handleRefundBtnClick = (row) => {
         setRefundInv(row);
         setOpenRefDialog(true);
+    }
+
+    const handleQuoteToInvoiceBtnClick = async (row) => {
+        const payload = useFullPayload(row);
+        if (window.confirm('Do you want to invoice it?')) {
+            try {
+                await postNewInvoice(payload);
+                setNotify((e) => ({...e, message: "Invoice submitted to GRA success!", color: 'success'}));
+                setOpen(true);
+            }
+            catch (error) {
+                setNotify((e) => ({...e, message: "Invoice submitted to GRA failed!", color: 'error'}));
+                setOpen(true);
+            }
+        }
+        else {
+            setNotify((e) => ({...e, message: "Cancelled!", color: 'warning'}));
+            setOpen(true);
+        }        
     }
 
     const handleCloseRefDialog = () => {
@@ -242,11 +286,8 @@ export default function Invoice() {
                     }}
                 />
             </Box>
-            {
-                alert.message ?
-                    <GeneralCatchError alert={alert} handleClose={handleClose} open={open} /> :
-                    null
-            }
+            { alert.message ? <GeneralCatchError alert={alert} handleClose={handleClose} open={open} /> : null }
+            { notify.message ? <AlertError alert={notify} handleClose={handleClose} open={open} /> : null }
             {
                 selectedRow && (
                     <>
@@ -264,3 +305,4 @@ export default function Invoice() {
         </div>
     );
 }
+export default Invoice;

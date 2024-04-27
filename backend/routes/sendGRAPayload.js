@@ -9,6 +9,7 @@ const {
     saveRefundInvoice,
     saveInInvoiceProduct,
     updateRefundProducts,
+    updateInvoiceQRCodes,
 } = require("../controller/salesNinvoices");
 
 const Router = express.Router();
@@ -33,6 +34,7 @@ const sanitizePayload = (data) => {
         "exchangeRate",
         "alt",
         "refProQty",
+        "invoiceType",
     ];
 
     const mainFieldsToRemove = [
@@ -49,7 +51,9 @@ const sanitizePayload = (data) => {
         "tourism",
         "increment",
         "status",
-        "delivery"
+        "delivery",
+        "invoiceType",
+        "quote",
     ];
 
     let sanitizedPayload = { ...data };
@@ -62,6 +66,7 @@ const sanitizePayload = (data) => {
 
 const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
     const { items } = Data;
+    logSuccessMessages(JSON.stringify(responseData));
 
     const {
         userName,
@@ -86,6 +91,7 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
         reference,
         delivery,
         invoiceType,
+        quote,
     } = Data;
  
     const payload = [
@@ -122,8 +128,27 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
         responseData.response.qr_code,
         delivery,
     ];
+    const load = [
+        responseData.response.message.ysdcid,
+        responseData.response.message.ysdcrecnum,
+        responseData.response.message.ysdcintdata,
+        responseData.response.message.ysdcregsig,
+        responseData.response.message.ysdcmrc,
+        responseData.response.message.ysdcmrctim,
+        responseData.response.message.ysdctime,
+        responseData.response.qr_code,
+        invoiceNumber,
+    ];
 
     try {
+        if (quote) {
+            await updateInvoiceQRCodes(load)
+            .then((success) => { return success })
+            .catch((err) => {
+                logErrorMessages(`Error saving QR code info for invoice ${invoiceNumber}, Error: ${JSON.stringify(err)}`);
+                return { status: 'error', message: 'Operation Failed! Try it again' };
+            })
+        }
         await AddNewInvoices(payload)
             .then(async () => {
                 if (items) {
@@ -151,7 +176,7 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
                             invoiceNumber,
                         ]
 
-                        if (invoiceType === 'Invoice') {
+                        if (invoiceType === 'Invoice'|| invoiceType === 'Quotation') {
                             await saveInInvoiceProduct(data)
                                 .then(() => { null })
                                 .catch((err) => {
@@ -195,24 +220,23 @@ Router.get("/status", async (req, res) => {
 Router.post("/quote", async (req, res) => {
     const Data = req.body;
     const sanitizedPayload = sanitizePayload(Data);
-    const message = {
-        responseData: {
-            response: {
-                message: {
-                    ysdcid: "",
-                    ysdcrecnum: "",
-                    ysdcintdata: "",
-                    ysdcregsig: "",
-                    ysdcmrc: "",
-                    ysdcmrctim: "",
-                    ysdctime: "",
-                },
-                qr_code: "",
+
+    const responseData = {
+        response: {
+            message: {
+                ysdcid: null,
+                ysdcrecnum: null,
+                ysdcintdata: null,
+                ysdcregsig: null,
+                ysdcmrc: null,
+                ysdcmrctim: null,
+                ysdctime: null,
             },
-        }
+            qr_code: null,
+        },
     }
     try {
-        await saveInvoiceToDB(Data, sanitizedPayload, message);
+        await saveInvoiceToDB(Data, sanitizedPayload, responseData);
         return res.status(200).json({ status: 'success' });
     }
     catch (error) {
@@ -228,7 +252,7 @@ Router.post("/invoice", async (req, res) => {
         return res.json({ status: 'Error', message: 'Invalid data structure', data: Data });
     }
     const sanitizedPayload = sanitizePayload(Data);
-    // logSuccessMessages(JSON.stringify(sanitizedPayload));
+    logSuccessMessages(JSON.stringify(Data));
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, { headers: { 'security_key': GRA_KEY } });
         if (response && response.status === 200) {
@@ -246,7 +270,8 @@ Router.post("/invoice", async (req, res) => {
                 logErrorMessages(`Unknow GRA error for invoice ${sanitizedPayload}`);
                 return res.json({ status: 'error', message: 'Request GRA response indicates unknown error' });
             }
-        } else {
+        }
+        else {
             return res.json({ status: 'error', message: `Sending invoice: ${sanitizedPayload.invoiceNumber} to GRA Failed!` });
         }
     }

@@ -7,7 +7,7 @@ const InvoiceTemplate = ({ data }) => {
 		<div>
 			<table align="center" border={0} width='100%' cellPadding={8}>
 				<tr>
-					<td><h1>{"Official "+data.InvoiceStatus || "Official Invoice"}</h1></td>
+					<td><h1>{data.InvoiceStatus === "Invoice" ? "Official Invoice" : data.InvoiceStatus}</h1></td>
 					<td><img src={logo} width={65} height={50} alt="Logo"/></td>
 				</tr>
 			</table>
@@ -131,63 +131,53 @@ const InvoiceTemplate = ({ data }) => {
 					}
 				</thead>
 			</table>
+			<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+			{
+				data.QRCode && data.YSDCID ?<>
+				<table cellSpacing="0" cellPadding="4" width="100%" align="left">
+					<tbody>
+						<tr>
+							<td colSpan={3}>
+								SDC INFORMATION
+								<hr />
+							</td>
+						</tr>
+						<tr>
+							<td>SDC ID:</td>
+							<td>{data.YSDCID}</td>
+							<td rowSpan="7">
+								<img src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data.QRCode)}`} alt="qr code" width={160} height={160} />
+							</td>
+						</tr>
+						<tr>
+							<td>Item Count:</td>
+							<td>{data.products.length}</td>
+						</tr>
 
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-
-			<table cellSpacing="0" cellPadding="4" width="100%" align="left">
-				<tbody>
-					<tr>
-						<td colSpan={3}>
-							SDC INFORMATION
-							<hr />
-						</td>
-					</tr>
-					<tr>
-						<td>SDC ID:</td>
-						<td>{data.YSDCID}</td>
-						<td rowSpan="7">
-							<img src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data.QRCode)}`} alt="qr code" width={160} height={160} />
-						</td>
-					</tr>
-					<tr>
-						<td>Item Count:</td>
-						<td>{data.products.length}</td>
-					</tr>
-
-					<tr>
-						<td>Rceipt Number:</td>
-						<td>{data.YSDCRecNum}</td>
-					</tr>
-					<tr>
-						<td>Timestamp:</td>
-						<td>{data.YSDCMRCTime}</td>
-					</tr>
-					<tr>
-						<td>MRC</td>
-						<td>{data.YSDCMRC}</td>
-					</tr>
-					<tr>
-						<td>Internal Data:</td>
-						<td>{data.YSDCIntData}</td>
-					</tr>
-					<tr>
-						<td>Signature</td>
-						<td>{data.YSDCRegSig}</td>
-					</tr>
-				</tbody>
-			</table>
+						<tr>
+							<td>Rceipt Number:</td>
+							<td>{data.YSDCRecNum}</td>
+						</tr>
+						<tr>
+							<td>Timestamp:</td>
+							<td>{data.YSDCMRCTime}</td>
+						</tr>
+						<tr>
+							<td>MRC</td>
+							<td>{data.YSDCMRC}</td>
+						</tr>
+						<tr>
+							<td>Internal Data:</td>
+							<td>{data.YSDCIntData}</td>
+						</tr>
+						<tr>
+							<td>Signature</td>
+							<td>{data.YSDCRegSig}</td>
+						</tr>
+					</tbody>
+				</table>
+				</> : null
+			}
 
 			<br />
 			<hr />
@@ -210,7 +200,6 @@ const InvoiceTemplate = ({ data }) => {
 				<small>
 					<strong>
 						{data.remarks}
-							{/* &#42;&#42;&#42; This is computer generated invoice. Signature or stamp is not required &#42;&#42;&#42; */}
 						</strong>
 				</small>
 			</center>

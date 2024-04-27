@@ -287,7 +287,7 @@ const Searches = async (prop) => {
 	ORDER BY
 		Inv_id DESC`;
 	try {
-		return await executeQuery(sql);
+		return await executeQuery(sql, prop);
 	}
 	catch (error) {
 		return error;
@@ -338,6 +338,28 @@ const saveInInvoiceProduct = async (payload) => {
 	}
 };
 
+// update invoice with qr code
+const updateInvoiceQRCodes = async (payload) => {
+	const sql = `
+		UPDATE invoice SET
+			ysdcid = ?,
+			ysdcrecnum = ?,
+			ysdcintdata = ?,
+			ysdcregsig = ?,
+			ysdcmrc = ?,
+			ysdcmrctim = ?,
+			ysdctime = ?,
+			qr_code = ?,
+		WHERE
+		Inv_Number = ?`;
+	try {
+		return await executeQuery(sql, payload);
+	}
+	catch (error) {
+		return error;
+	}
+}
+
 // Update products refunded quantity
 const updateRefundProducts = async (payload) => {
     const sql = "UPDATE invoice_products SET Product_Refunded_Quantity = Product_Refunded_Quantity + ? WHERE Product_ID = ? AND InvoiceNum_ID = ?";
@@ -375,4 +397,5 @@ module.exports = {
 	ThisMonthTaxes,
 	ThisMonthTotalInvoicenDate,
 	getAllQuoteInvoices,
+	updateInvoiceQRCodes,
 };
