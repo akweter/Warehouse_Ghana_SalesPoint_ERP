@@ -74,29 +74,29 @@ const InvoiceTemplate = ({ data }) => {
 			<table cellSpacing="0" cellPadding="4" align="right">
 				<thead>
 					<tr>
-						<td><strong>Subtotal</strong></td>
+						<td>GROSS</td>
 						<td>{data.Currency}: {(data.TotalAmount)}</td>
 					</tr>
 					<tr>
-						<td><strong>Discount</strong></td>
+						<td>DISCOUNT</td>
 						<td>{data.Currency}: {data.InvoiceDiscount}</td>
 					</tr>
 					<tr>
-						<td><strong>GetFund (2.5%)</strong></td>
+						<td>GETFUND (2.5%)</td>
 						<td>{data.Currency}: {data.GETFund}</td>
 					</tr>
 					<tr>
-						<td><strong>NHIL (2.5%)</strong></td>
+						<td>NHIL (2.5%)</td>
 						<td>{data.Currency}: {data.NHIL}</td>
 					</tr>
 					<tr>
-						<td><strong>Covid (1%)</strong></td>
+						<td>COVID (1%)</td>
 						<td>{data.Currency}: {data.COVID}</td>
 					</tr>
 					{data.CST ?
 						(<>
 							<tr>
-								<td><strong>Cst (5%)</strong></td>
+								<td>CST (5%)</td>
 								<td>{data.Currency}: {data.CST}</td>
 							</tr>
 						</>) : null
@@ -104,17 +104,17 @@ const InvoiceTemplate = ({ data }) => {
 					{data.tourism ?
 						(<>
 							<tr>
-								<td><strong>Tourism (1%)</strong></td>
+								<td>TOURISM (1%)</td>
 								<td>{data.Currency}: {data.Tourism}</td>
 							</tr>
 						</>) : null
 					}
 					<tr>
-						<td><strong>Vat (15%)</strong></td>
+						<td>VAT (15%)</td>
 						<td>{data.Currency}: {data.VatAmount}</td>
 					</tr>
 					<tr>
-						<td><strong>TOTAL</strong></td>
+						<td>NET TOTAL</td>
 						<td>{data.Currency}: {((data.TotalAmount) - (data.InvoiceDiscount))}</td>
 					</tr>
 					< br />
@@ -123,7 +123,7 @@ const InvoiceTemplate = ({ data }) => {
 							< br />
 							< br />
 							<tr>
-								<td><strong>Delivery:</strong></td>
+								<td>DELIVERY:</td>
 								<td>{data.DeliveryFee === 'Free' ? null : `${data.Currency}:`} {(data.DeliveryFee)}</td>
 							</tr>
 						</>):

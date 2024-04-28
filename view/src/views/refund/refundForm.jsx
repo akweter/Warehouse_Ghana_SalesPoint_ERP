@@ -9,7 +9,7 @@ import {
     Grid,
     Typography
 } from '@mui/material';
-import { headerPayload, itemlistPayload } from 'views/payload/payloadStructure';
+import { headerPayload } from 'views/payload/payloadStructure';
 import { AlertError } from 'utilities/errorAlert';
 import { ShowBackDrop } from 'utilities/backdrop';
 import { getUserName } from 'utilities/getUserName';
@@ -21,7 +21,6 @@ import { computeStandardTaxes } from 'utilities/computeAllTaxes';
 const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
     const [openAlert, setOpen] = useState(false);
     const [drop, setDrop] = useState(false);
-    const [itemLists, setItemLists] = useState(itemlistPayload);
     const [header, setHeader] = useState(headerPayload);
     const [currentQuantities, setCurrentQuantities] = useState({});
     const [originalQuantities, setOriginalQuantities] = useState({});
@@ -38,12 +37,14 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
 
     // Set Date value according to GRA API standard
     const formatDate = (date) => {
-        if (date) {
-            const parts = date.split('/');
-            const formattedDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-            return formattedDate;
+        if (date instanceof Date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${year}-${month}-${day}`;
         }
-    }  
+        return '';
+    }
 
     // update the header and item state
     useEffect(() => {
@@ -73,7 +74,7 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
                 flag: "PARTIAL_REFUND",
                 calculationType: CalculationType,
                 totalVat: "",
-                transactionDate: formatDate(InvoiceDate),
+                transactionDate: formatDate(new Date()),
                 totalAmount: "",
                 voucherAmount: "",
                 businessPartnerName: CustomerName,
@@ -84,7 +85,7 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
                 reference: generateRandomNumber(),
                 groupReferenceId: "",
                 purchaseOrderReference: "",
-                items: products,
+                // items: products,
                 invCusId: CustomerTIN,
                 remarks: Remarks,
                 status: "Partial_Refund"
@@ -93,23 +94,17 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
             // Set items state
             if (Array.isArray(products) && products.length > 0) {
                 const updatedItemLists = products.map((e) => {
-                    const originalQuantity = e.Quantity;
-                    setOriginalQuantities((prevQuantities) => ({
-                        ...prevQuantities,
-                        [e.itemCode]: originalQuantity,
-                    }));
-            
-                    setCurrentQuantities((prevQuantities) => ({
-                        ...prevQuantities,
-                        [e.itemCode]: originalQuantity,
-                    }));
-            
+
+                    const qty = e.Quantity;
+                    setOriginalQuantities((val) => ({ ...val, [e.itemCode]: qty }));
+                    setCurrentQuantities((val) => ({ ...val, [e.itemCode]: qty }));
+
                     return {
                         itemCode: e.itemCode,
                         itemCategory: e.ProductCategory,
                         expireDate: "",
                         description: e.ProductName,
-                        quantity: originalQuantity, // Set the original quantity
+                        quantity: qty,
                         levyAmountA: "",
                         levyAmountB: "",
                         levyAmountC: "",
@@ -126,10 +121,7 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
                         refProQty: e.RefundedQuantity,
                     };
                 });
-                setHeader((state) => ({
-                    ...state,
-                    items: updatedItemLists
-                }));
+                setHeader((state) => ({ ...state, items: updatedItemLists }));
             }
         }
     }, [refundInv]);
@@ -138,28 +130,25 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
     const updateQuantity = (itemCode, newQuantity) => {
         const isValidQuantity = /^[+]?\d+([.]\d+)?$/.test(newQuantity);
         const isQuantityValid = isValidQuantity && parseFloat(newQuantity) <= originalQuantities[itemCode];
-    
+
         setCurrentQuantities((prevQuantities) => ({
             ...prevQuantities,
             [itemCode]: isQuantityValid ? newQuantity : prevQuantities[itemCode],
         }));
-    
-        setItemLists((prevItemLists) =>
-            prevItemLists.map((item) =>
-                item.itemCode === itemCode
-                    ? { ...item, quantity: isQuantityValid ? newQuantity : item.quantity }
-                    : item
-            )
-        );
-        setQuantityErrors((prevErrors) => ({
-            ...prevErrors,
-            [itemCode]: !isQuantityValid,
+
+        // Update the specific item in the header state
+        setHeader((prevHeader) => ({
+            ...prevHeader,
+            items: prevHeader.items.map((item) =>
+                item.itemCode === itemCode ? { ...item, quantity: isQuantityValid ? newQuantity : item.quantity } : item
+            ),
         }));
+        setQuantityErrors((err) => ({ ...err, [itemCode]: !isQuantityValid }));
     };
-    
+
     // handle invoice item computations
     const submitInvoice = () => {
-    const result = computeStandardTaxes(header);
+        const result = computeStandardTaxes(header);
         const {
             totalLevy,
             totalAmount,
@@ -171,6 +160,7 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
             cst,
             tourism,
             items,
+            totalVat,
         } = result;
         setHeader((state) => ({
             ...state,
@@ -183,14 +173,15 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
             tourism: tourism,
             covid: covid,
             items: items,
-            cst: cst
+            cst: cst,
+            totalVat: totalVat,
         }));
         handleClose();
         setConfirmationOpen(true);
     }
- 
+
     const submitFullInvoice = () => {
-    const result = computeStandardTaxes(header);
+        const result = computeStandardTaxes(header);
         const {
             totalLevy,
             totalAmount,
@@ -202,8 +193,10 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
             cst,
             tourism,
             items,
+            totalVat,
         } = result;
-        setHeader((state) => ({...state,
+        setHeader((state) => ({
+            ...state,
             totalAmount: totalAmount,
             voucherAmount: voucherAmount,
             discountAmount: discountAmount,
@@ -215,6 +208,7 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
             items: items,
             cst: cst,
             flag: 'REFUND',
+            totalVat: totalVat,
         }));
         handleClose();
         setConfirmationOpen(true);
@@ -266,62 +260,62 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
                 </Grid>
                 <DialogContent>
                     {
-                        Array.isArray(itemLists) && itemLists.length > 0 ? (
-                            itemLists.map((item, index) =>
-                                (
-                                    <Grid container key={index} spacing={1} marginBottom={2}>
-                                        <Grid item xs={12}>
-                                            <TextField
-                                                label='Product'
-                                                disabled={true}
-                                                value={item.description}
-                                                size='small'
-                                                fullWidth={true}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={3}>
-                                            <TextField
-                                                label='Unit Price'
-                                                disabled={true}
-                                                value={item.unitPrice}
-                                                size='small'
-                                                fullWidth={true}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={3}>
-                                            <TextField
-                                                label='Total Qty'
-                                                disabled={true}
-                                                value={originalQuantities[item.itemCode]}
-                                                size='small'
-                                                fullWidth={true}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={3}>
-                                            <TextField
-                                                label='Refunded'
-                                                disabled={true}
-                                                value={item.refProQty}
-                                                size='small'
-                                                fullWidth={true}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={3}>
-                                            <TextField
-                                                label='Refund Qty'
-                                                type='number'
-                                                name='quantity'
-                                                value={currentQuantities[item.itemCode]}
-                                                size='small'
-                                                fullWidth={true}
-                                                error={quantityErrors[item.itemCode]}
-                                                helperText={quantityErrors[item.itemCode] ? 'Invalid quantity' : ''}
-                                                onChange={(e) => updateQuantity(item.itemCode, e.target.value)}
-                                                disabled={ originalQuantities[item.itemCode] === item.refProQty ? true : false }
-                                            />
-                                        </Grid>
+                        Array.isArray(header.items) && header.items.length > 0 ? (
+                            header.items.map((item, index) =>
+                            (
+                                <Grid container key={index} spacing={1} marginBottom={2}>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            label='Product'
+                                            disabled={true}
+                                            value={item.description}
+                                            size='small'
+                                            fullWidth={true}
+                                        />
                                     </Grid>
-                                )
+                                    <Grid item xs={3}>
+                                        <TextField
+                                            label='Unit Price'
+                                            disabled={true}
+                                            value={item.unitPrice}
+                                            size='small'
+                                            fullWidth={true}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <TextField
+                                            label='Total Qty'
+                                            disabled={true}
+                                            value={originalQuantities[item.itemCode]}
+                                            size='small'
+                                            fullWidth={true}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <TextField
+                                            label='Refunded'
+                                            disabled={true}
+                                            value={item.refProQty}
+                                            size='small'
+                                            fullWidth={true}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <TextField
+                                            label='Refund Qty'
+                                            type='number'
+                                            name='quantity'
+                                            value={currentQuantities[item.itemCode]}
+                                            size='small'
+                                            fullWidth={true}
+                                            error={quantityErrors[item.itemCode]}
+                                            helperText={quantityErrors[item.itemCode] ? 'Invalid quantity' : ''}
+                                            onChange={(e) => updateQuantity(item.itemCode, e.target.value)}
+                                            disabled={originalQuantities[item.itemCode] === item.refProQty ? true : false}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            )
                             )
                         ) : null
                     }

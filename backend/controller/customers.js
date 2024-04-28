@@ -33,7 +33,7 @@ const allCustomers = async () => {
 const status = async (prop) => {
   const sql = "SELECT * FROM suppliersncustomers WHERE  SnC_Type = 'customer' AND SnC_status = ?";
   try {
-		return await executeQuery(sql);
+		return await executeQuery(sql, prop);
 	}
 	catch (error) {
 		return error;
@@ -50,7 +50,7 @@ const CustomerByTIn = async (id) => {
 const Region = async (prop) => {
   const sql = "SELECT * FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'customer' AND SnC_region = ?";
   try {
-		return await executeQuery(sql);
+		return await executeQuery(sql, prop);
 	}
 	catch (error) {
 		return error;
@@ -67,7 +67,7 @@ const Type = async () => {
 const Exempt = async (prop) => {
   const sql = "SELECT SnC_id, SnC_name, SnC_Type, SnC_tin FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'customer' AND SnC_region = 'local' AND SnC_exempted = ?";
   try {
-		return await executeQuery(sql);
+		return await executeQuery(sql, prop);
 	}
 	catch (error) {
 		return error;
@@ -78,7 +78,7 @@ const Exempt = async (prop) => {
 const oneExempt = async (prop) => {
     const sql = "SELECT SnC_id, SnC_name, SnC_Type, SnC_tin FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'customer' AND SnC_region = 'local' AND SnC_id = ?";
     try {
-		return await executeQuery(sql);
+		return await executeQuery(sql, prop);
 	}
 	catch (error) {
 		return error;
@@ -95,7 +95,7 @@ const allRating = async () => {
 const oneRating = async (prop) => {
     const sql = "SELECT SnC_id, SnC_name, SnC_Type, SnC_tin, SnC_region FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_rating = ?  AND SnC_Type = 'customer'";
     try {
-		return await executeQuery(sql);
+		return await executeQuery(sql, prop);
 	}
 	catch (error) {
 		return error;
@@ -147,7 +147,7 @@ const Searches = async (prop) => {
     WHERE 
       SnC_status = 'active' AND SnC_Type = 'customer' AND (SnC_name LIKE ? OR SnC_tin LIKE ? OR SnC_phone LIKE ? OR SnC_email LIKE ?)`;
   try {
-		return await executeQuery(sql);
+		return await executeQuery(sql, prop);
 	}
 	catch (error) {
 		return error;
@@ -160,11 +160,11 @@ const AddCustomerSupplier = async (prop) => {
     INSERT INTO suppliersncustomers(
       SnC_Type, SnC_name, SnC_tin, SnC_address, SnC_phone, SnC_region, SnC_status, SnC_email, SnC_exempted, SnC_rating, SnC_id, SnC_date
     )
-    VALUES ( 
+    VALUES (
       ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
     )`;
   try {
-		return await executeQuery(sql);
+		return await executeQuery(sql, prop);
 	}
 	catch (error) {
 		return error;

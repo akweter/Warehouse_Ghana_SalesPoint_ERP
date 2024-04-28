@@ -54,7 +54,7 @@ const UpdateCusNSup = ({ user, closeAddnewUser, setSubmitted }) => {
                 const userName = /^[A-Za-z._ -]{4,}$/;
                 return userName.test(value) ? '' : 'Full name must be at least 4 characters long!';
             case 'userTIN':
-                const userGhCardTIN = /^(?:C000|GHA-)[0-9xX]{7}(?:[0-9xX]{4})?$/;
+                const userGhCardTIN = /^(P00|C00)[0-9xX]{8}$|^GHA-[0-9xX]{9}-?[0-9xX]?$/;
                 return userGhCardTIN.test(value) ? '' : 'Invalid TIN or Ghana Card number';
             default:
                 return '';

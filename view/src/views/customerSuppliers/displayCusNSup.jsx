@@ -37,13 +37,14 @@ const CusNsupRow = ({ cusNsup, setSubmitted }) => {
 						{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
 					</IconButton>
 				</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} component="th" scope="row" onClick={openData}>{cusNsup.userType}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userName}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userTIN}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userRegion}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userStatus}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} component="th" scope="row" onClick={openData}>{cusNsup.userType || "-"}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userName || "-"}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userTIN || "-"}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userID || "-"}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userRegion || "-"}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userStatus || "-"}</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>
-					<Rating name="read-only" value={cusNsup.userRating} readOnly />
+					<Rating name="read-only" value={cusNsup.userRating || "-"} readOnly />
 				</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={() => handleUpdateUser()} align='right'>
 					<Button variant='outlined' sx={{ backgroundColor: '#0C0E81', color: 'white' }}>Edit</Button>
@@ -138,6 +139,7 @@ const CustomersSuppliersTable = ({ inData, setSubmitted }) => {
 								<TableCell><Typography variant='h4' color='white'>Type</Typography></TableCell>
 								<TableCell><Typography variant='h4' color='white'>Name</Typography></TableCell>
 								<TableCell><Typography variant='h4' color='white'>TIN</Typography></TableCell>
+								<TableCell><Typography variant='h4' color='white'>Account</Typography></TableCell>
 								<TableCell><Typography variant='h4' color='white'>Region</Typography></TableCell>
 								<TableCell><Typography variant='h4' color='white'>Status</Typography></TableCell>
 								<TableCell><Typography variant='h4' color='white'>Rating</Typography></TableCell>

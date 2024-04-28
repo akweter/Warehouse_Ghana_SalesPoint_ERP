@@ -65,7 +65,7 @@ const searchOnlyProduct = async (product) => {
 const oneProduct = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_id = ?";
   try {
-		return await executeQuery(sql);
+		return await executeQuery(sql, prop);
 	}
 	catch (error) {
 		return error;
@@ -76,7 +76,7 @@ const oneProduct = async (prop) => {
 const oneProductAutoIncrement = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_autoincrement = ?";
   try {
-		return await executeQuery(sql);
+		return await executeQuery(sql, prop);
 	}
 	catch (error) {
 		return error;
@@ -87,7 +87,7 @@ const oneProductAutoIncrement = async (prop) => {
 const Exempt = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND  Itm_taxable = ?";
   try {
-		return await executeQuery(sql);
+		return await executeQuery(sql, prop);
 	}
 	catch (error) {
 		return error;
@@ -98,7 +98,7 @@ const Exempt = async (prop) => {
 const taxOnProduct = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND  Itm_taxable = ?";
   try {
-		return await executeQuery(sql);
+		return await executeQuery(sql, prop);
 	}
 	catch (error) {
 		return error;
@@ -109,7 +109,7 @@ const taxOnProduct = async (prop) => {
 const addedUser = async (prop) => {
     const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND  Itm_usr_id = ?";
     try {
-		return await executeQuery(sql);
+		return await executeQuery(sql, prop);
 	}
 	catch (error) {
 		return error;
@@ -120,7 +120,7 @@ const addedUser = async (prop) => {
 const productSupplier = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND  Itm_sup_id = ?";
   try {
-		return await executeQuery(sql);
+		return await executeQuery(sql, prop);
 	}
 	catch (error) {
 		return error;
@@ -131,7 +131,7 @@ const productSupplier = async (prop) => {
 const dateAdded = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND  Itm_date >= ? AND Itm_date <= ?";
   try {
-		return await executeQuery(sql);
+		return await executeQuery(sql, prop);
 	}
 	catch (error) {
 		return error;
@@ -142,7 +142,7 @@ const dateAdded = async (prop) => {
 const searchProduct = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND (Itm_name LIKE ? OR Itm_price LIKE ? OR itm_date LIKE ?); ";
   try {
-		return await executeQuery(sql);
+		return await executeQuery(sql, prop);
 	}
 	catch (error) {
 		return error;
@@ -156,7 +156,7 @@ const searchProduct = async (prop) => {
 const addExcelProducts = async (prop) => {
   const sql = "INSERT INTO inventory (Itm_autoincrement, Itm_cat, Itm_name, Itm_status, Itm_img, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date, Itm_id, Itm_UOM) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   try {
-		return await executeQuery(sql);
+		return await executeQuery(sql, prop);
 	}
 	catch (error) {
 		return error;

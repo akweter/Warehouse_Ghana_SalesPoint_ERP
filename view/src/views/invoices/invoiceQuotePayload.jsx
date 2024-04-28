@@ -2,14 +2,7 @@ import { computeStandardTaxes } from 'utilities/computeAllTaxes';
 import { getUserName } from 'utilities/getUserName';
 
 export const useFullPayload = (payload) => {
-
-    // Generate random number for refund reference
-    function generateRandomNumber() {
-        const length = 10;
-        const randomNumber = Math.floor(Math.random() * Math.pow(10, length));
-        return randomNumber.toString().padStart(length, '0');
-    }
-
+    
     // Set Date value according to GRA API standard
     const formatDate = (date) => {
         if (date) {
@@ -64,7 +57,8 @@ export const useFullPayload = (payload) => {
         }
     }
     // Set header state
-    const header = { calculationType: CalculationType, items: itemslist(products) };
+    const header = { calculationType: CalculationType, discountType: DiscountType, items: itemslist(products) };
+
     const result = computeStandardTaxes(header);
     const {
         covid,
@@ -97,7 +91,7 @@ export const useFullPayload = (payload) => {
         saleType: SaleType,
         discountType: DiscountType,
         discountAmount: discountAmount,
-        reference: generateRandomNumber(),
+        reference: "",
         groupReferenceId: "",
         purchaseOrderReference: "",
         invCusId: CustomerTIN,
@@ -110,6 +104,7 @@ export const useFullPayload = (payload) => {
         nhil: nhil,
         tourism: tourism,
         covid: covid,
+        invoiceType: "Invoice",
     };
     return newHeader;
 }

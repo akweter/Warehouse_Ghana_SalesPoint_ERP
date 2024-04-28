@@ -129,7 +129,6 @@ export const fetchAutocompleteId = async () => {
 export const postNewInvoice = async (data) => {
     const endpoint = data.invoiceType === "Quotation" ? "gra/quote" : "gra/invoice";
     const response = await requestMaking(endpoint, 'POST', data);
-    console.log(response);
     if (response.ok) {
         return await response.json();
     }

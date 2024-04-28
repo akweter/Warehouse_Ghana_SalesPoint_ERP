@@ -183,6 +183,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                 cst,
                 tourism,
                 items,
+                totalVat,
             } = result;
             setHeader((state) => ({...state,
                 totalAmount: totalAmount,
@@ -194,7 +195,8 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                 tourism: tourism,
                 covid: covid,
                 items: items,
-                cst: cst
+                cst: cst,
+                totalVat: totalVat,
             }));
         }
         setTimeout(() => {
@@ -401,12 +403,13 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                 setDrop(false);
                 setAlert((e) => ({ ...e, message: data.status, color: 'success' }));
                 setOpen(true);
-                BackdropOpen(false)
+                BackdropOpen(false);
+                setSubmitted(true);
             }
         }
         catch (error) {
             setDrop(false);
-            setAlert((e) => ({ ...e, message: 'Temporal server error. Please refresh and continue', color: 'info' }));
+            setAlert((e) => ({ ...e, message: "Invoice submission failed! Refresh and try again", color: 'error' }));
             setOpen(true);
         }
     };
