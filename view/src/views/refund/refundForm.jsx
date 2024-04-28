@@ -85,7 +85,7 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
                 reference: generateRandomNumber(),
                 groupReferenceId: "",
                 purchaseOrderReference: "",
-                // items: products,
+                invoiceType: "Partial_Refund",
                 invCusId: CustomerTIN,
                 remarks: Remarks,
                 status: "Partial_Refund"

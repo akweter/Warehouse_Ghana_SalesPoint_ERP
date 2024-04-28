@@ -13,6 +13,7 @@ import NotificationSection from './NotificationSection';
 
 import { IconMenu2 } from '@tabler/icons';
 import { DateTimeSecondsDisplay } from 'utilities/globalTime';
+import Customization from 'layout/Customization';
 
 // ==============================|| MAIN NAVBAR / HEADER ||============================== //
 
@@ -58,9 +59,10 @@ const Header = ({ handleLeftDrawerToggle }) => {
 
       {/* header search */}
       <SearchSection />
+      <Customization />
       <Box sx={{ flexGrow: 1 }} />
       < DateTimeSecondsDisplay />
-      <Box sx={{ flexGrow: 1 }} />
+      {/* <Box sx={{ flexGrow: 1 }} /> */}
       <NotificationSection />
       <ProfileSection />
     </>

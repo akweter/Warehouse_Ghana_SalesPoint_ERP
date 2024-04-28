@@ -19,7 +19,7 @@ const { thirtySeven } = require("../controller/selectQueries");
 // all refund Invoices
 Router.get("/", async (req, res) => {
     try {
-        const output = await thirtySeven('Partial_Refund', 'Refund', 'Refund');
+        const output = await thirtySeven('Partial_Refund', 'Refund', 'Refund_Cancellation');
         const modifiedOutput = restructureInvoiceResult(output);
         return res.status(200).json(modifiedOutput);
     }

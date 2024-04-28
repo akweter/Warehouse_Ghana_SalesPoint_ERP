@@ -95,23 +95,23 @@ const Customization = () => {
         <Fab
           component="div"
           onClick={handleToggle}
-          size="medium"
+          size="small"
           variant="circular"
-          color="secondary"
+          color="primary"
           sx={{
             borderRadius: 0,
             borderTopLeftRadius: '50%',
             borderBottomLeftRadius: '50%',
             borderTopRightRadius: '50%',
             borderBottomRightRadius: '4px',
-            top: '12%',
+            top: '8%',
             position: 'fixed',
             right: 10,
             zIndex: theme.zIndex.speedDial
           }}
         >
           <AnimateButton type="rotate">
-            <IconButton color="inherit" size="large" disableRipple>
+            <IconButton color="warning" size="large" disableRipple>
               <IconSettings />
             </IconButton>
           </AnimateButton>
@@ -124,7 +124,7 @@ const Customization = () => {
         open={open}
         PaperProps={{
           sx: {
-            width: 280
+            width: 200
           }
         }}
       >
