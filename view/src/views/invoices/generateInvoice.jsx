@@ -29,12 +29,11 @@ const MakeNewInvoice = ({ setSubmitted, status }) => {
         <div>
             <Button
                 variant='contained'
-                color='primary'
-                size='medium'
-                sx={{ color: 'gold' }}
+                color='inherit'
+                size='large'
                 onClick={handleOpen}
             >
-                Issue New Invoice
+                <Typography variant='h5' color='darkred'>Issue New Invoice</Typography>
             </Button>
             <Dialog
                 fullWidth

@@ -7,6 +7,7 @@ import {
     IconButton,
     Grid,
     Drawer,
+    Typography,
 } from '@mui/material';
 import { GeneralCatchError } from 'utilities/errorAlert';
 import RefundCancellationForm from './refundCancelation';
@@ -169,7 +170,7 @@ export default function Refund() {
     return (
         <div>
             <Grid container sx={{ justifyContent: 'space-between' }}>
-                <h2>Refund Transactions</h2>
+            <Typography color='darkblue' variant='h3'>Refunds</Typography>
                 <IconButton onClick={toggleDrawer(true)} size='large' edge="end" color="secondary">
                     <MenuIcon color='secondary' />
                 </IconButton>

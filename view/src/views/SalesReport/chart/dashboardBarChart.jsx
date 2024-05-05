@@ -47,7 +47,7 @@ const DashboardBarChart = () => {
                         data: totalSales,
                     },
                     {
-                        name: 'Profit',
+                        name: 'Expenses',
                         type: 'line',
                         fill: 'solid',
                         data: profit,

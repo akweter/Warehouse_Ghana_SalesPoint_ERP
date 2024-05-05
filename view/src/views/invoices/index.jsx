@@ -8,15 +8,15 @@ import {
     SendRounded,
     Visibility as VisibilityIcon
 } from '@mui/icons-material';
-import { 
-    IconButton, 
-    Grid, 
-    Box, 
+import {
+    IconButton,
+    Grid,
+    Box,
     CircularProgress,
-    DialogContent, 
-    Typography, 
-    DialogActions, 
-    Button, 
+    DialogContent,
+    Typography,
+    DialogActions,
+    Button,
     Dialog,
     DialogTitle
 } from '@mui/material';
@@ -33,9 +33,10 @@ import InvoiceDetails from './invoiceDetails';
 import InvoiceTemplate from './invoiceTemplate';
 import { AlertError, GeneralCatchError } from 'utilities/errorAlert';
 import { useFullPayload } from './invoiceQuotePayload';
+import VerifyTIN from './verifyTIN';
+import WaybillPopper from 'views/waybill/waybillPopup';
 
 /* eslint-disable */
-
 const Invoice = () => {
     const [submitted, setSubmitted] = useState(false);
     const [status, setStatus] = useState(false);
@@ -86,17 +87,20 @@ const Invoice = () => {
         }
     };
 
+    // Format Date and Time to GRA Standard
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
         return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
+    // Sum Levied together
     const Levies = (invoice) => {
         const { NHIL, GETFund, COVID, CST, Tourism } = invoice;
         const totalLevies = NHIL + GETFund + COVID + CST + Tourism;
         return parseFloat(totalLevies);
     };
 
+    // Set Row for DataGrid
     const rowsWithIds = useMemo(() =>
         invoices.map((invoice, index) => ({
             id: index,
@@ -107,6 +111,7 @@ const Invoice = () => {
         [invoices]
     );
 
+    // Set column for DataGrid
     const columns = useMemo(() => {
         return [
             {
@@ -201,9 +206,6 @@ const Invoice = () => {
                     <IconButton title='View Invoice' onClick={() => handleViewIconClick(params.row)}>
                         <VisibilityIcon fontSize='medium' color='primary' />
                     </IconButton>
-                    <IconButton title='Print Invoice' onClick={() => handlePrintIcon(params.row)}>
-                        <PrintIcon fontSize='small' color='error' />
-                    </IconButton>
                     {
                         params.row.InvoiceStatus === "Invoice" ?
                             <IconButton title='Refund Invoice' onClick={() => handleRefundBtnClick(params.row)}>
@@ -211,20 +213,25 @@ const Invoice = () => {
                             </IconButton> :
                             <IconButton onClick={() => handleQuoteToInvoiceBtnClick(params.row)}>
                                 {loadQuote === true ?
-                                    <CircularProgress size={20} color='secondary'/> :
+                                    <CircularProgress size={20} color='secondary' /> :
                                     <SendRounded fontSize='small' color='secondary' title='Invoice Quotation' />}
                             </IconButton>
                     }
+                    <IconButton title='Print Invoice' onClick={() => handlePrintIcon(params.row)}>
+                        <PrintIcon fontSize='small' color='error' />
+                    </IconButton>
                 </>),
             },
         ]
     });
 
+    // Open invoice view
     const handleViewIconClick = (row) => {
         setSelectedRow(row);
         setOpenDialog(true);
     };
 
+    // Print invoice
     const handlePrintIcon = (row) => {
         const invoiceTemplateHTML = renderInvoiceTemplate(row);
 
@@ -232,9 +239,12 @@ const Invoice = () => {
         printWindow.document.body.innerHTML = invoiceTemplateHTML;
         printWindow.onload = () => {
             printWindow.print();
-            printWindow.onafterprint = () => {
-                printWindow.close();
-            };
+
+            setTimeout(() => {
+                printWindow.onafterprint = () => {
+                    printWindow.close();
+                };
+            }, 1000);
         };
     }
 
@@ -295,8 +305,19 @@ const Invoice = () => {
 
     return (
         <div>
-            <Grid container sx={{ justifyContent: 'space-around' }}>
-                < MakeNewInvoice setSubmitted={setSubmitted} status={status} />
+            <Grid container justifyContent='space-evenly'>
+                <Grid item>
+                    <Typography color='darkblue' variant='h3'>Invoices</Typography>
+                </Grid>
+                <Grid item>
+                    < MakeNewInvoice setSubmitted={setSubmitted} status={status} />
+                </Grid>
+                <Grid item>
+                    <WaybillPopper />
+                </Grid>
+                <Grid item>
+                    <VerifyTIN />
+                </Grid>
             </Grid>
             <Box sx={{ height: 600, width: '100%' }}>
                 <DataGrid

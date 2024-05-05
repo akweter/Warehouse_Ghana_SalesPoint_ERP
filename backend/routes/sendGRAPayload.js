@@ -210,6 +210,16 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
     }
 };
 
+// Verify Taxpayer TIN
+Router.get("/verify/tin/:id", async (req, res) => {
+    const { id } = req.params;
+    const response = await axios.get(`${GRA_ENDPOINT}/identification/tin/${id}`, { headers: { 'security_key': GRA_KEY } });
+    if (response.data) {
+        res.status(200).json(response.data);
+    }
+    res.status(500).send({ status: 'error' });
+});
+
 // Check gra server status
 Router.get("/status", async (req, res) => {
     const response = await axios.get(`${GRA_ENDPOINT}/health`, { headers: { 'security_key': GRA_KEY } });

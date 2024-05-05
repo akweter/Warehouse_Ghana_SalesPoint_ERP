@@ -21,6 +21,7 @@ const {
   ThisMonthTaxes,
   ThisMonthTotalInvoicenDate,
   getAllQuoteInvoices,
+  getWaybillInvoice,
 } = require("../controller/salesNinvoices");
 const { thirtySeven } = require("../controller/selectQueries");
 
@@ -82,6 +83,20 @@ Router.get("/quote", async (req, res) => {
   catch (err) {
     logErrorMessages(`Error fetching quotation invoices ${err}`);
     return res.status(500).send("Temporal server error. Kindly refresh");
+  }
+});
+
+// Get all today invoices
+Router.get("/waybill/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const output = await getWaybillInvoice(id);
+    const modifiedOutput = restructureInvoiceResult(output);
+    return res.status(200).json(modifiedOutput);
+  }
+  catch (err) {
+    logErrorMessages(`Error fetching quotation invoices ${err}`);
+    return res.status(500).send("Something unexpected happened. Kindly try again");
   }
 });
 

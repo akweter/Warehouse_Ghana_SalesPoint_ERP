@@ -278,6 +278,39 @@ const oneInvoice = async (id) => {
 	}
 };
 
+// Get Quotation invoices
+const getWaybillInvoice = async (id) => {
+	const sql = `
+		SELECT
+			invoice.Inv_ID_auto  AS AutoID,
+			invoice.Inv_Number AS InvoiceNumber,
+			inventory.Itm_id AS itemCode,
+			inventory.Itm_name AS ProductName,
+			invoice_products.Product_Quantity AS Quantity,
+			suppliersncustomers.SnC_name AS CustomerName,
+			suppliersncustomers.SnC_tin AS CustomerTIN,
+			suppliersncustomers.SnC_phone AS customerPhone
+		FROM
+			invoice
+		JOIN
+			suppliersncustomers ON invoice.Inv_Customer_Tin = suppliersncustomers.SnC_tin
+		LEFT JOIN
+			invoice_products ON invoice.Inv_Number = invoice_products.InvoiceNum_ID
+		LEFT JOIN
+			inventory ON invoice_products.Product_ID = inventory.Itm_id
+		WHERE
+			Inv_status IN ("Invoice") AND Inv_Number IN (?)
+		ORDER BY
+			invoice.Inv_ID_auto DESC
+	`;
+	try {
+		return await executeQuery(sql, id);
+	}
+	catch (error) {
+		return error;
+	}
+}
+
 // Sales Dept invoice
 const Searches = async (prop) => {
 	const sql = `
@@ -406,4 +439,5 @@ module.exports = {
 	ThisMonthTotalInvoicenDate,
 	getAllQuoteInvoices,
 	updateInvoiceQRCodes,
+	getWaybillInvoice,
 };

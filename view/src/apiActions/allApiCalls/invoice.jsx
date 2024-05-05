@@ -13,6 +13,19 @@ export const checkGRAServerStatus = async () => {
         return 'error';
     }
 };
+
+// Verify TIN
+export const verifyTIN = async (id) => {
+    const response = await requestMaking(`gra/verify/tin/${id}`, 'GET', null);
+    try {
+        if (response.ok) {
+            return await response.json();
+        }
+    }
+    catch (error) {
+        return error;
+    }
+};
 /*-------------------------------------------------------------------------------*/
 
 // Fetch all invoice
@@ -122,6 +135,15 @@ export const fetchAutocompleteId = async () => {
     }
     return null;
 };
+
+// Fetch Invoice details for Waybill
+export const FetchWaybillInvoice = async (id) => {
+    const response = await requestMaking(`invoices/waybill/${id}`, 'GET', null);
+    if (response.ok) {
+        return await response.json();
+    }
+    return null;
+}
 
 /* ------------    POST REQUEST     -------------------*/
 

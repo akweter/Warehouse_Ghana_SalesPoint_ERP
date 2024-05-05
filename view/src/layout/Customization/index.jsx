@@ -91,13 +91,13 @@ const Customization = () => {
   return (
     <>
       {/* toggle button */}
-      <Tooltip title="Live Customize">
+      <Tooltip title="Nortifications">
         <Fab
           component="div"
           onClick={handleToggle}
           size="small"
           variant="circular"
-          color="primary"
+          color="inherit"
           sx={{
             borderRadius: 0,
             borderTopLeftRadius: '50%',
@@ -111,7 +111,7 @@ const Customization = () => {
           }}
         >
           <AnimateButton type="rotate">
-            <IconButton color="warning" size="large" disableRipple>
+            <IconButton color="error" size="large" disableRipple>
               <IconSettings />
             </IconButton>
           </AnimateButton>
