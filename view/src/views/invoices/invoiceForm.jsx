@@ -160,7 +160,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
         const { currency, businessPartnerName, businessPartnerTin } = header;
 
         if (currency === 'GHS') {
-            setHeader(prevHeader => ({ ...prevHeader, exchangeRate: '1.0' }));
+            setHeader(state => ({ ...state, exchangeRate: '1.0' }));
         } else if (businessPartnerName !== null && businessPartnerTin === "C0000000000") {
             setDisableCustomer(true);
         } else {
@@ -440,7 +440,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                     fullWidth
                                     size='small'
                                     color="primary"
-                                    value={header.businessPartnerName ? header.businessPartnerName : null}
+                                    value={header.businessPartnerName}
                                     exclusive
                                     name="businessPartnerName"
                                     onChange={handleCashChange}
