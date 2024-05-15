@@ -6,14 +6,11 @@ const executeQuery = (sql, id) => {
   return new Promise((resolve, reject) => {
     db.query(sql, id, (err, result) => {
       if (err) {
-        logErrorMessages("Execution failed " + err);
-        reject("Operation failed. Please try again!");
+        logErrorMessages(JSON.stringify(err));
+        reject(err);
       }
-      else {
-        resolve(result);
-      }
+      resolve(result);
     });
   });
 };
-
 module.exports = { executeQuery };

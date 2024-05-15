@@ -33,7 +33,7 @@ const ProductTemplate = () => {
             '1500.00',
             'B63H',
             'TRSM',
-            'SINGLE',
+            'DAY',
           ],
           [
             'COMPUTER',

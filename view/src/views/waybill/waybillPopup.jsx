@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { 
+import {
     Button,
     Dialog,
     Popover,
@@ -28,12 +28,12 @@ const WaybillPopper = () => {
             }
         }
         catch (error) {
-            console.error(error);
+            setResult([]);
         }
     }
 
     return (
-        <div>
+        <>
             <Button variant="outlined" onClick={handleClick}>Print Waybill</Button>
             <Popover
                 open={open}
@@ -48,12 +48,14 @@ const WaybillPopper = () => {
                     horizontal: 'center',
                 }}
             >
-                <Typography sx={{ p: 2 }}><SmallTextField setData={setData} label={"Invoice #"} handleVerification={printWaybill} /></Typography>
+                <Typography sx={{ p: 2 }}>
+                    <SmallTextField setData={setData} label={"Invoice #"} handleVerification={printWaybill} />
+                </Typography>
             </Popover>
-            <Dialog open={dialog} onClose={()=> openDialog(false)}>
-                <WaybillForm formData={result}/>
+            <Dialog open={dialog} onClose={() => openDialog(false)} fullWidth>
+                <WaybillForm formData={result} />
             </Dialog>
-        </div>
+        </>
     );
 };
 

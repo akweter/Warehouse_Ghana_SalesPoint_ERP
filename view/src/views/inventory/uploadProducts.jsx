@@ -34,6 +34,7 @@ import ProductTemplate from './productTemplate';
 import { Stack } from '@mui/system';
 import { ShowBackDrop } from 'utilities/backdrop';
 import { AlertError } from 'utilities/errorAlert';
+import { IconEraser } from '@tabler/icons';
 
 // /* eslint-disable */
 
@@ -244,6 +245,11 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData, 
 		setProducts([]);
 	}
 
+	// Clear products from the state and close dialog
+	const clearProductsData = () => {
+		setProducts([]);
+	}
+
 	// Post new product or update product
 	const UpdateOrPost = async () => {
 		const trimProducts = products.filter((product) => product.key !== 0);
@@ -322,6 +328,13 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData, 
 						>
 							Inventory | Stock Management
 						</Typography>
+						<Grid item>
+							<FormControl fullWidth>
+								<Stack direction="row" spacing={2}>
+									<Button onClick={clearProductsData} fullWidth color='warning' variant="contained" size='small' startIcon={<IconEraser />}>Ceear Products</Button>
+								</Stack>
+							</FormControl>
+						</Grid>
 						< ProductTemplate />
 						<Grid item>
 							<FormControl fullWidth>

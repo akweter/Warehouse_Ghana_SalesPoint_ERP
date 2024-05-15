@@ -3,7 +3,7 @@ const Router = require("express").Router();
 
 // Projects
 const { executeRoute } = require("../utils/handler");
-const { logErrorMessages } = require("../utils/saveLogfile");
+const { logErrorMessages, logSuccessMessages } = require("../utils/saveLogfile");
 
 // controller
 const restructureInvoiceResult = require("../utils/invoiceModifier");
@@ -28,7 +28,7 @@ const { thirtySeven } = require("../controller/selectQueries");
 // All invoices transaction
 Router.get("/", async (req, res) => {
   try {
-    const output = await thirtySeven('Invoice', 'Invoice', 'Quotation');
+    const output = await thirtySeven("Invoice", "Quotation", "Invoice");
     const modifiedOutput = restructureInvoiceResult(output);
     return res.status(200).json(modifiedOutput);
   }
@@ -212,5 +212,3 @@ Router.get("/:id", async (req, res) => {
 });
 
 module.exports = Router;
-
-

@@ -7,7 +7,8 @@ const { logMessage } = require("../utils/saveLogfile");
 const tenInvoices = async () => {
 	const sql = "SELECT * FROM invoice WHERE Inv_status = 'Invoice' ORDER BY Inv_ID_auto DESC LIMIT 10";
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -26,7 +27,8 @@ const allSalesInvNumbers = async () => {
     LIMIT 1;
   `;
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -37,7 +39,8 @@ const allSalesInvNumbers = async () => {
 const getAllSalesInvoices = async () => {
 	const sql = `SELECT * FROM invoice WHERE Inv_status = 'Invoice' ORDER BY Inv_ID_auto DESC`;
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -48,7 +51,8 @@ const getAllSalesInvoices = async () => {
 const getAllQuoteInvoices = async () => {
 	const sql = `SELECT * FROM invoice WHERE Inv_status = 'Quotation' ORDER BY Inv_ID_auto DESC`;
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -59,7 +63,8 @@ const getAllQuoteInvoices = async () => {
 const getByDate = async () => {
 	const sql = `SELECT * FROM invoice WHERE Inv_date = ${new Date('yy-mm-dd')}`;
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -70,7 +75,8 @@ const getByDate = async () => {
 const getTotalInv = async () => {
 	const sql = `SELECT COUNT(*) as total_invoices FROM invoice`;
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -81,7 +87,8 @@ const getTotalInv = async () => {
 const getSalesCurDay = async () => {
 	const sql = `SELECT * FROM invoice WHERE Inv_status = 'Invoice' AND Inv_date = CURDATE()`;
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -92,7 +99,8 @@ const getSalesCurDay = async () => {
 const WeekAllSalesInvoice = async () => {
 	const sql = `SELECT Inv_total_amt FROM invoice WHERE Inv_status = 'Invoice' AND WEEK(Inv_date) = WEEK(CURDATE())`;
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -103,7 +111,8 @@ const WeekAllSalesInvoice = async () => {
 const MonthAllSalesInvoice = async () => {
 	const sql = `SELECT Inv_total_amt FROM invoice WHERE Inv_status = 'Invoice' AND MONTH(Inv_date) = MONTH(CURDATE())`;
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -114,7 +123,8 @@ const MonthAllSalesInvoice = async () => {
 const YearAllSalesInvoice = async () => {
 	const sql = `SELECT Inv_total_amt FROM invoice WHERE Inv_status = 'Invoice' AND YEAR(Inv_date) = YEAR(CURDATE())`;
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -125,7 +135,8 @@ const YearAllSalesInvoice = async () => {
 const TodayAllRefundsInvoice = async () => {
 	const sql = `SELECT * FROM invoice WHERE Inv_status = 'Refund' OR Inv_status = 'Partial_Refund' AND Inv_date = CURDATE()`;
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -136,7 +147,8 @@ const TodayAllRefundsInvoice = async () => {
 const TodayRefundsCancellationInvoice = async () => {
 	const sql = `SELECT * FROM invoice WHERE Inv_status = 'Refund_Cancellation' AND Inv_date = CURDATE()`;
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -160,7 +172,8 @@ const ThisMonthTaxes = async () => {
 			AND YEAR(Inv_date) = YEAR(CURRENT_DATE());
 	`
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -205,7 +218,8 @@ const ThisMonthTotalInvoicenDate = async () => {
 		LIMIT 0, 25;
 	`
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -216,7 +230,8 @@ const ThisMonthTotalInvoicenDate = async () => {
 const refundInvoices = async () => {
 	const sql = "SELECT * FROM invoice WHERE Inv_status = 'REFUND' OR Inv_status = 'Partial_Refund' ORDER BY Inv_ID_auto DESC";
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -227,7 +242,8 @@ const refundInvoices = async () => {
 const countALlrefundInvoices = async () => {
 	const sql = "SELECT * FROM invoice WHERE Inv_status IN ('REFUND', 'Partial_Refund') GROUP BY Inv_Number ORDER BY Inv_ID_auto DESC";
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -238,7 +254,8 @@ const countALlrefundInvoices = async () => {
 const allRefundedProducts = async () => {
 	const sql = "SELECT Inv_Number FROM invoice WHERE Inv_status IN ('REFUND', 'Partial_Refund') ORDER BY Inv_ID_auto DESC";
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -249,7 +266,8 @@ const allRefundedProducts = async () => {
 const cancelledRefundInvoices = async () => {
 	const sql = "SELECT * FROM invoice WHERE Inv_status = 'Refund_Cancellation' ORDER BY Inv_Number DESC";
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -260,7 +278,8 @@ const cancelledRefundInvoices = async () => {
 const purchaseInvoices = async () => {
 	const sql = "SELECT * FROM invoice WHERE Inv_status = 'PURCHASE' ORDER BY Inv_ID_auto  DESC";
 	try {
-		return await executeQuery(sql);
+		const result = await executeQuery(sql);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -268,10 +287,10 @@ const purchaseInvoices = async () => {
 };
 
 // Only one Invoice
-const oneInvoice = async (id) => {
+const oneInvoice = async (payload) => {
 	const sql = "SELECT * FROM invoice WHERE Inv_status = 'Invoice' AND Inv_id = ? ORDER BY Inv_ID_auto  DESC";
 	try {
-		return await executeQuery(sql, id);
+		return await executeQuery(sql, payload);
 	}
 	catch (error) {
 		return error;
@@ -279,7 +298,7 @@ const oneInvoice = async (id) => {
 };
 
 // Get Quotation invoices
-const getWaybillInvoice = async (id) => {
+const getWaybillInvoice = async (payload) => {
 	const sql = `
 		SELECT
 			invoice.Inv_ID_auto  AS AutoID,
@@ -304,7 +323,7 @@ const getWaybillInvoice = async (id) => {
 			invoice.Inv_ID_auto DESC
 	`;
 	try {
-		return await executeQuery(sql, id);
+		return await executeQuery(sql, payload);
 	}
 	catch (error) {
 		return error;
@@ -312,7 +331,7 @@ const getWaybillInvoice = async (id) => {
 }
 
 // Sales Dept invoice
-const Searches = async (prop) => {
+const Searches = async (payload) => {
 	const sql = `
 	SELECT 
 		Inv_user, Inv_status, Inv_Number FROM invoice 
@@ -321,7 +340,7 @@ const Searches = async (prop) => {
 	ORDER BY
 		Inv_id DESC`;
 	try {
-		return await executeQuery(sql, prop);
+		return await executeQuery(sql, payload);
 	}
 	catch (error) {
 		return error;
@@ -339,7 +358,8 @@ const AddNewInvoices = async (payload) => {
 		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 	)`;
 	try {
-		return await executeQuery(sql, payload);
+		const result = await executeQuery(sql, payload);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -354,7 +374,8 @@ const saveRefundInvoice = async (payload) => {
 		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 	)`;
 	try {
-		return await executeQuery(sql, payload);
+		const result = await executeQuery(sql, payload);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -369,7 +390,8 @@ const saveInInvoiceProduct = async (payload) => {
 		?, ?, ?, ?, ?, ?, ?
 	)`;
 	try {
-		return await executeQuery(sql, payload);
+		const result = await executeQuery(sql, payload);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -394,7 +416,8 @@ const updateInvoiceQRCodes = async (payload) => {
 		Inv_Number = ?
     `;
 	try {
-		return await executeQuery(sql, payload);
+		const result = await executeQuery(sql, payload);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;
@@ -405,7 +428,8 @@ const updateInvoiceQRCodes = async (payload) => {
 const updateRefundProducts = async (payload) => {
 	const sql = "UPDATE invoice_products SET Product_Refunded_Quantity = Product_Refunded_Quantity + ? WHERE Product_ID = ? AND InvoiceNum_ID = ?";
 	try {
-		return await executeQuery(sql, payload);
+		const result = await executeQuery(sql, payload);
+    	if(result ){ return result }
 	}
 	catch (error) {
 		return error;

@@ -55,7 +55,7 @@ const searchOnlyProduct = async (product) => {
   LEFT JOIN 
     usermanagement AS u ON i.Itm_usr_id = u.Usr_id
   WHERE
-    Itm_status <> 'Inactive' AND (Itm_name LIKE ?) LIMIT 10
+    Itm_status <> 'Inactive' AND (Itm_name LIKE ?)
   `;
   // "SELECT * FROM inventory WHERE Itm_status <> 'Inactive' AND (Itm_name LIKE ?) LIMIT 10";
   return await executeQuery(sql, product);

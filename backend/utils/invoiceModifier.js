@@ -5,18 +5,12 @@ const restructureInvoiceResult = (result) => {
             const existingInvoice = modifiedResult.find(item => item.AutoID === row.AutoID);
 
             if (!existingInvoice) {
-                const { ProductName, ProductPrice, ProductDiscount, Quantity, RefundedQuantity, ProductCategory, itemCode, ...invoiceData } = row;
+                const { ProductName, ProductPrice, ProductDiscount, Quantity, RefundedQuantity, ProductCategory, itemCode, uom, ...invoiceData } = row;
                 const newInvoice = {
                     ...invoiceData,
-                    products: [{
-                        ProductName,
-                        ProductPrice,
-                        ProductDiscount,
-                        Quantity,
-                        RefundedQuantity,
-                        ProductCategory,
-                        itemCode,
-                    }]
+                    products: [
+                        { ProductName, ProductPrice, ProductDiscount, Quantity, RefundedQuantity, ProductCategory, itemCode, uom, }
+                    ]
                 };
                 modifiedResult.push(newInvoice);
             }
@@ -31,6 +25,7 @@ const restructureInvoiceResult = (result) => {
                         RefundedQuantity: row.RefundedQuantity,
                         ProductCategory: row.ProductCategory,
                         itemCode: row.itemCode,
+                        uom: row.uom,
                     });
                 }
             }
