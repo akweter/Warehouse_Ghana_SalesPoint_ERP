@@ -23,6 +23,7 @@ const Customer = require('./routes/customers');
 const Inventory = require('./routes/inventory');
 const SalesNInvoices = require('./routes/salesNinvoices');
 const Refunds = require('./routes/refund');
+const Payload = require('./routes/sendPayload');
 const GRAPayload = require('./routes/sendGRAPayload');
 const Company = require('./routes/company');
 const Forbidden = require('./auth/globalHeaderToken');
@@ -81,6 +82,7 @@ server.use('/customers', Customer);
 server.use('/products', Inventory);
 server.use('/invoices', SalesNInvoices);
 server.use('/refunds', Refunds);
+server.use('/payload', Payload);
 server.use('/gra', GRAPayload);
 server.use('/company', Company);
 
