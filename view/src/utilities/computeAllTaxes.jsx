@@ -16,15 +16,7 @@ export const InclusiveTax = (item, header) => {
         const graValue = itemSubtotal / 1.219;
         let levyAmountA, levyAmountB, levyAmountC, levyAmountD, levyAmountE, totalLevy, totalVat, vatableAmt;
 
-        if (itemCategory === "") {
-            levyAmountA = levyAmountB = (2.5 / 100) * graValue;
-            levyAmountC = (1 / 100) * graValue;
-            levyAmountD = levyAmountE = "";
-            vatableAmt = graValue + levyAmountA + levyAmountB + levyAmountC + levyAmountD + levyAmountE;
-            totalVat = 0.15 * vatableAmt;
-            totalLevy = levyAmountA + levyAmountB + levyAmountC + levyAmountD + levyAmountE;
-        }
-        else if (itemCategory === "EXM") {
+        if (itemCategory === "EXM") {
             levyAmountA = levyAmountB = levyAmountC = levyAmountD = levyAmountE = totalVat = totalLevy = "";
         }
         else if (itemCategory === "TRSM") {
@@ -47,6 +39,14 @@ export const InclusiveTax = (item, header) => {
             levyAmountE = "";
             vatableAmt = graValueCST + levyAmountA + levyAmountB + levyAmountC + levyAmountD;
             totalVat = (15 / 100) * vatableAmt;
+            totalLevy = levyAmountA + levyAmountB + levyAmountC + levyAmountD + levyAmountE;
+        }
+        else {
+            levyAmountA = levyAmountB = (2.5 / 100) * graValue;
+            levyAmountC = (1 / 100) * graValue;
+            levyAmountD = levyAmountE = "";
+            vatableAmt = graValue + levyAmountA + levyAmountB + levyAmountC + levyAmountD + levyAmountE;
+            totalVat = 0.15 * vatableAmt;
             totalLevy = levyAmountA + levyAmountB + levyAmountC + levyAmountD + levyAmountE;
         }
         return {
@@ -74,15 +74,7 @@ export const ExclusiveTax = (item, header) => {
         // const graValue = itemSubtotal / 1.219;
         let levyAmountA, levyAmountB, levyAmountC, levyAmountD, levyAmountE, totalLevy, totalVat, vatableAmt;
 
-        if (itemCategory === "") {
-            levyAmountA = levyAmountB = (2.5 / 100) * itemSubtotal;
-            levyAmountC = (1 / 100) * itemSubtotal;
-            levyAmountD = levyAmountE = "";
-            vatableAmt = itemSubtotal + levyAmountA + levyAmountB + levyAmountC + levyAmountD + levyAmountE;
-            totalVat = 0.15 * vatableAmt;
-            totalLevy = levyAmountA + levyAmountB + levyAmountC + levyAmountD + levyAmountE;
-        }
-        else if (itemCategory === "EXM") {
+        if (itemCategory === "EXM") {
             levyAmountA = levyAmountB = levyAmountC = levyAmountD = levyAmountE = totalVat = totalLevy = "";
         }
         else if (itemCategory === "TRSM") {
@@ -101,6 +93,14 @@ export const ExclusiveTax = (item, header) => {
             levyAmountE = "";
             vatableAmt = itemSubtotal + levyAmountA + levyAmountB + levyAmountC + levyAmountD;
             totalVat = (15 / 100) * vatableAmt;
+            totalLevy = levyAmountA + levyAmountB + levyAmountC + levyAmountD + levyAmountE;
+        }
+        else {
+            levyAmountA = levyAmountB = (2.5 / 100) * itemSubtotal;
+            levyAmountC = (1 / 100) * itemSubtotal;
+            levyAmountD = levyAmountE = "";
+            vatableAmt = itemSubtotal + levyAmountA + levyAmountB + levyAmountC + levyAmountD + levyAmountE;
+            totalVat = 0.15 * vatableAmt;
             totalLevy = levyAmountA + levyAmountB + levyAmountC + levyAmountD + levyAmountE;
         }
         return {
