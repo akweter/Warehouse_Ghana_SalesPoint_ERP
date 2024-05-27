@@ -146,9 +146,18 @@ export const FetchWaybillInvoice = async (id) => {
 }
 
 /* ------------    POST REQUEST     -------------------*/
+// post new invoice
+export const postNewInvoice = async (data) => {
+    const endpoint = data.invoiceType === "Quotation" ? "payload/quote" : "payload/invoice";
+    const response = await requestMaking(endpoint, 'POST', data);
+    if (response.ok) {
+        return await response.json();
+    }
+    return null;
+};
 
 // post gra new invoice
-export const postNewInvoice = async (data) => {
+export const postNewGRAInvoice = async (data) => {
     const endpoint = data.invoiceType === "Quotation" ? "gra/quote" : "gra/invoice";
     const response = await requestMaking(endpoint, 'POST', data);
     if (response.ok) {

@@ -4,7 +4,6 @@ const express = require("express");
 const axios = require("axios");
 require('dotenv').config();
 
-const { GRA_ENDPOINT, GRA_KEY } = process.env;
 const { saveRefundInvoice } = require("../controller/salesNinvoices");
 const {
     sanitizePayload,
@@ -29,7 +28,7 @@ const responseData = {
 }
 
 // Post and save invoice records
-Router.post("/inv", async (req, res) => {
+Router.post("/invoice", async (req, res) => {
     const Data = req.body;
     if (!Data || !Data.items || !Array.isArray(Data.items)) {
         return res.json({ status: 'Error', message: 'Invalid data structure', data: Data });
@@ -41,8 +40,12 @@ Router.post("/inv", async (req, res) => {
             .then(() => {
                 return res.status(200).json({ status: 'success' });
             })
-            .catch(() => {
-                return res.json({ status: 'error', message: `Failed to save invoice: ${sanitizedPayload.invoiceNumber} to DB. Try new invoice` });
+            .catch((err) => {
+                logErrorMessages(JSON.stringify(err));
+                return res.json({
+                    status: 'error',
+                    message: `Failed to save invoice: ${sanitizedPayload.invoiceNumber} to DB. Try new invoice`
+                });
             });
     }
     catch (error) {
@@ -53,7 +56,7 @@ Router.post("/inv", async (req, res) => {
 });
 
 // Post and save refund records
-Router.post("/ref", async (req, res) => {
+Router.post("/refund", async (req, res) => {
     const Data = req.body;
 
     if (!Data || !Data.items || !Array.isArray(Data.items)) {
@@ -62,23 +65,15 @@ Router.post("/ref", async (req, res) => {
     const sanitizedPayload = sanitizePayload(Data);
     // logSuccessMessages(JSON.stringify(sanitizedPayload));
     try {
-        if (Array.isArray(sanitizedPayload) || sanitizedPayload) {
-            if (resultMessage) {
-                await saveInvoiceToDB(Data, sanitizedPayload, response.data)
-                    .then(() => {
-                        return res.status(200).json({ status: 'success' });
-                    })
-                    .catch(() => {
-                        logErrorMessages(`Failed to save invoice to DB: ${sanitizedPayload}`);
-                        return res.json({ status: 'error', message: `Failed to save invoice: ${sanitizedPayload.invoiceNumber} to DB. Try new invoice` });
-                    });
-            }
-            else {
-                logErrorMessages(`Unknow GRA error for invoice ${sanitizedPayload}`);
-                return res.json({ status: 'error', message: 'GRA response indicates unknown error' });
-            }
+        if (sanitizedPayload.length > 0) {
+            await saveInvoiceToDB(Data, sanitizedPayload, response.data)
+                .then(() => { return res.status(200).json({ status: 'success' }) })
+                .catch((err) => {
+                    logErrorMessages(`Failed to save invoice to DB: ${err}`);
+                    return res.json({ status: 'error', message: `Failed to save invoice: ${sanitizedPayload.invoiceNumber} to DB.` });
+                });
         } else {
-            return res.json({ status: 'error', message: `Sending invoice: ${sanitizedPayload.invoiceNumber} to GRA Failed!` });
+            return res.json({ status: 'error', message: `Incoreect payload` });
         }
     }
     catch (error) {

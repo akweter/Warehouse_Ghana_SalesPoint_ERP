@@ -25,7 +25,7 @@ import {
 import {
     checkGRAServerStatus,
     fetchAllInvoices,
-    postNewInvoice,
+    postNewGRAInvoice,
 } from 'apiActions/allApiCalls/invoice';
 import MakeNewInvoice from './generateInvoice';
 import RefundForms from 'views/refund/refundForm';
@@ -272,7 +272,7 @@ const Invoice = () => {
                 setOpenConfirm(false);
                 setTimeout(resolve, 2000);
             });
-            await postNewInvoice(header);
+            await postNewGRAInvoice(header);
             setNotify((e) => ({ ...e, message: "Invoice submitted to GRA success!", color: 'success' }));
             setOpen(true);
             setLoadQuote(false);

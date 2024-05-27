@@ -70,66 +70,40 @@ Router.post("/invoice", async (req, res) => {
     const sanitizedPayload = sanitizePayload(Data);
     // logSuccessMessages(JSON.stringify(sanitizedPayload));
     try {
-        // const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, { headers: { 'security_key': GRA_KEY } });
-        // if (response && response.status === 200) {
-        //     const resultMessage = response.data.response.status;
-        // if (resultMessage) {
-        // await saveInvoiceToDB(Data, sanitizedPayload, response.data)
-        //     .then(() => {
-        //         return res.status(200).json({ status: 'success' });
-        //     })
-        //     .catch(() => {
-        //         return res.json({ status: 'error', message: `Failed to save invoice: ${sanitizedPayload.invoiceNumber} to DB. Try new invoice` });
-        //     });
-
-        const responseData = {
-            response: {
-                message: {
-                    ysdcid: null,
-                    ysdcrecnum: null,
-                    ysdcintdata: null,
-                    ysdcregsig: null,
-                    ysdcmrc: null,
-                    ysdcmrctim: null,
-                    ysdctime: null,
-                },
-                qr_code: null,
-            },
+        const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, { headers: { 'security_key': GRA_KEY } });
+        if (response && response.status === 200) {
+            const resultMessage = response.data.response.status;
+            if (resultMessage) {
+                await saveInvoiceToDB(Data, sanitizedPayload, response.data)
+                    .then(() => {
+                        return res.status(200).json({ status: 'success' });
+                    })
+                    .catch(() => {
+                        return res.json({ status: 'error', message: `Failed to save invoice: ${sanitizedPayload.invoiceNumber} to DB. Try new invoice` });
+                    });
+            }
+            else {
+                logErrorMessages(`Unknow GRA error for invoice ${sanitizedPayload}`);
+                return res.json({ status: 'error', message: 'Request GRA response indicates unknown error' });
+            }
         }
-        await saveInvoiceToDB(Data, sanitizedPayload, responseData)
-            .then(() => {
-                return res.status(200).json({ status: 'success' });
-            })
-            .catch(() => {
-                return res.json({ status: 'error', message: `Failed to save invoice: ${sanitizedPayload.invoiceNumber} to DB. Try new invoice` });
-            });
-
-        // }
-        // else {
-        //     logErrorMessages(`Unknow GRA error for invoice ${sanitizedPayload}`);
-        //     return res.json({ status: 'error', message: 'Request GRA response indicates unknown error' });
-        // }
-        // }
-        // else {
-        //     return res.json({ status: 'error', message: `Sending invoice: ${sanitizedPayload.invoiceNumber} to GRA Failed!` });
-        // }
+        else {
+            return res.json({ status: 'error', message: `Sending invoice: ${sanitizedPayload.invoiceNumber} to GRA Failed!` });
+        }
     }
     catch (error) {
-        // if (error.response) {
-            const { status, data } = error.response;
-            logErrorMessages(`${Data.userName} - ${JSON.stringify(data)}, ${JSON.stringify(sanitizedPayload)}`);
-            return res.status(status).json({ status: 'error', message: data });
-        // }
-        // else if (error.request) {
-        //     // The request was made but no response was received
-        //     logErrorMessages(`No response received from the server for request: ${JSON.stringify(error.request)} `);
-        //     return res.json({ status: 'error', message: 'Empty response from GRA server' });
-        // }
-        // else {
-        //     // Something happened in setting up the request that triggered an error
-        //     logErrorMessages(`Request setup error: ${error}`);
-        //     return res.json({ status: 'error', message: `Oops! Something went wrong. Please reflesh and retry.` });
-        // }
+        if (error.response) {
+        }
+        else if (error.request) {
+            // The request was made but no response was received
+            logErrorMessages(`No response received from the server for request: ${JSON.stringify(error.request)} `);
+            return res.json({ status: 'error', message: 'Empty response from GRA server' });
+        }
+        else {
+            // Something happened in setting up the request that triggered an error
+            logErrorMessages(`Request setup error: ${error}`);
+            return res.json({ status: 'error', message: `Oops! Something went wrong. Please reflesh and retry.` });
+        }
     }
 });
 
