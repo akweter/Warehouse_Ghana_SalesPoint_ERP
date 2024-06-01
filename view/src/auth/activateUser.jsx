@@ -30,17 +30,15 @@ export default function VerifyToken() {
                         }
                     }
                     else {
-                        alert(result.message);
                         return window.location.href='/auth/login';
                     }
                 })
                 .catch(()=>{
-                    return null;
+                    return window.location.href='/auth/login';
                 });
             }
             else {
-                alert('Please log in again');
-                return;
+                return window.location.href='/auth/login';
             }
         }
         catch (error) {

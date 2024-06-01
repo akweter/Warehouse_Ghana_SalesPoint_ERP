@@ -20,20 +20,33 @@ const allCustomersNSuplliers = async () => {
       SnC_date as userAddedDate
     FROM suppliersncustomers
     ORDER BY SnC_date DESC`;
-  return await executeQuery(sql);
+    try {
+      const result = await executeQuery(sql);
+      if (result) { return result }
+    }
+    catch (error) {
+      return error;
+    }
 };
 
 // Return all customers
 const allCustomers = async () => {
   const sql = "SELECT * FROM suppliersncustomers WHERE SnC_status IN ('active')  AND SnC_Type = 'customer'";
-  return await executeQuery(sql);
+  try {
+    const result = await executeQuery(sql);
+    if (result) { return result }
+  }
+  catch (error) {
+    return error;
+  }
 };
 
 // Return only active customers
 const status = async (prop) => {
   const sql = "SELECT * FROM suppliersncustomers WHERE  SnC_Type = 'customer' AND SnC_status = ?";
   try {
-		return await executeQuery(sql, prop);
+		const result =  await executeQuery(sql, prop);
+    if (result) { return result }
 	}
 	catch (error) {
 		return error;
@@ -43,52 +56,73 @@ const status = async (prop) => {
 // Only one customer
 const CustomerByTIn = async (id) => {
   const sql = "SELECT * FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'customer' AND SnC_tin = ?";
-  return await executeQuery(sql, id);
+  try {
+    const result = await executeQuery(sql, id);
+    if (result) { return result }
+  }
+  catch (error) {
+    return error;
+  }
 };
 
 // User Region
 const Region = async (prop) => {
   const sql = "SELECT * FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'customer' AND SnC_region = ?";
   try {
-		return await executeQuery(sql, prop);
-	}
-	catch (error) {
-		return error;
-	}
+    const result = await executeQuery(sql, prop);
+    if (result) { return result }
+  }
+  catch (error) {
+    return error;
+  }
 };
 
 // User Type
 const Type = async () => {
   const sql = "SELECT * FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'customer'";
-  return await executeQuery(sql);
+  try {
+    const result = await executeQuery(sql);
+    if (result) { return result }
+  }
+  catch (error) {
+    return error;
+  }
 };
 
 // All Exempted
 const Exempt = async (prop) => {
   const sql = "SELECT SnC_id, SnC_name, SnC_Type, SnC_tin FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'customer' AND SnC_region = 'local' AND SnC_exempted = ?";
   try {
-		return await executeQuery(sql, prop);
-	}
-	catch (error) {
-		return error;
-	}
+    const result = await executeQuery(sql, prop);
+    if (result) { return result }
+  }
+  catch (error) {
+    return error;
+  }
 };
 
 // One Exempted
 const oneExempt = async (prop) => {
     const sql = "SELECT SnC_id, SnC_name, SnC_Type, SnC_tin FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'customer' AND SnC_region = 'local' AND SnC_id = ?";
     try {
-		return await executeQuery(sql, prop);
-	}
-	catch (error) {
-		return error;
-	}
+      const result = await executeQuery(sql, prop);
+      if (result) { return result }
+    }
+    catch (error) {
+      return error;
+    }
 };
 
 // One Rating
 const allRating = async () => {
   const sql = "SELECT SnC_id, SnC_name, SnC_Type, SnC_rating FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'customer'";
-  return await executeQuery(sql);
+  try {
+    const result = await executeQuery(sql);
+    if (result) { return result }
+  }
+  catch (error) {
+    return error;
+  }
 };
 
 // All rating
@@ -123,7 +157,13 @@ const queryProduct = async (user) => {
     WHERE 
       SnC_status  <> 'inactive' AND SnC_Type = 'customer' AND (SnC_name LIKE ?) 
     LIMIT 10`;
-  return executeQuery(sql, user);
+    try {
+      const result = await executeQuery(sql, user);
+      if (result) { return result }
+    }
+    catch (error) {
+      return error;
+    }
 };
 
 // Sales Dept customers
@@ -146,12 +186,13 @@ const Searches = async (prop) => {
       suppliersncustomers 
     WHERE 
       SnC_status = 'active' AND SnC_Type = 'customer' AND (SnC_name LIKE ? OR SnC_tin LIKE ? OR SnC_phone LIKE ? OR SnC_email LIKE ?)`;
-  try {
-		return await executeQuery(sql, prop);
-	}
-	catch (error) {
-		return error;
-	}
+      try {
+        const result = await executeQuery(sql, prop);
+        if (result) { return result }
+      }
+      catch (error) {
+        return error;
+      }
 };
 
 // Add new custoner or supplier
@@ -163,18 +204,25 @@ const AddCustomerSupplier = async (prop) => {
     VALUES (
       ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
     )`;
-  try {
-		return await executeQuery(sql, prop);
-	}
-	catch (error) {
-		return error;
-	}
+    try {
+      const result = await executeQuery(sql, prop);
+      if (result) { return result }
+    }
+    catch (error) {
+      return error;
+    }
 }
 
 // Update customer or supplier
-const updateCustomerNSupplier = (userData, userId) => {
+const updateCustomerNSupplier = async (userData, userId) => {
   const sql = "UPDATE suppliersncustomers SET ? WHERE SnC_id = ?";
-  return executeQuery(sql, [userData, userId]);
+  try {
+    const result = await executeQuery(sql, [userData, userId]);
+    if (result) { return result }
+  }
+  catch (error) {
+    return error;
+  }
 }
 
 module.exports = {

@@ -65,6 +65,8 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
         }
     };
 
+    const closeAlert = () => setOpenAlert(false);
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         const validationError = validateField(name, value);
@@ -122,6 +124,7 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
             }, 1000);
         }
         catch (error) {
+            setDrop(false);
             setAlert({ message: 'Ooops! Something went wrong. Please refresh and retry', color: 'error' });
             setOpenAlert(true);
         }
@@ -129,7 +132,7 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
 
     return (
         <>
-            {alert.message ? (<AlertError open={openAlert} alert={alert} />) : null}
+            {alert.message ? (<AlertError open={openAlert} alert={alert} handleClose={closeAlert}/>) : null}
             {drop === true ? <ShowBackDrop open={drop} /> : null}
             <DialogContent>
                 <Box>

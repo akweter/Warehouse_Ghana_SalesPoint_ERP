@@ -162,7 +162,7 @@ const VerifyEmail = () => {
                                     <Grid container paddingTop={2} spacing={1}>
                                         <Grid item xs={6}>
                                             <Button 
-                                                variant='outlined' 
+                                                variant='contained' 
                                                 fullWidth 
                                                 size='large' 
                                                 color='primary' 

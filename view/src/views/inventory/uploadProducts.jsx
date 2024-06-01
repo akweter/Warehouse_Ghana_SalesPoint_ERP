@@ -331,7 +331,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData, 
 						<Grid item>
 							<FormControl fullWidth>
 								<Stack direction="row" spacing={2}>
-									<Button onClick={clearProductsData} fullWidth color='warning' variant="contained" size='small' startIcon={<IconEraser />}>Ceear Products</Button>
+									<Button onClick={clearProductsData} fullWidth color='warning' variant="contained" size='small' startIcon={<IconEraser />}>Clear Products</Button>
 								</Stack>
 							</FormControl>
 						</Grid>

@@ -27,7 +27,13 @@ const allProducts = async () => {
   LEFT JOIN 
     usermanagement AS u ON i.Itm_usr_id = u.Usr_id
   `;
-  return await executeQuery(sql);
+  try {
+    const result = await executeQuery(sql);
+    if (result) { return result }
+  }
+  catch (error) {
+    return error;
+  }
 };
 
 //searchOnlyProduct

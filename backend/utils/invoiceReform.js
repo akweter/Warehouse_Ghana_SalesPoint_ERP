@@ -4,7 +4,7 @@ const {
     saveInInvoiceProduct, 
     updateRefundProducts 
 } = require("../controller/salesNinvoices");
-const { logErrorMessages, logSuccessMessages } = require("./saveLogfile");
+const { logErrorMessages, logSuccessMessages, logMessage } = require("./saveLogfile");
 
 const filterFields = (obj, fieldsToRemove) => {
     return Object.fromEntries(
@@ -130,6 +130,8 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
         responseData.response.qr_code,
         invoiceNumber,
     ];
+    
+    logMessage(JSON.stringify(sanitizedPayload));
 
     try {
         if (quote || quote === "Yes") {
@@ -194,8 +196,7 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
                     return { status: 'error', message: 'Please refresh and Issue new invoice' };
                 });
         }
-    }
-    catch (err) {
+    } catch (err) {
         logErrorMessages(`Error adding Invoice ${invoiceNumber}: ${err.message}`);
         return `Error saving invoice: "${invoiceNumber}"`;
     }

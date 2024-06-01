@@ -83,7 +83,8 @@ export default function SignInForm() {
                     setloginStatus(`Ooops! Something went wrong. Please refresh and retry`);
                     setLoading(false);
                     return;
-                } else {
+                }
+                else {
                     const t = response.headers.get('Authorization');
                     response.json().then(body => {
                         if (body.statusMessage === 'successLogin') { 

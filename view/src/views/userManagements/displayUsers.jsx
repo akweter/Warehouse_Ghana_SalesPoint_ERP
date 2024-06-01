@@ -33,28 +33,20 @@ const UserRow = ({ user, setSubmitted }) => {
 
 	const openData = () => { setOpen(!open) };
 
-	const sendEmail = async (event, user) =>{
+	const sendEmail = async (event, user) => {
 		try {
 			setLoadEmail(true);
 			event.preventDefault();
-			if (user.Usr_email && user.activated === 'no') {
-				const data = await sendEmailToUser(user);
-				if (data) {
-					setTimeout(() => {
-						setAlert((state) => ({
-							...state,
-							message: `verification email sent to ${user.Usr_email}`, color: "success"
-						}));
-						setOpenAlert(true);
-						setLoadEmail(false);
-					}, 2000);
-				}
-			} else {
-				setAlert((state) => ({
-					...state,
-					message: `${user.Usr_email} is already verified`, color: "secondary"
-				}));
-				setOpenAlert(true);
+			const data = await sendEmailToUser(user);
+			if (data.message === 'email_sent') {
+				setTimeout(() => {
+					setAlert((state) => ({
+						...state,
+						message: `Password reset email sent to ${user.Usr_email}`, color: "success"
+					}));
+					setOpenAlert(true);
+					setLoadEmail(false);
+				}, 2000);
 			}
 		}
 		catch (error) {
@@ -74,11 +66,11 @@ const UserRow = ({ user, setSubmitted }) => {
 			setTimeout(() => {
 				setSubmitted(true);
 			}, 100);
-        }
-        catch (error) {
-			setAlert((e) => ({...e, message: 'something unexpected happend!', color: 'error'}));
+		}
+		catch (error) {
+			setAlert((e) => ({ ...e, message: 'something unexpected happend!', color: 'error' }));
 			setOpenAlert(true);
-        }
+		}
 	}
 
 	const handleUpdateUser = (event) => {
@@ -88,7 +80,7 @@ const UserRow = ({ user, setSubmitted }) => {
 
 	return (
 		<>
-			{alert.message ? (<AlertError open={openAlert} alert={alert} handleClose={()=>setOpenAlert(false)}/>) : null}
+			{alert.message ? (<AlertError open={openAlert} alert={alert} handleClose={() => setOpenAlert(false)} />) : null}
 			<TableRow key={user.Usr_id}>
 				<TableCell padding='none'>
 					<IconButton style={{ cursor: 'pointer' }} size="small" onClick={openData}>
@@ -110,20 +102,24 @@ const UserRow = ({ user, setSubmitted }) => {
 					</Button>
 				</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} align='center'>
-					<Button 
-						onClick={(event) => sendEmail(event, user)} 
+					<Button
+						onClick={(event) => sendEmail(event, user)}
 						variant='text'
 						size='small'
 						color={user.activated === 'yes' ? 'success' : 'error'}
 					>
-						{user.activated === 'yes' ? <Verified /> : (loadEmail === true ? <CircularProgress color='error' size={20}/> : < Dangerous />)}
+						{
+							loadEmail === true ?
+							(<CircularProgress color='error' size={20}/>) :
+							(user.activated === 'yes' ? (<Verified/>) : (< Dangerous />))
+						}
 					</Button>
 				</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }}align='right'>
-					<Button 
+				<TableCell padding='none' style={{ cursor: 'pointer' }} align='right'>
+					<Button
 						onClick={() => handleUpdateUser(event)}
-						variant='outlined' 
-						size='small'sx={{ color: '#DDAC05'}}
+						variant='outlined'
+						size='small' sx={{ color: '#DDAC05' }}
 					>
 						<EditNote />
 					</Button>
@@ -168,14 +164,14 @@ const UserRow = ({ user, setSubmitted }) => {
 			</TableRow>
 
 			<Dialog open={updateDialog}>
-                    <UpdateUser user={user} closeAddnewUser={()=>setUpdateDialog(false)} setSubmitted={setSubmitted} />
-            </Dialog>
+				<UpdateUser user={user} closeAddnewUser={() => setUpdateDialog(false)} setSubmitted={setSubmitted} />
+			</Dialog>
 		</>
 	);
 };
 
 const DisplayUsers = ({ inData, submission }) => {
-	
+
 	const itemsPerPage = 25;
 	const [currentPage, setCurrentPage] = useState(1);
 
@@ -193,7 +189,7 @@ const DisplayUsers = ({ inData, submission }) => {
 		const currentPageData = inData.slice(startIndex, endIndex);
 
 		return currentPageData.map(data => (
-			<UserRow key={data.Usr_id} user={data} setSubmitted={submission}/>
+			<UserRow key={data.Usr_id} user={data} setSubmitted={submission} />
 		));
 	};
 
@@ -210,7 +206,7 @@ const DisplayUsers = ({ inData, submission }) => {
 								<TableCell><Typography variant='h4' color='white'>Telephone</Typography></TableCell>
 								<TableCell><Typography variant='h4' color='white'>Registration Date</Typography></TableCell>
 								<TableCell><Typography variant='h4' align='center' color='white'>Status</Typography></TableCell>
-								<TableCell><Typography variant='h4' align='center' color='white'>Verify</Typography></TableCell>
+								<TableCell><Typography variant='h4' align='center' color='white'>Reset psd</Typography></TableCell>
 								<TableCell><Typography variant='h4' align='right' color='white'>Edit</Typography></TableCell>
 							</TableRow>
 						</TableHead>

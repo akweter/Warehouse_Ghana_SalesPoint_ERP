@@ -39,10 +39,9 @@ function logErrorMessages(message) {
     });
 }
 
-const Logs = {
+module.exports = {
     logMessage,
     logSuccessMessages,
     logErrorMessages,
     logServerMessages,
-}
-module.exports = Logs;
+};

@@ -8,36 +8,61 @@ const { logErrorMessages } = require("../utils/saveLogfile");
 // Return Search supplier
 const querySupplier = async (user) => {
 	const sql = "SELECT * FROM suppliersncustomers WHERE SnC_status  <> 'inactive' AND SnC_Type = 'supplier' AND (SnC_name LIKE ?) LIMIT 10";
-	return executeQuery(sql, user);
+    try {
+      const result = await executeQuery(sql, user);
+      if (result) { return result }
+    }
+    catch (error) {
+      return error;
+    }
 };
 
 // Retrieve All Suppliers
 const allSuppliers = async () => {
 	const sql = "SELECT * FROM suppliersncustomers WHERE SnC_Type = 'supplier'";
-	return await executeQuery(sql);
+    try {
+      const result = await executeQuery(sql);
+      if (result) { return result }
+    }
+    catch (error) {
+      return error;
+    }
 };
 
 // Fetch all active foreign suppliers
 const foreignSuppliers = async () => {
 	const sql = `SELECT * FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'supplier' AND SnC_region = 'foreign'`;
-	return await executeQuery(sql);
+    try {
+      const result = await executeQuery(sql);
+      if (result) { return result }
+    }
+    catch (error) {
+      return error;
+    }
 }
 
 // Fetch all active local suppliers
 const localSuppliers = async () => {
 	const sql = `SELECT * FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'supplier' AND SnC_region = 'local'`;
-	return await executeQuery(sql);
+    try {
+      const result = await executeQuery(sql);
+      if (result) { return result }
+    }
+    catch (error) {
+      return error;
+    }
 }
 
 // Retrieve Suppliers by ID
 const oneSupplier = async (id) => {
 	const sql = "SELECT * FROM suppliersncustomers WHERE SnC_Type = 'supplier' AND SnC_id = ?";
-	try {
-		return await executeQuery(sql, id);
-	}
-	catch (error) {
-		return error;
-	}
+    try {
+      const result = await executeQuery(sql, id);
+      if (result) { return result }
+    }
+    catch (error) {
+      return error;
+    }
 };
 
 // Retrieve Active/Non Active Suppliers

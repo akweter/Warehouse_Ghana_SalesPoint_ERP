@@ -50,7 +50,7 @@ import dayjs from 'dayjs';
 import { headerPayload, itemlistPayload } from 'views/payload/payloadStructure';
 import { AlertError } from 'utilities/errorAlert';
 import { ShowBackDrop } from 'utilities/backdrop';
-import { postNewInvoice } from 'apiActions/allApiCalls/invoice';
+import { postNewGRAInvoice } from 'apiActions/allApiCalls/invoice';
 import { fetchProductNameSearch } from 'apiActions/allApiCalls/product';
 import { fetchCustomerNameSearch } from 'apiActions/allApiCalls/customer';
 import { computeStandardTaxes } from 'utilities/computeAllTaxes';
@@ -392,7 +392,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                 setTimeout(resolve, 2000);
             });
 
-            const data = await postNewInvoice(header);
+            const data = await postNewGRAInvoice(header);
             if (data.status === "Error") {
                 const res = JSON.stringify(data.message);
                 setAlert((e) => ({ ...e, message: res, color: 'warning' }));
