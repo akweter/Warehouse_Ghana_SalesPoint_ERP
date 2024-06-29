@@ -10,7 +10,7 @@ import {
     CircularProgress 
 } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
-import { bcndOrigin, viewOrigin } from 'auth/origins';
+import { bcndOrigin } from './origins';
 
 /* eslint-disable */
 

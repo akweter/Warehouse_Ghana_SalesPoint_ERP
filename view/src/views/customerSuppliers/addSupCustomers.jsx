@@ -16,8 +16,8 @@ import {
     Slider,
     CircularProgress,
 } from '@mui/material';
-import { AlertError } from 'utilities/errorAlert';
-import { postCustomerSupplier } from 'apiActions/allApiCalls/customer';
+import { AlertError } from '../../utilities/errorAlert';
+import { postCustomerSupplier } from '../../apiActions/allApiCalls/customer';
 
 // /* eslint-disable */
 

@@ -18,6 +18,7 @@ import {
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import UpdateCusNSup from './updateSupNCus';
+import { Edit } from '@mui/icons-material';
 
 const CusNsupRow = ({ cusNsup, setSubmitted }) => {
 	const [updateDialog, setUpdateDialog] = useState(false);
@@ -47,7 +48,7 @@ const CusNsupRow = ({ cusNsup, setSubmitted }) => {
 					<Rating name="read-only" value={cusNsup.userRating || "-"} readOnly />
 				</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={() => handleUpdateUser()} align='right'>
-					<Button variant='outlined' sx={{ backgroundColor: '#0C0E81', color: 'white' }}>Edit</Button>
+					<Button variant='contained' style={{ background: 'darkred' }}><Edit fontSize='28px'/></Button>
 				</TableCell>
 			</TableRow>
 			<TableRow>
@@ -58,39 +59,39 @@ const CusNsupRow = ({ cusNsup, setSubmitted }) => {
 								<TableHead>
 									<TableRow>
 										<TableCell padding='none'>TIN</TableCell>
-										<TableCell padding='none' align='left'>{cusNsup.userTIN}</TableCell>
+										<TableCell padding='none' align='left'>{cusNsup.userTIN || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Email</TableCell>
-										<TableCell padding='none'>{cusNsup.userEmail}</TableCell>
+										<TableCell padding='none'>{cusNsup.userEmail || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Telephone</TableCell>
-										<TableCell padding='none'>{cusNsup.userPhone}</TableCell>
+										<TableCell padding='none'>{cusNsup.userPhone || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Tax Status</TableCell>
-										<TableCell padding='none'>{cusNsup.userStatus}</TableCell>
+										<TableCell padding='none'>{cusNsup.userStatus || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Address</TableCell>
-										<TableCell padding='none'>{cusNsup.userAddress}</TableCell>
+										<TableCell padding='none'>{cusNsup.userAddress || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Date Added</TableCell>
-										<TableCell padding='none'>{cusNsup.userAddedDate}</TableCell>
+										<TableCell padding='none'>{cusNsup.userAddedDate || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Rating</TableCell>
-										<TableCell padding='none'>{cusNsup.userRating}</TableCell>
+										<TableCell padding='none'>{cusNsup.userRating || 0}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Exemption</TableCell>
-										<TableCell padding='none'>{cusNsup.userExemption}</TableCell>
+										<TableCell padding='none'>{cusNsup.userExemption || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
-										<TableCell padding='none'>Products Bought/supplied</TableCell>
-										<TableCell padding='none'>Milk{/*{cusNsup.tags.map(e => e.productName).join(', ')}*/}</TableCell>
+										<TableCell padding='none'>Products Bought</TableCell>
+										<TableCell padding='none'>{cusNsup.ProBoughtQty || 0}</TableCell>
 									</TableRow>
 								</TableHead>
 							</Table>
@@ -130,20 +131,20 @@ const CustomersSuppliersTable = ({ inData, setSubmitted }) => {
 
 	return (
 		<>
-			<Box height={550} overflow='scroll'>
+			<Box height={550} sx={{ overflowX: 'scroll' }}>
 				<TableContainer component={Paper}>
 					<Table>
 						<TableHead>
-							<TableRow style={{ backgroundColor: 'darkblue' }}>
-								<TableCell><Typography variant='h4' color='white'>{inData.length}</Typography></TableCell>
-								<TableCell><Typography variant='h4' color='white'>Type</Typography></TableCell>
-								<TableCell><Typography variant='h4' color='white'>Name</Typography></TableCell>
-								<TableCell><Typography variant='h4' color='white'>TIN</Typography></TableCell>
-								<TableCell><Typography variant='h4' color='white'>Account</Typography></TableCell>
-								<TableCell><Typography variant='h4' color='white'>Region</Typography></TableCell>
-								<TableCell><Typography variant='h4' color='white'>Status</Typography></TableCell>
-								<TableCell><Typography variant='h4' color='white'>Rating</Typography></TableCell>
-								<TableCell><Typography variant='h4' color='white' align='right'>Action</Typography></TableCell>
+							<TableRow style={{ backgroundColor: 'lightgray', padding: 0, }}>
+								<TableCell><Typography variant='h4' color='darkred'>{inData.length}</Typography></TableCell>
+								<TableCell><Typography variant='h4' color='darkred'>Type</Typography></TableCell>
+								<TableCell><Typography variant='h4' color='darkred'>Name</Typography></TableCell>
+								<TableCell><Typography variant='h4' color='darkred'>TIN</Typography></TableCell>
+								<TableCell><Typography variant='h4' color='darkred'>Account</Typography></TableCell>
+								<TableCell><Typography variant='h4' color='darkred'>Region</Typography></TableCell>
+								<TableCell><Typography variant='h4' color='darkred'>Status</Typography></TableCell>
+								<TableCell><Typography variant='h4' color='darkred'>Rating</Typography></TableCell>
+								<TableCell><Typography variant='h4' color='darkred' align='right'>Action</Typography></TableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody>

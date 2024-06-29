@@ -9,7 +9,7 @@ import {
     Button,
     Paper,
 } from '@mui/material';
-import { PostNewProducts } from 'apiActions/allApiCalls/product';
+import { PostNewProducts } from '../../apiActions/allApiCalls/product';
 
 const NewProductForm = ({products}) => {
     const [data, setData] = useState([]);

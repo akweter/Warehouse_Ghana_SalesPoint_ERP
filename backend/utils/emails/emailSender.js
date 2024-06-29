@@ -107,17 +107,17 @@ const sendVerificationEmail = async (email, emailToken, type) => {
 		}
 		if (type === 'login') {
 			await transporter.sendMail(userLogin(email));
-			logSuccessMessages(`Login email sent to ${email}`);
+			logMessage(`Login email sent to ${email}`);
 			return 200;
 		}
 		if (type === 'reset') {
 			await transporter.sendMail(resetPassword(email, emailToken));
-			logSuccessMessages(`Reset password sent to ${email}`);
+			logMessage(`Reset password sent to ${email}`);
 			return { status: 'success', message: 'email_sent'};
 		}
 		else {
 			await transporter.sendMail(verifyEmail(email, emailToken));
-			logSuccessMessages(`Verification email sent to ${email}`);
+			logMessage(`Verification email sent to ${email}`);
 			return { status: 'success', message: 'email_sent'};
 		}
 	}

@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { Box, Button, Grid, List, Typography } from '@mui/material';
-import supplier from '../../assets/images/icons/supplier.jpg'
 
 // project imports
+import supplier from '../../assets/images/icons/supplier.jpg'
 import SkeletonTotalOrderCard from '../../ui-component/cards/Skeleton/EarningCard';
-import { CardWrapper, CustomLLogo } from 'ui-component/colorsCardWrapper';
+import { CardWrapper, CustomLLogo } from '../../ui-component/colorsCardWrapper';
 
 const TotalSuppliersCard = ({ isLoading, foreign, local }) => {
 

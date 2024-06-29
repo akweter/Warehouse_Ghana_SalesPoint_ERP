@@ -13,20 +13,20 @@ import {
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { Analytics, CalendarMonth, Today } from '@mui/icons-material';
 import { CalendarIcon } from '@mui/x-date-pickers';
-import sales from '../../assets/images/icons/sales.png'
 
 /* eslint-disable */
 
 // Projects
+import sales from '../../assets/images/icons/sales.png'
 import SkeletonEarningCard from '../../ui-component/cards/Skeleton/EarningCard';
 import {
 	fetchAllMonthSalesInvoices,
 	fetchAllTodaySalesInvoices,
 	fetchAllWeekSalesInvoices,
 	fetchAllYearSalesInvoices,
-} from 'apiActions/allApiCalls/invoice';
-import { formatCurrencyNumber } from 'utilities/formatAmount';
-import { CardWrapper, CustomLLogo } from 'ui-component/colorsCardWrapper';
+} from '../../apiActions/allApiCalls/invoice';
+import { formatCurrencyNumber } from '../../utilities/formatAmount';
+import { CardWrapper, CustomLLogo } from '../../ui-component/colorsCardWrapper';
 
 
 const TotalCustomersCard = ({ isLoading }) => {

@@ -25,6 +25,6 @@
     justify-content: end;
 }
 
-td{
+.td_invoice {
     border-bottom: 1px dashed #030655;
 }

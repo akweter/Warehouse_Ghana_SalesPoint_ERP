@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import logo from '../assets/images/logo.webp';
 import '../assets/css/verifyEmail.css';
-import { fetchuserByID, updateUserPSD } from 'apiActions/allApiCalls/users';
+import { fetchuserByID, updateUserPSD } from '../apiActions/allApiCalls/users';
 import {
     Box,
     Button,
@@ -11,7 +11,7 @@ import {
     TextField
 } from '@mui/material';
 import { IconExclamationMark } from '@tabler/icons';
-import { AlertError } from 'utilities/errorAlert';
+import { AlertError } from '../utilities/errorAlert';
 
 /* eslint-disable */
 
@@ -75,10 +75,10 @@ const VerifyEmail = () => {
 
         try {
             setLoading(true);
-            const response = await updateUserPSD(userData[0].Usr_id, formData);
+            const response = await updateUserPSD(userData[0].accountId, formData);
             setTimeout(() => {
                 if (response.message === 'success') {
-                    setAlert((e) => ({ ...e, message: `${userData[0].Usr_email} activated`, color: 'success' }));
+                    setAlert((e) => ({ ...e, message: `${userData[0].primaryEmail} activated`, color: 'success' }));
                     setOpenAlert(true);
                     setTimeout(() => {
                         window.location.href='/';
@@ -117,7 +117,7 @@ const VerifyEmail = () => {
                                             <TextField  
                                                 label="Username"
                                                 required
-                                                value={userData[0].Usr_name ? userData[0].Usr_name : ""}
+                                                value={userData[0].userName ? userData[0].userName : ""}
                                                 disabled={true}
                                             />
                                         </FormControl>
@@ -127,7 +127,7 @@ const VerifyEmail = () => {
                                             <TextField
                                                 label="Email"
                                                 required
-                                                value={userData[0].Usr_email ? userData[0].Usr_email : ""}
+                                                value={userData[0].primaryEmail ? userData[0].primaryEmail : ""}
                                                 disabled={true}
                                             />
                                         </FormControl>

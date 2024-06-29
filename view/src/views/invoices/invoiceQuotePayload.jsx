@@ -1,7 +1,7 @@
-import { computeStandardTaxes } from 'utilities/computeAllTaxes';
-import { getUserName } from 'utilities/getUserName';
+import { computeStandardTaxes } from '../../utilities/computeAllTaxes';
+import { getUserName } from '../../utilities/getUserName';
 
-export const useFullPayload = (payload) => {
+export const UseFullPayload = (payload) => {
     
     // Set Date value according to GRA API standard
     const formatDate = (date) => {

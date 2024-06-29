@@ -2,9 +2,9 @@ import { useEffect } from "react";
 
 function ProtectedRoute({ children }) {
   const logSuccess = sessionStorage.getItem('usrlogstat');
-  useEffect(()=>{
+  useEffect(() => {
     if (!logSuccess || logSuccess !== '200') {
-      window.location.href="/auth/login"
+      window.location.href = "/auth/login"
     }
     // return children;
   }, [logSuccess]);

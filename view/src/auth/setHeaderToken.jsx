@@ -1,4 +1,4 @@
-import { bcndOrigin } from "auth/origins";
+import { bcndOrigin } from "./origins";
 
 const headerToken = () => {
   const token = sessionStorage.getItem('Authorization');

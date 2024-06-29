@@ -1,13 +1,12 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const { SaveNewTokensQuery } = require('../controller/tokens');
-const { logSuccessMessages, logErrorMessages } = require('./saveLogfile');
 
 const { JWT_ACCESS_TOKEN } = process.env;
 
 // generate New tokens
 function generateJWTToken(email){
-    const token = jwt.sign({ email }, JWT_ACCESS_TOKEN, { expiresIn: '60m' });
+    const token = jwt.sign({ email }, JWT_ACCESS_TOKEN, { expiresIn: '8h' });
     return token;
 };
 
@@ -15,10 +14,10 @@ function generateJWTToken(email){
 const SaveNewTokens = async ({token}) =>{
     await SaveNewTokensQuery(token)
     .then((res) => {
-        logSuccessMessages(`Token: ${JSON.stringify(res)} saved successfuly to DB`);
+      return res;
     })
     .catch((err) => {
-        logErrorMessages(`Token: ${JSON.stringify(err)} failed to save to DB`);
+      return err;
     });
 }
 

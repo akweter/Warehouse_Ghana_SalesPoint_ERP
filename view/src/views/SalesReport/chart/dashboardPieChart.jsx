@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import AppCurrentVisits from "./pieChart";
-import { fetchAllThisMonthTaxes } from 'apiActions/allApiCalls/invoice';
-import ProductPlaceholder from 'ui-component/cards/Skeleton/ProductPlaceholder';
+import { fetchAllThisMonthTaxes } from '../../../apiActions/allApiCalls/invoice';
+import ProductPlaceholder from '../../../ui-component/cards/Skeleton/ProductPlaceholder';
 
 const DashBoardPieChart = () => {
     const [taxes, setTaxes] = useState([]);

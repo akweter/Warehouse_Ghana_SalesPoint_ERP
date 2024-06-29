@@ -655,7 +655,7 @@ const thirtySeven = async (a, b, c) => {
         invoice.Inv_ID_auto DESC`;
   try {
     const result = await executeQuery(sql, [a, b, c]);
-      return result;
+    if(result ){ return result};
   }
   catch (error) {
     return error;
@@ -690,7 +690,7 @@ const thirtyNine = async () => {
     LIMIT 5`;
   try {
     const result = await executeQuery(sql);
-    if(result ){ return result;};;
+    if(result ){ return result};
   }
   catch (error) {
     return error;
@@ -942,7 +942,7 @@ const fiftyTwo = async () => {
     JOIN suppliersncustomers ON inventory.Itm_sup_id = suppliersncustomers.SnC_id
     GROUP BY Itm_name, SnC_name
     ORDER BY total_sales DESC
-    LIMIT 3;
+    LIMIT 5;
     `;
   try {
     const result = await executeQuery(sql);

@@ -17,9 +17,10 @@ import {
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { Dangerous, EditNote, Verified } from '@mui/icons-material';
-import { sendEmailToUser, updateUserStatus } from 'apiActions/allApiCalls/users';
-import { AlertError } from 'utilities/errorAlert';
+import { Dangerous, Edit, Verified } from '@mui/icons-material';
+
+import { sendEmailToUser, updateUserStatus } from '../../apiActions/allApiCalls/users';
+import { AlertError } from '../../utilities/errorAlert';
 import UpdateUser from './updateUser';
 
 /* eslint-disable */
@@ -42,7 +43,7 @@ const UserRow = ({ user, setSubmitted }) => {
 				setTimeout(() => {
 					setAlert((state) => ({
 						...state,
-						message: `Password reset email sent to ${user.Usr_email}`, color: "success"
+						message: `Password reset email sent to ${user.primaryEmail}`, color: "success"
 					}));
 					setOpenAlert(true);
 					setLoadEmail(false);
@@ -81,24 +82,24 @@ const UserRow = ({ user, setSubmitted }) => {
 	return (
 		<>
 			{alert.message ? (<AlertError open={openAlert} alert={alert} handleClose={() => setOpenAlert(false)} />) : null}
-			<TableRow key={user.Usr_id}>
+			<TableRow key={user.accountId}>
 				<TableCell padding='none'>
-					<IconButton style={{ cursor: 'pointer' }} size="small" onClick={openData}>
+					<IconButton style={{ cursor: 'pointer' }} size="small" onClick={openData}> 
 						{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
 					</IconButton>
 				</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} component="th" scope="row" onClick={openData}>{user.Usr_name}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{user.Usr_email}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{user.Usr_phone || '-'}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{user.Usr_reg_date}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} component="th" scope="row" onClick={openData}>{user.userName}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{user.primaryEmail}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{user.telephone || '-'}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{user.regDate}</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} align='center'>
 					<Button
-						onClick={() => activatAndDisableeUser(event, user.Usr_id, user)}
+						onClick={() => activatAndDisableeUser(event, user.accountId, user)}
 						variant='outlined'
 						size='small'
-						color={user.Usr_status === 'active' ? 'primary' : 'error'}
+						color={user.accountStat === 'active' ? 'primary' : 'error'}
 					>
-						{user.Usr_status}
+						{user.accountStat}
 					</Button>
 				</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} align='center'>
@@ -106,23 +107,17 @@ const UserRow = ({ user, setSubmitted }) => {
 						onClick={(event) => sendEmail(event, user)}
 						variant='text'
 						size='small'
-						color={user.activated === 'yes' ? 'success' : 'error'}
+						color={user.userSubscribed === 'yes' ? 'success' : 'error'}
 					>
 						{
 							loadEmail === true ?
 							(<CircularProgress color='error' size={20}/>) :
-							(user.activated === 'yes' ? (<Verified/>) : (< Dangerous />))
+							(user.userSubscribed === 'yes' ? (<Verified/>) : (< Dangerous />))
 						}
 					</Button>
 				</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} align='right'>
-					<Button
-						onClick={() => handleUpdateUser(event)}
-						variant='outlined'
-						size='small' sx={{ color: '#DDAC05' }}
-					>
-						<EditNote />
-					</Button>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} align='right' onClick={() => handleUpdateUser(event)}>
+					<Button variant='contained' style={{ background: 'darkred' }}><Edit fontSize='28px'/></Button>
 				</TableCell>
 			</TableRow>
 
@@ -134,23 +129,23 @@ const UserRow = ({ user, setSubmitted }) => {
 								<TableHead>
 									<TableRow>
 										<TableCell padding='none'>First Name</TableCell>
-										<TableCell padding='none' align='left'>{user.Usr_FName || '-'}</TableCell>
+										<TableCell padding='none' align='left'>{user.userFName || '-'}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Last Name</TableCell>
-										<TableCell padding='none' align='left'>{user.Usr_LName || '-'}</TableCell>
+										<TableCell padding='none' align='left'>{user.userLName || '-'}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Department</TableCell>
-										<TableCell padding='none' align='left'>{user.Usr_dept || '-'}</TableCell>
+										<TableCell padding='none' align='left'>{user.orgDept || '-'}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>User Type</TableCell>
-										<TableCell padding='none'>{user.Usr_type || '-'}</TableCell>
+										<TableCell padding='none'>{user.accountType || '-'}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Address</TableCell>
-										<TableCell padding='none'>{user.Usr_address || '-'}</TableCell>
+										<TableCell padding='none'>{user.regAddress || '-'}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Activities</TableCell>
@@ -189,25 +184,25 @@ const DisplayUsers = ({ inData, submission }) => {
 		const currentPageData = inData.slice(startIndex, endIndex);
 
 		return currentPageData.map(data => (
-			<UserRow key={data.Usr_id} user={data} setSubmitted={submission} />
+			<UserRow key={data.accountId} user={data} setSubmitted={submission} />
 		));
 	};
 
 	return (
 		<>
-			<Box height={550} overflow='scroll'>
+			<Box height={550} sx={{ overflowX: 'scroll' }}>
 				<TableContainer component={Paper}>
 					<Table>
 						<TableHead>
-							<TableRow style={{ backgroundColor: 'darkblue' }}>
-								<TableCell><Typography variant='h4' color='white'>{inData.length}</Typography></TableCell>
-								<TableCell><Typography variant='h4' color='white'>User Name</Typography></TableCell>
-								<TableCell><Typography variant='h4' color='white'>Email</Typography></TableCell>
-								<TableCell><Typography variant='h4' color='white'>Telephone</Typography></TableCell>
-								<TableCell><Typography variant='h4' color='white'>Registration Date</Typography></TableCell>
-								<TableCell><Typography variant='h4' align='center' color='white'>Status</Typography></TableCell>
-								<TableCell><Typography variant='h4' align='center' color='white'>Reset psd</Typography></TableCell>
-								<TableCell><Typography variant='h4' align='right' color='white'>Edit</Typography></TableCell>
+							<TableRow style={{ backgroundColor: 'lightgray', padding: 0, }}>
+								<TableCell><Typography variant='h4' color='darkred'>{inData.length}</Typography></TableCell>
+								<TableCell><Typography variant='h4' color='darkred'>User Name</Typography></TableCell>
+								<TableCell><Typography variant='h4' color='darkred'>Email</Typography></TableCell>
+								<TableCell><Typography variant='h4' color='darkred'>Telephone</Typography></TableCell>
+								<TableCell><Typography variant='h4' color='darkred'>Registration Date</Typography></TableCell>
+								<TableCell><Typography variant='h4' align='center' color='darkred'>Status</Typography></TableCell>
+								<TableCell><Typography variant='h4' align='center' color='darkred'>Reset psd</Typography></TableCell>
+								<TableCell><Typography variant='h4' align='right' color='darkred'>Edit</Typography></TableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody>

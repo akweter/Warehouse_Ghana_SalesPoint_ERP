@@ -17,7 +17,7 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { verifyTIN } from 'apiActions/allApiCalls/invoice';
+import { verifyTIN } from '../../apiActions/allApiCalls/invoice';
 
 export const SmallTextField = ({ setData, label, handleVerification }) => {
     const [loading, setLoading] = useState(false);
@@ -29,7 +29,7 @@ export const SmallTextField = ({ setData, label, handleVerification }) => {
     };
 
     return (
-        <>
+        <Paper style={{ border: '1px solid white', borderRadius: 20 }}>
             <TextField
                 label={label}
                 type="search"
@@ -41,7 +41,7 @@ export const SmallTextField = ({ setData, label, handleVerification }) => {
             <IconButton size='small' onClick={handleClick}>
                 {loading ? <CircularProgress size={23} /> : <Search />}
             </IconButton>
-        </>
+        </Paper>
     );
 }
 
@@ -82,23 +82,23 @@ const VerifyTIN = () => {
                                         <>
                                             <TableRow>
                                                 <TableCell>TIN</TableCell>
-                                                <TableCell>{res.data.tin}</TableCell>
+                                                <TableCell>{res.data.tin || "Unavailable"}</TableCell>
                                             </TableRow>
                                             <TableRow>
                                                 <TableCell>BUSINESS TYPE</TableCell>
-                                                <TableCell>{res.data.type}</TableCell>
+                                                <TableCell>{res.data.type || "Unavailable"}</TableCell>
                                             </TableRow>
                                             <TableRow>
                                                 <TableCell>BUSINESS NAME</TableCell>
-                                                <TableCell>{res.data.name}</TableCell>
+                                                <TableCell>{res.data.name || "Unavailable"}</TableCell>
                                             </TableRow>
                                             <TableRow>
                                                 <TableCell>SECTOR</TableCell>
-                                                <TableCell>{res.data.sector}</TableCell>
+                                                <TableCell>{res.data.sector || "Unavailable"}</TableCell>
                                             </TableRow>
                                             <TableRow>
                                                 <TableCell>BUSINESS ADDRESS</TableCell>
-                                                <TableCell>{res.data.address}</TableCell>
+                                                <TableCell>{res.data.address || "Unavailable"}</TableCell>
                                             </TableRow>
                                         </>
                                     ) :

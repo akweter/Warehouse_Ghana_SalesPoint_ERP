@@ -1,19 +1,19 @@
-import React, {  } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material/styles';
 import { Avatar, Box, Grid, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
-import TotalIncomeCard from '../../ui-component/cards/Skeleton/TotalIncomeCard';
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
+import { IconReceiptRefund, IconReportMoney } from '@tabler/icons';
+import { Cancel, Discount } from '@mui/icons-material';
 import {
     BlackCardWrapperEffect,
     BlueCardWrapperEffect,
     GreenCardWrapperEffect,
     OrangeCardWrapperEffect,
     YellowCardWrapperEffect
-} from 'ui-component/colorsCardWrapper';
-import { formatCurrencyNumber } from 'utilities/formatAmount';
-import { IconReceiptRefund, IconReportMoney } from '@tabler/icons';
-import { Cancel, Discount } from '@mui/icons-material';
+} from '../../ui-component/colorsCardWrapper';
+import TotalIncomeCard from '../../ui-component/cards/Skeleton/TotalIncomeCard';
+import { formatCurrencyNumber } from '../../utilities/formatAmount';
 
 const CustomListItem = ({ avatarBackgroundColor, avatarIcon, primaryText, secondaryText }) => {
     const theme = useTheme();

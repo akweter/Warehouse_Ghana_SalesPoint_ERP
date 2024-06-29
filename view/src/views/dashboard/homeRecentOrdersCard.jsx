@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { Tabs, Tab, Box, Typography } from '@mui/material';
-import DashBoardInvoice from 'views/invoices/dashboard/InvoicesCard';
+import DashBoardInvoice from '../../views/invoices/dashboard/InvoicesCard';
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;

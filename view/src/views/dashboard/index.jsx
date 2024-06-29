@@ -5,19 +5,19 @@ import { Grid } from '@mui/material';
 import TotalSalesCard from './homeSalesReportCard';
 import HomeRecentOrders from './homeRecentOrdersCard';
 import TotalTaxes from './homeTaxesCard';
-import Screens from 'ui-component/cardDivision';
+import Screens from '../../ui-component/cardDivision';
 import { ThemeProvider } from 'styled-components';
 import HomeDarkCard from './darkCard';
 import TotalCsutomersCard from './homeCustomersCard';
 import TotalSuppliersCard from './homeProductsCard';
-import { fetchAllTodaySalesInvoices, } from 'apiActions/allApiCalls/invoice';
-import { formatCurrencyNumber } from 'utilities/formatAmount';
-import { fetchAllCustomers } from 'apiActions/allApiCalls/customer';
-import { fetchAllProducts } from 'apiActions/allApiCalls/product';
-import { fetchAllForeignSuppliers, fetchAllLocalSuppliers } from 'apiActions/allApiCalls/supplier';
-import { fetchAllTodayRefundsInvoices, fetchTodayRefundsCancelledInvoices } from 'apiActions/allApiCalls/refund';
-import DashboardBarChart from 'views/SalesReport/chart/dashboardBarChart';
-import DashBoardPieChart from 'views/SalesReport/chart/dashboardPieChart';
+import { fetchAllTodaySalesInvoices, } from '../../apiActions/allApiCalls/invoice';
+import { formatCurrencyNumber } from '../../utilities/formatAmount';
+import { fetchAllCustomers } from '../../apiActions/allApiCalls/customer';
+import { fetchAllProducts } from '../../apiActions/allApiCalls/product';
+import { fetchAllForeignSuppliers, fetchAllLocalSuppliers } from '../../apiActions/allApiCalls/supplier';
+import { fetchAllTodayRefundsInvoices, fetchTodayRefundsCancelledInvoices } from '../../apiActions/allApiCalls/refund';
+import DashboardBarChart from '../../views/SalesReport/chart/dashboardBarChart';
+import DashBoardPieChart from '../../views/SalesReport/chart/dashboardPieChart';
 
 const Dashboard = () => {
 	const [isLoading, setLoading] = useState(true);

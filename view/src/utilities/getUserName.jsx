@@ -10,3 +10,12 @@ export const getUserName = () => {
         }
     }
 }
+
+export const getUserAccountType = () => {
+    const systemUser = window.sessionStorage.getItem('userInfo');
+    if (systemUser) {
+        const parseSystemUser = JSON.parse(systemUser);
+        return parseSystemUser.accountType;
+    }
+    return null;
+};

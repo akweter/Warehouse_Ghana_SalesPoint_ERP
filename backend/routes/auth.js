@@ -9,7 +9,6 @@ const { logMessage, logErrorMessages, logSuccessMessages } = require('../utils/s
 const { generateJWTToken, decodeToken, } = require("../utils/tokenActions");
 const { SaveNewTokensQuery } = require("../controller/tokens");
 const { Myip } = require('../utils/ipinfo');
-const UUID = require('../utils/generateIDs');
 const { sendVerificationEmail } = require("../utils/emails/emailSender");
 const {
 	loginUser,
@@ -18,6 +17,7 @@ const {
 	updateUserPSD,
 	resetPassword,
 } = require("../controller/userMgt");
+const generateUUID = require("../utils/generateIDs");
 
 // Send email and save token
 const saveToken_SendEmail = async (userEmail, username, reqParam, type) => {
@@ -39,7 +39,7 @@ const saveToken_SendEmail = async (userEmail, username, reqParam, type) => {
 		ipInfo.ip,
 		ipInfo.country,
 		userAgent,
-		UUID(),
+		generateUUID(),
 	];
 
 	try {
@@ -55,10 +55,13 @@ const saveToken_SendEmail = async (userEmail, username, reqParam, type) => {
 
 // Login
 Auth.post("/login", async (req, res) => {
-	req.activationContext = 'login';
-	const userAgent = req.get('User-Agent');
 	const { email, passwrd } = req.body;
+	const ipInfo = await Myip();
 
+	if (!ipInfo) {
+		logErrorMessages(`Login failed | No internet for user: ${email}`);
+		return res.json({ status: 'error', message: 'You are not connected to internet' });
+	}
 	if (!email) {
 		return res.send({ status: 'error', message: 'Please log in with your email instead' });
 	}
@@ -69,11 +72,6 @@ Auth.post("/login", async (req, res) => {
 		const payload = [email, email];
 		try {
 			const output = await loginUser(payload);
-			const ipInfo = await Myip();
-			if (!ipInfo) {
-				logErrorMessages(`Login failed | No internet <=> ${email}`);
-				return res.json({ status: 'error', message: 'You are not connected to internet' });
-			}
 			if (output.length > 0) {
 				output.map((e) => {
 					const status = e.activated;
@@ -138,7 +136,7 @@ Auth.post("/login", async (req, res) => {
 			}
 			else {
 				logErrorMessages(`Login failed. No records found for ${email}, Ip: ${JSON.stringify(ipInfo.ip)}, Location: ${JSON.stringify(ipInfo.loc)} `);
-				return res.json({ status: 'error', message: "You don't have an account. Please Sign Up" });
+				return res.json({ status: 'error', message: "You don't have an account." });
 			}
 		}
 		catch (err) {
@@ -188,7 +186,7 @@ Auth.post("/signup", async (req, res) => {
 				setPsd(),
 				'no',
 				staffID,
-				UUID(),
+				generateUUID(),
 			];
 
 			await AddNewUser(Vals)
@@ -234,21 +232,21 @@ Auth.put("/psd/:id", async (req, res, next) => {
 
 // Send verification email
 Auth.post("/sendemail", async (req, res) => {
-	const { Usr_name, Usr_email, Usr_id } = req.body;
-	await resetPassword(Usr_id)
+	const { userName, primaryEmail, accountId } = req.body;
+	await resetPassword(accountId)
 	.then( async() => {
-		await saveToken_SendEmail(Usr_email, Usr_name, req, type = 'reset')
+		await saveToken_SendEmail(primaryEmail, userName, req, type = 'reset')
 		.then((response) => {
 			res.status(200).send(response);
 		})
 		.catch((err) => {
 			logErrorMessages(JSON.stringify(err));
-			res.send({ status: 'error', message: `Failed to save password reset for ${Usr_email}` });
+			res.status(500).send({ status: 'error', message: `Failed to save password reset for ${primaryEmail}` });
 		});
 	})
 	.catch((err) => {
 		logErrorMessages(JSON.stringify(err));
-		res.send({ status: 'error', message: `Failed to send password reset to ${Usr_email}` });
+		res.status(500).send({ status: 'error', message: `Failed to send password reset to ${primaryEmail}` });
 	});	
 });
 

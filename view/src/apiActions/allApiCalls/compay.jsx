@@ -1,4 +1,4 @@
-import requestMaking from "auth/setHeaderToken";
+import requestMaking from "../../auth/setHeaderToken";
 
 // Fetch all company info
 export const fetchCompanyData = async () => {

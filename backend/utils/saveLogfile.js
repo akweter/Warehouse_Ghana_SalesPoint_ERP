@@ -3,7 +3,7 @@ const path = require('path');
 
 function logMessage(message) {
     const logTime = new Date().toLocaleString();
-    const log = `${logTime}: ${message}\n`;
+    const log = `${logTime}: ${JSON.stringify(message)}\n`;
     const logFilePath = path.join(__dirname, '../logs/userActions.txt');
     fs.appendFile(logFilePath, log, (err) => {
         if (err) {return}
@@ -13,7 +13,7 @@ function logMessage(message) {
 // Save success messages
 function logSuccessMessages(message) {
     const logTime = new Date().toLocaleString();
-    const log = `${logTime}: ${message}\n`;
+    const log = `${logTime}: ${JSON.stringify(message)}\n`;
     const logFilePath = path.join(__dirname, '../logs/successLogs.txt');
     fs.appendFile(logFilePath, log, (err) => {
         if (err) {return}
@@ -23,7 +23,7 @@ function logSuccessMessages(message) {
 // Save server logs
 function logServerMessages(message) {
     const logTime = new Date().toLocaleString();
-    const log = `${logTime}: ${message}\n`;
+    const log = `${logTime}: ${JSON.stringify(message)}\n`;
     const logFilePath = path.join(__dirname, '../logs/serverLogs.txt');
     fs.appendFile(logFilePath, log, (err) => {
         if (err) {return}
@@ -32,7 +32,7 @@ function logServerMessages(message) {
 // Save error messages
 function logErrorMessages(message) {
     const logTime = new Date().toLocaleString();
-    const log = `${logTime}: ${message}\n`;
+    const log = `${logTime}: ${JSON.stringify(message)}\n`;
     const logFilePath = path.join(__dirname, '../logs/errorLogs.txt');
     fs.appendFile(logFilePath, log, (err) => {
         if (err) {return}

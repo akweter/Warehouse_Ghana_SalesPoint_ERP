@@ -16,9 +16,9 @@ import {
     Slider,
     CircularProgress,
 } from '@mui/material';
-import { ShowBackDrop } from 'utilities/backdrop';
-import { AlertError } from 'utilities/errorAlert';
-import { updateSupplierCustomer } from 'apiActions/allApiCalls/customer';
+import { ShowBackDrop } from '../../utilities/backdrop';
+import { AlertError } from '../../utilities/errorAlert';
+import { updateSupplierCustomer } from '../../apiActions/allApiCalls/customer';
 
 /* eslint-disable */
 

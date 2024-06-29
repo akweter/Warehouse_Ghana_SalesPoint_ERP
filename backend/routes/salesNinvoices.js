@@ -28,7 +28,7 @@ const { thirtySeven } = require("../controller/selectQueries");
 // All invoices transaction
 Router.get("/", async (req, res) => {
   try {
-    const output = await thirtySeven("Invoice", "Quotation", "Invoice");
+    const output = await thirtySeven("Invoice", "Quotation", "");
     const modifiedOutput = restructureInvoiceResult(output);
     return res.status(200).json(modifiedOutput);
   }

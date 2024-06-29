@@ -96,7 +96,7 @@ const Row = ({ order }) => {
 };
 
 const OrdersTable = ({ orders }) => {
-    const itemsPerPage = 11;
+    const itemsPerPage = 100;
 	const [currentPage, setCurrentPage] = useState(1);
 
 	const handleNextPage = () => {

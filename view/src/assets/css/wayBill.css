@@ -1,0 +1,10 @@
+.waybill_table {
+    border-collapse: collapse;
+    border: 1px solid black;
+    width: 100%;
+}
+
+.waybill_table .waybill_td {
+    border: none;
+    padding: 8px;
+}

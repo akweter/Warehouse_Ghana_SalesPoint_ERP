@@ -12,23 +12,24 @@ import {
     Select,
     MenuItem,
 } from '@mui/material';
-import { ShowBackDrop } from 'utilities/backdrop';
-import { AlertError } from 'utilities/errorAlert';
-import { updateUserDetails } from 'apiActions/allApiCalls/users';
+
+import { ShowBackDrop } from '../../utilities/backdrop';
+import { AlertError } from '../../utilities/errorAlert';
+import { updateUserDetails } from '../../apiActions/allApiCalls/users';
 
 /* eslint-disable */
 
 const UpdateUser = ({ user, closeAddnewUser, setSubmitted }) => {
     const [formData, setFormData] = useState({
-        fname: user.Usr_FName || '',
-        lname: user.Usr_LName || '',
-        username: user.Usr_name || '',
-        userPhone: user.Usr_phone || '',
-        userType: user.Usr_type || '',
-        userDept: user.Usr_dept || '',
-        staffID: user.Usr_StaffID || '',
-        address: user.Usr_address || '',
-        userID: user.Usr_id,
+        fname: user.userFName || '',
+        lname: user.userLName || '',
+        username: user.userName || '',
+        userPhone: user.telephone || '',
+        userType: user.accountType || '',
+        userDept: user.orgDept || '',
+        staffID: user.staffID || '',
+        address: user.regAddress || '',
+        userID: user.accountId,
     });
     const [errors, setErrors] = useState({});
     const [drop, setDrop] = useState(false);
@@ -101,15 +102,14 @@ const UpdateUser = ({ user, closeAddnewUser, setSubmitted }) => {
                 else {
                     setDrop(false);
                     setAlert({ message: response.message, color: 'error' });
+                    setOpenAlert(true);
                 }
             }, 500)
         }
         catch (error) {
             setDrop(false);
-            setAlert({
-                message: 'Oops! Something went wrong. Please refresh and retry',
-                color: 'error',
-            });
+            setAlert({ message: 'Oops! Something went wrong. Please refresh and retry', color: 'error' });
+            setOpenAlert(true);
         }
     };
 
@@ -121,7 +121,7 @@ const UpdateUser = ({ user, closeAddnewUser, setSubmitted }) => {
                 <Box>
                     <Typography variant='h3' align='center' paddingBottom={2}>
                         Updating <i style={{ color: 'darkred', backgroundColor: '#E5E6E7', fontSize: 18 }}>
-                            {user.Usr_name ? user.Usr_name : user.Usr_email}
+                            {user.userName ? user.userName : user.primaryEmail}
                         </i>
                     </Typography>
                     <Grid container spacing={2}>

@@ -14,9 +14,9 @@ import {
     Select,
     MenuItem,
 } from '@mui/material';
-import { ShowBackDrop } from 'utilities/backdrop';
-import { AlertError } from 'utilities/errorAlert';
-import { postNewUser } from 'apiActions/allApiCalls/users';
+import { ShowBackDrop } from '../../utilities/backdrop';
+import { AlertError } from '../../utilities/errorAlert';
+import { postNewUser } from '../../apiActions/allApiCalls/users';
 
 /* eslint-disable */
 

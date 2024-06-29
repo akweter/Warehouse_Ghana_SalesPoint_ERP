@@ -8,7 +8,7 @@ import graph from '../../assets/images/icons/graph.png'
 import SkeletonTotalOrderCard from '../../ui-component/cards/Skeleton/EarningCard';
 import ThisMonthTaxes from './chart-data/thisMonthlyTaxes';
 import ChartDataYear from './chart-data/total-order-year-line-chart';
-import { CardWrapper, CustomLLogo } from 'ui-component/colorsCardWrapper';
+import { CardWrapper, CustomLLogo } from '../../ui-component/colorsCardWrapper';
 
 const TotalTaxes = ({ isLoading, vats, levies }) => {
 	const [timeValue, setTimeValue] = useState(false);

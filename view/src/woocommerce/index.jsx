@@ -21,7 +21,7 @@ import {
     FetchWooSearchCustomer,
     FetchWooSearchOrder,
     FetchWooSearchProduct
-} from 'apiActions/allApiCalls/woocommerce';
+} from '../apiActions/allApiCalls/woocommerce';
 import {
     MasonryContainer,
     MasonryItem,
@@ -30,16 +30,16 @@ import {
     Search,
     SearchIconWrapper,
     StyledInputBase
-} from 'ui-component/styleEffects';
+} from '../ui-component/styleEffects';
 import { SearchSharp } from '@mui/icons-material';
-import { GeneralCatchError } from 'utilities/errorAlert';
+import { GeneralCatchError } from '../utilities/errorAlert';
 
 const Analysis = () => <WooAnalysis />;
 const Orders = () => <WooOrders />;
 const Customers = () => <WooCustomers />;
 const Products = () => <WooProducts />;
 
-const components = [Orders, Customers, Products, Analysis];
+const components = [Orders, Customers, Products];
 
 const WoocommerceApi = () => {
     const [searchTerm, setSearchTerm] = useState('');

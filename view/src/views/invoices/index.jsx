@@ -26,17 +26,17 @@ import {
     checkGRAServerStatus,
     fetchAllInvoices,
     postNewGRAInvoice,
-} from 'apiActions/allApiCalls/invoice';
+} from '../../apiActions/allApiCalls/invoice';
 import MakeNewInvoice from './generateInvoice';
-import RefundForms from 'views/refund/refundForm';
+import RefundForms from '../../views/refund/refundForm';
 import InvoiceDetails from './invoiceDetails';
 import InvoiceTemplate from './invoiceTemplate';
-import { AlertError, GeneralCatchError } from 'utilities/errorAlert';
-import { useFullPayload } from './invoiceQuotePayload';
-import VerifyTIN from './verifyTIN';
-import WaybillPopper from 'views/waybill/waybillPopup';
+import { AlertError, GeneralCatchError } from '../../utilities/errorAlert';
+import { UseFullPayload } from './invoiceQuotePayload';
+import WaybillPopper from '../../views/waybill/waybillPopup';
+import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceholder';
 
-/* eslint-disable */
+// /* eslint-disable */
 const Invoice = () => {
     const [submitted, setSubmitted] = useState(false);
     const [status, setStatus] = useState(false);
@@ -259,7 +259,7 @@ const Invoice = () => {
     }
 
     const handleQuoteToInvoiceBtnClick = async (row) => {
-        const payload = useFullPayload(row);
+        const payload = UseFullPayload(row);
         setHeader(payload);
         setOpenConfirm(true);
     }
@@ -305,9 +305,15 @@ const Invoice = () => {
 
     return (
         <div>
-            <Grid container justifyContent='space-evenly'>
+            <Grid container justifyContent='space-evenly'
+                style={{
+                    backgroundColor: 'darkblue',
+                    paddingTop: 5,
+                    paddingBottom: 5,
+                }}
+            >
                 <Grid item>
-                    <Typography color='darkblue' variant='h3'>Invoices</Typography>
+                    <Typography color='white' variant='h3'>Invoices Transactions</Typography> 
                 </Grid>
                 <Grid item>
                     < MakeNewInvoice setSubmitted={setSubmitted} status={status} />
@@ -315,29 +321,32 @@ const Invoice = () => {
                 <Grid item>
                     <WaybillPopper />
                 </Grid>
-                <Grid item>
-                    <VerifyTIN />
-                </Grid>
+                {/* <Grid item>
+                </Grid> */}
             </Grid>
-            <Box sx={{ height: 600, width: '100%' }}>
-                <DataGrid
-                    rows={rowsWithIds}
-                    columns={columns}
-                    loading={loading ? loading : null}
-                    density='compact'
-                    editMode='cell'
-                    pageSize={5}
-                    disableRowSelectionOnClick={true}
-                    slots={{ toolbar: GridToolbar }}
-                    hideFooterSelectedRowCount={true}
-                    filterMode='client'
-                    slotProps={{
-                        toolbar: {
-                            showQuickFilter: true,
-                        },
-                    }}
-                />
-            </Box>
+            {
+                invoices.length > 0 ?
+                <Box sx={{ height: 600, width: '100%' }}>
+                    <DataGrid
+                        rows={rowsWithIds}
+                        columns={columns}
+                        loading={loading ? loading : null}
+                        density='compact'
+                        editMode='cell'
+                        pageSize={5}
+                        disableRowSelectionOnClick={true}
+                        slots={{ toolbar: GridToolbar }}
+                        hideFooterSelectedRowCount={true}
+                        filterMode='client'
+                        slotProps={{
+                            toolbar: {
+                                showQuickFilter: true,
+                            },
+                        }}
+                    />
+                </Box> :
+                < ProductPlaceholder />
+            }
             {alert.message ? <GeneralCatchError alert={alert} handleClose={handleClose} open={open} /> : null}
             {notify.message ? <AlertError alert={notify} handleClose={handleClose} open={open} /> : null}
             {

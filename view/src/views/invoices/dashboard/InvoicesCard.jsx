@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { Visibility as VisibilityIcon } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
-import { GeneralCatchError } from 'utilities/errorAlert';
-import { fetchTenInvoices } from 'apiActions/allApiCalls/invoice';
+import { GeneralCatchError } from '../../../utilities/errorAlert';
+import { fetchTenInvoices } from '../../../apiActions/allApiCalls/invoice';
 import InvoiceDetails from '../invoiceDetails';
 
 /* eslint-disable */

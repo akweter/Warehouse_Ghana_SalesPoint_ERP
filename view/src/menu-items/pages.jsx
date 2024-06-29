@@ -5,6 +5,8 @@ import {
   IconBuildingStore,
   IconBuildingWarehouse,
   IconUsers,
+  IconTruckDelivery,
+  IconBuildingFactory,
 } from '@tabler/icons';
 import { IconUsersGroup } from '@tabler/icons-react';
 
@@ -29,19 +31,11 @@ const pages = {
       breadcrumbs: false
     },
     {
-      id: 'stock',
-      title: 'Inventory',
+      id: 'order_checkout',
+      title: 'Order Checkout',
       type: 'item',
-      url: '/stock',
-      icon: IconBuildingWarehouse,
-      breadcrumbs: false
-    },
-    {
-      id: 'partner',
-      title: 'Customer & Suppliers',
-      type: 'item',
-      url: '/partner',
-      icon: IconUsersGroup,
+      url: '/order/checkout',
+      icon: IconTruckDelivery,
       breadcrumbs: false
     },
     {
@@ -54,15 +48,39 @@ const pages = {
     },
     {
       id: 'purchase',
-      title: 'Purchase Records',
+      title: 'Purchases',
       type: 'item',
       url: '/purchase',
+      icon: IconBuildingFactory,
+      breadcrumbs: false
+    },
+    {
+      id: 'stock',
+      title: 'Inventory',
+      type: 'item',
+      url: '/stock',
       icon: IconBuildingStore,
       breadcrumbs: false
     },
     {
+      id: 'warehouse',
+      title: 'Warehouse',
+      type: 'item',
+      url: '/warehouse',
+      icon: IconBuildingWarehouse,
+      breadcrumbs: false
+    },
+    {
+      id: 'partner',
+      title: 'Customer & Suppliers',
+      type: 'item',
+      url: '/partner',
+      icon: IconUsersGroup,
+      breadcrumbs: false
+    },
+    {
       id: 'users',
-      title: 'Staff Management',
+      title: 'Employees Directory',
       type: 'item',
       url: '/user',
       icon: IconUsers,

@@ -27,13 +27,13 @@ import {
 	Dialog,
 	Slide,
 } from '@mui/material';
-import { PostNewProducts, UpdateProduct } from 'apiActions/allApiCalls/product';
+import { PostNewProducts, UpdateProduct } from '../../apiActions/allApiCalls/product';
 import { CancelSharp, Delete, Edit } from '@mui/icons-material';
-import { fetchSupplierNameSearch } from 'apiActions/allApiCalls/supplier';
+import { fetchSupplierNameSearch } from '../../apiActions/allApiCalls/supplier';
 import ProductTemplate from './productTemplate';
 import { Stack } from '@mui/system';
-import { ShowBackDrop } from 'utilities/backdrop';
-import { AlertError } from 'utilities/errorAlert';
+import { ShowBackDrop } from '../../utilities/backdrop';
+import { AlertError } from '../../utilities/errorAlert';
 import { IconEraser } from '@tabler/icons';
 
 // /* eslint-disable */
@@ -326,7 +326,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData, 
 								color: 'white'
 							}}
 						>
-							Inventory | Stock Management
+							Add | Update Product
 						</Typography>
 						<Grid item>
 							<FormControl fullWidth>

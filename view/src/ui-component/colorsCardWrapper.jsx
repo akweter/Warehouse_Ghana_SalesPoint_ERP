@@ -210,6 +210,12 @@ export const CardWrapper = styled(MainCard)(({ theme }) => ({
   height: 180,
 }));
 
+export const InventoryCard = styled(MainCard)(({ bg }) => ({
+  overflow: 'hidden',
+  position: 'relative',
+  height: 120,
+}));
+
 export const CustomLLogo = ({ border, avatarIcon }) => {
   const theme = useTheme();
   return (

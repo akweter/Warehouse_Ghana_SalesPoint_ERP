@@ -1,4 +1,4 @@
-import requestMaking from "auth/setHeaderToken";
+import requestMaking from "../../auth/setHeaderToken";
 
 // Fetch all products
 export const fetchAllProducts = async () => {
@@ -12,6 +12,15 @@ export const fetchAllProducts = async () => {
 // Fetch product name
 export const fetchProductNameSearch = async (data) => {
     const response = await requestMaking(`products/query?query=${data}`, 'GET', null);
+    if (response.ok) {
+        return await response.json();
+    }
+    return null;
+};
+
+// Fetch dashboard card product details
+export const fetchDashboardCardDetails = async (data) => {
+    const response = await requestMaking(`products/dashboard/card`, 'GET', null);
     if (response.ok) {
         return await response.json();
     }

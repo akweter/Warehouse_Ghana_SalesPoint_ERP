@@ -67,7 +67,7 @@ WooCommerceRow.propTypes = {
 const CustomersTable = ({ data }) => {
 	const customers = [...data];
 
-	const itemsPerPage = 11;
+	const itemsPerPage = 100;
 	const [currentPage, setCurrentPage] = useState(1);
 	const handleNextPage = () => {
 		setCurrentPage(prevPage => prevPage + 1);

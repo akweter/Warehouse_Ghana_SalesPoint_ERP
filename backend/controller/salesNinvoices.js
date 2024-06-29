@@ -303,12 +303,17 @@ const getWaybillInvoice = async (payload) => {
 		SELECT
 			invoice.Inv_ID_auto  AS AutoID,
 			invoice.Inv_Number AS InvoiceNumber,
+			invoice.Inv_date AS InvoiceDate,
 			inventory.Itm_id AS itemCode,
 			inventory.Itm_name AS ProductName,
 			invoice_products.Product_Quantity AS Quantity,
 			suppliersncustomers.SnC_name AS CustomerName,
 			suppliersncustomers.SnC_tin AS CustomerTIN,
-			suppliersncustomers.SnC_phone AS customerPhone
+			suppliersncustomers.SnC_name AS CustomerName,
+			suppliersncustomers.SnC_address AS CustomerAddress,
+			suppliersncustomers.SnC_email AS CustomerEmail,
+			suppliersncustomers.SnC_phone AS customerPhone,
+			suppliersncustomers.SnC_id AS customerID
 		FROM
 			invoice
 		JOIN
@@ -382,12 +387,12 @@ const saveRefundInvoice = async (payload) => {
 	}
 }
 
-// Save procust for each invoice
+// Save product for each invoice
 const saveInInvoiceProduct = async (payload) => {
 	const sql = `INSERT INTO invoice_products(
 		_ID, InvoiceNum_ID, Product_ID, Product_Price, Product_Discount, Product_Quantity, Product_Refunded_Quantity
 	) VALUES (
-		?, ?, ?, ?, ?, ?, ?
+			?, ?, ?, ?, ?, ?, ?
 	)`;
 	try {
 		const result = await executeQuery(sql, payload);

@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
-    List,
-    ListItemText, 
-    Collapse, 
-    ListItemButton,
     Paper,
     Stack,
     Typography,
+    Box,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { fetchRefundCancelledInvoices } from 'apiActions/allApiCalls/refund';
+import { DataGrid } from '@mui/x-data-grid';
+
+import { fetchRefundCancelledInvoices } from '../../apiActions/allApiCalls/refund';
 
 /* eslint-disable */
 const DemoPaper = styled(Paper)(({ theme }) => ({
@@ -42,37 +39,66 @@ const DrawerContent = () => {
             });
     }, []);
 
-    const handleClick = (index) => {
-        setShow((prevStates) => {
-            const newStates = [...prevStates];
-            newStates[index] = !newStates[index];
-            return newStates;
-        });
-    };
+
+    const columns = useMemo(() => {
+        return [
+            {
+                field: 'Inv_user',
+                headerName: 'Cancelled By',
+                description: 'Cancelled By',
+                flex: 1,
+                width: 70,
+                headerClassName: 'dataGridheader',
+            },
+            {
+                field: 'Inv_Number',
+                headerName: 'Invoice #',
+                description: 'Invoice number',
+                flex: 1,
+                width: 70,
+                headerClassName: 'dataGridheader',
+            },
+            {
+                field: 'Inv_Reference',
+                headerName: 'Reference #',
+                description: 'Reference number',
+                flex: 1,
+                width: 70,
+                headerClassName: 'dataGridheader',
+            },
+            {
+                field: 'Inv_date',
+                headerName: 'Date',
+                description: 'Transaction Date',
+                flex: 1,
+                width: 70,
+                headerClassName: 'dataGridheader',
+            }
+        ]
+    });
+    const getRowId = (row) => row.Inv_ID_auto;
 
     return (
         <Stack direction="row">
-            <DemoPaper variant="outlined" sx={{width: 350}}>
-                <Typography variant='h4' color="darkred" align='center' borderBottom={1}>Cancel Refund Transactions</Typography>
-                {
-                    Array.isArray(data) && data.length > 0 ? 
-                    (data.map((inv, index) => (
-                        <List key={index} dense sx={{ width: '100%', margin: 0, padding: 0 }}>
-                            <ListItemButton dense onClick={() => handleClick(index)} sx={{ margin: 0, padding: 0 }}>
-                                <ListItemText primary="Invoice Number" secondary={inv.Inv_Number} />
-                                {show[index] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                            </ListItemButton>
-                            <Collapse in={show[index]} timeout="auto" unmountOnExit>
-                                <List dense component="div" disablePadding>
-                                    <ListItemButton dense sx={{ pl: 2, margin: 0, }}>
-                                        <ListItemText primary="Refund Reference" secondary={inv.Inv_Reference}/>
-                                    </ListItemButton>
-                                </List>
-                            </Collapse>
-                        </List>
-                    ))): 
-                    (<Typography variant='h4' sx={{padding: 3}}>Data unavailable</Typography>)
-                }
+            <DemoPaper variant="outlined" sx={{ width: 750 }}>
+                <Typography variant='h4' bgcolor='darkred' color="white" align='center' borderBottom={1}>Cancelled Refund Transactions</Typography>
+                <Box sx={{ height: 600, width: '100%' }}>
+                    <DataGrid
+                        rows={data}
+                        columns={columns}
+                        getRowId={getRowId}
+                        density='compact'
+                        disableRowSelectionOnClick={false}
+                        hideFooterSelectedRowCount={true}
+                        hideFooter={true}
+                        filterMode='client'
+                        slotProps={{
+                            toolbar: {
+                                showQuickFilter: true,
+                            },
+                        }}
+                    />
+                </Box>
             </DemoPaper>
         </Stack>
     );

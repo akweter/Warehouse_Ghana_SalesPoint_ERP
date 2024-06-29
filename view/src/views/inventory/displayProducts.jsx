@@ -77,7 +77,7 @@ const InventoryProductsTable = ({ products, loading, RefreshData }) => {
             },
             {
                 field: 'stockQTY',
-                headerName: 'UOM QTY',
+                headerName: 'STOCK',
                 description: 'Quantity of UOM available',
                 width: 100,
                 headerClassName: 'dataGridheader',
@@ -143,7 +143,7 @@ const InventoryProductsTable = ({ products, loading, RefreshData }) => {
 
     return (
         <>
-            <Box sx={{ height: 600, width: '100%' }}>
+            <Box sx={{ height: 500, width: '100%' }}>
                 <DataGrid
                     rows={rows.map((row, index) => ({ ...row, id: index }))}
                     columns={columns}

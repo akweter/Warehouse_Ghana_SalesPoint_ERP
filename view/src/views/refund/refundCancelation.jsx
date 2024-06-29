@@ -7,9 +7,9 @@ import {
     Button, 
     Typography
 } from '@mui/material';
-import { AlertError } from 'utilities/errorAlert';
-import { ShowBackDrop } from 'utilities/backdrop';
-import { postRefundCancellation } from 'apiActions/allApiCalls/invoice';
+import { AlertError } from '../../utilities/errorAlert';
+import { ShowBackDrop } from '../../utilities/backdrop';
+import { postRefundCancellation } from '../../apiActions/allApiCalls/invoice';
 
 export const RefundCancellationForm = ({ open, handleClose, refData, setSubmitted }) => {
     const [openAlert, setOpen] = useState(false);
@@ -52,15 +52,13 @@ export const RefundCancellationForm = ({ open, handleClose, refData, setSubmitte
     const formatDate = (date) => {
         if (date) {
             const parts = date.split('/');
-            const formattedDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+            const formattedDate = `${parts[2]}-${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}`;
             return formattedDate;
         }
-    } 
+    }
     
     // close alert snackbar
-    const closeAlert = () =>{
-        setOpen(false);
-    }
+    const closeAlert = () => setOpen(false);
 
     // method that calls the payloads
     const sendPayload = () =>{
@@ -89,7 +87,7 @@ export const RefundCancellationForm = ({ open, handleClose, refData, setSubmitte
             }
         }, 2000);
     }
-    
+
     return (<>
         { alert.message ?
             (<AlertError open={openAlert} alert={alert} handleClose={closeAlert} />) :

@@ -1,4 +1,4 @@
 
 export default function ProcurementDept(){
-    return(`<h1>Procurement Department</h1>`);
+    return(<h1>Procurement Department</h1>);
 }

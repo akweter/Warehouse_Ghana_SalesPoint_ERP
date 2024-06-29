@@ -1,5 +1,4 @@
 const { logErrorMessages, logSuccessMessages } = require("../utils/saveLogfile");
-const UUID = require('../utils/generateIDs');
 const express = require("express");
 const axios = require("axios");
 require('dotenv').config();
@@ -10,6 +9,7 @@ const {
     sanitizePayload,
     saveInvoiceToDB,
 } = require("../utils/invoiceReform");
+const generateUUID = require("../utils/generateIDs");
 
 const Router = express.Router();
 
@@ -68,7 +68,7 @@ Router.post("/invoice", async (req, res) => {
         return res.json({ status: 'Error', message: 'Invalid data structure', data: Data });
     }
     const sanitizedPayload = sanitizePayload(Data);
-    // logSuccessMessages(JSON.stringify(sanitizedPayload));
+    logSuccessMessages(sanitizedPayload);
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, { headers: { 'security_key': GRA_KEY } });
         if (response && response.status === 200) {
@@ -78,7 +78,8 @@ Router.post("/invoice", async (req, res) => {
                     .then(() => {
                         return res.status(200).json({ status: 'success' });
                     })
-                    .catch(() => {
+                    .catch((error) => {
+                        logErrorMessages(`Failed to save invoice: ${error} to DB`);
                         return res.json({ status: 'error', message: `Failed to save invoice: ${sanitizedPayload.invoiceNumber} to DB. Try new invoice` });
                     });
             }
@@ -96,7 +97,7 @@ Router.post("/invoice", async (req, res) => {
         }
         else if (error.request) {
             // The request was made but no response was received
-            logErrorMessages(`No response received from the server for request: ${JSON.stringify(error.request)} `);
+            logErrorMessages(`No response received from the server for request: ${error} `);
             return res.json({ status: 'error', message: 'Empty response from GRA server' });
         }
         else {
@@ -115,7 +116,7 @@ Router.post("/refund", async (req, res) => {
         return res.json({ status: 'Error', message: 'Invalid data structure', data: Data });
     }
     const sanitizedPayload = sanitizePayload(Data);
-    // logSuccessMessages(JSON.stringify(sanitizedPayload));
+    // logSuccessMessages(sanitizedPayload);
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, { headers: { 'security_key': GRA_KEY } });
         if (response && response.status === 200) {
@@ -141,12 +142,12 @@ Router.post("/refund", async (req, res) => {
     catch (error) {
         if (error.response) {
             const { status, data } = error.response;
-            logErrorMessages(`${Data.userName} - ${JSON.stringify(data)}, ${JSON.stringify(sanitizedPayload)}`);
+            logErrorMessages(`${Data.userName} - ${data}, ${sanitizedPayload}`);
             return res.status(status).json({ status: 'error', message: data });
         }
         else if (error.request) {
             // The request was made but no response was received
-            logErrorMessages(`No response received from the server for request: ${JSON.stringify(error.request)} `);
+            logErrorMessages(`No response received from the server for request: ${error.request} `);
             return res.json({ status: 'error', message: 'Empty response from GRA server' });
         }
         else {
@@ -185,7 +186,7 @@ Router.post("/refund/cancellation", async (req, res) => {
                     null,
                     null,
                     null,
-                    UUID(),
+                    generateUUID(),
                     reference,
                     null,
                     null,
@@ -226,12 +227,12 @@ Router.post("/refund/cancellation", async (req, res) => {
     catch (error) {
         if (error.response) {
             const { status, data } = error.response;
-            logErrorMessages(`${Data.userName} - ${JSON.stringify(data)}, ${JSON.stringify(Data)}`);
+            logErrorMessages(`${Data.userName} - ${data}, ${Data}`);
             return res.status(status).json({ status: 'error', message: data });
         }
         else if (error.request) {
             // The request was made but no response was received
-            logErrorMessages(`No response received from the server for request: ${JSON.stringify(error.request)} `);
+            logErrorMessages(`No response received from the server for request: ${error.request} `);
             return res.json({ status: 'error', message: 'Empty response from GRA server' });
         }
         else {

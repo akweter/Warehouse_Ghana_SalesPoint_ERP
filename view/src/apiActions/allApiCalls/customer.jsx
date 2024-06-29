@@ -1,4 +1,4 @@
-import requestMaking from "auth/setHeaderToken";
+import requestMaking from "../../auth/setHeaderToken";
 
 // Fetch all customers
 export const fetchAllCustomersNSuppliers = async () => {

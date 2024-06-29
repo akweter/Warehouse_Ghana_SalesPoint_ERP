@@ -5,10 +5,10 @@ import {
 	List, 
 	Typography,
 } from '@mui/material';
-import SkeletonEarningCard from '../../ui-component/cards/Skeleton/EarningCard';
-import { CardWrapper, CustomLLogo } from 'ui-component/colorsCardWrapper';
 import product from '../../assets/images/icons/product.png';
 import customer from '../../assets/images/icons/customers.png'
+import SkeletonEarningCard from '../../ui-component/cards/Skeleton/EarningCard';
+import { CardWrapper, CustomLLogo } from '../../ui-component/colorsCardWrapper';
 
 const TotalSalesCard = ({ isLoading, customers, products }) => {
 	return (

@@ -43,17 +43,17 @@ import {
     Checkbox,
 } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
-import Screens from 'ui-component/cardDivision';
 import dayjs from 'dayjs';
 
 // Projects
-import { headerPayload, itemlistPayload } from 'views/payload/payloadStructure';
-import { AlertError } from 'utilities/errorAlert';
-import { ShowBackDrop } from 'utilities/backdrop';
-import { postNewGRAInvoice } from 'apiActions/allApiCalls/invoice';
-import { fetchProductNameSearch } from 'apiActions/allApiCalls/product';
-import { fetchCustomerNameSearch } from 'apiActions/allApiCalls/customer';
-import { computeStandardTaxes } from 'utilities/computeAllTaxes';
+import Screens from '../../ui-component/cardDivision';
+import { headerPayload, itemlistPayload } from '../../views/payload/payloadStructure';
+import { AlertError } from '../../utilities/errorAlert';
+import { ShowBackDrop } from '../../utilities/backdrop';
+import { postNewGRAInvoice } from '../../apiActions/allApiCalls/invoice';
+import { fetchProductNameSearch } from '../../apiActions/allApiCalls/product';
+import { fetchCustomerNameSearch } from '../../apiActions/allApiCalls/customer';
+import { computeStandardTaxes } from '../../utilities/computeAllTaxes';
 
 // /* eslint-disable */
 
@@ -231,7 +231,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
             setAlert((e) => ({ ...e, message: 'Only positive quantity value is allowed', color: 'error' }));
             return setOpen(true);
         }
-        else if (discountAmount >= (quantity * unitPrice)) {
+        else if (discountAmount > (quantity * unitPrice)) {
             setAlert((e) => ({ ...e, message: `Disount should be less than the subtotal ${quantity * unitPrice}`, color: 'error' }));
             return setOpen(true);
         }
@@ -391,7 +391,6 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                 setDrop(true);
                 setTimeout(resolve, 2000);
             });
-
             const data = await postNewGRAInvoice(header);
             if (data.status === "Error") {
                 const res = JSON.stringify(data.message);
@@ -582,6 +581,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                         name="transactionDate"
                                         value={header.transactionDate || null}
                                         format='YYYY-MM-DD'
+                                        defaultValue={new Date()}
                                         label="Invoice Date"
                                         sx={{height: '10px'}}
                                         maxDate={dayjs()}
@@ -648,6 +648,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                             size="small"
                                             color="primary"
                                             fullWidth
+                                            key={params}
                                             InputProps={{
                                                 ...params.InputProps,
                                                 endAdornment: (
@@ -857,36 +858,36 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                             <tbody>
                                                 <tr>
-                                                    <td style={{ textAlign: 'left' }}>GROSS TOTAL</td>
-                                                    <td style={{ textAlign: 'right' }}>{header.totalAmount || 0.00}</td>
+                                                    <td style={{ textAlign: 'left' }} className='td_invoice'>GROSS TOTAL</td>
+                                                    <td style={{ textAlign: 'right' }} className='td_invoice'>{header.totalAmount || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
-                                                    <td>DISOCUNT</td>
-                                                    <td>{header.discountAmount || 0.00}</td>
+                                                    <td className='td_invoice'>DISOCUNT</td>
+                                                    <td className='td_invoice'>{header.discountAmount || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
-                                                    <td>NHIL (2.5%)</td>
-                                                    <td>{header.nhil || 0.00}</td>
+                                                    <td className='td_invoice'>NHIL (2.5%)</td>
+                                                    <td className='td_invoice'>{header.nhil || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
-                                                    <td>GETFUND (2.5%)</td>
-                                                    <td>{header.getfund || 0.00}</td>
+                                                    <td className='td_invoice'>GETFUND (2.5%)</td>
+                                                    <td className='td_invoice'>{header.getfund || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
-                                                    <td>COVID (1%)</td>
-                                                    <td>{header.covid || 0.00}</td>
+                                                    <td className='td_invoice'>COVID (1%)</td>
+                                                    <td className='td_invoice'>{header.covid || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
-                                                    <td>CST (5%)</td>
-                                                    <td>{header.cst || 0.00}</td>
+                                                    <td className='td_invoice'>CST (5%)</td>
+                                                    <td className='td_invoice'>{header.cst || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
-                                                    <td>TOURISM (1%)</td>
-                                                    <td>{header.tourism || 0.00}</td>
+                                                    <td className='td_invoice'>TOURISM (1%)</td>
+                                                    <td className='td_invoice'>{header.tourism || 0.00}</td>
                                                 </tr>
                                                 <tr className='table'>
-                                                    <td>VAT (15%)</td>
-                                                    <td>{header.totalVat || 0.00}</td>
+                                                    <td className='td_invoice'>VAT (15%)</td>
+                                                    <td className='td_invoice'>{header.totalVat || 0.00}</td>
                                                 </tr>
                                                 <tr
                                                     style={{

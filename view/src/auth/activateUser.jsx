@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import axios from 'axios';
-import { bcndOrigin, viewOrigin } from 'auth/origins';
+import { bcndOrigin, viewOrigin } from './origins';
 
 /* eslint-disable */
 

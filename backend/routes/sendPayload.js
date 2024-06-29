@@ -1,5 +1,4 @@
 const { logErrorMessages, logSuccessMessages } = require("../utils/saveLogfile");
-const UUID = require('../utils/generateIDs');
 const express = require("express");
 const axios = require("axios");
 require('dotenv').config();
@@ -50,7 +49,7 @@ Router.post("/invoice", async (req, res) => {
     }
     catch (error) {
         const { status, data } = error.response;
-        logErrorMessages(`${Data.userName} - ${JSON.stringify(data)}, ${JSON.stringify(sanitizedPayload)}`);
+        logErrorMessages(`${Data.userName} - ${JSON.stringify(error)}, ${JSON.stringify(sanitizedPayload)}`);
         return res.status(status).json({ status: 'error', message: data });
     }
 });

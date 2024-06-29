@@ -1,7 +1,8 @@
-import { fetchAllWooCustomers } from 'apiActions/allApiCalls/woocommerce';
-import React, { useEffect, useState } from 'react';
+import { fetchAllWooCustomers } from '../../apiActions/allApiCalls/woocommerce';
 import CustomersTable from './customersTable';
-import ProductPlaceholder from 'ui-component/cards/Skeleton/ProductPlaceholder';
+import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceholder';
+
+import React, { useEffect, useState } from 'react';
 const { Typography } = require("@mui/material")
 
 const WooCustomers = () => {

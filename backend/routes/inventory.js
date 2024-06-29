@@ -17,8 +17,12 @@ const {
 	oneProductAutoIncrement,
 	addExcelProducts,
 	updateProduct,
+	sumAllProducts,
+	allOutOfStockProducts,
+	allLowProducts,
+	allTopProducts,
+	noStockProducts,
 } = require("../controller/Inventory");
-const { logAllMessage } = require("../utils/saveAllLogs");
 const { logSuccessMessages, logErrorMessages } = require("../utils/saveLogfile");
 const generateUUID = require("../utils/generateIDs");
 
@@ -29,8 +33,32 @@ Router.get("/", async (req, res) => {
 		return await executeRoute(output, res);
 	}
 	catch (err) {
-		logAllMessage("Internal server error" + err);
+		logErrorMessages("Internal server error" + err);
 		return res.status(500).send("Temporal server error. Kindly refresh");
+	}
+});
+
+// Dashboard Cards
+Router.get("/dashboard/card", async (req, res) => {
+	try {
+		const sum = await sumAllProducts();
+		const outOfStock = await allOutOfStockProducts();
+		const lowProduct = await allLowProducts();
+		const topProducts = await allTopProducts();
+		const noStock = await noStockProducts();
+
+		const result = [
+			sum,
+			outOfStock,
+			lowProduct,
+			topProducts,
+			noStock,
+		]
+		res.status(200).send(result);
+	}
+	catch (err) {
+		logErrorMessages("Inventory fetch error" + err);
+		res.status(500).send("Something unexpected happened!");
 	}
 });
 
@@ -43,7 +71,7 @@ Router.get("/query", async (req, res) => {
 		return await executeRoute(output, res);
 	}
 	catch (err) {
-		logAllMessage("error searching products" + err);
+		logErrorMessages("error searching products" + err);
 		return res.status(500).send("Temporal server error. Kindly refresh");
 	}
 });
@@ -56,7 +84,7 @@ Router.get("/user", async (req, res) => {
 		return await executeRoute(output, res);
 	}
 	catch (err) {
-		logAllMessage("Internal server error" + err);
+		logErrorMessages("Internal server error" + err);
 		return res.status(500).send("Internal server error");
 	}
 });
@@ -69,7 +97,7 @@ Router.get("/supplier", async (req, res) => {
 		return await executeRoute(output, res);
 	}
 	catch (err) {
-		logAllMessage("Internal server error" + err);
+		logErrorMessages("Internal server error" + err);
 		return res.status(500).send("Internal server error");
 	}
 });
@@ -82,7 +110,7 @@ Router.get("/taxable", async (req, res) => {
 		return await executeRoute(output, res);
 	}
 	catch (err) {
-		logAllMessage("Internal server error" + err);
+		logErrorMessages("Internal server error" + err);
 		return res.status(500).send("Internal server error");
 	}
 });
@@ -99,7 +127,7 @@ Router.get("/date", async (req, res) => {
 		return await executeRoute(output, res);
 	}
 	catch (err) {
-		logAllMessage("Internal server error" + err);
+		logErrorMessages("Internal server error" + err);
 		return res.status(500).send("Internal server error");
 	}
 });
@@ -114,7 +142,7 @@ Router.get("/search", async (req, res) => {
 		return await executeRoute(output, res);
 	}
 	catch (err) {
-		logAllMessage("Internal server error" + err);
+		logErrorMessages("Internal server error" + err);
 		return res.status(500).send("Internal server error");
 	}
 });
@@ -127,7 +155,7 @@ Router.get("/alt/:id", async (req, res) => {
 		return await executeRoute(output, res);
 	}
 	catch (err) {
-		logAllMessage("Internal server error" + err);
+		logErrorMessages("Internal server error" + err);
 		return res.status(500).send("Internal server error");
 	}
 });
@@ -140,7 +168,7 @@ Router.get("/:id", async (req, res) => {
 		return await executeRoute(output, res);
 	}
 	catch (err) {
-		logAllMessage("Internal server error" + err);
+		logErrorMessages("Internal server error" + err);
 		return res.status(500).send("Internal server error");
 	}
 });
@@ -225,7 +253,7 @@ Router.put("/:id", async (req, res) => {
 		res.status(200).json({ status: "success", message: `Product updated succesfully` });
 	}
 	catch (err) {
-		logAllMessage("Internal server error" + err);
+		logErrorMessages("Internal server error" + err);
 		return res.status(500).json({ status: 'error', message: `Failed to update ${productName}` });
 	}
 });

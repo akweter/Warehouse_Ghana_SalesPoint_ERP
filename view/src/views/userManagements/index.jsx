@@ -5,13 +5,14 @@ import {
     Dialog,
     Grid,
     Paper,
+    Typography,
 } from "@mui/material";
 
 // Projects
-import { fetchAllUsers } from 'apiActions/allApiCalls/users';
+import { fetchAllUsers } from '../../apiActions/allApiCalls/users';
 import DisplayUsers from './displayUsers';
 import AddNewSystemUser from './addNewUser';
-import { LoadingSpinner } from 'ui-component/loaderAPI';
+import { LoadingSpinner } from '../../ui-component/loaderAPI';
 
 const UserManagerment = () => {
     const [loading, setLoading] = useState(false);
@@ -40,10 +41,10 @@ const UserManagerment = () => {
 
     const FormatDate = (data) => {
         if (data > 0) {
-            const { Usr_reg_date } = data;
-            const dateObject = new Date(Usr_reg_date);
+            const { regDate } = data;
+            const dateObject = new Date(regDate);
             const formattedDate = `${dateObject.getFullYear()} ${(dateObject.getMonth() + 1).toString().padStart(2, '0')} ${dateObject.getDate().toString().padStart(2, '0')}`;
-            setAllusers((state) => ({ ...state, Usr_reg_date: formattedDate }));
+            setAllusers((state) => ({ ...state, regDate: formattedDate }));
         }
     }
 
@@ -53,30 +54,31 @@ const UserManagerment = () => {
     return (<>
         {
             loading ?
-            <LoadingSpinner /> :
-            <>
-                <Paper>
-                    <Grid container sx={{ justifyContent: 'space-around', paddingBottom: 1 }}>
-                        <Button
-                            variant='contained'
-                            color='primary'
-                            size='medium'
-                            onClick={handleOpen}
-                        >
-                            Add New System User
-                        </Button>
-                    </Grid>
-                    <Box>
-                        {allusers.length > 0 ? (
-                            <DisplayUsers inData={allusers} addUser={open} closeAddnewUser={handleClose} submission={setSubmitted}/>
-                        ) :
-                            null}
-                    </Box>
-                </Paper>
-                <Dialog open={open}>
-                    <AddNewSystemUser closeAddnewUser={handleClose} setSubmitted={setSubmitted} />
-                </Dialog>
-            </>
+                <LoadingSpinner /> :
+                <>
+                    <Paper>
+                        <Grid container sx={{ justifyContent: 'space-around', paddingBottom: 1, backgroundColor: 'darkblue', padding: 1, }}>
+                            <Typography color='white' variant='h3'>Staff Management Portal</Typography>
+                            <Button
+                                variant='contained'
+                                color='inherit'
+                                size='medium'
+                                onClick={handleOpen}
+                            >
+                                Add New System User
+                            </Button>
+                        </Grid>
+                        <Box>
+                            {allusers.length > 0 ? (
+                                <DisplayUsers inData={allusers} addUser={open} closeAddnewUser={handleClose} submission={setSubmitted} />
+                            ) :
+                                null}
+                        </Box>
+                    </Paper>
+                    <Dialog open={open}>
+                        <AddNewSystemUser closeAddnewUser={handleClose} setSubmitted={setSubmitted} />
+                    </Dialog>
+                </>
         }
     </>);
 }

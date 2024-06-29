@@ -1,4 +1,4 @@
 
 export default function HumanResourceDept(){
-    return(`<h1>Human Resource Department</h1>`);
+    return(<h1>Human Resource Department</h1>);
 }

@@ -6,7 +6,7 @@ import { styled, useTheme } from '@mui/material/styles';
 
 import useChart from './use-chart';
 import chart from './chart';
-import { fNumber } from 'utilities/numerals';
+import { fNumber } from '../../../utilities/numerals';
 
 const CHART_HEIGHT = 350;
 

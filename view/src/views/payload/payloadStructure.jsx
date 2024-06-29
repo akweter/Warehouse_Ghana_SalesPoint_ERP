@@ -47,5 +47,5 @@ export const headerPayload = {
     invCusId: "",
     remarks: "Thank you for choosing us.",
     invoiceType: "Invoice",
-    delivery: "Free",
+    delivery: "",
 }

@@ -40,6 +40,10 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog }) => {
                                     <TableCell component="td" scope="row">{selectedRow.CustomerTIN || 'Unavailable'}</TableCell>
                                 </TableRow>
                                 <TableRow>
+                                    <TableCell component="th" scope="row">Transaction Type:</TableCell>
+                                    <TableCell component="td" scope="row">{selectedRow.CalculationType || 'Unavailable'}</TableCell>
+                                </TableRow>
+                                <TableRow>
                                     <TableCell component="th" scope="row">Transaction Date:</TableCell>
                                     <TableCell component="td" scope="row">{selectedRow.InvoiceDate || 'Unavailable'}</TableCell>
                                 </TableRow>
@@ -70,7 +74,23 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog }) => {
                                 </TableRow>
                                 <TableRow>
                                     <TableCell component="th" scope="row">Total Amount:</TableCell>
-                                    <TableCell component="td" scope="row">{selectedRow.currency} {selectedRow.TotalAmount || 0}</TableCell>
+                                    <TableCell component="td" scope="row">
+                                        {selectedRow.currency}
+                                        {
+                                            selectedRow.CalculationType === "EXCLUSIVE" ?
+                                            selectedRow.Currency+":"+ ((
+                                                Number(selectedRow.TotalAmount) + 
+                                                Number(selectedRow.VatAmount) + 
+                                                Number(selectedRow.CST) + 
+                                                Number(selectedRow.Tourism) + 
+                                                Number(selectedRow.GETFund) + 
+                                                Number(selectedRow.NHIL)
+                                            ) - selectedRow.InvoiceDiscount).toFixed(2) :
+                                            selectedRow.Currency+":"+ (
+                                                Number(selectedRow.TotalAmount - selectedRow.InvoiceDiscount)
+                                            ).toFixed(2)
+                                        }
+                                    </TableCell>
                                 </TableRow>
                             </TableHead>
                         </Table>

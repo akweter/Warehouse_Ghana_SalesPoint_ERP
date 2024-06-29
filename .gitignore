@@ -10,6 +10,8 @@ backend/package-lock.json
 
 # view
 view/node_modules
+view/node_modules_old
 view/.env
 view/.prettierrc
 view/package-lock.json
+view/.eslintrcf

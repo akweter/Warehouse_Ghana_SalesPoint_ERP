@@ -21,8 +21,8 @@ const InvoiceTemplate = ({ data }) => {
 					<td><img src={logo} width={80} height={65} alt="Logo" /></td>
 				</tr>
 				<tr>
-					{/* <td><h1>{data.InvoiceStatus === "Invoice" ? "Official Invoice" : data.InvoiceStatus}</h1></td> */}
-					<td><h1>Official Invoice</h1></td>
+					<td><h1>{data.InvoiceStatus === "Invoice" ? "Official Invoice" : data.InvoiceStatus}</h1></td>
+					{/* <td><h1>Official Invoice</h1></td> */}
 				</tr>
 			</table>
 
@@ -133,7 +133,24 @@ const InvoiceTemplate = ({ data }) => {
 					<tr style={{ border: "12px" }}>
 						<td width="60%" />
 						<td width="20%" align="left"><strong>NET TOTAL</strong></td>
-						<td width="20%"><strong>{data.Currency}: {((data.TotalAmount) - (data.InvoiceDiscount)).toFixed(2)}</strong></td>
+						<td width="20%">
+							<strong>
+								{
+									data.CalculationType === "EXCLUSIVE" ?
+									data.Currency+":"+ ((
+										Number(data.TotalAmount) + 
+										Number(data.VatAmount) + 
+										Number(data.CST) + 
+										Number(data.Tourism) + 
+										Number(data.GETFund) + 
+										Number(data.NHIL)
+									) - data.InvoiceDiscount).toFixed(2) :
+									data.Currency+":"+ (
+										Number(data.TotalAmount - data.InvoiceDiscount)
+									).toFixed(2)
+								}
+							</strong>
+						</td>
 					</tr>
 					{data.DeliveryFee ?
 						(<tr>

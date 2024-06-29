@@ -4,7 +4,27 @@ const { executeQuery } = require("../database/index");
 
 // Return all users
 const allUsers = async () => {
-  const sql = "SELECT * FROM UserManagement ORDER BY Usr_name ASC";
+  const sql = `
+  SELECT
+    Usr_name As userName,
+    Usr_FName As userFName,
+    Usr_LName As userLName,
+    Usr_type As accountType,
+    Usr_phone As telephone,
+    Usr_email As primaryEmail,
+    Usr_address As regAddress,
+    Usr_dept As orgDept,
+    Usr_reg_date As regDate,
+    Usr_dept As userDept,
+    activated As userSubscribed,
+    Usr_id As accountId,
+    Usr_StaffID As staffID,
+    Usr_status As accountStat
+  FROM
+    UserManagement
+  ORDER BY 
+    Usr_name 
+  ASC`;
   try {
     const result = await executeQuery(sql);
     if (result) { return result }

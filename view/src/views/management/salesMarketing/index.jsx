@@ -1,4 +1,4 @@
 
 export default function SalesAndMarketingDept(){
-    return(`<h1>Sales & Marketing Department</h1>`);
+    return(<h1>Sales & Marketing Department</h1>);
 }

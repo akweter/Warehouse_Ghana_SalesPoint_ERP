@@ -2,6 +2,7 @@
 import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material/styles';
 import { Avatar, Box, ButtonBase } from '@mui/material';
+import { IconMenu2 } from '@tabler/icons';
 
 // import Modal from '@mui/material/Modal';
 
@@ -10,10 +11,8 @@ import LogoSection from '../LogoSection';
 import SearchSection from './SearchSection';
 import ProfileSection from './ProfileSection';
 import NotificationSection from './NotificationSection';
-
-import { IconMenu2 } from '@tabler/icons';
-import { DateTimeSecondsDisplay } from 'utilities/globalTime';
-import Customization from 'layout/Customization';
+import { DateTimeSecondsDisplay } from '../../../utilities/globalTime';
+import Customization from '../../../layout/Customization';
 
 // ==============================|| MAIN NAVBAR / HEADER ||============================== //
 

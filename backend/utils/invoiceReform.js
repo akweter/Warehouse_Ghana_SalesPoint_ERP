@@ -4,7 +4,8 @@ const {
     saveInInvoiceProduct, 
     updateRefundProducts 
 } = require("../controller/salesNinvoices");
-const { logErrorMessages, logSuccessMessages, logMessage } = require("./saveLogfile");
+const generateUUID = require("./generateIDs");
+const { logErrorMessages, logSuccessMessages } = require("./saveLogfile");
 
 const filterFields = (obj, fieldsToRemove) => {
     return Object.fromEntries(
@@ -98,7 +99,7 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
         discountAmount,
         exchangeRate,
         totalVat,
-        UUID(),
+        generateUUID(),
         reference,
         remarks,
         nhil,
@@ -130,8 +131,6 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
         responseData.response.qr_code,
         invoiceNumber,
     ];
-    
-    logMessage(JSON.stringify(sanitizedPayload));
 
     try {
         if (quote || quote === "Yes") {
@@ -155,7 +154,7 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
                                 refProQty,
                             } = item;
                             const data = [
-                                UUID(),
+                                generateUUID(),
                                 invoiceNumber,
                                 itemCode,
                                 unitPrice,
@@ -172,7 +171,7 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
 
                             if (invoiceType === 'Invoice' || invoiceType === 'Quotation') {
                                 await saveInInvoiceProduct(data)
-                                    .then(() => { null })
+                                    .then(() => { return null})
                                     .catch((err) => {
                                         logErrorMessages(`Error saving products: ${itemCode} for invoice ${invoiceNumber}, <> ${JSON.stringify(err)}`);
                                         return { status: 'error', message: 'Please refresh and Issue new invoice' };
@@ -180,7 +179,7 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
                             }
                             else if (invoiceType === 'REFUND' || invoiceType === 'Partial_Refund') {
                                 await updateRefundProducts(update)
-                                    .then(() => { null })
+                                    .then(() => { return null })
                                     .catch((err) => {
                                         logErrorMessages(`Error updating products refunded qty:${itemCode} for invoice ${invoiceNumber}, <> ${JSON.stringify(err)}`);
                                         return { status: 'error', message: 'Please refresh and Issue new invoice' };

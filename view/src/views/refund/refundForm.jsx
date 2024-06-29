@@ -9,13 +9,14 @@ import {
     Grid,
     Typography
 } from '@mui/material';
-import { headerPayload } from 'views/payload/payloadStructure';
-import { AlertError } from 'utilities/errorAlert';
-import { ShowBackDrop } from 'utilities/backdrop';
-import { getUserName } from 'utilities/getUserName';
 import { Cancel } from '@mui/icons-material';
-import { postRefundInvoice } from 'apiActions/allApiCalls/refund';
-import { computeStandardTaxes } from 'utilities/computeAllTaxes';
+
+import { headerPayload } from '../../views/payload/payloadStructure';
+import { AlertError } from '../../utilities/errorAlert';
+import { ShowBackDrop } from '../../utilities/backdrop';
+import { getUserName } from '../../utilities/getUserName';
+import { postRefundInvoice } from '../../apiActions/allApiCalls/refund';
+import { computeStandardTaxes } from '../../utilities/computeAllTaxes';
 
 /* eslint-disable */
 const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {

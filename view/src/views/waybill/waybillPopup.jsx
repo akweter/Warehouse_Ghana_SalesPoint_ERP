@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import {
     Button,
     Dialog,
+    Paper,
     Popover,
     Typography,
 } from '@mui/material';
-import { SmallTextField } from 'views/invoices/verifyTIN';
-import { FetchWaybillInvoice } from 'apiActions/allApiCalls/invoice';
+import { SmallTextField } from '../../views/customerSuppliers/verifyTIN';
+import { FetchWaybillInvoice } from '../../apiActions/allApiCalls/invoice';
 import WaybillForm from './waybillForm';
 
 const WaybillPopper = () => {
@@ -32,9 +33,13 @@ const WaybillPopper = () => {
         }
     }
 
+    const handleDialog = () => openDialog(false);
+
     return (
         <>
-            <Button variant="outlined" onClick={handleClick}>Print Waybill</Button>
+            <Button variant="contained" color='error' onClick={handleClick}>
+                <Typography color='white'>Print Waybill</Typography>                
+            </Button>
             <Popover
                 open={open}
                 anchorEl={anchorEl}
@@ -52,8 +57,24 @@ const WaybillPopper = () => {
                     <SmallTextField setData={setData} label={"Invoice #"} handleVerification={printWaybill} />
                 </Typography>
             </Popover>
-            <Dialog open={dialog} onClose={() => openDialog(false)} fullWidth>
-                <WaybillForm formData={result} />
+            <Dialog
+                open={dialog}
+                onClose={() => openDialog(false)}
+                PaperProps={{
+                    sx: {
+                        width: '53%',
+                        height: '100%',
+                        maxWidth: '53%',
+                        maxHeight: '100%',
+                        margin: 0,
+                    },
+                }}
+                fullWidth
+                maxWidth="xl"
+            >
+                <Paper sx={{ height: '100%' }}>
+                    <WaybillForm formData={result} closeDialog={handleDialog}/>
+                </Paper>
             </Dialog>
         </>
     );

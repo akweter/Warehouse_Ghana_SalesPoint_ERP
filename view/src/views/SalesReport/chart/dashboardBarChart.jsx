@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AppWebsiteVisits from "./barChart";
-import { fetchAllThisMonthDailyInvoiceAmount } from 'apiActions/allApiCalls/invoice';
+import { fetchAllThisMonthDailyInvoiceAmount } from '../../../apiActions/allApiCalls/invoice';
 
 const DashboardBarChart = () => {
     const [data, setData] = useState([]);

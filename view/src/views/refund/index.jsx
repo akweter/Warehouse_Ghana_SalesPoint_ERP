@@ -2,19 +2,20 @@ import { useEffect, useMemo, useState } from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { Visibility as VisibilityIcon } from '@mui/icons-material';
-import MenuIcon from '@mui/icons-material/Menu';
 import {
     IconButton,
     Grid,
     Drawer,
     Typography,
+    Button,
 } from '@mui/material';
-import { GeneralCatchError } from 'utilities/errorAlert';
+import { IconCreditCardRefund } from '@tabler/icons-react';
+
+import { GeneralCatchError } from '../../utilities/errorAlert';
 import RefundCancellationForm from './refundCancelation';
 import DrawerContent from './showCancelRefunds';
-import { IconCreditCardRefund } from '@tabler/icons-react';
-import { fetchRefundInvoices } from 'apiActions/allApiCalls/refund';
-import InvoiceDetails from 'views/invoices/invoiceDetails';
+import { fetchRefundInvoices } from '../../apiActions/allApiCalls/refund';
+import InvoiceDetails from '../../views/invoices/invoiceDetails';
 
 /* eslint-disable */
 
@@ -169,11 +170,16 @@ export default function Refund() {
 
     return (
         <div>
-            <Grid container sx={{ justifyContent: 'space-between' }}>
-            <Typography color='darkblue' variant='h3'>Refunds</Typography>
-                <IconButton onClick={toggleDrawer(true)} size='large' edge="end" color="secondary">
-                    <MenuIcon color='secondary' />
-                </IconButton>
+            <Grid container sx={{ justifyContent: 'space-around', backgroundColor: 'darkblue', paddingTop: 1, paddingBottom: 1, }}>
+                <Typography color='white' variant='h3'>Refunds Transactions</Typography>
+                <Button
+                    variant='contained'
+                    color='inherit'
+                    size='large'
+                    onClick={toggleDrawer(true)}
+                >
+                    <Typography variant='h5' color='darkred'>Cancelled Refunds</Typography>
+                </Button>
             </Grid>
             <Box sx={{ height: 600, width: '100%' }}>
                 <DataGrid

@@ -12,15 +12,22 @@ import {
 	Paper,
 	Box,
 	Button,
+	Dialog,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { Edit } from '@mui/icons-material';
+import UpdateWooProduct from './updateProduct';
 
-const ProductRow = ({ product }) => {
+const ProductRow = ({ product, fetchPRoducts }) => {
 	const [open, setOpen] = useState(false);
+	const [edit, setEdit] = useState(false);
+	const [products, setProducts] = useState([]);
 
-	const openData = () => {
-		setOpen(!open);
+	const openData = () =>  setOpen(!open);
+	const editProduct = (row) => {
+		setProducts(row)
+		setEdit(true);
 	}
 
 	return (
@@ -34,7 +41,11 @@ const ProductRow = ({ product }) => {
 				<TableCell padding='none' style={{ cursor: 'pointer' }} component="th" scope="row" onClick={openData}>{product.name}</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{product.price}</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{product.status}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{product.sku}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }}>
+					<IconButton color='primary' onClick={() => editProduct(product)}>
+						<Edit />
+					</IconButton>
+				</TableCell>
 			</TableRow>
 
 			<TableRow>
@@ -77,12 +88,16 @@ const ProductRow = ({ product }) => {
 					</Collapse>
 				</TableCell>
 			</TableRow>
+
+			<Dialog open={edit} fullWidth>
+				<UpdateWooProduct product={products} openClose={setEdit} fetchPRoducts={fetchPRoducts}/>
+            </Dialog>
 		</>
 	);
 };
 
-const ProductsTable = ({ products }) => {
-    const itemsPerPage = 10;
+const ProductsTable = ({ products, fetchPRoducts }) => {
+    const itemsPerPage = 100;
 	const [currentPage, setCurrentPage] = useState(1);
 
 	const handleNextPage = () => {
@@ -97,7 +112,7 @@ const ProductsTable = ({ products }) => {
 		const currentPageData = products.slice(startIndex, endIndex);
 
 		return currentPageData.map(data => (
-			<ProductRow key={data.id} product={data} />
+			<ProductRow key={data.id} product={data} fetchPRoducts={fetchPRoducts}/>
 		));
 	};
 
@@ -112,7 +127,7 @@ const ProductsTable = ({ products }) => {
 								<TableCell><Typography variant='h4' color='white'>Product Name</Typography></TableCell>
 								<TableCell><Typography variant='h4' color='white'>Price</Typography></TableCell>
 								<TableCell><Typography variant='h4' color='white'>Status</Typography></TableCell>
-								<TableCell><Typography variant='h4' color='white'>SKU</Typography></TableCell>
+								<TableCell><Typography variant='h4' color='white'>Edit</Typography></TableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody>
