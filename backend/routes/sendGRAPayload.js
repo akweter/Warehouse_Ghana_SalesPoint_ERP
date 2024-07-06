@@ -68,7 +68,7 @@ Router.post("/invoice", async (req, res) => {
         return res.json({ status: 'Error', message: 'Invalid data structure', data: Data });
     }
     const sanitizedPayload = sanitizePayload(Data);
-    logSuccessMessages(sanitizedPayload);
+    // logSuccessMessages(sanitizedPayload);
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, { headers: { 'security_key': GRA_KEY } });
         if (response && response.status === 200) {
@@ -182,6 +182,7 @@ Router.post("/refund/cancellation", async (req, res) => {
                     null,
                     null,
                     invoiceNumber,
+                    null,
                     null,
                     null,
                     null,

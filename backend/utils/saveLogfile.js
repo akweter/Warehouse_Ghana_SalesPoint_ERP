@@ -1,42 +1,41 @@
-const fs = require('fs');
-const path = require('path');
+const { saveMessageLogs, saveSuccessLogs, saveServerLogs, saveErrorLogs, saveAllMessageLogs } = require('../controller/saveLogs');
 
-function logMessage(message) {
+const logMessage = async(message) =>{
     const logTime = new Date().toLocaleString();
-    const log = `${logTime}: ${JSON.stringify(message)}\n`;
-    const logFilePath = path.join(__dirname, '../logs/userActions.txt');
-    fs.appendFile(logFilePath, log, (err) => {
-        if (err) {return}
-    });
+    const log = [ "", logTime, JSON.stringify(message) ]
+    await saveMessageLogs(log);
+    return;
 }
 
 // Save success messages
-function logSuccessMessages(message) {
+const logSuccessMessages = async(message) =>{
     const logTime = new Date().toLocaleString();
-    const log = `${logTime}: ${JSON.stringify(message)}\n`;
-    const logFilePath = path.join(__dirname, '../logs/successLogs.txt');
-    fs.appendFile(logFilePath, log, (err) => {
-        if (err) {return}
-    });
+    const log = [ "", logTime, JSON.stringify(message) ]
+    await saveSuccessLogs(log);
+    return;
 }
 
 // Save server logs
-function logServerMessages(message) {
+const logServerMessages = async(message) =>{
     const logTime = new Date().toLocaleString();
-    const log = `${logTime}: ${JSON.stringify(message)}\n`;
-    const logFilePath = path.join(__dirname, '../logs/serverLogs.txt');
-    fs.appendFile(logFilePath, log, (err) => {
-        if (err) {return}
-    });
+    const log = [ "", logTime, JSON.stringify(message) ]
+    await saveServerLogs(log);
+    return;
 }
 // Save error messages
-function logErrorMessages(message) {
+const logErrorMessages = async(message) =>{
     const logTime = new Date().toLocaleString();
-    const log = `${logTime}: ${JSON.stringify(message)}\n`;
-    const logFilePath = path.join(__dirname, '../logs/errorLogs.txt');
-    fs.appendFile(logFilePath, log, (err) => {
-        if (err) {return}
-    });
+    const log = [ "", logTime, JSON.stringify(message) ]
+    await saveErrorLogs(log);
+    return;
+}
+
+// Save error messages
+const logAllMessage = async(message) =>{
+    const logTime = new Date().toLocaleString();
+    const log = [ "", logTime, JSON.stringify(message) ]
+    await saveAllMessageLogs(log);
+    return;
 }
 
 module.exports = {
@@ -44,4 +43,5 @@ module.exports = {
     logSuccessMessages,
     logErrorMessages,
     logServerMessages,
+    logAllMessage,
 };

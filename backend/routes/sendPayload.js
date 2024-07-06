@@ -1,6 +1,5 @@
 const { logErrorMessages, logSuccessMessages } = require("../utils/saveLogfile");
 const express = require("express");
-const axios = require("axios");
 require('dotenv').config();
 
 const { saveRefundInvoice } = require("../controller/salesNinvoices");
@@ -33,7 +32,7 @@ Router.post("/invoice", async (req, res) => {
         return res.json({ status: 'Error', message: 'Invalid data structure', data: Data });
     }
     const sanitizedPayload = sanitizePayload(Data);
-    // logSuccessMessages(JSON.stringify(sanitizedPayload));
+    logSuccessMessages(JSON.stringify(sanitizedPayload));
     try {
         await saveInvoiceToDB(Data, sanitizedPayload, responseData)
             .then(() => {

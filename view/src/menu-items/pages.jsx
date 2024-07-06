@@ -71,10 +71,18 @@ const pages = {
       breadcrumbs: false
     },
     {
-      id: 'partner',
-      title: 'Customer & Suppliers',
+      id: 'suppliers',
+      title: 'Suppliers Directory',
       type: 'item',
-      url: '/partner',
+      url: '/suppliers',
+      icon: IconUsersGroup,
+      breadcrumbs: false
+    },
+    {
+      id: 'customer',
+      title: 'Customers Directory',
+      type: 'item',
+      url: '/customers',
       icon: IconUsersGroup,
       breadcrumbs: false
     },

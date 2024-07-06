@@ -2,44 +2,44 @@ const { executeQuery } = require("../database/index");
 
 /******************  GET REQUESTS  *********************/
 
-// Return all customers and suppliers
-const allCustomersNSuplliers = async () => {
+// Return all customers and product bought
+const allCus_Inv_Pro = async () => {
   const sql = `
-    SELECT
-      i.SnC_Type as userType, 
-      i.SnC_name as userName, 
-      i.SnC_tin as userTIN, 
-      i.SnC_address as userAddress, 
-      i.SnC_phone as userPhone, 
-      i.SnC_region as userRegion, 
-      i.SnC_status as userStatus, 
-      i.SnC_email as userEmail,
-      i.SnC_exempted as userExemption, 
-      i.SnC_rating as userRating, 
-      i.SnC_id as userID, 
-      i.SnC_date as userAddedDate,
+    SELECT 
+      i.C_name as customerName, 
+      i.C_tin as customerTIN, 
+      i.C_address as customerAddress, 
+      i.C_phone as customerPhone, 
+      i.C_region as customerRegion, 
+      i.C_status as customerStatus, 
+      i.C_email as customerEmail,
+      i.C_exempted as customerExemption, 
+      i.C_rating as customerRating, 
+      i.C_id as customerID, 
+      i.C_Added_date as customerAddedDate,
       COUNT(ip.Product_Quantity) As ProBoughtQty
     FROM
-      suppliersncustomers i
+      customers i
     LEFT JOIN
-      invoice iv ON i.SnC_tin = iv.Inv_Customer_Tin
+      invoice iv ON i.C_tin = iv.Inv_Customer_Tin
     LEFT JOIN
       invoice_products ip ON iv.Inv_Number = ip.InvoiceNum_ID
+    WHERE
+      i.C_status = 'active' AND i.C_tin <> 'C0000000000'
     GROUP BY
-      i.SnC_Type, 
-      i.SnC_name, 
-      i.SnC_tin, 
-      i.SnC_address, 
-      i.SnC_phone, 
-      i.SnC_region, 
-      i.SnC_status, 
-      i.SnC_email,
-      i.SnC_exempted, 
-      i.SnC_rating, 
-      i.SnC_id, 
-      i.SnC_date
+      i.C_name,
+      i.C_tin,
+      i.C_address,  
+      i.C_phone,
+      i.C_region, 
+      i.C_status, 
+      i.C_email,
+      i.C_exempted, 
+      i.C_rating, 
+      i.C_id, 
+      i.C_Added_date
     ORDER BY 
-      i.SnC_date DESC
+      i.C_Added_date DESC
   `;
   try {
     const result = await executeQuery(sql);
@@ -50,9 +50,9 @@ const allCustomersNSuplliers = async () => {
   }
 };
 
-// Return all customers
+// Return all active customers
 const allCustomers = async () => {
-  const sql = "SELECT * FROM suppliersncustomers WHERE SnC_status IN ('active')  AND SnC_Type = 'customer'";
+  const sql = "SELECT * FROM customers WHERE C_status IN ('active')";
   try {
     const result = await executeQuery(sql);
     if (result) { return result }
@@ -62,9 +62,9 @@ const allCustomers = async () => {
   }
 };
 
-// Return only active customers
+// Return only given status customers
 const status = async (prop) => {
-  const sql = "SELECT * FROM suppliersncustomers WHERE  SnC_Type = 'customer' AND SnC_status = ?";
+  const sql = "SELECT * FROM customers WHERE AND C_status = ?";
   try {
     const result = await executeQuery(sql, prop);
     if (result) { return result }
@@ -74,9 +74,9 @@ const status = async (prop) => {
   }
 };
 
-// Only one customer
+// Select active customers based on their TIN
 const CustomerByTIn = async (id) => {
-  const sql = "SELECT * FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'customer' AND SnC_tin = ?";
+  const sql = "SELECT * FROM customers WHERE C_status = 'active' AND C_tin = ?";
   try {
     const result = await executeQuery(sql, id);
     if (result) { return result }
@@ -86,9 +86,9 @@ const CustomerByTIn = async (id) => {
   }
 };
 
-// User Region
+// Select active customers based on their region
 const Region = async (prop) => {
-  const sql = "SELECT * FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'customer' AND SnC_region = ?";
+  const sql = "SELECT * FROM customers WHERE C_status = 'active' AND C_region = ?";
   try {
     const result = await executeQuery(sql, prop);
     if (result) { return result }
@@ -98,21 +98,16 @@ const Region = async (prop) => {
   }
 };
 
-// User Type
-const Type = async () => {
-  const sql = "SELECT * FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'customer'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
-};
-
-// All Exempted
+// Select local and active customers based on their Exemption
 const Exempt = async (prop) => {
-  const sql = "SELECT SnC_id, SnC_name, SnC_Type, SnC_tin FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'customer' AND SnC_region = 'local' AND SnC_exempted = ?";
+  const sql = `
+    SELECT 
+      C_id as customerID,
+      C_name as customerName, 
+      C_tin as customerTIN
+    FROM customers 
+    WHERE 
+      C_status = 'active' AND C_region = 'local' AND C_exempted = ?`;
   try {
     const result = await executeQuery(sql, prop);
     if (result) { return result }
@@ -122,33 +117,24 @@ const Exempt = async (prop) => {
   }
 };
 
-// One Exempted
-const oneExempt = async (prop) => {
-  const sql = "SELECT SnC_id, SnC_name, SnC_Type, SnC_tin FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'customer' AND SnC_region = 'local' AND SnC_id = ?";
-  try {
-    const result = await executeQuery(sql, prop);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
-};
-
-// One Rating
-const allRating = async () => {
-  const sql = "SELECT SnC_id, SnC_name, SnC_Type, SnC_rating FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_Type = 'customer'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
-};
-
-// All rating
+// Select active customers based on their Status
 const oneRating = async (prop) => {
-  const sql = "SELECT SnC_id, SnC_name, SnC_Type, SnC_tin, SnC_region FROM suppliersncustomers WHERE SnC_status = 'active' AND SnC_rating = ?  AND SnC_Type = 'customer'";
+  const sql = `
+    SELECT 
+      C_name as customerName, 
+      C_tin as customerTIN, 
+      C_address as customerAddress, 
+      C_phone as customerPhone, 
+      C_region as customerRegion, 
+      C_status as customerStatus, 
+      C_email as customerEmail,
+      C_exempted as customerExemption, 
+      C_rating as customerRating, 
+      C_id as customerID, 
+      C_Added_date as customerAddedDate
+    FROM customers 
+    WHERE C_status = 'active' AND C_rating = ?
+  `;
   try {
     return await executeQuery(sql, prop);
   }
@@ -158,28 +144,27 @@ const oneRating = async (prop) => {
 };
 
 // Return Search Customer
-const queryProduct = async (user) => {
+const queryCustomer = async (customer) => {
   const sql = `
-    SELECT 
-      SnC_Type as userType, 
-      SnC_name as userName, 
-      SnC_tin as userTIN, 
-      SnC_address as userAddress, 
-      SnC_phone as userPhone, 
-      SnC_region as userRegion, 
-      SnC_status as userStatus, 
-      SnC_email as userEmail,
-      SnC_exempted as userExemption, 
-      SnC_rating as userRating, 
-      SnC_id as userID, 
-      SnC_date as userAddedDate
+    SELECT
+      C_name as customerName, 
+      C_tin as customerTIN, 
+      C_address as customerAddress, 
+      C_phone as customerPhone, 
+      C_region as customerRegion, 
+      C_status as customerStatus, 
+      C_email as customerEmail,
+      C_exempted as customerExemption, 
+      C_rating as customerRating, 
+      C_id as customerID, 
+      C_Added_date as customerAddedDate
     FROM 
-      suppliersncustomers 
+      customers 
     WHERE 
-      SnC_status  <> 'inactive' AND SnC_Type = 'customer' AND (SnC_name LIKE ?) 
+      C_status  <> 'inactive' AND (C_name LIKE ?) 
     LIMIT 10`;
   try {
-    const result = await executeQuery(sql, user);
+    const result = await executeQuery(sql, customer);
     if (result) { return result }
   }
   catch (error) {
@@ -187,26 +172,109 @@ const queryProduct = async (user) => {
   }
 };
 
+
+// Retrieve the total sales amount and quantity of each product, excluding refunded items
+const fortyThree = async () => {
+  const sql = `
+    SELECT Itm_name, SUM(Product_Price * (Product_Quantity - Product_Refunded_Quantity)) AS total_sales
+    FROM inventory
+    JOIN invoice_products ON inventory.Itm_id = invoice_products.Product_ID
+    GROUP BY Itm_name
+    ORDER BY total_sales DESC;
+    `;
+  try {
+    const result = await executeQuery(sql);
+    if(result ){ return result;};;
+  }
+  catch (error) {
+    return error;
+  }
+};
+
+
+// Retrieve the top 3 customers who made the highest total purchases in a specific category
+const fortyTwo = async () => {
+  const sql = `
+    SELECT C_name as customerName, Itm_cat, SUM(Product_Price * Product_Quantity) AS total_purchases
+    FROM customers
+    JOIN invoice ON customers.C_id = invoice.Inv_Customer_Tin
+    JOIN invoice_products ON invoice.Inv_Number = invoice_products.InvoiceNum_ID
+    JOIN inventory ON invoice_products.Product_ID = inventory.Itm_id
+    WHERE Itm_cat = 'specific_category'
+    GROUP BY C_name
+    ORDER BY total_purchases 
+    DESC LIMIT 3;
+    `;
+  try {
+    const result = await executeQuery(sql);
+    if(result ){ return result;};;
+  }
+  catch (error) {
+    return error;
+  }
+};
+
+
+// Retrieve the top 3 customers with the highest total purchases in the last year
+const thirtyTwo = async () => {
+  const sql = `
+    SELECT C_name as customerName, SUM(Inv_total_amt) AS total_purchases
+    FROM customers cs
+    JOIN invoice ON cs.C_id = invoice.Inv_Customer_Tin
+    WHERE Inv_date >= CURDATE() - INTERVAL 1 YEAR
+    GROUP BY C_name
+    ORDER BY total_purchases DESC
+    LIMIT 3;
+    `;
+  try {
+    const result = await executeQuery(sql);
+    if(result ){ return result };
+  }
+  catch (error) {
+    return error;
+  }
+};
+
+
+// Retrieve the top 5 customers with the highest average purchase amount per invoice
+const fortyEight = async () => {
+  const sql = `
+    SELECT SnC_name as customerName, AVG(Inv_total_amt) AS avg_purchase_amount
+    FROM suppliers
+    JOIN invoice ON suppliers.SnC_id = invoice.Inv_Customer_Tin
+    GROUP BY SnC_name
+    ORDER BY avg_purchase_amount DESC
+    LIMIT 5;
+    `;
+  try {
+    const result = await executeQuery(sql);
+    if(result ){ return result;};;
+  }
+  catch (error) {
+    return error;
+  }
+};
+
+
 // Sales Dept customers
 const Searches = async (prop) => {
   const sql = `
     SELECT
-      SnC_Type as userType, 
-      SnC_name as userName, 
-      SnC_tin as userTIN, 
-      SnC_address as userAddress, 
-      SnC_phone as userPhone, 
-      SnC_region as userRegion, 
-      SnC_status as userStatus, 
-      SnC_email as userEmail,
-      SnC_exempted as userExemption, 
-      SnC_rating as userRating, 
-      SnC_id as userID, 
-      SnC_date as userAddedDate
+      C_name as customerName, 
+      C_tin as customerTIN, 
+      C_address as customerAddress, 
+      C_phone as customerPhone, 
+      C_region as customerRegion, 
+      C_status as customerStatus, 
+      C_email as customerEmail,
+      C_exempted as customerExemption, 
+      C_rating as customerRating, 
+      C_id as customerID, 
+      C_Added_date as customerAddedDate
     FROM 
-      suppliersncustomers 
+      customers 
     WHERE 
-      SnC_status = 'active' AND SnC_Type = 'customer' AND (SnC_name LIKE ? OR SnC_tin LIKE ? OR SnC_phone LIKE ? OR SnC_email LIKE ?)`;
+      C_status = 'active' AND (C_name LIKE ? OR C_tin LIKE ? OR C_phone LIKE ? OR C_email LIKE ?)`;
   try {
     const result = await executeQuery(sql, prop);
     if (result) { return result }
@@ -216,14 +284,24 @@ const Searches = async (prop) => {
   }
 };
 
-// Add new custoner or supplier
-const AddCustomerSupplier = async (prop) => {
+// Add new custoner
+const addCustomer = async (prop) => {
   const sql = `
-    INSERT INTO suppliersncustomers(
-      SnC_Type, SnC_name, SnC_tin, SnC_address, SnC_phone, SnC_region, SnC_status, SnC_email, SnC_exempted, SnC_rating, SnC_id, SnC_date
+    INSERT INTO customers(
+      C_name, 
+      C_tin,
+      C_address,  
+      C_phone,
+      C_region,
+      C_status,
+      C_email,
+      C_exempted, 
+      C_rating, 
+      C_id, 
+      C_Added_date
     )
     VALUES (
-      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
     )`;
   try {
     const result = await executeQuery(sql, prop);
@@ -234,11 +312,11 @@ const AddCustomerSupplier = async (prop) => {
   }
 }
 
-// Update customer or supplier
-const updateCustomerNSupplier = async (userData, userId) => {
-  const sql = "UPDATE suppliersncustomers SET ? WHERE SnC_id = ?";
+// Update customer
+const updateCustomer = async (customerData, customerId) => {
+  const sql = "UPDATE customers SET ? WHERE C_id = ?";
   try {
-    const result = await executeQuery(sql, [userData, userId]);
+    const result = await executeQuery(sql, [customerData, customerId]);
     if (result) { return result }
   }
   catch (error) {
@@ -250,15 +328,12 @@ module.exports = {
   CustomerByTIn,
   allCustomers,
   status,
-  Type,
   Exempt,
-  allRating,
   oneRating,
-  oneExempt,
-  queryProduct,
+  queryCustomer,
   Searches,
   Region,
-  allCustomersNSuplliers,
-  AddCustomerSupplier,
-  updateCustomerNSupplier,
+  allCus_Inv_Pro,
+  addCustomer,
+  updateCustomer,
 };

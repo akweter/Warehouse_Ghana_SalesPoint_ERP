@@ -1,5 +1,4 @@
 const axios = require('axios');
-const { logErrorMessages } = require('./saveLogfile');
 require('dotenv').config();
 
 const { IP_INFO } = process.env;

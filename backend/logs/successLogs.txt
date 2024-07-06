@@ -1,6 +1,0 @@
-6/21/2024, 6:45:12 AM: "Product: FIBERGLASS ROLL INSULATION updated succesfully"
-6/21/2024, 6:49:54 AM: "Product: FIBERGLASS ROLL INSULATION updated succesfully"
-6/21/2024, 8:18:52 AM: "Product:  added succesfully"
-6/21/2024, 8:29:17 AM: "Jamie - Quotation 9132996651 added successfully"
-6/22/2024, 8:54:51 PM: {"currency":"GHS","exchangeRate":"1.0","invoiceNumber":"2958958064","totalLevy":"7.09","userName":"Jamie","flag":"INVOICE","calculationType":"INCLUSIVE","totalVat":"18.78","transactionDate":"2024-06-22","totalAmount":"144.00","voucherAmount":"0.00","businessPartnerName":"Walk-In Customer","businessPartnerTin":"C0000000000","saleType":"NORMAL","discountType":"GENERAL","discountAmount":"0.00","reference":"","groupReferenceId":"","purchaseOrderReference":"","items":[{"itemCode":"0399D1F","itemCategory":"","expireDate":"","description":"QUARRY DUST CONCRETE BLOCK","quantity":"12","levyAmountA":2.9532403609516,"levyAmountB":2.9532403609516,"levyAmountC":1.1812961443806398,"levyAmountD":"","levyAmountE":"","discountAmount":0,"batchCode":"","unitPrice":12}]}
-6/22/2024, 8:54:53 PM: "Jamie - Invoice 2958958064 added successfully"

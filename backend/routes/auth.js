@@ -43,7 +43,7 @@ const saveToken_SendEmail = async (userEmail, username, reqParam, type) => {
 	];
 
 	try {
-		await SaveNewTokensQuery(TokenVals);
+		SaveNewTokensQuery(TokenVals);
 		const response = await sendVerificationEmail(userEmail, emailToken, type);
 		return response;
 	}

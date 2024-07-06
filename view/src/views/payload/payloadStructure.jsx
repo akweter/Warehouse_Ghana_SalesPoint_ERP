@@ -35,7 +35,7 @@ export const headerPayload = {
     transactionDate: "",
     totalAmount: "",
     voucherAmount: "",
-    businessPartnerName: "Walk-In Customer",
+    businessPartnerName: "",
     businessPartnerTin: "C0000000000",
     saleType: "NORMAL",
     discountType: "GENERAL",
@@ -45,7 +45,8 @@ export const headerPayload = {
     purchaseOrderReference: "",
     items: [],
     invCusId: "",
-    remarks: "Thank you for choosing us.",
+    remarks: "",
     invoiceType: "Invoice",
     delivery: "",
+    userPhone: "",
 }

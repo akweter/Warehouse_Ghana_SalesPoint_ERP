@@ -2,37 +2,33 @@
 const Router = require("express").Router();
 
 // Projects
-const { executeRoute } = require("../utils/handler");
-const { logAllMessage } = require("../utils/saveAllLogs");
+const { logErrorMessages } = require("../utils/saveLogfile");
+const generateUUID = require("../utils/generateIDs");
 
 // controller
 const {
-  Exempt,
-  Searches,
-  Type,
+  allCus_Inv_Pro,
   allCustomers,
-  allRating,
-  oneExempt,
-  oneRating,
-  CustomerByTIn,
+  queryCustomer,
   status,
-  queryProduct,
   Region,
-  allCustomersNSuplliers,
-  AddCustomerSupplier,
-  updateCustomerNSupplier,
+  Exempt,
+  oneRating,
+  Searches,
+  CustomerByTIn,
+  addCustomer,
+  updateCustomer,
 } = require("../controller/customers");
-const { logErrorMessages, logSuccessMessages } = require("../utils/saveLogfile");
-const generateUUID = require("../utils/generateIDs");
+const { updateSupplier, addSupplier } = require("../controller/suppliers");
 
 // all customers and suppliers
 Router.get("/customersnsuppliers", async (req, res, next) => {
   try {
-    const output = await allCustomersNSuplliers();
+    const output = await allCus_Inv_Pro();
     return res.status(200).json(output);
   }
   catch (err) {
-    logAllMessage("Select All customers error" + err);
+    logErrorMessages("Select All customers error" + err);
     return res.status(500).send("Fetching all customers failed");
   }
 });
@@ -44,7 +40,7 @@ Router.get("/", async (req, res, next) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logAllMessage("" + err);
+    logErrorMessages("" + err);
     return res.status(500).send("Temporal server error. Kindly refresh");
   }
 });
@@ -54,12 +50,12 @@ Router.get("/query", async (req, res, next) => {
   const query = req.query.search;
   const result = '%' + query + '%'
   try {
-    const output = await queryProduct(result);
+    const output = await queryCustomer(result);
     res.status(200).json(output);
   }
   catch (err) {
-    logAllMessage("" + err);
-    return res.status(500).send("");
+    logErrorMessages("" + err);
+    res.status(500).send({ status: "error", message: "product not found" });
   }
 });
 
@@ -68,11 +64,11 @@ Router.get("/status", async (req, res, next) => {
   const stat = req.body.status;
   try {
     const output = await status(stat);
-    return executeRoute(output, res);
+    res.status(200).json(output);
   }
   catch (err) {
-    logAllMessage("" + err);
-    return res.status(500).send("");
+    logErrorMessages((err));
+    res.status(500).send({ status: "error", message: "Status not found" });
   }
 });
 
@@ -81,23 +77,11 @@ Router.get("/region", async (req, res, next) => {
   const stat = req.body.type;
   try {
     const output = await Region(stat);
-    return executeRoute(output, res);
+    res.status(200).json(output);
   }
   catch (err) {
-    logAllMessage("" + err);
-    return res.status(500).send("");
-  }
-});
-
-// Customers Type
-Router.get("/type", async (req, res, next) => {
-  try {
-    const output = await Type();
-    return executeRoute(output, res);
-  }
-  catch (err) {
-    logAllMessage("" + err);
-    return res.status(500).send("");
+    logErrorMessages("" + err);
+    res.status(500).send({ status: "error", message: "region not found" });
   }
 });
 
@@ -106,36 +90,11 @@ Router.get("/exempt", async (req, res, next) => {
   const stat = req.body.exempt;
   try {
     const output = await Exempt(stat);
-    return executeRoute(output, res);
+    res.status(200).json(output);
   }
   catch (err) {
-    logAllMessage("" + err);
-    return res.status(500).send("");
-  }
-});
-
-// Single Exempted Customer
-Router.get("/exempt/:id", async (req, res, next) => {
-  const ID = req.params.id;
-  try {
-    const output = await oneExempt(ID);
-    return executeRoute(output, res);
-  }
-  catch (err) {
-    logAllMessage("" + err);
-    return res.status(500).send("");
-  }
-});
-
-// All customers Rating
-Router.get("/rate", async (req, res, next) => {
-  try {
-    const output = await allRating();
-    return executeRoute(output, res);
-  }
-  catch (err) {
-    logAllMessage("" + err);
-    return res.status(500).send("");
+    logErrorMessages((err));
+    res.status(500).send({ status: "error", message: "exemption not found" });
   }
 });
 
@@ -144,11 +103,11 @@ Router.get("/rate/one", async (req, res, next) => {
   const rate = req.body.rate;
   try {
     const output = await oneRating(rate);
-    return await executeRoute(output, res);
+    res.status(200).json(output);
   }
   catch (err) {
-    logAllMessage("" + err);
-    return res.status(500).send("");
+    logErrorMessages("" + err);
+    res.status(500).send({ status: "error", message: "The rating is not found for the tp" });
   }
 });
 
@@ -159,11 +118,11 @@ Router.get("/search", async (req, res, next) => {
   const Value = [searchTerm, searchTerm, searchTerm, searchTerm];
   try {
     const output = await Searches(Value);
-    return executeRoute(output, res);
+    res.status(200).json(output);
   }
   catch (err) {
-    logAllMessage("" + err);
-    return res.status(500).send("");
+    logErrorMessages("" + err);
+    res.status(500).send({ status: "error", message: "Search for tp not found" });
   }
 });
 
@@ -172,16 +131,16 @@ Router.get("/:id", async (req, res, next) => {
   const userID = req.params.id;
   try {
     const output = await CustomerByTIn(userID);
-    return executeRoute(output, res);
+    res.status(200).json(output);
   }
   catch (err) {
-    logAllMessage("" + err);
-    return res.status(500).send("");
+    logErrorMessages("" + err);
+    res.status(500).send({ status: "error", message: "Customer information not found" });
   }
 });
 
-// Post customer or supplier info
-Router.post("/addsnc", async (req, res, next) => {
+// Post customer or supplier info addSupplier /add/new
+Router.post("/add/new", async (req, res, next) => {
   const {
     userEmail,
     userActive,
@@ -196,7 +155,6 @@ Router.post("/addsnc", async (req, res, next) => {
   } = req.body;
 
   const payload = [
-    userType,
     userName,
     userTIN,
     userAddress,
@@ -210,18 +168,30 @@ Router.post("/addsnc", async (req, res, next) => {
     new Date(),
   ];
 
-  try {
-    const output = await AddCustomerSupplier(payload);
-    res.status(200).json({ status: 'success', data: output });
+  if (userType === 'customer') {
+    try {
+      const output = await addCustomer(payload);
+      res.status(200).json({ status: 'success', data: output });
+    }
+    catch (err) {
+      logErrorMessages((err));
+      res.status(500).send("Adding new customer failed! Please try again");
+    }
   }
-  catch (err) {
-    logErrorMessages("" + err);
-    res.status(500).send("Adding new user failed!");
+  else {
+    try {
+      const output = await addSupplier(payload);
+      res.status(200).json({ status: 'success', data: output });
+    }
+    catch (err) {
+      logErrorMessages((err));
+      res.status(500).send("Adding new supplier failed! Please try again");
+    }
   }
 });
 
-// Update user
-Router.put("/:id", async (req, res) => {
+// Update customer
+Router.put("/update/:id", async (req, res) => {
   const { id } = req.params;
   const {
     userType,
@@ -237,25 +207,36 @@ Router.put("/:id", async (req, res) => {
   } = req.body;
 
   const userData = {
-    SnC_email: userEmail,
-    SnC_status: userActive,
-    SnC_name: userName,
-    SnC_phone: userPhone,
-    SnC_Type: userType,
-    SnC_exempted: userExemption,
-    SnC_tin: userTIN,
-    SnC_address: userAddress,
-    SnC_region: userRegion,
-    SnC_rating: userRating,
+    C_email: userEmail,
+    C_status: userActive,
+    C_name: userName,
+    C_phone: userPhone,
+    C_exempted: userExemption,
+    C_tin: userTIN,
+    C_address: userAddress,
+    C_region: userRegion,
+    C_rating: userRating,
   };
 
-  try {
-    await updateCustomerNSupplier(userData, id);
-    return res.status(200).json({ message: "success" });
+  if (userType !== 'supplier') {
+    try {
+      await updateCustomer(userData, id);
+      return res.status(200).json({ message: "success" });
+    }
+    catch (err) {
+      logErrorMessages("" + err);
+      return res.status(500).json({ message: `Failed to update ${userName}` });
+    }
   }
-  catch (err) {
-    logAllMessage("" + err);
-    return res.status(500).json({ message: `Failed to update ${username}` });
+  else {
+    try {
+      await updateSupplier(userData, id);
+      return res.status(200).json({ message: "success" });
+    }
+    catch (err) {
+      logErrorMessages("" + err);
+      return res.status(500).json({ message: `Failed to update ${userName}` });
+    }
   }
 });
 

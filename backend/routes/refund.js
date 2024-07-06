@@ -2,7 +2,6 @@
 const Router = require("express").Router();
 
 // Projects
-const { executeRoute } = require("../utils/handler");
 const { logErrorMessages } = require("../utils/saveLogfile"); 
 
 // controller
@@ -12,14 +11,14 @@ const {
     TodayRefundsCancellationInvoice,
     countALlrefundInvoices,
     allRefundedProducts,
+    salesNRefundInvoices,
 } = require("../controller/salesNinvoices");
 const restructureInvoiceResult = require("../utils/invoiceModifier");
-const { thirtySeven } = require("../controller/selectQueries");
 
 // all refund Invoices
 Router.get("/", async (req, res) => {
     try {
-        const output = await thirtySeven('Partial_Refund', 'Refund', 'Refund_Cancellation');
+        const output = await salesNRefundInvoices('Partial_Refund', 'Refund', 'Refund_Cancellation');
         const modifiedOutput = restructureInvoiceResult(output);
         return res.status(200).json(modifiedOutput);
     }

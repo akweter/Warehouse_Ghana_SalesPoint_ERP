@@ -3,7 +3,6 @@ const Router = require("express").Router();
 
 // Projects
 const { executeRoute } = require("../utils/handler");
-const { logAllMessage } = require("../utils/saveAllLogs");
 
 // controller
 const {
@@ -29,6 +28,7 @@ const {
   updateUserStatus,
   updateUser,
 } = require("../controller/userMgt");
+const { logErrorMessages } = require("../utils/saveLogfile");
 
 // Get all users
 Router.get("/", async (req, res, next) => {
@@ -38,7 +38,7 @@ Router.get("/", async (req, res, next) => {
     return await executeRoute(output, res, Cookie);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Temporal server error. Kindly refresh");
   }
 });
@@ -50,7 +50,7 @@ Router.get("/admins", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -62,7 +62,7 @@ Router.get("/active", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -74,7 +74,7 @@ Router.get("/account", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -86,7 +86,7 @@ Router.get("/procurement", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -98,7 +98,7 @@ Router.get("/sales", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -110,7 +110,7 @@ Router.get("/hr", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -122,7 +122,7 @@ Router.get("/legal", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -134,7 +134,7 @@ Router.get("/logistic", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -146,7 +146,7 @@ Router.get("/IT", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -158,7 +158,7 @@ Router.get("/market", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -170,7 +170,7 @@ Router.get("/superadmin", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -182,7 +182,7 @@ Router.get("/default", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -194,7 +194,7 @@ Router.get("/internal", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -206,7 +206,7 @@ Router.get("/guest", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -218,7 +218,7 @@ Router.get("/csm", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -231,7 +231,7 @@ Router.get("/temporal", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -246,7 +246,7 @@ Router.get("/search", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -259,7 +259,7 @@ Router.get("/:id", async (req, res, next) => {
     return executeRoute(output, res);
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).send("Internal server error");
   }
 });
@@ -296,7 +296,7 @@ Router.put("/:id", async (req, res) => {
     return res.status(200).json({ message: "success" });
   }
   catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).json({ message: `Failed to update ${username}` });
   }
 });
@@ -311,7 +311,7 @@ Router.put("/status/:id", async (req, res) => {
     const output = await updateUserStatus(data);
     return res.status(200).json({ message: "success" });
   } catch (err) {
-    logAllMessage("Internal server error" + err);
+    logErrorMessages("Internal server error" + err);
     return res.status(500).json({ message: "Internal server error" });
   }
 });

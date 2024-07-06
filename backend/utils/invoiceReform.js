@@ -1,3 +1,4 @@
+const { addCustomer } = require("../controller/customers");
 const {
     updateInvoiceQRCodes,
     AddNewInvoices, 
@@ -65,6 +66,7 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
         currency,
         invoiceNumber,
         businessPartnerTin,
+        businessPartnerName,
         discountAmount,
         totalVat,
         exchangeRate,
@@ -82,7 +84,22 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
         delivery,
         invoiceType,
         quote,
+        userPhone,
+        invCusId,
     } = Data;
+
+    let customer_id = null;
+
+    function customerID(id) {
+        if (customer_id === null) {
+            if (!id || id === "") {
+                customer_id = generateUUID();
+            } else {
+                customer_id = id;
+            }
+        }
+        return customer_id;
+    }
 
     const payload = [
         0,
@@ -96,6 +113,7 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
         saleType,
         invoiceNumber,
         businessPartnerTin,
+        customerID(invCusId),
         discountAmount,
         exchangeRate,
         totalVat,
@@ -169,11 +187,29 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
                                 invoiceNumber,
                             ]
 
+                            const customerAdd = [
+                                businessPartnerName,
+                                businessPartnerTin,
+                                "", 
+                                userPhone,
+                                "",
+                                "Active",
+                                "",
+                                "Taxable",
+                                2,
+                                customerID(invCusId),
+                                new Date(),
+                            ]
+
                             if (invoiceType === 'Invoice' || invoiceType === 'Quotation') {
                                 await saveInInvoiceProduct(data)
-                                    .then(() => { return null})
+                                    .then( async() => {
+                                        if (businessPartnerTin === "C0000000000") {
+                                            await addCustomer(customerAdd);
+                                        }
+                                    })
                                     .catch((err) => {
-                                        logErrorMessages(`Error saving products: ${itemCode} for invoice ${invoiceNumber}, <> ${JSON.stringify(err)}`);
+                                        logErrorMessages(`Error saving products: ${itemCode} for invoice ${invoiceNumber}: ${(err)}`);
                                         return { status: 'error', message: 'Please refresh and Issue new invoice' };
                                     })
                             }
@@ -181,7 +217,7 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
                                 await updateRefundProducts(update)
                                     .then(() => { return null })
                                     .catch((err) => {
-                                        logErrorMessages(`Error updating products refunded qty:${itemCode} for invoice ${invoiceNumber}, <> ${JSON.stringify(err)}`);
+                                        logErrorMessages(`Error updating products refunded qty:${itemCode} for invoice ${invoiceNumber}: ${JSON.stringify(err)}`);
                                         return { status: 'error', message: 'Please refresh and Issue new invoice' };
                                     });
                             }
@@ -201,4 +237,7 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
     }
 };
 
-module.exports = { sanitizePayload, saveInvoiceToDB }
+module.exports = {
+    sanitizePayload, 
+    saveInvoiceToDB 
+}

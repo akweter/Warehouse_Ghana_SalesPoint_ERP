@@ -1,4 +1,4 @@
-const { logErrorMessages, logSuccessMessages, logMessage } = require('../saveLogfile');
+const { logErrorMessages, logMessage } = require('../saveLogfile');
 
 const nodemailer = require('nodemailer');
 require('dotenv').config();
@@ -122,7 +122,7 @@ const sendVerificationEmail = async (email, emailToken, type) => {
 		}
 	}
 	catch (error) {
-		logErrorMessages(`Sending verification email failed: ` + JSON.stringify(error));
+		logErrorMessages(`Sending verification email failed: `+(error));
 		return `Sending verification email failed`;
 	}
 };

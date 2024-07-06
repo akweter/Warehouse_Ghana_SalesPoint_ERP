@@ -20,7 +20,7 @@
 // const Invoices = Loadable(lazy(() => import('views/invoices')));
 // const Purchase = Loadable(lazy(() => import('views/purchases')));
 // const SalesReport = Loadable(lazy(() => import('views/SalesReport')));
-// const CustomerNSupplier = Loadable(lazy(() => import('views/customerSuppliers')));
+// const Customers = Loadable(lazy(() => import('views/customerSuppliers')));
 // const Inventory = Loadable(lazy(() => import('views/inventory')));
 // const Refund = Loadable(lazy(() => import('views/refund')));
 // const Users = Loadable(lazy(() => import('views/userManagements')));
@@ -170,7 +170,7 @@
 //       children: [
 //         {
 //           path: '',
-//           element: <ProtectedRoute><CustomerNSupplier /></ProtectedRoute>
+//           element: <ProtectedRoute><Customers /></ProtectedRoute>
 //         }
 //       ]
 //     },
@@ -254,7 +254,7 @@ const HRDp = Loadable(lazy(() => import('../views/management/hr')));
 const Invoices = Loadable(lazy(() => import('../views/invoices')));
 const Purchase = Loadable(lazy(() => import('../views/purchases')));
 const SalesReport = Loadable(lazy(() => import('../views/SalesReport')));
-const CustomerNSupplier = Loadable(lazy(() => import('../views/customerSuppliers')));
+const Customers = Loadable(lazy(() => import('../views/customerSuppliers')));
 const Inventory = Loadable(lazy(() => import('../views/inventory')));
 const Refund = Loadable(lazy(() => import('../views/refund')));
 const Users = Loadable(lazy(() => import('../views/userManagements')));
@@ -414,11 +414,11 @@ const MainRoutes = {
       ]
     },
     {
-      path: 'partner',
+      path: 'customers',
       children: [
         {
           path: '',
-          element: <ProtectedRoute><CustomerNSupplier /></ProtectedRoute>
+          element: <ProtectedRoute><Customers /></ProtectedRoute>
         }
       ]
     },

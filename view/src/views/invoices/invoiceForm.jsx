@@ -1,5 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
-import '../../assets/css/form.css';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -45,21 +45,23 @@ import {
 import { ThemeProvider } from '@mui/material/styles';
 import dayjs from 'dayjs';
 
+// /* eslint-disable */
+
 // Projects
+import '../../assets/css/form.css';
 import Screens from '../../ui-component/cardDivision';
 import { headerPayload, itemlistPayload } from '../../views/payload/payloadStructure';
 import { AlertError } from '../../utilities/errorAlert';
 import { ShowBackDrop } from '../../utilities/backdrop';
-import { postNewGRAInvoice } from '../../apiActions/allApiCalls/invoice';
+import { fetchAutocompleteId, postNewGRAInvoice } from '../../apiActions/allApiCalls/invoice';
 import { fetchProductNameSearch } from '../../apiActions/allApiCalls/product';
 import { fetchCustomerNameSearch } from '../../apiActions/allApiCalls/customer';
 import { computeStandardTaxes } from '../../utilities/computeAllTaxes';
 
-// /* eslint-disable */
-
 const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
     const [open, setOpen] = useState(false);
     const [compute, setCompute] = useState(false);
+    const [cashCustomer, setCashCustomer] = useState(false);
     const [loading, setLoading] = useState(false);
     const [disableCustomer, setDisableCustomer] = useState(false);
     const [editIndex, setEditIndex] = useState(null);
@@ -69,104 +71,24 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
     const [itemlists, setItemLists] = useState(itemlistPayload);
     const [alert, setAlert] = useState({ message: '', color: 'success' });
 
-    // Call and set new invoice number
-    useEffect(() => {
-        const systemUser = window.sessionStorage.getItem('userInfo');
-        if (systemUser) {
-            const parseSystemUser = JSON.parse(systemUser);
-            const systemUserName = parseSystemUser.userName;
-            if (systemUserName) {
-                setHeader((state) => ({ ...state, userName: systemUserName, status: "INVOICE" }));
-            } else {
-                setHeader((state) => ({ ...state, userName: 'Unknown', status: "INVOICE" }));
-            }
-        }
-
-        // Generate random number for invoices (development sake)
-        function generateRandomNumber() {
-            const length = 10;
-            const randomNumber = Math.floor(Math.random() * Math.pow(10, length));
-            return randomNumber.toString().padStart(length, '0');
-        }
-        setHeader((prevHeader) => ({
-            ...prevHeader,
-            increment: "",
-            invoiceNumber: generateRandomNumber(),
-            reference: ""
-        }));
-
-        // // Get invoice information
-        //     const setInvoiceNumber = async () => {
-        //         const minutes = (new Date().getMinutes() + 1).toString().padStart(2, '0');
-        //         const hours = (new Date().getHours() + 1).toString().padStart(2, '0');
-        //         const today = new Date().getDate().toString().padStart(2, '0');
-        //         const currentYear = new Date().getFullYear().toString().slice(-2);
-        //         const currentMonth = (new Date().getMonth() + 1).toString().padStart(2, '0');
-
-        //         try {
-        //             // Fetch auto complete data
-        //             const data = await fetchAutocompleteId();
-        //             const lastInvoice = data[data.length - 1];
-        //             const lastInvoiceDate = new Date(lastInvoice.Inv_date);
-        //             const lastInvoiceYear = lastInvoiceDate.getFullYear().toString().slice(-2);
-        //             const lastInvoiceMonth = (lastInvoiceDate.getMonth() + 1).toString().padStart(2, '0');
-
-        //             let invoiceNum = 1;
-        //             if (currentMonth === lastInvoiceMonth) {
-        //                 invoiceNum = lastInvoice.autoIncrementID + 1;
-        //             }
-        //             setHeader((prevHeader) => ({
-        //                 ...prevHeader,
-        //                 increment: invoiceNum,
-        //                 invoiceNumber: `${currentYear}${currentMonth}${invoiceNum}CSD`,
-        //                 reference: `${currentYear}${currentMonth}${today}${invoiceNum}CSD`
-        //             }));
-        //         }
-        //         catch (error) {
-        //             setHeader((prevHeader) => ({
-        //                 ...prevHeader,
-        //                 invoiceNumber: `${currentYear}${currentMonth}${today}${hours}${minutes}TM`,
-        //                 reference: `${currentYear}${currentMonth}${today}${hours}${minutes}TM`
-        //             }));
-        //         }
-        //     }
-        //     setInvoiceNumber();
-    }, [header.invoiceNumber, header.businessPartnerName]);
-
-    // querying product and customer search
+    // query product, set customers,username and invoice number
     useEffect(() => {
         setLoading(true);
-
-        const fetchData = async () => {
-            try {
-                const data = await fetchProductNameSearch(allSearch.product);
-                SetAllSearch((prevState) => ({
-                    ...prevState, product: data,
-                }));
-                const result = await fetchCustomerNameSearch(allSearch.customer);
-                SetAllSearch((prevState) => ({
-                    ...prevState, customer: result,
-                }));
-            }
-            catch (error) {
-                setLoading(false);
-            }
-        }
+        setUserName();
+        setInvoiceNumber();
         fetchData();
     }, [allSearch]);
 
     // disable customer cash && Update currency for Ghana cedis.
     useEffect(() => {
-        const { currency, businessPartnerName, businessPartnerTin } = header;
-
+        const { currency } = header;
         if (currency === 'GHS') {
             setHeader(state => ({ ...state, exchangeRate: '1.0' }));
-        } else if (businessPartnerName !== null && businessPartnerTin === "C0000000000") {
-            setDisableCustomer(true);
-        } else {
-            setDisableCustomer(false);
         }
-    }, [header.businessPartnerName, header.currency, header.exchangeRate]);
+        if (cashCustomer === true) {
+            setHeader(state => ({ ...state, businessPartnerTin: 'C0000000000' }));
+        }
+    }, [header.currency, header.exchangeRate, header.businessPartnerTin, header, cashCustomer]);
 
     // Compute final/total taxes and levies
     useEffect(() => {
@@ -185,7 +107,8 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                 items,
                 totalVat,
             } = result;
-            setHeader((state) => ({...state,
+            setHeader((state) => ({
+                ...state,
                 totalAmount: totalAmount,
                 voucherAmount: voucherAmount,
                 discountAmount: discountAmount,
@@ -202,7 +125,71 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
         setTimeout(() => {
             setCompute(false);
         }, 1000);
-    }, [compute]);
+    }, [compute, header]);
+
+    // Set Invoice Number
+    const setInvoiceNumber = async () => {
+        let number;
+        const currentDate = new Date();
+
+        const year = currentDate.getFullYear() % 100;
+        const month = currentDate.getMonth() + 1;
+        const day = currentDate.getDate();
+        let hour = currentDate.getHours();
+        let minute = currentDate.getMinutes();
+        const seconds = currentDate.getSeconds();
+
+        try {
+            await fetchAutocompleteId()
+            .then((response) => {
+                if (header.invoiceNumber === "") {
+                    number = response.numList[0] + 1;
+                    window.alert('one', response, 'two', number);
+                    
+                    const output = `WG${year}M${month}${number}CSD`;
+                    setHeader((state) => ({ ...state, invoiceNumber: output }));
+                }
+            });
+        }
+        catch (error) {
+            function padNumber(num) {
+                return num < 10 ? `0${num}` : `${num}`;
+            }
+            const output = `WG${year}${month}${(day)}:${padNumber(hour)}:${padNumber(minute)}:${padNumber(seconds)}CSD`;
+            setHeader((state) => ({ ...state, invoiceNumber: output }));
+        }
+    }
+
+    // Get userName
+    const setUserName = () => {
+        const systemUser = window.sessionStorage.getItem('userInfo');
+        if (systemUser) {
+            const parseSystemUser = JSON.parse(systemUser);
+            const systemUserName = parseSystemUser.userName;
+            if (systemUserName) {
+                setHeader((state) => ({ ...state, userName: systemUserName, status: "INVOICE" }));
+            } else {
+                setHeader((state) => ({ ...state, userName: 'Unknown', status: "INVOICE" }));
+            }
+        }
+    }
+
+    // Fetch product and Customer Data
+    const fetchData = async () => {
+        try {
+            const data = await fetchProductNameSearch(allSearch.product);
+            SetAllSearch((prevState) => ({
+                ...prevState, product: data,
+            }));
+            const result = await fetchCustomerNameSearch(allSearch.customer);
+            SetAllSearch((prevState) => ({
+                ...prevState, customer: result,
+            }));
+        }
+        catch (error) {
+            setLoading(false);
+        }
+    }
 
     // edit item function
     const handleEdit = (index) => {
@@ -271,18 +258,6 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
         });
     };
 
-    // handle cash onchange
-    const handleCashChange = (event, custype) => {
-        setHeader({
-            ...header,
-            businessPartnerName: custype,
-            businessPartnerTin: 'C0000000000',
-            invCusId: "cashid"
-        });
-        setDisableCustomer(true);
-        setCompute(false);
-    };
-
     // handle header onchange
     const handleMainChange = (event) => {
         const { name, value } = event.target;
@@ -302,6 +277,11 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
         }));
         setCompute(false);
     };
+
+    // Check cash customer info
+    const CheckCashCustomer = () => {
+        setCashCustomer(!cashCustomer);
+    }
 
     // Show alert function.
     const showAlert = (message, color) => {
@@ -433,85 +413,109 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
             >
                 <Screens.Item>
                     <Grid container spacing={2} py={3}>
-                        <Grid item xs={6}>
+                        <Grid item xs={cashCustomer === true ? 3 : 6}>
                             <FormControl fullWidth>
                                 <ToggleButtonGroup
                                     fullWidth
                                     size='small'
-                                    color="primary"
+                                    // color={cashCustomer === true ? "primary" : "standard"}
                                     value={header.businessPartnerName}
                                     exclusive
                                     name="businessPartnerName"
-                                    onChange={handleCashChange}
+                                    onChange={CheckCashCustomer}
                                 >
-                                    <ToggleButton value="Walk-In Customer">Cash Customer</ToggleButton>
+                                    <ToggleButton color="primary">Customer</ToggleButton>
                                 </ToggleButtonGroup>
                             </FormControl>
                         </Grid>
+                        {cashCustomer === true ?
+                            <Grid item xs={8}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        label="Cash Customer Name"
+                                        value={header.businessPartnerName}
+                                        name='businessPartnerName'
+                                        size='small'
+                                        onChange={handleMainChange}
+                                    />
+                                </FormControl>
+                            </Grid>
+                            :
+                            <Grid item xs={6}>
+                                <FormControl fullWidth>
+                                    <Autocomplete
+                                        id="customer-search"
+                                        options={allSearch.customer}
+                                        loading={loading}
+                                        getOptionLabel={(option) => header.businessPartnerName !== 'Cash' ? option.customerName : ''}
+                                        onChange={(event, selecteduser) => {
+                                            if (selecteduser) {
+                                                const customerName = selecteduser.customerName;
+                                                setHeader((oldValue) => ({
+                                                    ...oldValue,
+                                                    businessPartnerName: customerName,
+                                                    businessPartnerTin: selecteduser.customerTIN,
+                                                    invCusId: selecteduser.customerID,
+                                                }));
+                                            }
+                                        }}
+                                        disabled={disableCustomer}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Customer Name"
+                                                variant="outlined"
+                                                color="primary"
+                                                size="small"
+                                                fullWidth
+                                                InputProps={{
+                                                    ...params.InputProps,
+                                                    endAdornment: (
+                                                        <>
+                                                            {loading ? (<CircularProgress color="primary" size={20} />) : null}
+                                                            {params.InputProps.endAdornment}
+                                                        </>
+                                                    ),
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                </FormControl>
+                            </Grid>
+                        }
                         <Grid item xs={6}>
-                            <FormControl fullWidth>
-                                <Autocomplete
-                                    id="customer-search"
-                                    options={allSearch.customer}
-                                    loading={loading}
-                                    getOptionLabel={(option) => header.businessPartnerName !== 'Cash' ? option.userName : ''}
-                                    onChange={(event, selecteduser) => {
-                                        if (selecteduser) {
-                                            const customerName = selecteduser.userName;
-                                            setHeader((oldValue) => ({
-                                                ...oldValue,
-                                                businessPartnerName: customerName,
-                                                businessPartnerTin: selecteduser.userTIN,
-                                                invCusId: selecteduser.SnC_id,
-                                            }));
-                                        }
-                                    }}
-                                    disabled={disableCustomer}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            label="Customer Name"
-                                            variant="outlined"
-                                            color="primary"
-                                            size="small"
-                                            fullWidth
-                                            InputProps={{
-                                                ...params.InputProps,
-                                                endAdornment: (
-                                                    <>
-                                                        {loading ? (<CircularProgress color="primary" size={20} />) : null}
-                                                        {params.InputProps.endAdornment}
-                                                    </>
-                                                ),
-                                            }}
-                                        />
-                                    )}
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <FormControl fullWidth>
-                                <InputLabel id="saleType">Sales Type</InputLabel>
-                                <Select
-                                    required
-                                    labelId="saleType"
-                                    id="saleType"
-                                    label="saleType"
-                                    name="saleType"
-                                    value={header.saleType}
-                                    onChange={handleMainChange}
-                                    size='small'
-                                >
-                                    <MenuItem value='NORMAL'>Normal</MenuItem>
-                                    <MenuItem value='EXPORT'>Export</MenuItem>
-                                </Select>
-                            </FormControl>
+                            {cashCustomer === true ?
+                                <FormControl fullWidth>
+                                    <TextField
+                                        label="Customer Telephone"
+                                        value={header.userPhone}
+                                        name='userPhone'
+                                        size='small'
+                                        onChange={handleMainChange}
+                                    />
+                                </FormControl>
+                                :
+                                <FormControl fullWidth>
+                                    <InputLabel id="saleType">Sales Type</InputLabel>
+                                    <Select
+                                        labelId="saleType"
+                                        id="saleType"
+                                        label="saleType"
+                                        name="saleType"
+                                        value={header.saleType}
+                                        onChange={handleMainChange}
+                                        size='small'
+                                    >
+                                        <MenuItem value='NORMAL'>Normal</MenuItem>
+                                        <MenuItem value='EXPORT'>Export</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            }
                         </Grid>
                         <Grid item xs={6}>
                             <FormControl fullWidth>
                                 <InputLabel id="calculationType">Invoice Type</InputLabel>
                                 <Select
-                                    required
                                     labelId="calculationType"
                                     id="calculationType"
                                     label="calculationType"
@@ -529,7 +533,6 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                             <FormControl fullWidth>
                                 <InputLabel id="currency">Currency</InputLabel>
                                 <Select
-                                    required
                                     labelId="currency"
                                     id="currency"
                                     label="currency"
@@ -583,7 +586,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                         format='YYYY-MM-DD'
                                         defaultValue={new Date()}
                                         label="Invoice Date"
-                                        sx={{height: '10px'}}
+                                        sx={{ height: '10px' }}
                                         maxDate={dayjs()}
                                         onChange={(e) => {
                                             const selectedDate = e.$d;

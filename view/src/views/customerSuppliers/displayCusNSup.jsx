@@ -38,14 +38,13 @@ const CusNsupRow = ({ cusNsup, setSubmitted }) => {
 						{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
 					</IconButton>
 				</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} component="th" scope="row" onClick={openData}>{cusNsup.userType || "-"}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userName || "-"}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userTIN || "-"}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userID || "-"}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userRegion || "-"}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.userStatus || "-"}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.customerName || "-"}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.customerTIN || "-"}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.customerID || "-"}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.customerRegion || "-"}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.customerStatus || "-"}</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>
-					<Rating name="read-only" value={cusNsup.userRating || "-"} readOnly />
+					<Rating name="read-only" value={cusNsup.customerRating || "-"} readOnly />
 				</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={() => handleUpdateUser()} align='right'>
 					<Button variant='contained' style={{ background: 'darkred' }}><Edit fontSize='28px'/></Button>
@@ -59,35 +58,35 @@ const CusNsupRow = ({ cusNsup, setSubmitted }) => {
 								<TableHead>
 									<TableRow>
 										<TableCell padding='none'>TIN</TableCell>
-										<TableCell padding='none' align='left'>{cusNsup.userTIN || "Unavailable"}</TableCell>
+										<TableCell padding='none' align='left'>{cusNsup.customerTIN || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Email</TableCell>
-										<TableCell padding='none'>{cusNsup.userEmail || "Unavailable"}</TableCell>
+										<TableCell padding='none'>{cusNsup.customerEmail || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Telephone</TableCell>
-										<TableCell padding='none'>{cusNsup.userPhone || "Unavailable"}</TableCell>
+										<TableCell padding='none'>{cusNsup.customerPhone || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Tax Status</TableCell>
-										<TableCell padding='none'>{cusNsup.userStatus || "Unavailable"}</TableCell>
+										<TableCell padding='none'>{cusNsup.customerStatus || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Address</TableCell>
-										<TableCell padding='none'>{cusNsup.userAddress || "Unavailable"}</TableCell>
+										<TableCell padding='none'>{cusNsup.customerAddress || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Date Added</TableCell>
-										<TableCell padding='none'>{cusNsup.userAddedDate || "Unavailable"}</TableCell>
+										<TableCell padding='none'>{cusNsup.customerAddedDate || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Rating</TableCell>
-										<TableCell padding='none'>{cusNsup.userRating || 0}</TableCell>
+										<TableCell padding='none'>{cusNsup.customerRating || 0}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Exemption</TableCell>
-										<TableCell padding='none'>{cusNsup.userExemption || "Unavailable"}</TableCell>
+										<TableCell padding='none'>{cusNsup.customerExemption || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Products Bought</TableCell>
@@ -101,9 +100,9 @@ const CusNsupRow = ({ cusNsup, setSubmitted }) => {
 			</TableRow>
 
 			<Dialog open={updateDialog}>
-                    <UpdateCusNSup user={cusNsup} closeAddnewUser={()=>setUpdateDialog(false)} setSubmitted={setSubmitted} />
+                    <UpdateCusNSup customer={cusNsup} closeAddnewUser={()=>setUpdateDialog(false)} setSubmitted={setSubmitted} />
             </Dialog>
-		</>
+		</> 
 	);
 };
 
@@ -125,7 +124,7 @@ const CustomersSuppliersTable = ({ inData, setSubmitted }) => {
 		const currentPageData = inData.slice(startIndex, endIndex);
 
 		return currentPageData.map(data => (
-			<CusNsupRow key={data.userID} cusNsup={data} setSubmitted={setSubmitted}/>
+			<CusNsupRow key={data.customerID} cusNsup={data} setSubmitted={setSubmitted}/>
 		));
 	};
 
@@ -137,7 +136,6 @@ const CustomersSuppliersTable = ({ inData, setSubmitted }) => {
 						<TableHead>
 							<TableRow style={{ backgroundColor: 'lightgray', padding: 0, }}>
 								<TableCell><Typography variant='h4' color='darkred'>{inData.length}</Typography></TableCell>
-								<TableCell><Typography variant='h4' color='darkred'>Type</Typography></TableCell>
 								<TableCell><Typography variant='h4' color='darkred'>Name</Typography></TableCell>
 								<TableCell><Typography variant='h4' color='darkred'>TIN</Typography></TableCell>
 								<TableCell><Typography variant='h4' color='darkred'>Account</Typography></TableCell>

@@ -17,12 +17,9 @@ const InvoiceTemplate = ({ data }) => {
 							sales@warehouseghana.com <br />
 							+233 (0) 245152082
 						</address>
+						<h1>{data.InvoiceStatus === "Invoice" ? "Official Invoice" : data.InvoiceStatus}</h1>
 					</td>
-					<td><img src={logo} width={80} height={65} alt="Logo" /></td>
-				</tr>
-				<tr>
-					<td><h1>{data.InvoiceStatus === "Invoice" ? "Official Invoice" : data.InvoiceStatus}</h1></td>
-					{/* <td><h1>Official Invoice</h1></td> */}
+					<td><img src={logo} width={100} height={85} alt="Logo" /></td>
 				</tr>
 			</table>
 
@@ -41,12 +38,12 @@ const InvoiceTemplate = ({ data }) => {
 						<td>{data.InvoiceNumber}</td>
 					</tr>
 					<tr>
-						<td>{data.CustomerTIN}</td>
+						<td>{data.CustomerTIN === "C0000000000" ? data.customerPhone : data.CustomerTIN}</td>
 						<td>P0030588901</td>
 						<td><strong>DATE</strong></td>
 					</tr>
 					<tr>
-						<td>{data.customerPhone}</td>
+						<td>{data.CustomerTIN === "C0000000000" ? null : data.customerPhone}</td>
 						<td />
 						<td>{data.InvoiceDate}</td>
 					</tr>
@@ -60,17 +57,17 @@ const InvoiceTemplate = ({ data }) => {
 							<table border="1" cellSpacing="0" cellPadding="4" width="100%" color="lightgray">
 								<thead>
 									<tr>
-										<th>Product/Service</th>
+										<th>Description</th>
 										<th>UOM</th>
 										<th>Qty</th>
-										<th>Unit Price</th>
-										<th>Total Price</th>
+										<th>Price</th>
+										<th>Total</th>
 									</tr>
 								</thead>
 								<tbody>
 									{data.products.map((product, index) => (
 										<tr key={index}>
-											<td align="center">{product.ProductName}</td>
+											<td>{product.ProductName}</td>
 											<td align="center">{product.uom}</td>
 											<td align="center">{product.ProductPrice}</td>
 											<td align="center">{product.Quantity}</td>
@@ -86,16 +83,22 @@ const InvoiceTemplate = ({ data }) => {
 
 			<table cellSpacing="0" cellPadding="4" width="100%">
 				<thead>
-					<tr>
-						<td width="60%" />
-						<td width="20%" align="left">GROSS</td>
-						<td width="20%" >{data.Currency}: {(data.TotalAmount)}</td>
-					</tr>
-					<tr>
-						<td width="60%" />
-						<td width="20%" align="left">DISCOUNT</td>
-						<td width="20%" >{data.Currency}: {data.InvoiceDiscount}</td>
-					</tr>
+					{
+						Number(data.TotalAmount) !== Number(data.TotalAmount - data.InvoiceDiscount) ? 
+						<tr>
+							<td width="60%" />
+							<td width="20%" align="left">GROSS</td>
+							<td width="20%" >{data.Currency}: {Number(data.TotalAmount)}</td>
+						</tr> : null
+					}
+					{
+						isNaN(data.InvoiceDiscount) ?
+						<tr>
+							<td width="60%" />
+							<td width="20%" align="left">DISCOUNT</td>
+							<td width="20%" >{data.Currency}: {Number(data.InvoiceDiscount)}</td>
+						</tr> : null
+					}
 					<tr>
 						<td width="60%" />
 						<td width="20%" align="left">GETFUND (2.5%)</td>
@@ -210,12 +213,12 @@ const InvoiceTemplate = ({ data }) => {
 						</table>
 					</> : null
 				}
-
+{/* 
 				<span>
 					<div style={{ textDecoration: "underline" }}>Guidelines & Agreements</div>
 					<li> Leads time usually takes 2 - 12 hours</li>
 					<li>All checks and payments are payable to our accounts below.</li>
-				</span>
+				</span> */}
 
 				<p />
 				<hr />

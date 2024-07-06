@@ -22,19 +22,19 @@ import { updateSupplierCustomer } from '../../apiActions/allApiCalls/customer';
 
 /* eslint-disable */
 
-const UpdateCusNSup = ({ user, closeAddnewUser, setSubmitted }) => {
+const UpdateCusNSup = ({ customer, closeAddnewUser, setSubmitted }) => {
     const [formData, setFormData] = useState({
-        userEmail: user.userEmail || '',
-        userActive: user.userStatus || '',
-        userPhone: user.userPhone || '',
-        userAddress: user.userAddress || '',
-        userRegion: user.userRegion || '',
-        userType: user.userType || '',
-        userRating: user.userRating || '',
-        userTIN: user.userTIN || '',
-        userName: user.userName || '',
-        userExemption: user.userExemption || '',
-        userAddedDate: user.userAddedDate || new Date(),
+        userEmail: customer.customerEmail || '',
+        userActive: customer.customerStatus || '',
+        userPhone: customer.customerPhone || '',
+        userAddress: customer.customerAddress || '',
+        userRegion: customer.customerRegion || '',
+        userType: customer.userType || '',
+        userRating: customer.customerRating || '',
+        userTIN: customer.customerTIN || '',
+        userName: customer.customerName || '',
+        userExemption: customer.customerExemption || '',
+        userAddedDate: customer.customerAddedDate || new Date(),
     });
     const [errors, setErrors] = useState({});
     const [drop, setDrop] = useState(false);
@@ -106,13 +106,12 @@ const UpdateCusNSup = ({ user, closeAddnewUser, setSubmitted }) => {
             }
         });
         setErrors(validationErrors);
-
         if (Object.keys(validationErrors).length > 0) { return }
         
 
         try {
             setDrop(true);
-            const response = await updateSupplierCustomer(user.userID, formData);
+            const response = await updateSupplierCustomer(customer.customerID, formData);
             setTimeout(() => {
                 if (response.message === 'success') {
                     setTimeout(() => {

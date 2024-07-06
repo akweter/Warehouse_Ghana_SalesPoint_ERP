@@ -3,7 +3,7 @@ const Router = require("express").Router();
 
 // Projects
 const { executeRoute } = require("../utils/handler");
-const { logErrorMessages, logSuccessMessages } = require("../utils/saveLogfile");
+const { logErrorMessages } = require("../utils/saveLogfile");
 
 // controller
 const restructureInvoiceResult = require("../utils/invoiceModifier");
@@ -11,7 +11,6 @@ const {
   oneInvoice,
   Searches,
   purchaseInvoices,
-  tenInvoices,
   allSalesInvNumbers,
   getSalesCurDay,
   WeekAllSalesInvoice,
@@ -22,13 +21,13 @@ const {
   ThisMonthTotalInvoicenDate,
   getAllQuoteInvoices,
   getWaybillInvoice,
+  salesNRefundInvoices,
 } = require("../controller/salesNinvoices");
-const { thirtySeven } = require("../controller/selectQueries");
 
 // All invoices transaction
 Router.get("/", async (req, res) => {
   try {
-    const output = await thirtySeven("Invoice", "Quotation", "");
+    const output = await salesNRefundInvoices("Invoice", "Quotation", "");
     const modifiedOutput = restructureInvoiceResult(output);
     return res.status(200).json(modifiedOutput);
   }
@@ -41,7 +40,7 @@ Router.get("/", async (req, res) => {
 // 10 recent transactions only
 Router.get("/ten", async (req, res) => {
   try {
-    const output = await thirtySeven('Invoice','Partial_Refund', 'Refund');
+    const output = await salesNRefundInvoices('Invoice','Partial_Refund', 'Refund');
     return res.status(200).json(output);
   }
   catch (err) {
@@ -51,7 +50,7 @@ Router.get("/ten", async (req, res) => {
 });
 
 // Only Recent autocomplete placeholder value
-Router.get("/all", async (req, res) => {
+Router.get("/number", async (req, res) => {
   try {
     const output = await allSalesInvNumbers();
     return res.status(200).json(output);

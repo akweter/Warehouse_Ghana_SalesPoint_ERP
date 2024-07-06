@@ -29,7 +29,7 @@ export const fetchCustomerNameSearch = async (data) => {
 
 // Post a customer or supplier
 export const postCustomerSupplier = async (data) => {
-    await requestMaking(`customers/addsnc`, 'POST', data)
+    await requestMaking(`customers/add/new`, 'POST', data)
     .then( async (res) => {
         return await res.json();
     })
@@ -40,7 +40,7 @@ export const postCustomerSupplier = async (data) => {
 
 // Update supplier or customer details
 export const updateSupplierCustomer = async (id, data) => {
-    const response = await requestMaking(`customers/${id}`, 'put', data);
+    const response = await requestMaking(`customers/update/${id}`, 'put', data);
     if (response.ok) {
         return await response.json();
     }

@@ -3,21 +3,21 @@ const { executeQuery } = require("../database");
 // Save tokens to the DB
 const SaveNewTokensQuery = async (payload) => {
     const sql = `
-    INSERT INTO 
-        tokens (
-            UserName, 
-            TokenValue, 
-            ExpiryTimestamp, 
-            CreationTimestamp, 
-            TokenType, 
-            Status, 
-            IPAddress, 
-            UserLocation, 
-            UserAgent, 
-            TokenID
-        ) VALUES (
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-        )
+        INSERT INTO 
+            keys (
+                UserName, 
+                TokenValue, 
+                ExpiryTimestamp, 
+                CreationTimestamp, 
+                TokenType, 
+                Status, 
+                IPAddress, 
+                UserLocation, 
+                UserAgent, 
+                TokenID
+            ) VALUES (
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+            )
     `;
     try {
         const response = await executeQuery(sql, payload);
@@ -27,4 +27,6 @@ const SaveNewTokensQuery = async (payload) => {
     }
 };
 
-module.exports = { SaveNewTokensQuery };
+module.exports = {
+    SaveNewTokensQuery
+};

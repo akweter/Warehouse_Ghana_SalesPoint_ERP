@@ -129,7 +129,7 @@ export const fetchTenInvoices = async () => {
 
 // Fetch invoice autocomplete
 export const fetchAutocompleteId = async () => {
-    const response = await requestMaking(`invoices/all`, 'GET', null);
+    const response = await requestMaking(`invoices/number`, 'GET', null);
     if (response.ok) {
         return await response.json();
     }

@@ -56,7 +56,7 @@ const CusNSupp = () => {
                         customersNsuppliers.length > 0 ? (<>
                             <Paper>
                                 <Grid container sx={{ justifyContent: 'space-around', paddingBottom: 1, backgroundColor: 'darkblue', padding: 1, }}>
-                                    <Typography color='white' variant='h3'>Customers & Suppliers Dashboard</Typography>
+                                    <Typography color='white' variant='h3'>Customers Management Page</Typography>
                                     < VerifyTIN />
                                     <Button
                                         variant='contained'

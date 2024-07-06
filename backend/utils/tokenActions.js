@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const { SaveNewTokensQuery } = require('../controller/tokens');
 
 const { JWT_ACCESS_TOKEN } = process.env;
 
@@ -10,16 +9,6 @@ function generateJWTToken(email){
     return token;
 };
 
-// Save new tokens to the Database
-const SaveNewTokens = async ({token}) =>{
-    await SaveNewTokensQuery(token)
-    .then((res) => {
-      return res;
-    })
-    .catch((err) => {
-      return err;
-    });
-}
 
 // Implement the verifyToken function
 function verifyToken(token) {
@@ -57,8 +46,7 @@ const refreshAccessToken = async (oldToken) => {
 const Data = { 
   generateJWTToken, 
   verifyToken, 
-  decodeToken, 
-  SaveNewTokens,
+  decodeToken,
   refreshAccessToken,
 }
 

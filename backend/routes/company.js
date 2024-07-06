@@ -1,10 +1,7 @@
 const Router = require("express").Router();
 const { logErrorMessages } = require("../utils/saveLogfile");
 
-const {
-    getCompanyData,
-    AddCompanyInfo,
-} = require("../controller/postQuesrries");
+const { getCompanyData, AddCompanyInfo } = require("../controller/postQuesrries");
 
 // Get all company Data
 Router.get("/", async (req, res) => {

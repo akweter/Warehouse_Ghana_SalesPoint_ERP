@@ -7,7 +7,7 @@ require('dotenv').config();
 const { origin } = process.env;
 
 // Implement the activateUser function
-async function activateUser(email) {
+const activateUser = async(email) =>{
     try {
         const sql = "UPDATE UserManagement SET activated = 'yes' WHERE Usr_email = ?";
         return await executeQuery(sql, email);
@@ -17,7 +17,7 @@ async function activateUser(email) {
     }
 }
 
-  async function getUserByEmail(email) {
+  const getUserByEmail = async(email) =>{
     try {
         const sql = `SELECT * FROM UserManagement WHERE Usr_email = ?`;
         const user = await executeQuery(sql, email);
@@ -67,7 +67,7 @@ Auth.get("/", async (req, res) => {
                             return res.json({statusMessage: 'successActivate', message: 'Your are activated successfully.', data: sanitizedData});
                         })
                         .catch((err)=>{
-                            logErrorMessages(`error 1 while activating ${email} with the error ${JSON.stringify(err)}`);
+                            logErrorMessages(`error while activating ${email} with the error ${JSON.stringify(err)}`);
                             return res.json({status: 'error', message: 'Oops! Something went wrong. Log in again'});
                         });
                     }

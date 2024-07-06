@@ -1,7 +1,6 @@
 const db = require("../database/connection");
-const { logErrorMessages } = require("../utils/saveLogfile");
 
-// Reusable function to execute SQL queries
+// Execute SQL queries
 const executeQuery = (sql, id) => {
   return new Promise((resolve, reject) => {
     db.query(sql, id, (err, result) => {
@@ -12,4 +11,7 @@ const executeQuery = (sql, id) => {
     });
   });
 };
-module.exports = { executeQuery };
+
+module.exports = {
+  executeQuery
+};

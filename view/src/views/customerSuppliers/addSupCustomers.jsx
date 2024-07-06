@@ -32,7 +32,7 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
         userPhone: '',
         userAddress: '',
         userRegion: 'Local',
-        userType: '',
+        userType: 'customer',
         userRating: '',
         userTIN: '',
         userName: '',
@@ -143,7 +143,7 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
             <DialogContent>
                 <Box>
                     <Typography variant='h3' color="darkred" align='center' paddingBottom={2}>
-                        Add New Supplier or Customer
+                        Add New Customer
                     </Typography>
                     <Grid container spacing={2}>
                         <Grid item xs={3}>
@@ -269,7 +269,7 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                     value={formData.userType}
                                     onChange={handleInputChange}
                                 >
-                                    <MenuItem value="supplier">Supplier</MenuItem>
+                                    {/* <MenuItem value="supplier">Supplier</MenuItem> */}
                                     <MenuItem value="customer">Customer</MenuItem>
                                 </Select>
                             </FormControl>
