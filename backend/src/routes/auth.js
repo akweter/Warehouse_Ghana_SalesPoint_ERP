@@ -111,6 +111,7 @@ Auth.post("/login", async (req, res) => {
 											logErrorMessages(`${userEmail} failed to login: ` + JSON.stringify(err));
 											res.json({ status: 'error', message: 'Login failed. Please try again after 5 minutes' });
 										});
+										res.status(200).send({ statusMessage: 'successLogin', data: sanitizedData });
 								}
 								else {
 									await sendVerificationEmail(userEmail, emailToken, type = null)

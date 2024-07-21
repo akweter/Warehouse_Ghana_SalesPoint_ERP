@@ -3,9 +3,8 @@
 .gitignore
 
 # backend
-Backend/node_modules
-Backend/.env
-backend/.eslintrc.json
+backend/node_modules
+backend/.env
 backend/package-lock.json
 
 # view

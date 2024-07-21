@@ -6,9 +6,10 @@ const saveMessageLogs = async (message) => {
         INSERT INTO all_action_logs(
 		Act_Log_ID,
         Act_Log_DateTime,
-        Act_Log_Message
+        Act_Log_Message,
+		Date_Time
 	) VALUES (
-		?, ?, ?
+		?, ?, ?, ?
 	)`;
 	try {
 		const result = await executeQuery(sql, message);
@@ -25,9 +26,10 @@ const saveAllMessageLogs = async (message) => {
         INSERT INTO all_message_logs(
 		Act_Log_ID,
         Act_Log_DateTime,
-        Act_Log_Message
+        Act_Log_Message,
+		Date_Time
 	) VALUES (
-		?, ?, ?
+		?, ?, ?, ?
 	)`;
 	try {
 		const result = await executeQuery(sql, message);
@@ -44,9 +46,10 @@ const saveSuccessLogs = async (message) => {
         INSERT INTO all_sucesss_logs(
 		Act_Log_ID,
         Act_Log_DateTime,
-        Act_Log_Message
+        Act_Log_Message,
+		Date_Time
 	) VALUES (
-		?, ?, ?
+		?, ?, ?, ?
 	)`;
 	try {
 		const result = await executeQuery(sql, message);
@@ -63,9 +66,10 @@ const saveErrorLogs = async (message) => {
         INSERT INTO all_error_logs(
 		Act_Log_ID,
         Act_Log_DateTime,
-        Act_Log_Message
+        Act_Log_Message,
+		Date_Time
 	) VALUES (
-		?, ?, ?
+		?, ?, ?, ?
 	)`;
 	try {
 		const result = await executeQuery(sql, message);
@@ -82,9 +86,10 @@ const saveServerLogs = async (message) => {
         INSERT INTO all_server_logs(
 		Act_Log_ID,
         Act_Log_DateTime,
-        Act_Log_Message
+        Act_Log_Message,
+		Date_Time
 	) VALUES (
-		?, ?, ?
+		?, ?, ?, ?
 	)`;
 	try {
 		const result = await executeQuery(sql, message);

@@ -148,7 +148,7 @@ export const FetchWaybillInvoice = async (id) => {
 /* ------------    POST REQUEST     -------------------*/
 // post new invoice
 export const postNewInvoice = async (data) => {
-    const endpoint = data.invoiceType === "Quotation" ? "payload/quote" : "payload/invoice";
+    const endpoint = data.invoiceType === "Proforma Invoice" ? "payload/quote" : "payload/invoice"; 
     const response = await requestMaking(endpoint, 'POST', data);
     if (response.ok) {
         return await response.json();
@@ -158,7 +158,7 @@ export const postNewInvoice = async (data) => {
 
 // post gra new invoice
 export const postNewGRAInvoice = async (data) => {
-    const endpoint = data.invoiceType === "Quotation" ? "gra/quote" : "gra/invoice";
+    const endpoint = data.invoiceType === "Proforma Invoice" ? "gra/quote" : "gra/invoice";
     const response = await requestMaking(endpoint, 'POST', data);
     if (response.ok) {
         return await response.json();

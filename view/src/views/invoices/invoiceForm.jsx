@@ -44,7 +44,6 @@ import {
 } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import dayjs from 'dayjs';
-
 // /* eslint-disable */
 
 // Projects
@@ -57,13 +56,12 @@ import { fetchAutocompleteId, postNewGRAInvoice } from '../../apiActions/allApiC
 import { fetchProductNameSearch } from '../../apiActions/allApiCalls/product';
 import { fetchCustomerNameSearch } from '../../apiActions/allApiCalls/customer';
 import { computeStandardTaxes } from '../../utilities/computeAllTaxes';
-
-const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
+ 
+const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen }) => {
     const [open, setOpen] = useState(false);
     const [compute, setCompute] = useState(false);
     const [cashCustomer, setCashCustomer] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [disableCustomer, setDisableCustomer] = useState(false);
     const [editIndex, setEditIndex] = useState(null);
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [allSearch, SetAllSearch] = useState({ product: ([]), customer: ([]) });
@@ -71,13 +69,102 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
     const [itemlists, setItemLists] = useState(itemlistPayload);
     const [alert, setAlert] = useState({ message: '', color: 'success' });
 
-    // query product, set customers,username and invoice number
+    // update the header and item state
     useEffect(() => {
-        setLoading(true);
+        if (quoteProducts) {
+            const {
+                CustomerTIN,
+                InvoiceNumber,
+                ExchangeRate,
+                Currency,
+                CalculationType,
+                CustomerName,
+                products,
+                Remarks,
+                SaleType,
+                DiscountType,
+                // InvoiceDate,
+                COVID,
+                CST,
+                GETFund,
+                NHIL,
+                TotalAmount,
+                Tourism,
+                VatAmount,
+                customerPhone,
+                IssuerName,
+                CustomerID,
+            } = quoteProducts;
+            const headerDiscount = products.reduce((ProductDiscount, item) => ProductDiscount + parseFloat(item.ProductDiscount || 0), 0);
+            setHeader((state) => ({
+                ...state,
+                currency: Currency,
+                exchangeRate: ExchangeRate,
+                invoiceNumber: InvoiceNumber,
+                totalLevy: Number(COVID + CST, GETFund, NHIL + Tourism),
+                userName: IssuerName,
+                flag: "Proforma Invoice",
+                calculationType: CalculationType,
+                totalVat: VatAmount,
+                totalAmount: TotalAmount,
+                voucherAmount: "",
+                businessPartnerName: CustomerName,
+                businessPartnerTin: CustomerTIN,
+                saleType: SaleType,
+                discountType: DiscountType,
+                discountAmount: headerDiscount,
+                reference: "",
+                groupReferenceId: "",
+                purchaseOrderReference: "",
+                invoiceType: "Proforma Invoice",
+                invCusId: CustomerID,
+                remarks: Remarks,
+                status: "Proforma Invoice",
+                userPhone: customerPhone,
+                delivery: "",
+                increment: "",
+                infoMsg: "quoteEdit",
+                nhil: NHIL,
+                getfund: GETFund,
+                covid: COVID,
+                cst: CST,
+                tourism: Tourism,
+            }));
+            // Set items state
+            if (Array.isArray(products) && products.length > 0) {
+                const updatedItemLists = products.map((e) => {
+                    return {
+                        itemCode: e.itemCode,
+                        itemCategory: e.ProductCategory,
+                        expireDate: "",
+                        description: e.ProductName,
+                        quantity: e.Quantity,
+                        levyAmountA: "",
+                        levyAmountB: "",
+                        levyAmountC: "",
+                        levyAmountD: "",
+                        levyAmountE: "",
+                        discountAmount: e.ProductDiscount,
+                        batchCode: "",
+                        unitPrice: e.ProductPrice,
+                        refProQty: e.RefundedQuantity,
+                    };
+                });
+                setHeader((state) => ({ ...state, items: updatedItemLists }));
+            }
+            setCompute(true);
+        }
+    }, [])
+
+    // Fetch product and Customer Data
+    useEffect(() => {
+        fetchData();
+    }, [allSearch.customer, allSearch.product]);
+
+    useEffect(() => {
         setUserName();
         setInvoiceNumber();
-        fetchData();
-    }, [allSearch]);
+    },[header.invoiceNumber, header.userName]);
 
     // disable customer cash && Update currency for Ghana cedis.
     useEffect(() => {
@@ -127,43 +214,57 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
         }, 1000);
     }, [compute, header]);
 
+    // search product and customer information
+    const fetchData = async() => {
+        try {
+            setLoading(true);
+            if (allSearch.customer.length < 1) {
+                const result = await fetchCustomerNameSearch(allSearch.customer);
+                SetAllSearch((prevState) => ({ 
+                    ...prevState, 
+                    customer: result 
+                }));
+            }
+            if (allSearch.product.length < 1) {
+                const data = await fetchProductNameSearch(allSearch.product);
+                SetAllSearch((prevState) => ({ 
+                    ...prevState, 
+                    product: data 
+                }));
+            }
+        }
+        catch (error) {
+            setLoading(false);
+        }
+        setLoading(false);
+    }
+
     // Set Invoice Number
     const setInvoiceNumber = async () => {
-        let number;
         const currentDate = new Date();
-
         const year = currentDate.getFullYear() % 100;
         const month = currentDate.getMonth() + 1;
         const day = currentDate.getDate();
-        let hour = currentDate.getHours();
-        let minute = currentDate.getMinutes();
-        const seconds = currentDate.getSeconds();
-
-        try {
-            await fetchAutocompleteId()
-            .then((response) => {
-                if (header.invoiceNumber === "") {
-                    number = response.numList[0] + 1;
-                    window.alert('one', response, 'two', number);
-                    
-                    const output = `WG${year}M${month}${number}CSD`;
-                    setHeader((state) => ({ ...state, invoiceNumber: output }));
-                }
-            });
-        }
-        catch (error) {
-            function padNumber(num) {
-                return num < 10 ? `0${num}` : `${num}`;
+        if (header.invoiceNumber === "") {
+            try {
+                const response = await fetchAutocompleteId();
+                const number = response[0].numList + 1;
+                const output = `WG${year}M${month}${number}CSD`;
+                setHeader((state) => ({ ...state, invoiceNumber: output }));
             }
-            const output = `WG${year}${month}${(day)}:${padNumber(hour)}:${padNumber(minute)}:${padNumber(seconds)}CSD`;
-            setHeader((state) => ({ ...state, invoiceNumber: output }));
+            catch (error) {
+                let num = Math.floor(Math.random() * 100) + 1;
+                const output = `WG${year}${month}${(day)}-${num}CSD`;
+                // const output = `WG${year}${month}020CSD`;
+                setHeader((state) => ({ ...state, invoiceNumber: output }));
+            }
         }
     }
 
     // Get userName
     const setUserName = () => {
         const systemUser = window.sessionStorage.getItem('userInfo');
-        if (systemUser) {
+        if ( header.userName === "" && systemUser) {
             const parseSystemUser = JSON.parse(systemUser);
             const systemUserName = parseSystemUser.userName;
             if (systemUserName) {
@@ -171,23 +272,6 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
             } else {
                 setHeader((state) => ({ ...state, userName: 'Unknown', status: "INVOICE" }));
             }
-        }
-    }
-
-    // Fetch product and Customer Data
-    const fetchData = async () => {
-        try {
-            const data = await fetchProductNameSearch(allSearch.product);
-            SetAllSearch((prevState) => ({
-                ...prevState, product: data,
-            }));
-            const result = await fetchCustomerNameSearch(allSearch.customer);
-            SetAllSearch((prevState) => ({
-                ...prevState, customer: result,
-            }));
-        }
-        catch (error) {
-            setLoading(false);
         }
     }
 
@@ -256,6 +340,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
             ...header,
             items: updatedItems,
         });
+        setCompute(true);
     };
 
     // handle header onchange
@@ -281,6 +366,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
     // Check cash customer info
     const CheckCashCustomer = () => {
         setCashCustomer(!cashCustomer);
+        setHeader((state) => ({...state, invCusId: "", businessPartnerTin: ""}));
     }
 
     // Show alert function.
@@ -390,6 +476,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
             setDrop(false);
             setAlert((e) => ({ ...e, message: "Invoice submission failed! Refresh and try again", color: 'error' }));
             setOpen(true);
+            console.log('unknown error ', error)
         }
     };
 
@@ -419,8 +506,9 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                     fullWidth
                                     size='small'
                                     // color={cashCustomer === true ? "primary" : "standard"}
-                                    value={header.businessPartnerName}
+                                    value={header.businessPartnerName || ""}
                                     exclusive
+                                    // disabled={header.infoMsg ? true : false}
                                     name="businessPartnerName"
                                     onChange={CheckCashCustomer}
                                 >
@@ -445,6 +533,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                 <FormControl fullWidth>
                                     <Autocomplete
                                         id="customer-search"
+                                        disabled={header.infoMsg ? true : false}
                                         options={allSearch.customer}
                                         loading={loading}
                                         getOptionLabel={(option) => header.businessPartnerName !== 'Cash' ? option.customerName : ''}
@@ -459,7 +548,6 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                                 }));
                                             }
                                         }}
-                                        disabled={disableCustomer}
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
@@ -508,6 +596,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                     >
                                         <MenuItem value='NORMAL'>Normal</MenuItem>
                                         <MenuItem value='EXPORT'>Export</MenuItem>
+                                        <MenuItem value='RENT'>Real Estate</MenuItem>
                                     </Select>
                                 </FormControl>
                             }
@@ -517,6 +606,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                 <InputLabel id="calculationType">Invoice Type</InputLabel>
                                 <Select
                                     labelId="calculationType"
+                                    disabled={header.infoMsg ? true : false}
                                     id="calculationType"
                                     label="calculationType"
                                     name="calculationType"
@@ -541,10 +631,19 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                     onChange={handleMainChange}
                                     value={header.currency}
                                 >
-                                    <MenuItem value='GHS'>Cedis (₵)</MenuItem>
-                                    <MenuItem value='USD'>Dollars ($)</MenuItem>
-                                    <MenuItem value='GBP'>Pounds (£)</MenuItem>
+                                    <MenuItem value='AED'>UAE Dirham (د.إ)</MenuItem>
+                                    <MenuItem value='CAD'>Canadian Dollar (CA$)</MenuItem>
+                                    <MenuItem value='CNY'>Chinese Yuan (CN¥)</MenuItem>
                                     <MenuItem value='EUR'>Euro (€)</MenuItem>
+                                    <MenuItem value='GBP'>British Pound (£)</MenuItem>
+                                    <MenuItem value='GHS'>Ghanaian Cedi (₵)</MenuItem>
+                                    <MenuItem value='HKD'>Hong Kong Dollar (HK$)</MenuItem>
+                                    <MenuItem value='INR'>Indian Rupee (₹)</MenuItem>
+                                    <MenuItem value='JPY'>Japanese Yen (¥)</MenuItem>
+                                    <MenuItem value='LRD'>Liberian Dollar (LRD)</MenuItem>
+                                    <MenuItem value='NGN'>Nigerian Naira (₦)</MenuItem>
+                                    <MenuItem value='USD'>US Dollar ($)</MenuItem>
+                                    <MenuItem value='ZAR'>South African Rand (ZAR)</MenuItem>
                                 </Select>
                             </FormControl>
                         </Grid>
@@ -557,11 +656,12 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                     label="invoiceType"
                                     name="invoiceType"
                                     size='small'
+                                    disabled={header.infoMsg ? true : false}
                                     onChange={handleMainChange}
                                     value={header.invoiceType}
                                 >
-                                    <MenuItem value='Invoice'>Invoice</MenuItem>
-                                    <MenuItem value='Quotation'>Quotation</MenuItem>
+                                    <MenuItem value='Invoice'>Official Invoice</MenuItem>
+                                    <MenuItem value='Proforma Invoice'>Proforma Invoice</MenuItem>
                                 </Select>
                             </FormControl>
                         </Grid>
@@ -587,7 +687,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                         defaultValue={new Date()}
                                         label="Invoice Date"
                                         sx={{ height: '10px' }}
-                                        maxDate={dayjs()}
+                                        maxDate={header.infoMsg || header.invoiceType === "Proforma Invoice" ? null : dayjs()}
                                         onChange={(e) => {
                                             const selectedDate = e.$d;
                                             const formattedDate = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
@@ -637,6 +737,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                                 ...oldValue,
                                                 unitPrice: newPrice,
                                                 description: selectedProduct.productName,
+                                                quantity: 1,
                                                 itemCode: selectedProduct.productID,
                                                 itemCategory: selectedProduct.taxType,
                                                 alt: selectedProduct.productIncrement,
@@ -651,7 +752,7 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                             size="small"
                                             color="primary"
                                             fullWidth
-                                            key={params}
+                                            key={params.itemCode}
                                             InputProps={{
                                                 ...params.InputProps,
                                                 endAdornment: (
@@ -772,10 +873,10 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                     <TableBody>
                                         {header.items.map((item, index) => (
                                             <TableRow hover={true} key={index}>
-                                                <TableCell padding='normal' size='small'>{item.description}</TableCell>
-                                                <TableCell padding='none' size='small'>{item.quantity}</TableCell>
-                                                <TableCell padding='none' size='small'>{item.unitPrice}</TableCell>
-                                                <TableCell padding='none' size='small'>{item.discountAmount}</TableCell>
+                                                <TableCell padding='normal' size='small'>{item.description || item.ProductName}</TableCell>
+                                                <TableCell padding='none' size='small'>{item.quantity || item.Quantity}</TableCell>
+                                                <TableCell padding='none' size='small'>{item.unitPrice || item.ProductPrice}</TableCell>
+                                                <TableCell padding='none' size='small'>{item.discountAmount || item.ProductDiscount}</TableCell>
                                                 <TableCell padding='none' size='small'>
                                                     <Tooltip title="Edit">
                                                         <IconButton onClick={() => handleEdit(index)}><EditIcon color='primary' /></IconButton>
@@ -789,7 +890,6 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
                                     </TableBody>
                                 </Table>
                             </TableContainer>
-
                             {/* Edit Dialog */}
                             <Dialog open={openEditDialog} onClose={handleEditCancel}>
                                 <DialogTitle>Edit Item</DialogTitle>
@@ -915,5 +1015,4 @@ const InvoiceForm = ({ setSubmitted, setDrop, drop, BackdropOpen }) => {
         </ThemeProvider>
     </>);
 }
-
 export default InvoiceForm;

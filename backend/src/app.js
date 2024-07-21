@@ -8,11 +8,11 @@ const logger = require('morgan');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const compression = require('compression');
-const { origin } = process.env;
-const cache = require('./utils/caching/index');
 require('dotenv').config();
 
 // Projects
+const { origin } = process.env;
+const cache = require('./utils/caching/index');
 const indexRouter = require('./routes/index');
 const wooCommerce = require('./routes/woocommerce');
 const usersRoute = require('./routes/userManagement');
@@ -29,7 +29,7 @@ const Company = require('./routes/company');
 const Forbidden = require('./auth/globalHeaderToken');
 
 const corsOriginSetup = {
-  origin: '*',
+  origin: origin,
   methods: 'GET, PUT, PATCH, POST, DELETE',
   credentials: true,
 };
@@ -37,9 +37,10 @@ const corsOriginSetup = {
 const server = express();
 
 server.set('view engine', 'jade');
+server.set('maxHttpHeaderSize', 30 * 1024); // allow header up to 30KB
 server.use(compression());
-server.use(rateLimit({ windowMs: 5 * 60 * 1000, max: 500, }));
-server.use(cors(corsOriginSetup));
+server.use(rateLimit({ windowMs: 5 * 60 * 1000, max: 500, })); // Limit request to 500 per mins
+server.use(cors(corsOriginSetup)); // Cross origin
 server.use((req, res, next) => {
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');

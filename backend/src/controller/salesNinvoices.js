@@ -101,6 +101,7 @@ const salesNRefundInvoices = async (a, b, c) => {
 		user.Usr_type AS IssuerType,
 		user.Usr_dept AS IssuerDept,
 		ct.C_name AS CustomerName,
+		ct.C_id AS CustomerID,
 		ct.C_tin AS CustomerTIN,
 		ct.C_phone AS customerPhone,
 		ct.C_status AS CustomerStatus,
@@ -168,7 +169,6 @@ const forty = async () => {
 	}
 };
 
-
 // Retrieve the total sales amount and average discount for each item category
 const thirtySix = async () => {
 	const sql = `
@@ -188,7 +188,6 @@ const thirtySix = async () => {
 	}
 };
 
-
 // Retrieve the total sales amount for each category in the last quarter
 const thirtyOne = async () => {
 	const sql = `
@@ -207,7 +206,6 @@ const thirtyOne = async () => {
 		return error;
 	}
 };
-
 
 // Retrieve the total quantity of each product sold and the percentage of total sales it represents
 const twentyFive = async () => {
@@ -244,7 +242,6 @@ const twentyTwo = async () => {
 		return error;
 	}
 };
-
 
 // Retrieve the total amount and quantity of each item sold in the last month
 const eighteen = async () => {
@@ -290,7 +287,6 @@ const fifteen = async () => {
 	}
 };
 
-
 // Retrieve the invoices with the highest total amount
 const nine = async () => {
 	const sql = `SELECT * FROM invoice ORDER BY Inv_total_amt DESC LIMIT 1`;
@@ -303,7 +299,6 @@ const nine = async () => {
 	}
 };
 
-
 // Retrieve all invoices with a total amount greater than 1000
 const three = async () => {
 	const sql = ` SELECT * FROM invoice WHERE Inv_total_amt > 1000`;
@@ -315,7 +310,6 @@ const three = async () => {
 		return error;
 	}
 };
-
 
 // Return all invoice
 const one = async () => {
@@ -334,8 +328,7 @@ const allSalesInvNumbers = async () => {
 	const sql = `
     SELECT COUNT(*) AS numList
 	FROM invoice
-	WHERE Inv_status = 'Invoice'
-	AND MONTH(Inv_date) = MONTH(CURRENT_DATE())
+	WHERE MONTH(Inv_date) = MONTH(CURRENT_DATE())
 	AND YEAR(Inv_date) = YEAR(CURRENT_DATE());
   `;
 	try {
@@ -359,9 +352,9 @@ const getAllSalesInvoices = async () => {
 	}
 };
 
-// Return only quotation invoices
+// Return only Proforma Invoices
 const getAllQuoteInvoices = async () => {
-	const sql = `SELECT * FROM invoice WHERE Inv_status = 'Quotation' ORDER BY Inv_ID_auto DESC`;
+	const sql = `SELECT * FROM invoice WHERE Inv_status = 'Proforma Invoice' ORDER BY Inv_ID_auto DESC`;
 	try {
 		const result = await executeQuery(sql);
 		if (result) { return result }
@@ -650,38 +643,38 @@ const oneInvoice = async (payload) => {
 	}
 };
 
-// Get Quotation invoices
-const getWaybillInvoice = async (payload) => {
+// Get Proforma Invoice
+const getWaybillInvoice = async (id) => {
 	const sql = `
 		SELECT
 			i.Inv_ID_auto  AS AutoID,
 			i.Inv_Number AS InvoiceNumber,
 			i.Inv_date AS InvoiceDate,
-			int.Itm_id AS itemCode,
-			int.Itm_name AS ProductName,
+			inv.Itm_id AS itemCode,
+			inv.Itm_name AS ProductName,
 			ip.Product_Quantity AS Quantity,
 			c.C_name AS CustomerName,
 			c.C_tin AS CustomerTIN,
-			c.C_name AS CustomerName,
 			c.C_address AS CustomerAddress,
 			c.C_email AS CustomerEmail,
-			c.C_phone AS customerPhone,
-			c.C_id AS customerID
+			c.C_phone AS CustomerPhone,
+			c.C_id AS CustomerID
 		FROM
 			invoice i
 		JOIN
-			customers c ON i.Inv_Customer_Tin = c.C_tin
+			customers c ON i.Inv_Cus_ID = c.C_id
 		LEFT JOIN
 			invoice_products ip ON i.Inv_Number = ip.InvoiceNum_ID
 		LEFT JOIN
-			inventory int ON ip.Product_ID = int.Itm_id
+			inventory inv ON ip.Product_ID = inv.Itm_id
 		WHERE
-			Inv_status IN ("Invoice") AND Inv_Number IN (?)
+			i.Inv_Number IN (?)
 		ORDER BY
-			i.Inv_ID_auto DESC
+			inv.Itm_name ASC;
 	`;
 	try {
-		return await executeQuery(sql, payload);
+		const result = await executeQuery(sql, id);
+		if (result) { return result; };;
 	}
 	catch (error) {
 		return error;
@@ -706,7 +699,6 @@ const fortyFour = async () => {
 	}
 };
 
-
 // Sales Dept invoice
 const Searches = async (payload) => {
 	const sql = `
@@ -723,7 +715,6 @@ const Searches = async (payload) => {
 		return error;
 	}
 };
-
 
 // Retrieve the total sales amount for each product, considering different currencies
 const fortySix = async () => {
@@ -744,7 +735,6 @@ const fortySix = async () => {
 	}
 };
 
-
 // Retrieve the percentage of total sales contributed by each user in the last quarter, excluding refunds
 const fortySeven = async () => {
 	const sql = `
@@ -762,9 +752,7 @@ const fortySeven = async () => {
 	}
 };
 
-
 /******************  BEGIN POST REQUESTS *****************/
-
 
 // Save invoices to the DB
 const AddNewInvoices = async (payload) => {
@@ -814,6 +802,32 @@ const saveInInvoiceProduct = async (payload) => {
 		return error;
 	}
 };
+
+// Update quote invoice
+const updateQuotation = async (payload) => {
+	const sql = `
+	UPDATE invoice SET
+		Inv_status = ?,
+		Inv_date = ?,
+		ysdcid = ?,
+		ysdcrecnum = ?,
+		ysdcintdata = ?,
+		ysdcregsig = ?,
+		ysdcmrc = ?,
+		ysdcmrctim = ?,
+		ysdctime = ?,
+		qr_code = ?
+	WHERE
+		Inv_Number = ?
+    `;
+	try {
+		const result = await executeQuery(sql, payload);
+		if (result) { return result }
+	}
+	catch (error) {
+		return error;
+	}
+}
 
 // update invoice with qr code
 const updateInvoiceQRCodes = async (payload) => {
@@ -884,4 +898,5 @@ module.exports = {
 	salesNRefundInvoices,
 	customersMadePurchase,
 	sixMonthAverageItemsSold,
+	updateQuotation,
 };

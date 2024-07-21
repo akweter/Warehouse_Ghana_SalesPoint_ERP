@@ -3,7 +3,7 @@ const Router = require("express").Router();
 
 // Projects
 const { executeRoute } = require("../utils/handler");
-const { logErrorMessages } = require("../utils/saveLogfile");
+const { logErrorMessages, logSuccessMessages } = require("../utils/saveLogfile");
 
 // controller
 const restructureInvoiceResult = require("../utils/invoiceModifier");
@@ -27,7 +27,7 @@ const {
 // All invoices transaction
 Router.get("/", async (req, res) => {
   try {
-    const output = await salesNRefundInvoices("Invoice", "Quotation", "");
+    const output = await salesNRefundInvoices("Invoice", "Proforma Invoice", "");
     const modifiedOutput = restructureInvoiceResult(output);
     return res.status(200).json(modifiedOutput);
   }
@@ -80,7 +80,7 @@ Router.get("/quote", async (req, res) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages(`Error fetching quotation invoices ${err}`);
+    logErrorMessages(`Error fetching Proforma Invoices ${err}`);
     return res.status(500).send("Temporal server error. Kindly refresh");
   }
 });
@@ -94,7 +94,7 @@ Router.get("/waybill/:id", async (req, res) => {
     return res.status(200).json(modifiedOutput);
   }
   catch (err) {
-    logErrorMessages(`Error fetching quotation invoices ${err}`);
+    logErrorMessages(`Error fetching Proforma Invoices ${JSON.stringify(err)}`);
     return res.status(500).send("Something unexpected happened. Kindly try again");
   }
 });
@@ -189,7 +189,7 @@ Router.get("/search", async (req, res) => {
   const result = ['%' + query + '%', '%' + query + '%']
   try {
     const output = await Searches(result);
-    return executeRoute(output, res);
+    return res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(`Error searching through invoices: ${err}`);
@@ -202,7 +202,7 @@ Router.get("/:id", async (req, res) => {
   const userID = req.params.id;
   try {
     const output = await oneInvoice(userID);
-    return executeRoute(output, res);
+    return res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(`Error fetching invoice with id: ${userID}, Error: ${err}`);

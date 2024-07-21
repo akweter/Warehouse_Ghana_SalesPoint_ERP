@@ -1,15 +1,15 @@
-const { logErrorMessages, logSuccessMessages } = require("../utils/saveLogfile");
+const { logErrorMessages, logSuccessMessages, logAllMessage } = require("../utils/saveLogfile");
 const express = require("express");
 const axios = require("axios");
 require('dotenv').config();
 
 const { GRA_ENDPOINT, GRA_KEY } = process.env;
-const { saveRefundInvoice } = require("../controller/salesNinvoices");
+const { saveRefundInvoice, updateQuotation } = require("../controller/salesNinvoices");
+const generateUUID = require("../utils/generateIDs");
 const {
     sanitizePayload,
     saveInvoiceToDB,
 } = require("../utils/invoiceReform");
-const generateUUID = require("../utils/generateIDs");
 
 const Router = express.Router();
 
@@ -32,7 +32,7 @@ Router.get("/status", async (req, res) => {
     res.status(500).json({ status: 'down' });
 });
 
-// Post Quotation invoices
+// Post Proforma Invoices
 Router.post("/quote", async (req, res) => {
     const Data = req.body;
     const sanitizedPayload = sanitizePayload(Data);

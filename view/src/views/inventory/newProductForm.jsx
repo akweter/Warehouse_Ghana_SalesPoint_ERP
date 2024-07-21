@@ -16,15 +16,13 @@ const NewProductForm = ({products}) => {
     
     const handleEdit = (index) => {
         // Implement your edit logic here
-        console.log('Edit product:', products[index]);
     };
 
     const submitProducts = async () => {
         try {
         const response = await PostNewProducts(data);
-        console.log(response.data);
         } catch (error) {
-        console.log('Error uploading data:', error);
+            return null;
         }
     };
 

@@ -16,7 +16,7 @@ const WaybillForm = ({ formData, closeDialog }) => {
         });
 
         const pageWidth = doc.internal.pageSize.width;
-        const pageHeight = doc.internal.pageSize.height;
+        // const pageHeight = doc.internal.pageSize.height;
         const element = document.getElementById('waybill-form');
 
         html2canvas(element, { scale: 3 })
@@ -24,7 +24,6 @@ const WaybillForm = ({ formData, closeDialog }) => {
                 const imgData = canvas.toDataURL('image/jpeg', 1.0);
                 const ratio = pageWidth / canvas.width;
                 const imgHeight = canvas.height * ratio;
-                const filename = `${formData[0].InvoiceNumber}_waybill.pdf`;
 
                 doc.addImage(imgData, 'JPEG', 0, 0, pageWidth, imgHeight);
                 doc.save(`${formData[0].InvoiceNumber}_waybill.pdf`);
@@ -37,7 +36,7 @@ const WaybillForm = ({ formData, closeDialog }) => {
     return (
         <span>
             <div style={{ paddingLeft: 20, paddingRight: 20 }} id="waybill-form">
-                { formData ? (
+                { formData.length > 0 ? (
                     <React.Fragment>
                         <table align="" width='100%' border={0}>
                             {formData ? (
@@ -71,7 +70,7 @@ const WaybillForm = ({ formData, closeDialog }) => {
                                                     </tr>
                                                     <tr>
                                                         <td><strong>Despatch Date</strong></td>
-                                                        <td>{new Date(formData[0].InvoiceDate).toLocaleDateString()}</td>
+                                                        <td>{new Date().toLocaleDateString()}</td>
                                                     </tr>
                                                     <tr>
                                                         <td><strong>MOD</strong></td>
@@ -98,49 +97,49 @@ const WaybillForm = ({ formData, closeDialog }) => {
                         <table width='100%' border={0}>
                             <tbody>
                                 <tr>
-                                    <td width='45%'>
+                                    <td width='47%'>
                                         <strong>Shipping Address | Recipient</strong>
                                         <table width='100%' className="waybill_table">
                                             <tbody>
                                                 <tr>
-                                                    <td width='50%'>SITE LOCATION</td>
-                                                    <td width='50%'>KUMASI</td>
+                                                    <td width='30%'>SITE LOCATION</td>
+                                                    <td width='70%'>KUMASI</td>
                                                 </tr>
                                                 <tr>
-                                                    <td width='50%'>NAME</td>
-                                                    <td width='50%'>{formData[0].CustomerName}</td>
+                                                    <td width='30%'>NAME</td>
+                                                    <td width='70%'>{formData[0].CustomerName}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td width='50%'>COMPANY</td>
-                                                    <td width='50%'>{formData[0].CustomerName}</td>
+                                                    <td width='30%'>COMPANY</td>
+                                                    <td width='70%'>{formData[0].CustomerName}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td width='50%'>CONTACT</td>
-                                                    <td width='50%'>{formData[0].customerPhone}</td>
+                                                    <td width='30%'>CONTACT</td>
+                                                    <td width='70%'>{formData[0].customerPhone}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </td>
-                                    <td width='10%'></td>
-                                    <td width='45%'>
+                                    <td width='6%'></td>
+                                    <td width='47%'>
                                         <strong>Invoice Address | Customer</strong>
                                         <table width='100%' border={0}>
                                             <tbody>
                                                 <tr>
-                                                    <td width='50%'>COMPANY</td>
-                                                    <td width='50%'>{formData[0].CustomerName}</td>
+                                                    <td width='30%'>COMPANY</td>
+                                                    <td width='70%'>{formData[0].CustomerName}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td width='50%'>TIN</td>
+                                                    <td width='30%'>TIN</td>
                                                     <td width='50%'>{formData[0].CustomerTIN}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td width='50%'>ADDRESS</td>
-                                                    <td width='50%'>{formData[0].CustomerAddress}</td>
+                                                    <td width='30%'>ADDRESS</td>
+                                                    <td width='70%'>{formData[0].CustomerAddress}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td width='50%'>EMAIL | PHONE</td>
-                                                    <td width='50%'>{formData[0].CustomerEmail} | {formData[0].customerPhone}</td>
+                                                    <td width='30%'>EMAIL | PHONE</td>
+                                                    <td width='70%'>{formData[0].CustomerEmail} | {formData[0].customerPhone}</td>
                                                 </tr>
                                             </tbody>
                                         </table>

@@ -27,11 +27,9 @@ const MakeWooRequest = async (method, path, payload) => {
         if (response.status >= 200 && response.status < 300) {
             return response.data;
         } else {
-            console.info(`Request failed with message ${response.data}`);
             return null;
         }
     } catch (error) {
-        console.info("Error:", error.message);
         return null;
     }
 };

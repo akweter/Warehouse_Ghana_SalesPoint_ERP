@@ -9,7 +9,6 @@ function generateJWTToken(email){
     return token;
 };
 
-
 // Implement the verifyToken function
 function verifyToken(token) {
     try {

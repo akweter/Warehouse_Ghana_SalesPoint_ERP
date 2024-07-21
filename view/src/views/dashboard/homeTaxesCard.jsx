@@ -1,13 +1,10 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { Box, Button, Grid, List, Typography } from '@mui/material';
-import Chart from 'react-apexcharts';
 import graph from '../../assets/images/icons/graph.png'
 
 // project imports
 import SkeletonTotalOrderCard from '../../ui-component/cards/Skeleton/EarningCard';
-import ThisMonthTaxes from './chart-data/thisMonthlyTaxes';
-import ChartDataYear from './chart-data/total-order-year-line-chart';
 import { CardWrapper, CustomLLogo } from '../../ui-component/colorsCardWrapper';
 
 const TotalTaxes = ({ isLoading, vats, levies }) => {
@@ -70,9 +67,6 @@ const TotalTaxes = ({ isLoading, vats, levies }) => {
 											)}
 										</Grid>
 									</Grid>
-								</Grid>
-								<Grid item xs={6}>
-									{timeValue ? <Chart {...ThisMonthTaxes} /> : <Chart {...ChartDataYear} />}
 								</Grid>
 							</Grid>
 						</Grid>

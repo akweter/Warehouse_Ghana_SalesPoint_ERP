@@ -33,11 +33,6 @@ export default function NullPage() {
                     <Typography variant="h3" sx={{ mb: 3 }}>
                         Sorry, page not found!
                     </Typography>
-
-                    <Typography sx={{ color: 'text.secondary' }}>
-                        Navigating to the page failed. Kindly check your URL.
-                    </Typography>
-
                     <Box
                         component="img"
                         src={nullLogo}

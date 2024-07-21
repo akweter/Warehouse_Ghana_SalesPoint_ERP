@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
     Button,
     Dialog,
@@ -12,9 +13,24 @@ import {
     Paper,
     Typography,
     Box,
+    AppBar,
+    Toolbar,
+    Stack,
+    Chip,
+    Slide,
 } from '@mui/material';
+import { CancelSharp } from '@mui/icons-material';
+import logo from '../../assets/images/logo.webp';
+import InvoiceForm from './invoiceForm';
 
-const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog }) => {
+const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, submitted }) => {
+    
+    const [drop, setDrop] = useState(false);
+    const [open, setOpen] = useState(false);
+
+    const handleOpen = () => { setOpen(true); handleCloseDialog() };
+    const handleClose = () => { setOpen(false); };
+
     return (
         <Box>
             <Dialog open={openDialog} maxWidth='lg'>
@@ -129,8 +145,47 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog }) => {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDialog}>Close</Button>
+                {selectedRow.InvoiceStatus != "Invoice" ? <Button variant='contained' color='secondary' onClick={handleOpen}>Edit Quote</Button> : null}
+                    <Button variant='contained' color='error' onClick={handleCloseDialog}>Close</Button>
                 </DialogActions>
+            </Dialog>
+            <Dialog
+                fullWidth
+                maxWidth="xl"
+                open={open}
+                TransitionComponent={Slide}
+                transitionDuration={1000}
+            >
+                <AppBar style={{ backgroundColor: '#151B4D' }}>
+                    <Toolbar sx={{ justifyContent: 'space-between' }}>
+                        <img src={logo} width={60} height={40} alt='Logo' />
+                        <Typography
+                            variant="h2"
+                            sx={{
+                                flex: 1,
+                                textAlign: 'center',
+                                color: 'white'
+                            }}
+                        >
+                            Update The Quotation
+                        </Typography>
+                        <Stack direction="row" spacing={1}>
+                            <Chip
+                                variant="filled" 
+                                color={status === true ? 'primary' : 'error'}
+                                label={status === true ? 'GRA UP' : 'GRA DOWN'}
+                            />
+                        </Stack>
+                        <Box>
+                            <Button onClick={handleClose} fullWidth color='error' variant="contained" size='small' startIcon={<CancelSharp />}>
+                                Cancel
+                            </Button>
+                        </Box>
+                    </Toolbar>
+                </AppBar>
+                <div style={{ marginTop: '10px' }}>
+                    < InvoiceForm setDrop={setDrop} drop={drop} BackdropOpen={setOpen} quoteProducts={selectedRow} setSubmitted={submitted} />
+                </div>
             </Dialog>
         </Box>
     );

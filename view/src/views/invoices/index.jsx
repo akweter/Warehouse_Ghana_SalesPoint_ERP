@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import {
+    Close,
     CurrencyExchangeSharp,
     Print as PrintIcon,
     SendRounded,
@@ -46,6 +47,8 @@ const Invoice = () => {
     const [openRefDialog, setOpenRefDialog] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
     const [openConfirm, setOpenConfirm] = useState(false);
+    const [openPrintInvoice, setOpenPrintInvoice] = useState(false);
+    const [printInvoice, setPrintInvoice] = useState([]);
     const [invoices, setInvoices] = useState([]);
     const [selectedRow, setSelectedRow] = useState(null);
     const [refundInv, setRefundInv] = useState([]);
@@ -79,7 +82,7 @@ const Invoice = () => {
     // Test GRA Server Up
     const testServer = async () => {
         try {
-            const res = await checkGRAServerStatus();
+            await checkGRAServerStatus();
             setStatus(true);
         }
         catch (error) {
@@ -217,7 +220,7 @@ const Invoice = () => {
                                     <SendRounded fontSize='small' color='secondary' title='Invoice Quotation' />}
                             </IconButton>
                     }
-                    <IconButton title='Print Invoice' onClick={() => handlePrintIcon(params.row)}>
+                    <IconButton title='Print Invoice' onClick={() =>  pushPrintInvoiceData(params.row)}>
                         <PrintIcon fontSize='small' color='error' />
                     </IconButton>
                 </>),
@@ -231,8 +234,28 @@ const Invoice = () => {
         setOpenDialog(true);
     };
 
+    // Pump print data into selected invoice
+    const pushPrintInvoiceData = (data) => {
+        setOpenPrintInvoice(true);
+        setPrintInvoice(oldState => [...oldState, data]);
+    }
+
+    // print not VAT invoice
+    const printNoVATInvoice = (data) => {
+        if(data.length > 0){
+            const updatedInvoice = data.map(item => ({
+                ...item,
+                showVAT: "no"
+            }));
+            handlePrintIcon(updatedInvoice);
+        }
+        setOpenPrintInvoice(false)
+        return null;
+    }
+
     // Print invoice
     const handlePrintIcon = (row) => {
+        setOpenPrintInvoice(false)
         const invoiceTemplateHTML = renderInvoiceTemplate(row);
 
         const printWindow = window.open('', '_blank');
@@ -351,7 +374,7 @@ const Invoice = () => {
             {notify.message ? <AlertError alert={notify} handleClose={handleClose} open={open} /> : null}
             {
                 selectedRow && (
-                    <>< InvoiceDetails selectedRow={selectedRow} openDialog={openDialog} handleCloseDialog={handleCloseDialog} /></>
+                    <>< InvoiceDetails selectedRow={selectedRow} openDialog={openDialog} handleCloseDialog={handleCloseDialog} status={status} submitted={setSubmitted}/></>
                 )
             }
             <RefundForms
@@ -360,6 +383,7 @@ const Invoice = () => {
                 refundInv={refundInv}
                 setSubmitted={setSubmitted}
             />
+            {/* Confirm Proforma Invoice sent sent to GRA */}
             <Dialog open={openConfirm} sx={{ padding: '20px' }}>
                 <DialogTitle color='darkred' variant='h3'>Confirm Submission</DialogTitle>
                 <DialogContent>
@@ -372,7 +396,27 @@ const Invoice = () => {
                     <Button onClick={sendPayload} variant='contained' color='primary'>Proceed</Button>
                 </DialogActions>
             </Dialog>
+            
+            {/* Print Invoice in VAT or without VAT */}
+            <Dialog open={openPrintInvoice} sx={{ padding: '20px' }}>
+                <DialogTitle color='darkblue' variant='h3'>
+                    Print VAT & Levies 
+                    <IconButton color='error' size='medium' onClick={() => setOpenPrintInvoice(false)}>
+                        <Close/>
+                    </IconButton> 
+                </DialogTitle>
+                <DialogContent>
+                    <Typography variant='body1' align='center'>
+                        Do you want to show on the invoice?
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => printNoVATInvoice(printInvoice)}  variant='contained' color='error'>No</Button>
+                    <Button onClick={() => handlePrintIcon(printInvoice)} variant='contained' color='primary'>Yes</Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 }
+
 export default Invoice;

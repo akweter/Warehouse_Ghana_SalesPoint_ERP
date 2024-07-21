@@ -2,7 +2,7 @@ const { saveMessageLogs, saveSuccessLogs, saveServerLogs, saveErrorLogs, saveAll
 
 const logMessage = async(message) =>{
     const logTime = new Date().toLocaleString();
-    const log = [ "", logTime, JSON.stringify(message) ]
+    const log = [ "", logTime, JSON.stringify(message), new Date() ]
     await saveMessageLogs(log);
     return;
 }
@@ -10,7 +10,7 @@ const logMessage = async(message) =>{
 // Save success messages
 const logSuccessMessages = async(message) =>{
     const logTime = new Date().toLocaleString();
-    const log = [ "", logTime, JSON.stringify(message) ]
+    const log = [ "", logTime, JSON.stringify(message), new Date() ]
     await saveSuccessLogs(log);
     return;
 }
@@ -18,14 +18,15 @@ const logSuccessMessages = async(message) =>{
 // Save server logs
 const logServerMessages = async(message) =>{
     const logTime = new Date().toLocaleString();
-    const log = [ "", logTime, JSON.stringify(message) ]
+    const log = [ "", logTime, JSON.stringify(message), new Date() ]
     await saveServerLogs(log);
     return;
 }
+
 // Save error messages
 const logErrorMessages = async(message) =>{
     const logTime = new Date().toLocaleString();
-    const log = [ "", logTime, JSON.stringify(message) ]
+    const log = [ "", logTime, JSON.stringify(message), new Date() ]
     await saveErrorLogs(log);
     return;
 }
@@ -33,7 +34,7 @@ const logErrorMessages = async(message) =>{
 // Save error messages
 const logAllMessage = async(message) =>{
     const logTime = new Date().toLocaleString();
-    const log = [ "", logTime, JSON.stringify(message) ]
+    const log = [ "", logTime, JSON.stringify(message), new Date() ]
     await saveAllMessageLogs(log);
     return;
 }

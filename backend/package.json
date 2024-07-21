@@ -2,11 +2,11 @@
   "name": "backend",
   "version": "1.2.0",
   "private": true,
-  "main": "app.js",
+  "main": "./src/app.js",
   "scripts": {
-    "start": "nodemon bin/www",
-    "pm2-start": "pm2 start bin/www",
-    "pm2-stop": "pm2 stop bin/www"
+    "start": "nodemon ./src/bin/www",
+    "pm2-start": "pm2 start ./src/bin/www",
+    "pm2-stop": "pm2 stop ./src/bin/www"
   },
   "engines": {
     "node": ">=18.0.0"

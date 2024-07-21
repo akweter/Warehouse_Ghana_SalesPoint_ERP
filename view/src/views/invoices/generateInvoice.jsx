@@ -43,9 +43,7 @@ const MakeNewInvoice = ({ setSubmitted, status }) => {
                 transitionDuration={1000}
             >
                 <AppBar style={{ backgroundColor: '#151B4D' }}>
-                    <Toolbar sx={{
-                        justifyContent: 'space-between',
-                    }}>
+                    <Toolbar sx={{ justifyContent: 'space-between' }}>
                         <img src={logo} width={60} height={40} alt='Logo' />
                         <Typography
                             variant="h2"
@@ -72,7 +70,7 @@ const MakeNewInvoice = ({ setSubmitted, status }) => {
                     </Toolbar>
                 </AppBar>
                 <div style={{ marginTop: '10px' }}>
-                    < InvoiceForm setSubmitted={setSubmitted} setDrop={setDrop} drop={drop} BackdropOpen={setOpen} />
+                    < InvoiceForm setSubmitted={setSubmitted} setDrop={setDrop} drop={drop} BackdropOpen={setOpen}/>
                 </div>
             </Dialog>
         </div>

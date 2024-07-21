@@ -30,7 +30,7 @@ const generateUUID = require("../utils/generateIDs");
 Router.get("/", async (req, res) => {
 	try {
 		const output = await allProducts();
-		return await executeRoute(output, res);
+		return res.status(200).json(output);
 	}
 	catch (err) {
 		logErrorMessages("Internal server error" + err);
@@ -68,7 +68,7 @@ Router.get("/query", async (req, res) => {
 	const query = '%' + result + '%'
 	try {
 		const output = await searchOnlyProduct(query);
-		return await executeRoute(output, res);
+		return res.status(200).json(output);
 	}
 	catch (err) {
 		logErrorMessages("error searching products" + err);
@@ -81,7 +81,7 @@ Router.get("/user", async (req, res) => {
 	const stat = req.body.user;
 	try {
 		const output = await addedUser(stat);
-		return await executeRoute(output, res);
+		return res.status(200).json(output);
 	}
 	catch (err) {
 		logErrorMessages("Internal server error" + err);
@@ -94,7 +94,7 @@ Router.get("/supplier", async (req, res) => {
 	const stat = req.body.supplier;
 	try {
 		const output = await productSupplier(stat);
-		return await executeRoute(output, res);
+		return res.status(200).json(output);
 	}
 	catch (err) {
 		logErrorMessages("Internal server error" + err);
@@ -107,7 +107,7 @@ Router.get("/taxable", async (req, res) => {
 	const stat = req.body.taxable;
 	try {
 		const output = await Exempt(stat);
-		return await executeRoute(output, res);
+		return res.status(200).json(output);
 	}
 	catch (err) {
 		logErrorMessages("Internal server error" + err);
@@ -124,7 +124,7 @@ Router.get("/date", async (req, res) => {
 	const payload = [date1, date2];
 	try {
 		const output = await dateAdded(payload);
-		return await executeRoute(output, res);
+		return res.status(200).json(output);
 	}
 	catch (err) {
 		logErrorMessages("Internal server error" + err);
@@ -139,7 +139,7 @@ Router.get("/search", async (req, res) => {
 	const Value = [searchTerm, searchTerm, searchTerm];
 	try {
 		const output = await searchProduct(Value);
-		return await executeRoute(output, res);
+		return res.status(200).json(output);
 	}
 	catch (err) {
 		logErrorMessages("Internal server error" + err);
@@ -152,7 +152,7 @@ Router.get("/alt/:id", async (req, res) => {
 	const PID = req.params.id;
 	try {
 		const output = await oneProductAutoIncrement(PID);
-		return await executeRoute(output, res);
+		return res.status(200).json(output);
 	}
 	catch (err) {
 		logErrorMessages("Internal server error" + err);
@@ -165,7 +165,7 @@ Router.get("/:id", async (req, res) => {
 	const PID = req.params.id;
 	try {
 		const output = await oneProduct(PID);
-		return await executeRoute(output, res);
+		return res.status(200).json(output);
 	}
 	catch (err) {
 		logErrorMessages("Internal server error" + err);
