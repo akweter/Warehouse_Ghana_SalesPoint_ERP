@@ -3,8 +3,8 @@ const { executeQuery } = require("../database");
 // Save tokens to the DB
 const SaveNewTokensQuery = async (payload) => {
     const sql = `
-        INSERT INTO 
-            keys (
+        INSERT IGNORE INTO 
+            tokens (
                 UserName, 
                 TokenValue, 
                 ExpiryTimestamp, 

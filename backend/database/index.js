@@ -1,4 +1,4 @@
-const db = require("../database/connection");
+const db = require("./connection");
 
 // Execute SQL queries
 const executeQuery = (sql, id) => {

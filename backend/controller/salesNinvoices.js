@@ -757,7 +757,7 @@ const fortySeven = async () => {
 // Save invoices to the DB
 const AddNewInvoices = async (payload) => {
 	const sql = `
-	INSERT INTO invoice(
+	INSERT IGNORE INTO invoice(
 		Inv_ID_auto, autoIncrementID, Inv_user, Inv_total_amt, Inv_status, Inv_Calc_Type, Inv_date, currency, Inv_Sale_Type, Inv_Number, Inv_Customer_Tin, Inv_Cus_ID, Inv_discount, Inv_ext_Rate, Inv_vat, Inv_id, Inv_Reference, remarks, nhil, getfund, covid, cst, tourism, Inv_Discount_Type, ysdcid, ysdcrecnum, ysdcintdata, ysdcregsig, ysdcmrc, ysdcmrctim, ysdctime, qr_code, Inv_delivery_fee
 	) VALUES(
 		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
@@ -773,7 +773,7 @@ const AddNewInvoices = async (payload) => {
 
 const saveRefundInvoice = async (payload) => {
 	const sql = `
-	INSERT INTO invoice(
+	INSERT IGNORE INTO invoice(
 		Inv_ID_auto, autoIncrementID, Inv_user, Inv_total_amt, Inv_status, Inv_Calc_Type, Inv_date, currency, Inv_Sale_Type, Inv_Number, Inv_Customer_Tin, Inv_discount, Inv_ext_Rate, Inv_vat, Inv_id, Inv_Reference, remarks, nhil, getfund, covid, cst, tourism, Inv_Discount_Type, ysdcid, ysdcrecnum, ysdcintdata, ysdcregsig, ysdcmrc, ysdcmrctim, ysdctime, qr_code, Inv_delivery_fee
 	) VALUES(
 		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
@@ -789,11 +789,13 @@ const saveRefundInvoice = async (payload) => {
 
 // Save product for each invoice
 const saveInInvoiceProduct = async (payload) => {
-	const sql = `INSERT INTO invoice_products(
-		_ID, InvoiceNum_ID, Product_ID, Product_Price, Product_Discount, Product_Quantity, Product_Refunded_Quantity
-	) VALUES (
+	const sql = `
+		INSERT IGNORE INTO invoice_products(
+			_ID, InvoiceNum_ID, Product_ID, Product_Price, Product_Discount, Product_Quantity, Product_Refunded_Quantity
+		) VALUES (
 			?, ?, ?, ?, ?, ?, ?
-	)`;
+		)
+	`;
 	try {
 		const result = await executeQuery(sql, payload);
 		if (result) { return result }
@@ -857,9 +859,39 @@ const updateInvoiceQRCodes = async (payload) => {
 
 // Update products refunded quantity
 const updateRefundProducts = async (payload) => {
-	const sql = "UPDATE invoice_products SET Product_Refunded_Quantity = Product_Refunded_Quantity + ? WHERE Product_ID = ? AND InvoiceNum_ID = ?";
+	const sql = `
+		UPDATE invoice_products 
+		SET Product_Refunded_Quantity = Product_Refunded_Quantity + ? 
+		WHERE Product_ID = ? 
+		AND InvoiceNum_ID = ?
+	`;
 	try {
 		const result = await executeQuery(sql, payload);
+		if (result) { return result }
+	}
+	catch (error) {
+		return error;
+	}
+}
+
+
+// Delete products for quotation
+const deleteQuotation = async (invoiceNumber) => {
+	const sql = `DELETE FROM invoice WHERE Inv_Number = ?`;
+	try {
+		const result = await executeQuery(sql, invoiceNumber);
+		if (result) { return result }
+	}
+	catch (error) {
+		return error;
+	}
+}
+
+// Delete quotation
+const deleteQuotationProducts = async (invoiceNumber) => {
+	const sql = `DELETE FROM invoice_products WHERE InvoiceNum_ID = ?`;
+	try {
+		const result = await executeQuery(sql, invoiceNumber);
 		if (result) { return result }
 	}
 	catch (error) {
@@ -899,4 +931,6 @@ module.exports = {
 	customersMadePurchase,
 	sixMonthAverageItemsSold,
 	updateQuotation,
+	deleteQuotation,
+	deleteQuotationProducts,
 };

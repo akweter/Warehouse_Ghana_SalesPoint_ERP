@@ -68,7 +68,7 @@ const HomeDarkCard = ({ isLoading, invoices, refunds, cancelRefunds, }) => {
                                     <CustomListItem
                                         avatarBackgroundColor={theme.palette.background.default}
                                         avatarIcon={<LocalOfferOutlinedIcon fontSize="small" />}
-                                        primaryText={`# ${invoices.length}`}
+                                        primaryText={`# ${invoices.length || 0}`}
                                         secondaryText="Invoices"
                                     />
                                 </List>
@@ -82,9 +82,9 @@ const HomeDarkCard = ({ isLoading, invoices, refunds, cancelRefunds, }) => {
                                     <CustomListItem
                                         avatarBackgroundColor={theme.palette.background.default}
                                         avatarIcon={< Discount />}
-                                        primaryText={`¢${formatCurrencyNumber(invoices.reduce((e, invoice) => {
+                                        primaryText={`¢${ invoices.length > 1 ? formatCurrencyNumber(invoices.reduce((e, invoice) => {
                                             return e + parseFloat(invoice.Inv_discount);
-                                        }, 0).toFixed(2))}`}
+                                        }, 0).toFixed(2)) : 0}`}
                                         secondaryText="Today's Discounts"
                                     />
                                 </List>
@@ -98,7 +98,7 @@ const HomeDarkCard = ({ isLoading, invoices, refunds, cancelRefunds, }) => {
                                     <CustomListItem
                                         avatarBackgroundColor={theme.palette.background.default}
                                         avatarIcon={< IconReportMoney />}
-                                        primaryText={`# ${refunds.length}`}
+                                        primaryText={`# ${refunds.length || 0}`}
                                         secondaryText="Refunds Count"
                                     />
                                 </List>
@@ -112,9 +112,9 @@ const HomeDarkCard = ({ isLoading, invoices, refunds, cancelRefunds, }) => {
                                     <CustomListItem
                                         avatarBackgroundColor={theme.palette.background.default}
                                         avatarIcon={< IconReceiptRefund />}
-                                        primaryText={`¢${formatCurrencyNumber(refunds.reduce((e, invoice) => {
+                                        primaryText={`¢${refunds.length > 0 ? formatCurrencyNumber(refunds.reduce((e, invoice) => {
                                             return e + parseFloat(invoice.Inv_total_amt);
-                                        }, 0).toFixed(2))}`}
+                                        }, 0).toFixed(2)) : 0}`}
                                         secondaryText="Today Refunds "
                                     />
                                 </List>
@@ -128,9 +128,9 @@ const HomeDarkCard = ({ isLoading, invoices, refunds, cancelRefunds, }) => {
                                     <CustomListItem
                                         avatarBackgroundColor={theme.palette.background.default}
                                         avatarIcon={< Cancel color='error'/>}
-                                        primaryText={`¢${formatCurrencyNumber(cancelRefunds.reduce((e, invoice) => {
+                                        primaryText={`¢${cancelRefunds.length > 0 ? formatCurrencyNumber(cancelRefunds.reduce((e, invoice) => {
                                             return e + parseFloat(invoice.Inv_total_amt);
-                                        }, 0).toFixed(2))}`}
+                                        }, 0).toFixed(2)) : 0}`}
                                         secondaryText="Cancelled Refunds"
                                     />
                                 </List>

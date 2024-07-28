@@ -18,14 +18,14 @@ const DashboardBarChart = () => {
         }
     };
 
-    const labels = data.map(item => {
+    const labels = data.length > 0 ? data.map(item => {
         const date = new Date(item.Date);
         const options = { month: '2-digit', day: '2-digit', year: 'numeric' };
         return date.toLocaleDateString('en-US', options);
-    });
-    const invoices = data.map(item => item.invoiceList.split(',').length);
-    const totalSales = data.map(item => parseFloat(item.totalAmount));
-    const profit = data.map(item => parseFloat(item.Dailyprofit));
+    }) : [];
+    const invoices = data.length > 0 ? data.map(item => item.invoiceList.split(',').length) : [];
+    const totalSales = data.length > 0 ? data.map(item => parseFloat(item.totalAmount)) : [];
+    const profit = data.length > 0 ? data.map(item => parseFloat(item.Dailyprofit)) : [];
 
     return (
         <AppWebsiteVisits

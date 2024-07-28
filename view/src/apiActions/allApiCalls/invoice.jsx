@@ -174,3 +174,12 @@ export const postRefundCancellation = async (data) => {
     }
     return null;
 };
+
+// Delete quotation based on invoice
+export const deleteQuotation = async (id) => {
+    const response = await requestMaking(`invoices/quote/del/${id}`, 'DELETE', null);
+    if (response.ok) {
+        return await response.json();
+    }
+    return null;
+};

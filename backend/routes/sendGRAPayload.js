@@ -4,11 +4,12 @@ const axios = require("axios");
 require('dotenv').config();
 
 const { GRA_ENDPOINT, GRA_KEY } = process.env;
-const { saveRefundInvoice, updateQuotation } = require("../controller/salesNinvoices");
+const { saveRefundInvoice } = require("../controller/salesNinvoices");
 const generateUUID = require("../utils/generateIDs");
 const {
     sanitizePayload,
     saveInvoiceToDB,
+    addInvoiceProducts,
 } = require("../utils/invoiceReform");
 
 const Router = express.Router();
@@ -16,47 +17,41 @@ const Router = express.Router();
 // Verify Taxpayer TIN
 Router.get("/verify/tin/:id", async (req, res) => {
     const { id } = req.params;
-    const response = await axios.get(`${GRA_ENDPOINT}/identification/tin/${id}`, { headers: { 'security_key': GRA_KEY } });
-    if (response.data) {
-        res.status(200).json(response.data);
+    try {
+        const response = await axios.get(`${GRA_ENDPOINT}/identification/tin/${id}`, { headers: { 'security_key': GRA_KEY } });
+        if (response.data) {
+            res.status(200).json(response.data);
+        }
+    } catch (error) {
+        res.status(500).send({ status: 'error' });
     }
-    res.status(500).send({ status: 'error' });
 });
 
 // Check gra server status
 Router.get("/status", async (req, res) => {
-    const response = await axios.get(`${GRA_ENDPOINT}/health`, { headers: { 'security_key': GRA_KEY } });
-    if (response && response.data) {
-        res.status(200).json({ status: response.data.status });
+    try {
+        const response = await axios.get(`${GRA_ENDPOINT}/health`, { headers: { 'security_key': GRA_KEY } });
+        if (response && response.data) {
+            res.status(200).json({ status: response.data.status });
+        }
+    } catch (error) {
+        res.status(500).json({ status: 'down' });
     }
-    res.status(500).json({ status: 'down' });
 });
 
 // Post Proforma Invoices
 Router.post("/quote", async (req, res) => {
     const Data = req.body;
-    const sanitizedPayload = sanitizePayload(Data);
-
-    const responseData = {
-        response: {
-            message: {
-                ysdcid: null,
-                ysdcrecnum: null,
-                ysdcintdata: null,
-                ysdcregsig: null,
-                ysdcmrc: null,
-                ysdcmrctim: null,
-                ysdctime: null,
-            },
-            qr_code: null,
-        },
-    }
+    const { items, invoiceType, flag, invoiceNumber } = Data;
     try {
-        await saveInvoiceToDB(Data, sanitizedPayload, responseData);
-        return res.status(200).json({ status: 'success' });
+        const result = await addInvoiceProducts(items, invoiceType, flag, invoiceNumber)
+        await logSuccessMessages(result);
+        res.status(200).json({ status: 'success' });
     }
     catch (error) {
-        return res.json({ status: 'error', message: `Failed to save invoice: ${sanitizedPayload.invoiceNumber} to DB. Try new invoice` });
+        await logErrorMessages(error);
+        console.error(error);
+        res.status(500).json({ status: 'error', message: `Operation failed. Try new invoice` });
     }
 });
 
@@ -74,7 +69,7 @@ Router.post("/invoice", async (req, res) => {
         if (response && response.status === 200) {
             const resultMessage = response.data.response.status;
             if (resultMessage) {
-                await saveInvoiceToDB(Data, sanitizedPayload, response.data)
+                await saveInvoiceToDB(Data, response.data)
                     .then(() => {
                         return res.status(200).json({ status: 'success' });
                     })
@@ -122,7 +117,7 @@ Router.post("/refund", async (req, res) => {
         if (response && response.status === 200) {
             const resultMessage = response.data.response.status;
             if (resultMessage) {
-                await saveInvoiceToDB(Data, sanitizedPayload, response.data)
+                await saveInvoiceToDB(Data, response.data)
                     .then(() => {
                         return res.status(200).json({ status: 'success' });
                     })

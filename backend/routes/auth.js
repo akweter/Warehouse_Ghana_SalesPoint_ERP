@@ -54,14 +54,14 @@ const saveToken_SendEmail = async (userEmail, username, reqParam, type) => {
 }
 
 // Login
-Auth.post("/login", async (req, res) => {
+Auth.post("/login", async (req, res, next) => {
 	const { email, passwrd } = req.body;
-	const ipInfo = await Myip();
+	// const ipInfo = await Myip();
 
-	if (!ipInfo) {
-		logErrorMessages(`Login failed | No internet for user: ${email}`);
-		return res.json({ status: 'error', message: 'You are not connected to internet' });
-	}
+	// if (!ipInfo) {
+	// 	logErrorMessages(`Login failed | No internet for user: ${email}`);
+	// 	return res.json({ status: 'error', message: 'You are not connected to internet' });
+	// }
 	if (!email) {
 		return res.send({ status: 'error', message: 'Please log in with your email instead' });
 	}
@@ -94,6 +94,7 @@ Auth.post("/login", async (req, res) => {
 						.then( async (result) => {
 							if (result === true) {
 								if (status === 'yes') {
+									await sendVerificationEmail(userEmail, emailToken, type = "login");
 									res.setHeader('Access-Control-Allow-Origin', `${origin}`);
 									res.setHeader('Content-Type', 'application/json');
 									res.setHeader('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization');
@@ -101,17 +102,7 @@ Auth.post("/login", async (req, res) => {
 									res.setHeader('Access-Control-Expose-Headers', 'Authorization');
 									res.setHeader('Authorization', `${emailToken}`);
 									res.setHeader('Cache-Control', 'no-cache');
-
-									await sendVerificationEmail(userEmail, emailToken, type = "login")
-										.then(() => {
-											logMessage(`${userEmail} login succussful with ip ${ipInfo.ip}`);
-											res.status(200).send({ statusMessage: 'successLogin', data: sanitizedData });
-										})
-										.catch((err) => {
-											logErrorMessages(`${userEmail} failed to login: ` + JSON.stringify(err));
-											res.json({ status: 'error', message: 'Login failed. Please try again after 5 minutes' });
-										});
-										res.status(200).send({ statusMessage: 'successLogin', data: sanitizedData });
+									res.status(200).send({ statusMessage: 'successLogin', data: sanitizedData });	
 								}
 								else {
 									await sendVerificationEmail(userEmail, emailToken, type = null)
@@ -126,17 +117,16 @@ Auth.post("/login", async (req, res) => {
 							}
 							else {
 								logErrorMessages(`Login but wrong password for ${userEmail}`);
-								return res.json({ status: 'error', message: 'Incorrect password' });
+								res.json({ status: 'error', message: 'Incorrect password' });
 							}
 						})
 						.catch((err) => {
-							logErrorMessages(`Unable to login due to bcrypt: ${JSON.stringify(err)})`);
-							res.json({ status: 'error', message: 'Login failed. Please try again after 5 minutes' });
+							logErrorMessages(`bcrypt unable to login: ${(err)})`);
+							next();
 						});
 				});
 			}
 			else {
-				logErrorMessages(`Login failed. No records found for ${email}, Ip: ${JSON.stringify(ipInfo.ip)}, Location: ${JSON.stringify(ipInfo.loc)} `);
 				return res.json({ status: 'error', message: "You don't have an account." });
 			}
 		}

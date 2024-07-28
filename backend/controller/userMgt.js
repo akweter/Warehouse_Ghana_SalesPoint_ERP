@@ -329,7 +329,7 @@ const resetPassword = async (id) => {
 
 // Add user onto the system
 const AddNewUser = async (data) => {
-  const sql = "INSERT INTO UserManagement (Usr_FName, Usr_LName, Usr_name, Usr_type, Usr_status, Usr_phone, Usr_email, Usr_address, Usr_dept, Usr_reg_date, passwd, activated, Usr_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  const sql = "INSERT IGNORE INTO UserManagement (Usr_FName, Usr_LName, Usr_name, Usr_type, Usr_status, Usr_phone, Usr_email, Usr_address, Usr_dept, Usr_reg_date, passwd, activated, Usr_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   try {
     const result = await executeQuery(sql, data);
     if (result) { return result }

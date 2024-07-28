@@ -9,7 +9,7 @@ const getCompanyData = async () => {
 // Post company info
 const AddCompanyInfo = async () => {
 	const sql = `
-        INSERT INTO 
+        INSERT IGNORE INTO 
             company(
                 Com_name, Com_tin, Com_address, Com_phone, Com_email, Com_id, Com_logo
             ) 

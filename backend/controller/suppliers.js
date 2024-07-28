@@ -221,7 +221,7 @@ const inactiveSuppliersByRating = async (inrate) => {
 // Add new supplier
 const addSupplier = async (prop) => {
 	const sql = `
-	  INSERT INTO customers(
+	  INSERT IGNORE INTO customers(
 		S_name, 
 		S_tin,
 		S_address,  

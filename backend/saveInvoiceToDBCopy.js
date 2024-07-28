@@ -1,65 +1,5 @@
-const { addCustomer } = require("../controller/customers");
-const {
-    updateInvoiceQRCodes,
-    AddNewInvoices, 
-    saveInInvoiceProduct, 
-    updateRefundProducts 
-} = require("../controller/salesNinvoices");
-const generateUUID = require("./generateIDs");
-const { logErrorMessages, logSuccessMessages } = require("./saveLogfile");
-
-const filterFields = (obj, fieldsToRemove) => {
-    return Object.fromEntries(
-        Object.entries(obj).filter(([key]) => !fieldsToRemove.includes(key))
-    );
-};
-
-const sanitizePayload = (data) => {
-    const itemsFieldsToRemove = [
-        "itemSubtotal",
-        "totalVat",
-        "totalLevy",
-        "totalAmount",
-        "saleType",
-        "calculationType",
-        "currency",
-        "exchangeRate",
-        "alt",
-        "refProQty",
-        "invoiceType",
-    ];
-
-    const mainFieldsToRemove = [
-        "invCusId",
-        "remarks",
-        "unitPrice",
-        "quantity",
-        "itemSubtotal",
-        "remarks",
-        "nhil",
-        "getfund",
-        "covid",
-        "cst",
-        "tourism",
-        "increment",
-        "status",
-        "delivery",
-        "invoiceType",
-        "quote",
-        "infoMsg",
-    ];
-
-    let sanitizedPayload = { ...data };
-    sanitizedPayload = filterFields(sanitizedPayload, mainFieldsToRemove);
-    sanitizedPayload.items = sanitizedPayload.items.map((item) =>
-        filterFields(item, itemsFieldsToRemove)
-    );
-    return sanitizedPayload;
-};
-
 const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
     const { items } = Data;
-
     const {
         userName,
         totalAmount,
@@ -137,6 +77,7 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
         responseData.response.qr_code,
         delivery,
     ];
+    
     const load = [
         "Invoice",
         transactionDate,
@@ -151,11 +92,26 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
         invoiceNumber,
     ];
 
+    const customerAdd = [
+        businessPartnerName,
+        businessPartnerTin,
+        "", 
+        userPhone,
+        "",
+        "Active",
+        "",
+        "Taxable",
+        2,
+        customerID(invCusId),
+        new Date(),
+    ]
+
     try {
         await AddNewInvoices(payload)
             .then(async () => {
                 if (items) {
                     items.map(async (item) => {
+
                         const {
                             itemCode,
                             unitPrice,
@@ -163,6 +119,7 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
                             quantity,
                             refProQty,
                         } = item;
+
                         const data = [
                             generateUUID(),
                             invoiceNumber,
@@ -179,39 +136,34 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
                             invoiceNumber,
                         ]
 
-                        const customerAdd = [
-                            businessPartnerName,
-                            businessPartnerTin,
-                            "", 
-                            userPhone,
-                            "",
-                            "Active",
-                            "",
-                            "Taxable",
-                            2,
-                            customerID(invCusId),
-                            new Date(),
-                        ]
-                        if (invoiceType === 'Invoice' || invoiceType === 'Proforma Invoice') {
-                            await saveInInvoiceProduct(data)
-                                .then( async() => {
-                                    if (businessPartnerTin === "C0000000000") {
-                                        await addCustomer(customerAdd);
-                                    }
-                                })
-                                .catch((err) => {
-                                    logErrorMessages(`Error saving products: ${itemCode} for invoice ${invoiceNumber}: ${(err)}`);
-                                    return { status: 'error', message: 'Please refresh and Issue new invoice' };
-                                })
+                        if (invoiceType && invoiceType === 'Proforma Invoice') {
+                            // Either post new items or update them and add the items
+                            // if invoiceNumber do not have a particular itemCode, it should add it
+                            // If we do not have the invoiceNumber in the invoice_products table, then run await saveInInvoiceProduct(data) to save the products in the invoice
+                            return true;
                         }
                         else if (invoiceType === 'REFUND' || invoiceType === 'Partial_Refund') {
+                            // Update product redunded quantity
                             await updateRefundProducts(update)
-                                .then(() => { return null })
-                                .catch((err) => {
-                                    logErrorMessages(`Error updating products refunded qty:${itemCode} for invoice ${invoiceNumber}: ${JSON.stringify(err)}`);
-                                    return { status: 'error', message: 'Please refresh and Issue new invoice' };
-                                });
+                            .then(() => { return true })
+                            .catch((err) => {
+                                logErrorMessages(`Error updating products refunded qty:${itemCode} for invoice ${invoiceNumber}: ${JSON.stringify(err)}`);
+                                return { status: 'error', message: 'Please refresh and Issue new invoice' };
+                            });
                         }
+
+                        // Save cash customers to DB
+                        await saveInInvoiceProduct(data)
+                        .then( async() => {
+                            if (businessPartnerTin === "C0000000000") {
+                                return await addCustomer(customerAdd);
+                            }
+                            return true;
+                        })
+                        .catch( async(err) => {
+                            await logErrorMessages(`Error saving products: ${itemCode} for invoice ${invoiceNumber}: ${(err)}`);
+                            return { status: 'error', message: 'Please refresh and Issue new invoice' };
+                        });
                     });
                 }
                 logSuccessMessages(`${Data.userName} - ${invoiceType} ${invoiceNumber} added successfully`);
@@ -226,8 +178,3 @@ const saveInvoiceToDB = async (Data, sanitizedPayload, responseData) => {
         return `Error saving invoice: "${invoiceNumber}"`;
     }
 };
-
-module.exports = {
-    sanitizePayload, 
-    saveInvoiceToDB 
-}

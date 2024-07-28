@@ -25,6 +25,7 @@ import {
 // projects
 import {
     checkGRAServerStatus,
+    deleteQuotation,
     fetchAllInvoices,
     postNewGRAInvoice,
 } from '../../apiActions/allApiCalls/invoice';
@@ -69,6 +70,7 @@ const Invoice = () => {
             setInvoices(invoicesData);
             setTimeout(() => {
                 setLoading(false);
+                setSubmitted(false);
             }, 1900);
         }
         catch (error) {
@@ -175,14 +177,6 @@ const Invoice = () => {
                 headerClassName: 'dataGridheader',
             },
             {
-                field: 'Tourism',
-                headerName: 'Tourism',
-                description: 'Total Tourism Tax',
-                flex: 1,
-                width: 40,
-                headerClassName: 'dataGridheader',
-            },
-            {
                 field: 'Levies',
                 headerName: 'Levies',
                 description: 'Total Invoice Levies',
@@ -213,7 +207,8 @@ const Invoice = () => {
                         params.row.InvoiceStatus === "Invoice" ?
                             <IconButton title='Refund Invoice' onClick={() => handleRefundBtnClick(params.row)}>
                                 <CurrencyExchangeSharp fontSize='small' color='secondary' />
-                            </IconButton> :
+                            </IconButton>
+                        :
                             <IconButton onClick={() => handleQuoteToInvoiceBtnClick(params.row)}>
                                 {loadQuote === true ?
                                     <CircularProgress size={20} color='secondary' /> :
@@ -227,6 +222,20 @@ const Invoice = () => {
             },
         ]
     });
+
+    // Delete quotation invoice
+    const deleteQuote = async (invNum) => {
+        try {
+            const result = await deleteQuotation(invNum);
+            if (result) {
+                handleCloseDialog();
+                setSubmitted(true);
+            }
+        }
+        catch (error) {
+            return error;
+        }
+    }
 
     // Open invoice view
     const handleViewIconClick = (row) => {
@@ -374,7 +383,16 @@ const Invoice = () => {
             {notify.message ? <AlertError alert={notify} handleClose={handleClose} open={open} /> : null}
             {
                 selectedRow && (
-                    <>< InvoiceDetails selectedRow={selectedRow} openDialog={openDialog} handleCloseDialog={handleCloseDialog} status={status} submitted={setSubmitted}/></>
+                    <>
+                        < InvoiceDetails 
+                            selectedRow={selectedRow} 
+                            openDialog={openDialog} 
+                            handleCloseDialog={handleCloseDialog} 
+                            status={status} 
+                            submitted={setSubmitted}
+                            deleteQuote={deleteQuote}
+                        />
+                    </>
                 )
             }
             <RefundForms

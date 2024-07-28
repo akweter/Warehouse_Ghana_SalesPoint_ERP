@@ -1,11 +1,17 @@
-const app = require('../app');
+const app = require('../server');
 const debug = require('debug')('backend:server');
 const http = require('http');
 require('dotenv').config();
 const { logServerMessages } = require('../utils/saveLogfile');
+const initializeDatabase = require('../database/initDB');
 
 const port = normalizePort(process.env.PORT || '8000');
 app.set('port', port);
+
+// Run DB operations
+initializeDatabase();
+
+// create server with HTTP protocol (REST)
 const server = http.createServer(app);
 
 server.listen(port);
@@ -25,11 +31,6 @@ function normalizePort(val) {
   return false;
 }
 
-const logServerStartTime = () => {
-  const currentTime = new Date().toLocaleTimeString();
-  logServerMessages(`Server restarted at ${currentTime}`);
-};
-
 function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
@@ -38,11 +39,11 @@ function onError(error) {
   const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
   switch (error.code) {
     case 'EACCES':
-      logServerMessages(bind + ' requires elevated privileges');
+      console.log(bind + ' requires elevated privileges');
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      logServerMessages(bind + ' is already in use');
+      console.log(bind + ' is already in use');
       process.exit(1);
       break;
     default:
@@ -57,20 +58,25 @@ function onListening() {
   logServerStartTime();
 }
 
+const logServerStartTime = () => {
+  const currentTime = new Date().toLocaleTimeString();
+  console.log(`Server restarted at ${currentTime}`);
+};
+
 // Handle unhandled exceptions and rejections
 process.on('uncaughtException', (err) => {
-  logServerMessages(`Uncaught Exception: ${err.message}`);
+  console.log(`Uncaught Exception: ${err.message}`);
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  logServerMessages(`Unhandled Rejection at:`, promise, 'reason:', reason);
+  console.log(`Unhandled Rejection at:`, promise, 'reason:', reason);
 });
 
 // Handle SIGTERM for graceful shutdown
 process.on('SIGTERM', () => {
   server.close(() => {
-    logServerMessages('Server gracefully closed.');
+    console.log('Server gracefully closed.');
     process.exit(0);
   });
 });

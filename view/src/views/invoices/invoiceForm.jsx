@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -44,7 +43,7 @@ import {
 } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import dayjs from 'dayjs';
-// /* eslint-disable */
+/* eslint-disable */
 
 // Projects
 import '../../assets/css/form.css';
@@ -469,7 +468,6 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
                 setAlert((e) => ({ ...e, message: data.status, color: 'success' }));
                 setOpen(true);
                 BackdropOpen(false);
-                setSubmitted(true);
             }
         }
         catch (error) {

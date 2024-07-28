@@ -22,6 +22,8 @@ const {
   getAllQuoteInvoices,
   getWaybillInvoice,
   salesNRefundInvoices,
+  deleteQuotation,
+  deleteQuotationProducts,
 } = require("../controller/salesNinvoices");
 
 // All invoices transaction
@@ -183,7 +185,23 @@ Router.get("/purchase", async (req, res) => {
   }
 });
 
-// Get all Admins
+// delete quotation
+Router.delete("/quote/del/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const output = await deleteQuotation(id);
+    if (output) {
+      await deleteQuotationProducts(id);
+    }
+    res.status(200).json({message: `Transaction: ${id} removed!`});
+  }
+  catch (error) {
+    logErrorMessages(error);
+    res.status(500).json({message: "Delete failed!. Kindly refresh and retry"});
+  }
+});
+
+// Search Invoice
 Router.get("/search", async (req, res) => {
   const query = req.query.q;
   const result = ['%' + query + '%', '%' + query + '%']

@@ -23,13 +23,13 @@ import { CancelSharp } from '@mui/icons-material';
 import logo from '../../assets/images/logo.webp';
 import InvoiceForm from './invoiceForm';
 
-const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, submitted }) => {
+const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, submitted, deleteQuote }) => {
     
     const [drop, setDrop] = useState(false);
     const [open, setOpen] = useState(false);
 
-    const handleOpen = () => { setOpen(true); handleCloseDialog() };
-    const handleClose = () => { setOpen(false); };
+    const handleOpen = () => { setOpen(true); handleCloseDialog() }
+    const handleClose = () => { setOpen(false); }
 
     return (
         <Box>
@@ -145,9 +145,10 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, su
                     )}
                 </DialogContent>
                 <DialogActions>
-                {selectedRow.InvoiceStatus != "Invoice" ? <Button variant='contained' color='secondary' onClick={handleOpen}>Edit Quote</Button> : null}
-                    <Button variant='contained' color='error' onClick={handleCloseDialog}>Close</Button>
-                </DialogActions>
+                    {selectedRow.InvoiceStatus === "Proforma Invoice" ? <Button variant='contained' color='error' size='small' onClick={() => deleteQuote(selectedRow.InvoiceNumber)}>Delete</Button> : null}
+                    {selectedRow.InvoiceStatus === "Proforma Invoice" ? <Button variant='contained' color='secondary' size='small' onClick={handleOpen}>Edit Quote</Button> : null}
+                    <Button variant='contained' color='warning' size='small' onClick={handleCloseDialog}>Close</Button>
+                    </DialogActions>
             </Dialog>
             <Dialog
                 fullWidth
