@@ -4,10 +4,10 @@
   "private": true,
   "main": "./server.js",
   "scripts": {
-    "start": "nodemon ./bin/www",
+    "start": "node ./bin/www",
     "pm2-start": "pm2 start ./bin/www",
     "pm2-stop": "pm2 stop ./bin/www",
-    "build": "pkg -t node18.5.0-win-x64 -o salepoint bin/www"
+    "pkg": "pkg -t node18.5.0-win-x64 -o salepoint bin/www"
   },
   "engines": {
     "node": ">=18.20.4"

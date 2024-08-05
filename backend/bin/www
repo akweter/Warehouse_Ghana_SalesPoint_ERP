@@ -5,7 +5,7 @@ require('dotenv').config();
 const { logServerMessages } = require('../utils/saveLogfile');
 const initializeDatabase = require('../database/initDB');
 
-const port = normalizePort(process.env.PORT || '8000');
+const port = normalizePort(process.env.PORT || '7600');
 app.set('port', port);
 
 // Run DB operations
@@ -39,11 +39,11 @@ function onError(error) {
   const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
   switch (error.code) {
     case 'EACCES':
-      console.log(bind + ' requires elevated privileges');
+      logServerMessages(bind + ' requires elevated privileges');
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      console.log(bind + ' is already in use');
+      logServerMessages(bind + ' is already in use');
       process.exit(1);
       break;
     default:
@@ -60,23 +60,23 @@ function onListening() {
 
 const logServerStartTime = () => {
   const currentTime = new Date().toLocaleTimeString();
-  console.log(`Server restarted at ${currentTime}`);
+  logServerMessages(`Server restarted at ${currentTime}`);
 };
 
 // Handle unhandled exceptions and rejections
 process.on('uncaughtException', (err) => {
-  console.log(`Uncaught Exception: ${err.message}`);
+  logServerMessages(`Uncaught Exception: ${err.message}`);
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.log(`Unhandled Rejection at:`, promise, 'reason:', reason);
+  logServerMessages(`Unhandled Rejection at:`, promise, 'reason:', reason);
 });
 
 // Handle SIGTERM for graceful shutdown
 process.on('SIGTERM', () => {
   server.close(() => {
-    console.log('Server gracefully closed.');
+    logServerMessages('Server gracefully closed.');
     process.exit(0);
   });
 });

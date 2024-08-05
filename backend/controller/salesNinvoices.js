@@ -889,6 +889,7 @@ const deleteQuotation = async (invoiceNumber) => {
 
 // Delete quotation
 const deleteQuotationProducts = async (invoiceNumber) => {
+	console.log('deleteting invoice number', invoiceNumber);
 	const sql = `DELETE FROM invoice_products WHERE InvoiceNum_ID = ?`;
 	try {
 		const result = await executeQuery(sql, invoiceNumber);

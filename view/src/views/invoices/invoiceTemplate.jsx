@@ -39,12 +39,12 @@ const InvoiceTemplate = ({ data }) => {
 					<tr>
 						<td>{data[0].CustomerTIN === "C0000000000" ? data[0].customerPhone : data[0].CustomerTIN}</td>
 						<td>P0030588901</td>
-						<td><strong>DATE</strong></td>
+						<td>{data[0].InvoiceDate}</td>
 					</tr>
 					<tr>
 						<td>{data[0].CustomerTIN === "C0000000000" ? null : data[0].customerPhone}</td>
 						<td />
-						<td>{data[0].InvoiceDate}</td>
+						<td></td>
 					</tr>
 				</tbody>
 			</table>
@@ -95,7 +95,7 @@ const InvoiceTemplate = ({ data }) => {
 						</tr> : null
 					}
 					{
-						isNaN(data[0].InvoiceDiscount) ?
+					Number(data[0].InvoiceDiscount) ?
 						<tr>
 							<td width="60%" />
 							<td width="20%" align="left">DISCOUNT</td>
@@ -118,7 +118,7 @@ const InvoiceTemplate = ({ data }) => {
 							<td width="20%" align="left">COVID (1%)</td>
 							<td width="20%" >{data[0].Currency}: {data[0].COVID}</td>
 						</tr>
-						{data[0].CST ?
+						{Number(data[0].CST) ?
 							(<tr>
 								<td width="60%" />
 								<td width="20%" align="left">CST (5%)</td>
@@ -163,8 +163,14 @@ const InvoiceTemplate = ({ data }) => {
 					{data[0].DeliveryFee ?
 						(<tr>
 							<td width="60%" />
-							<td width="20%" align="left">DELIVERY:</td>
-							<td width="20%">{isNaN(data[0].DeliveryFee) ? <>{data[0].DeliveryFee}</> : <>{data[0].Currency}: {(data[0].DeliveryFee)}</>}</td>
+							<td width="20%" align="left"><i><small>SHIPPING:</small></i></td>
+							<td width="20%">
+								<small>{
+									isNaN(data[0].DeliveryFee) ? 
+									<i>{data[0].DeliveryFee}</i> : 
+									<i>{data[0].Currency}: {(data[0].DeliveryFee)}</i>
+								}</small>
+							</td>
 						</tr>) :
 						(<></>)
 					}

@@ -8,6 +8,7 @@ const logger = require('morgan');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const compression = require('compression');
+const fs = require('fs');
 require('dotenv').config();
 
 // Projects
@@ -27,6 +28,8 @@ const Payload = require('./routes/sendPayload');
 const GRAPayload = require('./routes/sendGRAPayload');
 const Company = require('./routes/company');
 const Forbidden = require('./auth/globalHeaderToken');
+const { logServerMessages } = require('./utils/saveLogfile');
+const generateUUID = require('./utils/generateIDs');
 
 const corsOriginSetup = {
   origin: origin,
@@ -37,10 +40,10 @@ const corsOriginSetup = {
 const server = express();
 
 server.set('view engine', 'jade');
-server.set('maxHttpHeaderSize', 30 * 1024); // allow header up to 30KB
+server.set('maxHttpHeaderSize', 30 * 1024);
 server.use(compression());
-server.use(rateLimit({ windowMs: 5 * 60 * 1000, max: 500, })); // Limit request to 500 per mins
-server.use(cors(corsOriginSetup)); // Cross origin
+server.use(rateLimit({ windowMs: 5 * 60 * 1000, max: 500, }));
+server.use(cors(corsOriginSetup));
 server.use((req, res, next) => {
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
@@ -70,7 +73,21 @@ server.use((req, res, next) => {
   const cacheKey = req.url;
   const cachedData = cache.get(cacheKey);
   if (cachedData) { res.json(cachedData); }
-  else { next();}
+  else { next(); }
+});
+
+// Write routes to file
+const logFilePath = path.join(__dirname, './logs/routes.txt');
+server.use(async (req, res, next) => {
+  const start = process.hrtime();
+  res.on('finish', async () => {
+    const elapsed = process.hrtime(start);
+    const responseTime = (elapsed[0] * 1000 + elapsed[1] / 1e6).toFixed(3);
+    const logEntry = `${req.method} ${req.originalUrl} ${res.statusCode} ${res.get('Content-Length') || '-'} - ${responseTime} ms\n`;
+    try { await fs.promises.appendFile(logFilePath, logEntry); }
+    catch (error) { logServerMessages('Error writing log to file:', error); }
+  });
+  next();
 });
 
 server.use('/auth', Auth);

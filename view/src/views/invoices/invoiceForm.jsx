@@ -195,17 +195,17 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
             } = result;
             setHeader((state) => ({
                 ...state,
-                totalAmount: totalAmount,
-                voucherAmount: voucherAmount,
-                discountAmount: discountAmount,
-                totalLevy: totalLevy,
-                nhil: nhil,
-                getfund: getfund,
-                tourism: tourism,
-                covid: covid,
+                totalAmount: Number(totalAmount || 0.00),
+                voucherAmount: Number(voucherAmount || 0.00),
+                discountAmount: Number(discountAmount || 0.00),
+                totalLevy: Number(totalLevy || 0.00),
+                nhil: Number(nhil || 0.00),
+                getfund: Number(getfund || 0.00),
+                tourism: Number(tourism || 0.00),
+                covid: Number(covid || 0.00),
                 items: items,
-                cst: cst,
-                totalVat: totalVat,
+                cst: Number(cst || 0.00),
+                totalVat: Number(totalVat || 0.00),
             }));
         }
         setTimeout(() => {
@@ -474,7 +474,6 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
             setDrop(false);
             setAlert((e) => ({ ...e, message: "Invoice submission failed! Refresh and try again", color: 'error' }));
             setOpen(true);
-            console.log('unknown error ', error)
         }
     };
 
@@ -503,10 +502,10 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
                                 <ToggleButtonGroup
                                     fullWidth
                                     size='small'
-                                    // color={cashCustomer === true ? "primary" : "standard"}
+                                    color={header.infoMsg === true ? "primary" : "standard"}
                                     value={header.businessPartnerName || ""}
                                     exclusive
-                                    // disabled={header.infoMsg ? true : false}
+                                    disabled={header.infoMsg ? true : false}
                                     name="businessPartnerName"
                                     onChange={CheckCashCustomer}
                                 >
@@ -590,6 +589,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
                                         name="saleType"
                                         value={header.saleType}
                                         onChange={handleMainChange}
+                                        disabled={header.infoMsg ? true : false}
                                         size='small'
                                     >
                                         <MenuItem value='NORMAL'>Normal</MenuItem>
@@ -604,7 +604,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
                                 <InputLabel id="calculationType">Invoice Type</InputLabel>
                                 <Select
                                     labelId="calculationType"
-                                    disabled={header.infoMsg ? true : false}
+                                    // disabled={header.infoMsg ? true : false}
                                     id="calculationType"
                                     label="calculationType"
                                     name="calculationType"
@@ -627,6 +627,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
                                     name="currency"
                                     size='small'
                                     onChange={handleMainChange}
+                                    disabled={header.infoMsg ? true : false}
                                     value={header.currency}
                                 >
                                     <MenuItem value='AED'>UAE Dirham (د.إ)</MenuItem>
@@ -654,7 +655,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
                                     label="invoiceType"
                                     name="invoiceType"
                                     size='small'
-                                    disabled={header.infoMsg ? true : false}
+                                    // disabled={header.infoMsg ? true : false}
                                     onChange={handleMainChange}
                                     value={header.invoiceType}
                                 >
@@ -672,6 +673,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
                                     name='exchangeRate'
                                     size='small'
                                     onChange={handleMainChange}
+                                    disabled={header.infoMsg ? true : false}
                                 />
                             </FormControl>
                         </Grid>
@@ -704,6 +706,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
                                     name='delivery'
                                     size='small'
                                     onChange={handleMainChange}
+                                    disabled={header.infoMsg ? true : false}
                                 />
                             </FormControl>
                         </Grid>
@@ -999,7 +1002,13 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
                                                     }}
                                                 >
                                                     <td>NET TOTAL</td>
-                                                    <td>{header.currency || 'GHS'}: {header.totalAmount - header.discountAmount || 0.00}</td>
+                                                    <td>
+                                                        {header.currency || 'AMT'}: 
+                                                        { header.calculationType !== "INCLUSIVE" ?
+                                                            Number(header.totalAmount + header.totalLevy + header.totalVat - header.discountAmount) : 
+                                                            Number(header.totalAmount - header.discountAmount) || 0.00
+                                                        }
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>

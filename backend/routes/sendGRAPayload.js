@@ -1,4 +1,4 @@
-const { logErrorMessages, logSuccessMessages, logAllMessage } = require("../utils/saveLogfile");
+const { logErrorMessages, logSuccessMessages } = require("../utils/saveLogfile");
 const express = require("express");
 const axios = require("axios");
 require('dotenv').config();
@@ -13,6 +13,21 @@ const {
 } = require("../utils/invoiceReform");
 
 const Router = express.Router();
+
+const sampleGARResponse = {
+    response: {
+        message: {
+            ysdcid: null,
+            ysdcrecnum: null,
+            ysdcintdata: null,
+            ysdcregsig: null,
+            ysdcmrc: null,
+            ysdcmrctim: null,
+            ysdctime: null,
+        },
+        qr_code: null,
+    }
+}
 
 // Verify Taxpayer TIN
 Router.get("/verify/tin/:id", async (req, res) => {
@@ -42,15 +57,22 @@ Router.get("/status", async (req, res) => {
 // Post Proforma Invoices
 Router.post("/quote", async (req, res) => {
     const Data = req.body;
-    const { items, invoiceType, flag, invoiceNumber } = Data;
+    const { infoMsg, invoiceType } = Data;
+    // const sanitizedPayload = sanitizePayload(Data);
+    // logSuccessMessages(Data);
     try {
-        const result = await addInvoiceProducts(items, invoiceType, flag, invoiceNumber)
-        await logSuccessMessages(result);
-        res.status(200).json({ status: 'success' });
+        if ((invoiceType && invoiceType === "Proforma Invoice") && (!infoMsg || infoMsg !== "quoteEdit")) {
+            await saveInvoiceToDB(Data, sampleGARResponse);
+            console.log('saving');
+            return res.status(200).json({status: "success", message: "Transaction success"});
+        }
+        console.log('editing');
+        await addInvoiceProducts(Data);
+        res.status(200).json({status: "success", message: "Transaction success"});
     }
     catch (error) {
-        await logErrorMessages(error);
-        console.error(error);
+        console.log(error);
+        await logErrorMessages(error.message);
         res.status(500).json({ status: 'error', message: `Operation failed. Try new invoice` });
     }
 });

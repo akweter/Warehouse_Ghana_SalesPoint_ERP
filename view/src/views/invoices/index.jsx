@@ -245,6 +245,7 @@ const Invoice = () => {
 
     // Pump print data into selected invoice
     const pushPrintInvoiceData = (data) => {
+        console.log("");
         setOpenPrintInvoice(true);
         setPrintInvoice(oldState => [...oldState, data]);
     }
@@ -259,14 +260,14 @@ const Invoice = () => {
             handlePrintIcon(updatedInvoice);
         }
         setOpenPrintInvoice(false)
-        return null;
+        return setPrintInvoice([]);
     }
 
     // Print invoice
     const handlePrintIcon = (row) => {
         setOpenPrintInvoice(false)
         const invoiceTemplateHTML = renderInvoiceTemplate(row);
-
+        setPrintInvoice([]);
         const printWindow = window.open('', '_blank');
         printWindow.document.body.innerHTML = invoiceTemplateHTML;
         printWindow.onload = () => {

@@ -136,9 +136,7 @@ const AddNewSystemUser = ({ closeAddnewUser, setSubmitted }) => {
             {drop === true ? <ShowBackDrop open={drop} /> : null}
             <DialogContent>
                 <Box>
-                    <Typography variant='h3' color="darkred" align='center' paddingBottom={2}>
-                        Add New Staff
-                    </Typography>
+                    <Typography variant='h3' color="darkred" align='center' paddingBottom={2}> Add New Staff</Typography>
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
                             <FormControl fullWidth>

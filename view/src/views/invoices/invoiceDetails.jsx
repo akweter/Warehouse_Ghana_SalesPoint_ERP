@@ -102,7 +102,7 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, su
                                                 Number(selectedRow.GETFund) + 
                                                 Number(selectedRow.NHIL)
                                             ) - selectedRow.InvoiceDiscount).toFixed(2) :
-                                            selectedRow.Currency+":"+ (
+                                            selectedRow.Currency+": "+ (
                                                 Number(selectedRow.TotalAmount - selectedRow.InvoiceDiscount)
                                             ).toFixed(2)
                                         }
