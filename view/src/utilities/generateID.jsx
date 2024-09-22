@@ -10,9 +10,7 @@ export function generateUUID() {
   const fullUUID = uuid.v4().replace(/-/g, '').toUpperCase();
   
   // Extract alphabets and numerics
-  const alphabets = fullUUID.replace(/[0-9]/g, '').substring(0, 2);
   const numerics = fullUUID.replace(/[A-Z]/g, '').substring(0, 2);
-  const remainingAlphabets = fullUUID.replace(/[0-9]/g, '').substring(2, 4); // Remaining alphabets
   
   return `WGWB${numerics}`;
 }

@@ -9,8 +9,7 @@ import { IconArrowBarToDown, IconArrowBarToUp, IconCircleNumber0, IconListCheck,
 import UploadCSVProducts from "./uploadProducts";
 import InventoryProductsTable from './displayProducts';
 import { fetchAllProducts, fetchDashboardCardDetails } from '../../apiActions/allApiCalls/product';
-import ProductStats from './stattistics';
-import One from './stattistics/topPerformingProducts';
+// import ProductStats from './stattistics';
 
 const Inventory = () => {
     const [submitted, setSubmitted] = useState(false);
@@ -168,9 +167,9 @@ const Inventory = () => {
                 </Grid>
             </Grid>
 
-            <Drawer anchor="right" open={openStat} onClose={toggleDrawer(false)}>
+            {/* <Drawer anchor="right" open={openStat} onClose={toggleDrawer(false)}>
                 < ProductStats closeDrawer={toggleDrawer(false)}/>
-            </Drawer>
+            </Drawer> */}
 
             <Box>
                 <InventoryProductsTable products={products} loading={loading} RefreshData={setSubmitted}/>

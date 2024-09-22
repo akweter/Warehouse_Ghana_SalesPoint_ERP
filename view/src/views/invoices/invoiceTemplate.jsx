@@ -3,6 +3,13 @@ import signature from "../../assets/images/signature.jpg"
 
 // /* eslint-disable */
 const InvoiceTemplate = ({ data }) => {
+
+	const sortedProducts = data[0].products.slice().sort((a, b) => {
+		if (a.ProductName < b.ProductName) return -1;
+		if (a.ProductName > b.ProductName) return 1;
+		return 0;
+	});
+
 	return (
 		<div>
 			<table align="center" border={0} width='100%' cellPadding={8}>
@@ -66,7 +73,7 @@ const InvoiceTemplate = ({ data }) => {
 									</tr>
 								</thead>
 								<tbody>
-									{data[0].products.map((product, index) => (
+									{sortedProducts.map((product, index) => (
 										<tr key={index}>
 											<td>{product.ProductName}</td>
 											<td align="center">{product.uom}</td>
@@ -87,22 +94,22 @@ const InvoiceTemplate = ({ data }) => {
 			<table cellSpacing="0" cellPadding="4" width="100%">
 				<thead>
 					{
-						Number(data[0].TotalAmount) !== Number(data[0].TotalAmount - data[0].InvoiceDiscount) ? 
-						<tr>
-							<td width="60%" />
-							<td width="20%" align="left">GROSS</td>
-							<td width="20%" >{data[0].Currency}: {Number(data[0].TotalAmount)}</td>
-						</tr> : null
+						Number(data[0].TotalAmount) !== Number(data[0].TotalAmount - data[0].InvoiceDiscount) ?
+							<tr>
+								<td width="60%" />
+								<td width="20%" align="left">GROSS</td>
+								<td width="20%" >{data[0].Currency}: {Number(data[0].TotalAmount)}</td>
+							</tr> : null
 					}
 					{
-					Number(data[0].InvoiceDiscount) ?
-						<tr>
-							<td width="60%" />
-							<td width="20%" align="left">DISCOUNT</td>
-							<td width="20%" >{data[0].Currency}: {Number(data[0].InvoiceDiscount)}</td>
-						</tr> : null
+						Number(data[0].InvoiceDiscount) ?
+							<tr>
+								<td width="60%" />
+								<td width="20%" align="left">DISCOUNT</td>
+								<td width="20%" >{data[0].Currency}: {Number(data[0].InvoiceDiscount)}</td>
+							</tr> : null
 					}
-					{data[0].showVAT || data[0].showVAT === "no" ? <></>: <>
+					{data[0].showVAT || data[0].showVAT === "no" ? <></> : <>
 						<tr>
 							<td width="60%" />
 							<td width="20%" align="left">GETFUND (2.5%)</td>
@@ -145,17 +152,17 @@ const InvoiceTemplate = ({ data }) => {
 							<strong>
 								{
 									data[0].CalculationType === "EXCLUSIVE" ?
-									data[0].Currency+":"+ ((
-										Number(data[0].TotalAmount) + 
-										Number(data[0].VatAmount) + 
-										Number(data[0].CST) + 
-										Number(data[0].Tourism) + 
-										Number(data[0].GETFund) + 
-										Number(data[0].NHIL)
-									) - data[0].InvoiceDiscount).toFixed(2) :
-									data[0].Currency+": "+ (
-										Number(data[0].TotalAmount - data[0].InvoiceDiscount)
-									).toFixed(2)
+										data[0].Currency + ":" + ((
+											Number(data[0].TotalAmount) +
+											Number(data[0].VatAmount) +
+											Number(data[0].CST) +
+											Number(data[0].Tourism) +
+											Number(data[0].GETFund) +
+											Number(data[0].NHIL)
+										) - data[0].InvoiceDiscount).toFixed(2) :
+										data[0].Currency + ": " + (
+											Number(data[0].TotalAmount - data[0].InvoiceDiscount)
+										).toFixed(2)
 								}
 							</strong>
 						</td>
@@ -166,9 +173,9 @@ const InvoiceTemplate = ({ data }) => {
 							<td width="20%" align="left"><i><small>SHIPPING:</small></i></td>
 							<td width="20%">
 								<small>{
-									isNaN(data[0].DeliveryFee) ? 
-									<i>{data[0].DeliveryFee}</i> : 
-									<i>{data[0].Currency}: {(data[0].DeliveryFee)}</i>
+									isNaN(data[0].DeliveryFee) ?
+										<i>{data[0].DeliveryFee}</i> :
+										<i>{data[0].Currency}: {(data[0].DeliveryFee)}</i>
 								}</small>
 							</td>
 						</tr>) :
@@ -176,9 +183,9 @@ const InvoiceTemplate = ({ data }) => {
 					}
 				</thead>
 			</table>
-			
-			{data[0].showVAT || data[0].showVAT === "no" ? <> < br/> < br/> < br/> < br/> </> : null }
-			
+
+			{data[0].showVAT || data[0].showVAT === "no" ? <> < br /> < br /> < br /> < br /> </> : null}
+
 			<table >
 				{
 					data[0].QRCode && data[0].YSDCID ? <>
@@ -226,7 +233,7 @@ const InvoiceTemplate = ({ data }) => {
 						</table>
 					</> : null
 				}
-{/* 
+				{/* 
 				<span>
 					<div style={{ textDecoration: "underline" }}>Guidelines & Agreements</div>
 					<li> Leads time usually takes 2 - 12 hours</li>

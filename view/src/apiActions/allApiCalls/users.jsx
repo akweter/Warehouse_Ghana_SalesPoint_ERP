@@ -20,6 +20,16 @@ export const fetchuserByID = async (id) => {
     return null;
 };
 
+// Fetch specific user data and set password
+export const fetchuserByIDPsd = async (id) => {
+    const response = await requestMaking(`users/${id}`, 'get', null);
+    if (response.ok) {
+        return await response.json();
+    }
+    return null;
+};
+
+
 
 /* ======================================================================================================== */
 

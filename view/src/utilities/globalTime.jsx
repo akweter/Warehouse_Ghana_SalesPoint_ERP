@@ -51,7 +51,7 @@ export function DateTimeSecondsDisplay(){
         <Chip label={formattedDateTime} color="primary" variant="outlined" size='medium'/>
       </div>
     );
-};
+}
 
 export function GreetUser() {
     const [greeting, setGreeting] = useState('');

@@ -147,7 +147,6 @@ Router.post("/add/new", async (req, res, next) => {
     userPhone,
     userAddress,
     userRegion,
-    userType,
     userExemption,
     userRating,
     userTIN,
@@ -167,26 +166,13 @@ Router.post("/add/new", async (req, res, next) => {
     generateUUID(),
     new Date(),
   ];
-
-  if (userType === 'customer') {
-    try {
-      const output = await addCustomer(payload);
-      res.status(200).json({ status: 'success', data: output });
-    }
-    catch (err) {
-      logErrorMessages((err));
-      res.status(500).send("Adding new customer failed! Please try again");
-    }
+  try {
+    const output = await addCustomer(payload);
+    res.status(200).json({ status: 'success', data: output });
   }
-  else {
-    try {
-      const output = await addSupplier(payload);
-      res.status(200).json({ status: 'success', data: output });
-    }
-    catch (err) {
-      logErrorMessages((err));
-      res.status(500).send("Adding new supplier failed! Please try again");
-    }
+  catch (err) {
+    logErrorMessages((err));
+    res.status(500).send("Adding new customer failed! Please try again");
   }
 });
 
@@ -194,7 +180,6 @@ Router.post("/add/new", async (req, res, next) => {
 Router.put("/update/:id", async (req, res) => {
   const { id } = req.params;
   const {
-    userType,
     userName,
     userTIN,
     userAddress,
@@ -217,26 +202,13 @@ Router.put("/update/:id", async (req, res) => {
     C_region: userRegion,
     C_rating: userRating,
   };
-
-  if (userType !== 'supplier') {
-    try {
-      await updateCustomer(userData, id);
-      return res.status(200).json({ message: "success" });
-    }
-    catch (err) {
-      logErrorMessages("" + err);
-      return res.status(500).json({ message: `Failed to update ${userName}` });
-    }
+  try {
+    await updateCustomer(userData, id);
+    return res.status(200).json({ message: "success" });
   }
-  else {
-    try {
-      await updateSupplier(userData, id);
-      return res.status(200).json({ message: "success" });
-    }
-    catch (err) {
-      logErrorMessages("" + err);
-      return res.status(500).json({ message: `Failed to update ${userName}` });
-    }
+  catch (err) {
+    logErrorMessages("" + err);
+    return res.status(500).json({ message: `Failed to update ${userName}` });
   }
 });
 

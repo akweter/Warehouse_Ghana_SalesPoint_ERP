@@ -17,10 +17,10 @@ import {
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import UpdateCusNSup from './updateSupNCus';
+import UpdateSupplier from './updateSupplier';
 import { Edit } from '@mui/icons-material';
 
-const CusNsupRow = ({ cusNsup, setSubmitted }) => {
+const CusNsupRow = ({ data, setSubmitted }) => {
 	const [updateDialog, setUpdateDialog] = useState(false);
 	const [open, setOpen] = useState(false);
 
@@ -38,13 +38,13 @@ const CusNsupRow = ({ cusNsup, setSubmitted }) => {
 						{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
 					</IconButton>
 				</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.customerName || "-"}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.customerTIN || "-"}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.customerID || "-"}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.customerRegion || "-"}</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{cusNsup.customerStatus || "-"}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{data.supplierName || "-"}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{data.supplierTin || "-"}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{data.supplierID || "-"}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{data.supplierRegion || "-"}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{data.supplierStatus || "-"}</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>
-					<Rating name="read-only" value={cusNsup.customerRating || "-"} readOnly />
+					<Rating name="read-only" value={data.supplierRating || "-"} readOnly />
 				</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={() => handleUpdateUser()} align='right'>
 					<Button variant='contained' style={{ background: 'darkred' }}><Edit fontSize='28px'/></Button>
@@ -58,39 +58,39 @@ const CusNsupRow = ({ cusNsup, setSubmitted }) => {
 								<TableHead>
 									<TableRow>
 										<TableCell padding='none'>TIN</TableCell>
-										<TableCell padding='none' align='left'>{cusNsup.customerTIN || "Unavailable"}</TableCell>
+										<TableCell padding='none' align='left'>{data.supplierTin || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Email</TableCell>
-										<TableCell padding='none'>{cusNsup.customerEmail || "Unavailable"}</TableCell>
+										<TableCell padding='none'>{data.supplierEmail || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Telephone</TableCell>
-										<TableCell padding='none'>{cusNsup.customerPhone || "Unavailable"}</TableCell>
+										<TableCell padding='none'>{data.supplierPhone || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Tax Status</TableCell>
-										<TableCell padding='none'>{cusNsup.customerStatus || "Unavailable"}</TableCell>
+										<TableCell padding='none'>{data.supplierStatus || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Address</TableCell>
-										<TableCell padding='none'>{cusNsup.customerAddress || "Unavailable"}</TableCell>
+										<TableCell padding='none'>{data.supplierAddress || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Date Added</TableCell>
-										<TableCell padding='none'>{cusNsup.customerAddedDate || "Unavailable"}</TableCell>
+										<TableCell padding='none'>{data.supplierAddedDate || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Rating</TableCell>
-										<TableCell padding='none'>{cusNsup.customerRating || 0}</TableCell>
+										<TableCell padding='none'>{data.supplierRating || 0}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Exemption</TableCell>
-										<TableCell padding='none'>{cusNsup.customerExemption || "Unavailable"}</TableCell>
+										<TableCell padding='none'>{data.supplierExempted || "Unavailable"}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell padding='none'>Products Bought</TableCell>
-										<TableCell padding='none'>{cusNsup.ProBoughtQty || 0}</TableCell>
+										<TableCell padding='none'>{data.ProBoughtQty || 0}</TableCell>
 									</TableRow>
 								</TableHead>
 							</Table>
@@ -100,13 +100,13 @@ const CusNsupRow = ({ cusNsup, setSubmitted }) => {
 			</TableRow>
 
 			<Dialog open={updateDialog}>
-                    <UpdateCusNSup customer={cusNsup} closeAddnewUser={()=>setUpdateDialog(false)} setSubmitted={setSubmitted} />
+                    <UpdateSupplier supplier={data} closeAddnewUser={()=>setUpdateDialog(false)} setSubmitted={setSubmitted} />
             </Dialog>
 		</> 
 	);
 };
 
-const CustomersSuppliersTable = ({ inData, setSubmitted }) => {
+const SuppliersTable = ({ inData, setSubmitted }) => {
 	const itemsPerPage = 25;
 	const [currentPage, setCurrentPage] = useState(1);
 
@@ -124,7 +124,7 @@ const CustomersSuppliersTable = ({ inData, setSubmitted }) => {
 		const currentPageData = inData.slice(startIndex, endIndex);
 
 		return currentPageData.map(data => (
-			<CusNsupRow key={data.customerID} cusNsup={data} setSubmitted={setSubmitted}/>
+			<CusNsupRow key={data.supplierID} data={data} setSubmitted={setSubmitted}/>
 		));
 	};
 
@@ -156,5 +156,5 @@ const CustomersSuppliersTable = ({ inData, setSubmitted }) => {
 		</>
 	);
 };
-
-export default CustomersSuppliersTable;
+ 
+export default SuppliersTable;

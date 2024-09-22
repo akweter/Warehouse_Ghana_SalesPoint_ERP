@@ -56,12 +56,12 @@ const saveToken_SendEmail = async (userEmail, username, reqParam, type) => {
 // Login
 Auth.post("/login", async (req, res, next) => {
 	const { email, passwrd } = req.body;
-	// const ipInfo = await Myip();
+	const ipInfo = await Myip();
 
-	// if (!ipInfo) {
-	// 	logErrorMessages(`Login failed | No internet for user: ${email}`);
-	// 	return res.json({ status: 'error', message: 'You are not connected to internet' });
-	// }
+	if (!ipInfo) {
+		logErrorMessages(`Login failed | No internet for user: ${email}`);
+		return res.json({ status: 'error', message: 'You are not connected to internet' });
+	}
 	if (!email) {
 		return res.send({ status: 'error', message: 'Please log in with your email instead' });
 	}
@@ -117,7 +117,7 @@ Auth.post("/login", async (req, res, next) => {
 							}
 							else {
 								logErrorMessages(`Login but wrong password for ${userEmail}`);
-								res.json({ status: 'error', message: 'Incorrect password' });
+								res.json({ status: 'error', message: 'Invalid password' });
 							}
 						})
 						.catch((err) => {
@@ -131,7 +131,7 @@ Auth.post("/login", async (req, res, next) => {
 			}
 		}
 		catch (err) {
-			logErrorMessages(`Internal server error for ${req.body.Usr_email}` + err);
+			logErrorMessages(`Internal server error for ${req.body.Usr_email}: ` + err);
 			res.json({ status: 'error', message: 'Login failed. Please try again after 5 minutes' });
 		}
 	}

@@ -7,7 +7,8 @@ import {
     Button,
     TextField,
     Grid,
-    Typography
+    Typography,
+    Box
 } from '@mui/material';
 import { Cancel } from '@mui/icons-material';
 
@@ -250,12 +251,12 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
                 (<AlertError open={openAlert} alert={alert} handleClose={closeAlert} />) :
                 (<ShowBackDrop open={drop} />)
             }
-            <Dialog open={open} sx={{ padding: '10px' }}>
-                <Grid container sx={{ justifyContent: 'space-around' }}>
-                    <DialogTitle sx={{ fontSize: 18 }}>Refund Invoice</DialogTitle>
+            <Box sx={{ padding: '10px' }}>
+                <Grid container sx={{ justifyContent: 'space-around', backgroundColor: 'darkblue' }}>
+                    <DialogTitle sx={{ fontSize: 18, color: 'white' }}>Cancel Invoice Transaction</DialogTitle>
                     <DialogActions>
-                        <Button variant='contained' color='primary' onClick={submitFullInvoice}>Full Refund</Button>
-                        <Button variant='contained' color='inherit' onClick={submitInvoice}>Partial Refund</Button>
+                        <Button variant='contained' color='error' onClick={submitFullInvoice}>Total Void</Button>
+                        <Button variant='contained' color='warning' onClick={submitInvoice}>Partial Void</Button>
                         <Button variant='outlined' color='error' onClick={handleClose}>< Cancel />Close</Button>
                     </DialogActions>
                 </Grid>
@@ -321,7 +322,7 @@ const RefundForms = ({ open, handleClose, refundInv, setSubmitted }) => {
                         ) : null
                     }
                 </DialogContent>
-            </Dialog>
+            </Box>
             <Dialog open={confirmationOpen} sx={{ padding: '20px' }}>
                 <DialogTitle variant='h3'>Confirm Refund</DialogTitle>
                 <DialogContent>

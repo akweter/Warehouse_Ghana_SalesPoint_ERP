@@ -36,9 +36,9 @@ import { ShowBackDrop } from '../../utilities/backdrop';
 import { AlertError } from '../../utilities/errorAlert';
 import { IconEraser } from '@tabler/icons';
 
-// /* eslint-disable */
+/* eslint-disable */
 
-const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, RefreshData, action }) => {
+const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action }) => {
 	const [open, setOpen] = useState(false);
 	const [drop, setDrop] = useState(false);
 	const [loading, setLoading] = useState(false);

@@ -18,7 +18,21 @@ const querySupplier = async (user) => {
 
 // Retrieve All Suppliers
 const allSuppliers = async () => {
-	const sql = "SELECT * FROM suppliers";
+	const sql = `
+		SELECT 
+			S_name AS supplierName, 
+			S_tin AS supplierTin, 
+			S_address AS supplierAddress, 
+			S_phone AS supplierPhone, 
+			S_region AS supplierRegion, 
+			S_status AS supplierStatus, 
+			S_email AS supplierEmail, 
+			S_exempted AS supplierExempted, 
+			S_rating AS supplierRating, 
+			S_id AS supplierID, 
+			S_Added_date AS supplierAddedDate 
+		FROM suppliers
+	`;
 	try {
 		const result = await executeQuery(sql);
 		if (result) { return result }

@@ -130,200 +130,7 @@ const salesNRefundInvoices = async (a, b, c) => {
 	}
 };
 
-// Retrieve the total sales amount and quantity of each product, grouped by month, for the last year
-const fortyOne = async () => {
-	const sql = `
-	  SELECT Itm_name, YEAR(Inv_date) AS year, MONTH(Inv_date) AS month,
-			 SUM(Product_Price * Product_Quantity) AS total_sales,
-			 SUM(Product_Quantity) AS total_quantity
-	  FROM inventory
-	  JOIN invoice_products ON inventory.Itm_id = invoice_products.Product_ID
-	  JOIN invoice ON invoice_products.InvoiceNum_ID = invoice.Inv_Number
-	  WHERE Inv_date >= CURDATE() - INTERVAL 1 YEAR
-	  GROUP BY Itm_name, YEAR(Inv_date), MONTH(Inv_date)
-	  ORDER BY year DESC, month DESC, total_sales DESC;
-	  `;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result; };;
-	}
-	catch (error) {
-		return error;
-	}
-};
-
-// Retrieve the percentage of total sales contributed by each user in the last quarter
-const forty = async () => {
-	const sql = `
-	  SELECT Inv_user, (SUM(Inv_total_amt) / (SELECT SUM(Inv_total_amt) FROM invoice WHERE Inv_date >= CURDATE() - INTERVAL 3 MONTH)) * 100 AS sales_percentage
-	  FROM invoice
-	  WHERE Inv_date >= CURDATE() - INTERVAL 3 MONTH
-	  GROUP BY Inv_user;
-	  `;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result; };;
-	}
-	catch (error) {
-		return error;
-	}
-};
-
-// Retrieve the total sales amount and average discount for each item category
-const thirtySix = async () => {
-	const sql = `
-	  SELECT Itm_cat, SUM(Product_Price * Product_Quantity) AS total_sales, AVG(Product_Discount) AS avg_discount
-	  FROM inventory
-	  JOIN invoice_products ON inventory.Itm_id = invoice_products.Product_ID
-	  GROUP BY Itm_cat;
-	  `;
-	try {
-		const result = await executeQuery(sql);
-		if (result) {
-			return result;
-		};
-	}
-	catch (error) {
-		return error;
-	}
-};
-
-// Retrieve the total sales amount for each category in the last quarter
-const thirtyOne = async () => {
-	const sql = `
-	  SELECT Itm_cat, SUM(Product_Price * Product_Quantity) AS total_sales
-	  FROM inventory
-	  JOIN invoice_products ON inventory.Itm_id = invoice_products.Product_ID
-	  JOIN invoice ON invoice_products.InvoiceNum_ID = invoice.Inv_Number
-	  WHERE Inv_date >= CURDATE() - INTERVAL 3 MONTH
-	  GROUP BY Itm_cat;
-	  `;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result };
-	}
-	catch (error) {
-		return error;
-	}
-};
-
-// Retrieve the total quantity of each product sold and the percentage of total sales it represents
-const twentyFive = async () => {
-	const sql = `
-	  SELECT Product_ID, SUM(Product_Quantity) AS total_quantity,
-			 (SUM(Product_Quantity) / (SELECT SUM(Product_Quantity) FROM invoice_products)) * 100 AS sales_percentage
-	  FROM invoice_products
-	  GROUP BY Product_ID;
-	  `;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result };
-	}
-	catch (error) {
-		return error;
-	}
-};
-
-// Retrieve the top 5 items with the highest total sales amount
-const twentyTwo = async () => {
-	const sql = `
-	  SELECT Itm_name, SUM(Product_Price * Product_Quantity) AS totalSales
-	  FROM inventory
-	  JOIN invoice_products ON inventory.Itm_id = invoice_products.Product_ID
-	  GROUP BY Itm_name
-	  ORDER BY total_sales DESC
-	  LIMIT 5;
-	  `;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result };
-	}
-	catch (error) {
-		return error;
-	}
-};
-
-// Retrieve the total amount and quantity of each item sold in the last month
-const eighteen = async () => {
-	const sql = `
-	  SELECT Itm_name, SUM(Product_Quantity) AS total_quantity, SUM(Product_Price * Product_Quantity) AS total_amount
-	  FROM invoice_products
-	  JOIN inventory ON invoice_products.Product_ID = inventory.Itm_id
-	  JOIN invoice ON invoice_products.InvoiceNum_ID = invoice.Inv_Number
-	  WHERE Inv_date >= NOW() - INTERVAL 1 MONTH
-	  GROUP BY Itm_name`;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result };
-	}
-	catch (error) {
-		return error;
-	}
-};
-
-// Retrieve the average product price in each invoice
-const sixteen = async () => {
-	const sql = `
-	  SELECT InvoiceNum_ID, AVG(Product_Price) AS avg_product_price FROM invoice_products GROUP BY InvoiceNum_ID;
-	  `;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result };
-	}
-	catch (error) {
-		return error;
-	}
-};
-
-// Retrieve the invoices with a refund status
-const fifteen = async () => {
-	const sql = `SELECT * FROM invoice WHERE Inv_status IN ('REFUND', 'REFUND_CANCELATION', 'PARTIAL_REFUND')`;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result };
-	}
-	catch (error) {
-		return error;
-	}
-};
-
-// Retrieve the invoices with the highest total amount
-const nine = async () => {
-	const sql = `SELECT * FROM invoice ORDER BY Inv_total_amt DESC LIMIT 1`;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result };
-	}
-	catch (error) {
-		return error;
-	}
-};
-
-// Retrieve all invoices with a total amount greater than 1000
-const three = async () => {
-	const sql = ` SELECT * FROM invoice WHERE Inv_total_amt > 1000`;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result; };;
-	}
-	catch (error) {
-		return error;
-	}
-};
-
-// Return all invoice
-const one = async () => {
-	const sql = "SELECT * FROM invoice WHERE Inv_status IN ('INVOICE', 'REFUND', 'PARTIAL_REFUND') ORDER BY Inv_ID_auto DESC";
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result; };;
-	}
-	catch (error) {
-		return error;
-	}
-};
-
-// Return only autocomplte recent record
+// Return only autocomplete recent record
 const allSalesInvNumbers = async () => {
 	const sql = `
     SELECT COUNT(*) AS numList
@@ -354,7 +161,15 @@ const getAllSalesInvoices = async () => {
 
 // Return only Proforma Invoices
 const getAllQuoteInvoices = async () => {
-	const sql = `SELECT * FROM invoice WHERE Inv_status = 'Proforma Invoice' ORDER BY Inv_ID_auto DESC`;
+	const sql = `
+		SELECT * 
+		FROM 
+			invoice 
+		WHERE 
+			Inv_status = 'Proforma Invoice' 
+		ORDER BY 
+			Inv_ID_auto 
+		DESC`;
 	try {
 		const result = await executeQuery(sql);
 		if (result) { return result }
@@ -531,47 +346,6 @@ const ThisMonthTotalInvoicenDate = async () => {
 	}
 }
 
-// Retrieve the total sales amount and quantity of each product, grouped by the customer's region
-const fortyNine = async () => {
-	const sql = `
-	  SELECT SnC_region, Itm_name, SUM(Product_Price * Product_Quantity) AS total_sales,
-	  SUM(Product_Quantity) AS total_quantity
-	  FROM suppliers
-	  JOIN invoice ON suppliers.SnC_id = invoice.Inv_Customer_Tin
-	  JOIN invoice_products ON invoice.Inv_Number = invoice_products.InvoiceNum_ID
-	  JOIN inventory ON invoice_products.Product_ID = inventory.Itm_id
-	  GROUP BY SnC_region, Itm_name
-	  ORDER BY SnC_region, total_sales DESC, total_quantity DESC;
-	  `;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result; };;
-	}
-	catch (error) {
-		return error;
-	}
-};
-
-// Retrieve the top 3 products with the highest total sales amount and their respective suppliers
-const fiftyTwo = async () => {
-	const sql = `
-	  SELECT Itm_name, SnC_name, SUM(Product_Price * Product_Quantity) AS total_sales
-	  FROM inventory
-	  JOIN invoice_products ON inventory.Itm_id = invoice_products.Product_ID
-	  JOIN suppliers ON inventory.Itm_sup_id = suppliers.SnC_id
-	  GROUP BY Itm_name, SnC_name
-	  ORDER BY total_sales DESC
-	  LIMIT 5;
-	  `;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result; };;
-	}
-	catch (error) {
-		return error;
-	}
-};
-
 // Return all purchase invoice
 const refundInvoices = async () => {
 	const sql = "SELECT * FROM invoice WHERE Inv_status = 'REFUND' OR Inv_status = 'Partial_Refund' ORDER BY Inv_ID_auto DESC";
@@ -681,24 +455,6 @@ const getWaybillInvoice = async (id) => {
 	}
 }
 
-// Retrieve the average sales amount per invoice for each user in the last 6 months
-const fortyFour = async () => {
-	const sql = `
-	  SELECT Inv_user, AVG(Inv_total_amt) AS avg_sales_per_invoice
-	  FROM invoice
-	  WHERE Inv_date >= CURDATE() - INTERVAL 6 MONTH
-	  GROUP BY Inv_user
-	  ORDER BY avg_sales_per_invoice DESC;
-	  `;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result; };;
-	}
-	catch (error) {
-		return error;
-	}
-};
-
 // Sales Dept invoice
 const Searches = async (payload) => {
 	const sql = `
@@ -710,42 +466,6 @@ const Searches = async (payload) => {
 		Inv_id DESC`;
 	try {
 		return await executeQuery(sql, payload);
-	}
-	catch (error) {
-		return error;
-	}
-};
-
-// Retrieve the total sales amount for each product, considering different currencies
-const fortySix = async () => {
-	const sql = `
-	  SELECT Itm_name, currency, SUM(Inv_total_amt) AS total_sales
-	  FROM invoice
-	  JOIN invoice_products ON invoice.Inv_Number = invoice_products.InvoiceNum_ID
-	  JOIN inventory ON invoice_products.Product_ID = inventory.Itm_id
-	  GROUP BY Itm_name, currency
-	  ORDER BY total_sales DESC;
-	  `;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result; };;
-	}
-	catch (error) {
-		return error;
-	}
-};
-
-// Retrieve the percentage of total sales contributed by each user in the last quarter, excluding refunds
-const fortySeven = async () => {
-	const sql = `
-	  SELECT Inv_user, (SUM(Inv_total_amt) / (SELECT SUM(Inv_total_amt) FROM invoice WHERE Inv_date >= CURDATE() - INTERVAL 3 MONTH AND Inv_status <> 'REFUND')) * 100 AS sales_percentage
-	  FROM invoice
-	  WHERE Inv_date >= CURDATE() - INTERVAL 3 MONTH AND Inv_status <> 'REFUND'
-	  GROUP BY Inv_user;
-	  `;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result; };;
 	}
 	catch (error) {
 		return error;

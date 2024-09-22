@@ -63,15 +63,12 @@ Router.post("/quote", async (req, res) => {
     try {
         if ((invoiceType && invoiceType === "Proforma Invoice") && (!infoMsg || infoMsg !== "quoteEdit")) {
             await saveInvoiceToDB(Data, sampleGARResponse);
-            console.log('saving');
             return res.status(200).json({status: "success", message: "Transaction success"});
         }
-        console.log('editing');
         await addInvoiceProducts(Data);
         res.status(200).json({status: "success", message: "Transaction success"});
     }
     catch (error) {
-        console.log(error);
         await logErrorMessages(error.message);
         res.status(500).json({ status: 'error', message: `Operation failed. Try new invoice` });
     }
@@ -87,7 +84,12 @@ Router.post("/invoice", async (req, res) => {
     const sanitizedPayload = sanitizePayload(Data);
     // logSuccessMessages(sanitizedPayload);
     try {
-        const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, { headers: { 'security_key': GRA_KEY } });
+        const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, {
+            timeout: 10000,
+            headers: { 'security_key': GRA_KEY,
+                'Content-Type': 'application/json'
+             }
+        });
         if (response && response.status === 200) {
             const resultMessage = response.data.response.status;
             if (resultMessage) {

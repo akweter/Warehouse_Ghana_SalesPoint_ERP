@@ -8,7 +8,6 @@ const logger = require('morgan');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const compression = require('compression');
-const fs = require('fs');
 require('dotenv').config();
 
 // Projects
@@ -28,8 +27,7 @@ const Payload = require('./routes/sendPayload');
 const GRAPayload = require('./routes/sendGRAPayload');
 const Company = require('./routes/company');
 const Forbidden = require('./auth/globalHeaderToken');
-const { logServerMessages } = require('./utils/saveLogfile');
-const generateUUID = require('./utils/generateIDs');
+const { logErrorMessages } = require('./utils/saveLogfile');
 
 const corsOriginSetup = {
   origin: origin,
@@ -73,21 +71,7 @@ server.use((req, res, next) => {
   const cacheKey = req.url;
   const cachedData = cache.get(cacheKey);
   if (cachedData) { res.json(cachedData); }
-  else { next(); }
-});
-
-// Write routes to file
-const logFilePath = path.join(__dirname, './logs/routes.txt');
-server.use(async (req, res, next) => {
-  const start = process.hrtime();
-  res.on('finish', async () => {
-    const elapsed = process.hrtime(start);
-    const responseTime = (elapsed[0] * 1000 + elapsed[1] / 1e6).toFixed(3);
-    const logEntry = `${req.method} ${req.originalUrl} ${res.statusCode} ${res.get('Content-Length') || '-'} - ${responseTime} ms\n`;
-    try { await fs.promises.appendFile(logFilePath, logEntry); }
-    catch (error) { logServerMessages('Error writing log to file:', error); }
-  });
-  next();
+  else { next();}
 });
 
 server.use('/auth', Auth);
@@ -104,13 +88,23 @@ server.use('/payload', Payload);
 server.use('/gra', GRAPayload);
 server.use('/company', Company);
 
-server.use((req, res, next) => { next(createError(404)); });
-
-server.use((err, req, res, next) => {
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-  res.status(err.status || 500);
-  res.render('error');
+// Custom 404 error handling
+server.use((req, res, next) => {
+  res.status(404).json({
+    message: 'Becareful!',
+    status: 404
+  });
 });
+
+// Global error handler
+server.use((err, req, res, next) => {
+  logErrorMessages(err.stack);
+  res.status(err.status || 500).json({
+    message: err.message || 'Something went wrong!',
+    status: err.status || 500
+  });
+});
+
+
 
 module.exports = server;

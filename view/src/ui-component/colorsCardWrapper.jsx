@@ -214,6 +214,7 @@ export const InventoryCard = styled(MainCard)(({ bg }) => ({
   overflow: 'hidden',
   position: 'relative',
   height: 120,
+  background: bg,
 }));
 
 export const CustomLLogo = ({ border, avatarIcon }) => {

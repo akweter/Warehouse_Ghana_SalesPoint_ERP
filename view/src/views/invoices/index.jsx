@@ -4,16 +4,13 @@ import ReactDOMServer from 'react-dom/server';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import {
     Close,
-    CurrencyExchangeSharp,
     Print as PrintIcon,
-    SendRounded,
     Visibility as VisibilityIcon
 } from '@mui/icons-material';
 import {
     IconButton,
     Grid,
     Box,
-    CircularProgress,
     DialogContent,
     Typography,
     DialogActions,
@@ -30,11 +27,9 @@ import {
     postNewGRAInvoice,
 } from '../../apiActions/allApiCalls/invoice';
 import MakeNewInvoice from './generateInvoice';
-import RefundForms from '../../views/refund/refundForm';
 import InvoiceDetails from './invoiceDetails';
 import InvoiceTemplate from './invoiceTemplate';
 import { AlertError, GeneralCatchError } from '../../utilities/errorAlert';
-import { UseFullPayload } from './invoiceQuotePayload';
 import WaybillPopper from '../../views/waybill/waybillPopup';
 import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceholder';
 
@@ -44,15 +39,12 @@ const Invoice = () => {
     const [status, setStatus] = useState(false);
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [loadQuote, setLoadQuote] = useState(false);
-    const [openRefDialog, setOpenRefDialog] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
     const [openConfirm, setOpenConfirm] = useState(false);
     const [openPrintInvoice, setOpenPrintInvoice] = useState(false);
     const [printInvoice, setPrintInvoice] = useState([]);
     const [invoices, setInvoices] = useState([]);
     const [selectedRow, setSelectedRow] = useState(null);
-    const [refundInv, setRefundInv] = useState([]);
     const [header, setHeader] = useState([]);
     const [alert, setAlert] = useState({ message: '', color: '' });
     const [notify, setNotify] = useState({ message: '', color: '' });
@@ -203,18 +195,6 @@ const Invoice = () => {
                     <IconButton title='View Invoice' onClick={() => handleViewIconClick(params.row)}>
                         <VisibilityIcon fontSize='medium' color='primary' />
                     </IconButton>
-                    {
-                        params.row.InvoiceStatus === "Invoice" ?
-                            <IconButton title='Refund Invoice' onClick={() => handleRefundBtnClick(params.row)}>
-                                <CurrencyExchangeSharp fontSize='small' color='secondary' />
-                            </IconButton>
-                        :
-                            <IconButton onClick={() => handleQuoteToInvoiceBtnClick(params.row)}>
-                                {loadQuote === true ?
-                                    <CircularProgress size={20} color='secondary' /> :
-                                    <SendRounded fontSize='small' color='secondary' title='Invoice Quotation' />}
-                            </IconButton>
-                    }
                     <IconButton title='Print Invoice' onClick={() =>  pushPrintInvoiceData(params.row)}>
                         <PrintIcon fontSize='small' color='error' />
                     </IconButton>
@@ -286,35 +266,21 @@ const Invoice = () => {
         return invoiceTemplate;
     };
 
-    const handleRefundBtnClick = (row) => {
-        setRefundInv(row);
-        setOpenRefDialog(true);
-    }
-
-    const handleQuoteToInvoiceBtnClick = async (row) => {
-        const payload = UseFullPayload(row);
-        setHeader(payload);
-        setOpenConfirm(true);
-    }
-
     const sendPayload = async () => {
         try {
             await new Promise((resolve) => {
                 setNotify((e) => ({ ...e, message: '', color: '' }));
-                setLoadQuote(true);
                 setOpenConfirm(false);
                 setTimeout(resolve, 2000);
             });
             await postNewGRAInvoice(header);
             setNotify((e) => ({ ...e, message: "Invoice submitted to GRA success!", color: 'success' }));
             setOpen(true);
-            setLoadQuote(false);
             fetchData();
         }
         catch (error) {
             setNotify((e) => ({ ...e, message: "Invoice submitted to GRA failed!", color: 'error' }));
             setOpen(true);
-            setLoadQuote(false);
         }
     }
 
@@ -324,11 +290,6 @@ const Invoice = () => {
         setOpenConfirm(false);
         setHeader([]);
     }
-
-    const handleCloseRefDialog = () => {
-        // setRefundInv(null);
-        setOpenRefDialog(false);
-    };
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
@@ -346,7 +307,7 @@ const Invoice = () => {
                 }}
             >
                 <Grid item>
-                    <Typography color='white' variant='h3'>Invoices Transactions</Typography> 
+                    <Typography color='white' variant='h3'>Invoice Transactions</Typography> 
                 </Grid>
                 <Grid item>
                     < MakeNewInvoice setSubmitted={setSubmitted} status={status} />
@@ -396,12 +357,6 @@ const Invoice = () => {
                     </>
                 )
             }
-            <RefundForms
-                open={openRefDialog}
-                handleClose={handleCloseRefDialog}
-                refundInv={refundInv}
-                setSubmitted={setSubmitted}
-            />
             {/* Confirm Proforma Invoice sent sent to GRA */}
             <Dialog open={openConfirm} sx={{ padding: '20px' }}>
                 <DialogTitle color='darkred' variant='h3'>Confirm Submission</DialogTitle>

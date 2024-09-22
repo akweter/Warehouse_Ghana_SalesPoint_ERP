@@ -23,12 +23,14 @@ const HRDp = Loadable(lazy(() => import('../views/management/hr')));
 const Invoices = Loadable(lazy(() => import('../views/invoices')));
 const Purchase = Loadable(lazy(() => import('../views/purchases')));
 const SalesReport = Loadable(lazy(() => import('../views/SalesReport')));
-const Customers = Loadable(lazy(() => import('../views/customerSuppliers')));
+const Customers = Loadable(lazy(() => import('../views/customer')));
+const Suppliers = Loadable(lazy(() => import('../views/suppliers')));
 const Inventory = Loadable(lazy(() => import('../views/inventory')));
 const Refund = Loadable(lazy(() => import('../views/refund')));
 const Users = Loadable(lazy(() => import('../views/userManagements')));
 const Warehouse = Loadable(lazy(() => import('../views/warehouse')));
 const OrderCheckout = Loadable(lazy(() => import('../views/order')));
+const SuppliedOrders = Loadable(lazy(() => import('../views/suppliedOrders')));
 const Auth = Loadable(lazy(() => import('../auth')));
 const Woocommerce = Loadable(lazy(() => import('../woocommerce')));
 const Tools = Loadable(lazy(() => import('../reports')));
@@ -115,11 +117,20 @@ const MainRoutes = {
       ]
     },
     {
-      path: 'order/checkout',
+      path: 'orders/new',
       children: [
         {
           path: '',
           element: <ProtectedRoute><OrderCheckout /></ProtectedRoute>
+        }
+      ]
+    },
+    {
+      path: 'orders/supplied',
+      children: [
+        {
+          path: '',
+          element: <ProtectedRoute><SuppliedOrders /></ProtectedRoute>
         }
       ]
     },
@@ -183,6 +194,15 @@ const MainRoutes = {
         {
           path: '',
           element: <ProtectedRoute>{ExeptTemporalInternAndGuest(getAccountType()) ? <Customers /> : <Link to='/'/>}</ProtectedRoute>
+        }
+      ]
+    },
+    {
+      path: 'suppliers',
+      children: [
+        {
+          path: '',
+          element: <ProtectedRoute>{ExeptTemporalInternAndGuest(getAccountType()) ? <Suppliers /> : <Link to='/'/>}</ProtectedRoute>
         }
       ]
     },

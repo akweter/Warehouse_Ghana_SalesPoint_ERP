@@ -171,7 +171,7 @@ export default function Refund() {
     return (
         <div>
             <Grid container sx={{ justifyContent: 'space-around', backgroundColor: 'darkblue', paddingTop: 1, paddingBottom: 1, }}>
-                <Typography color='white' variant='h3'>Refunds Transactions</Typography>
+                <Typography color='white' variant='h3'>Refund Transactions</Typography>
                 <Button
                     variant='contained'
                     color='inherit'

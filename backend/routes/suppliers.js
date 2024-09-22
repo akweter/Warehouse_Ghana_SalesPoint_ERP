@@ -22,6 +22,8 @@ const {
   querySupplier,
   foreignSuppliers,
   localSuppliers,
+  updateSupplier,
+  addSupplier,
 } = require("../controller/suppliers");
 const { logErrorMessages } = require("../utils/saveLogfile");
 
@@ -32,7 +34,7 @@ Router.get("/", async (req, res, next) => {
     const output = await allSuppliers();
     if (output.length === 0) {
       return res.status(404).send("Users not found");
-    } 
+    }
     return res.status(200).json(output);
   }
   catch (err) {
@@ -271,5 +273,78 @@ Router.get("/:id", async (req, res, next) => {
   }
 });
 /*******************************    END OF GET REQUESTS    **********************************/
+
+// Post supplier info addSupplier /add/new
+Router.post("/add/new", async (req, res) => {
+  const {
+    userEmail,
+    userActive,
+    userPhone,
+    userAddress,
+    userRegion,
+    userExemption,
+    userRating,
+    userTIN,
+    userName,
+  } = req.body;
+
+  const payload = [
+    userName,
+    userTIN,
+    userAddress,
+    userPhone,
+    userRegion,
+    userActive,
+    userEmail,
+    userExemption,
+    userRating,
+    generateUUID(),
+    new Date(),
+  ];
+  try {
+    const output = await addSupplier(payload);
+    res.status(200).json({ status: 'success', data: output });
+  }
+  catch (err) {
+    logErrorMessages((err));
+    res.status(500).send("Adding new supplier failed! Please try again");
+  }
+});
+
+// Update a particular user based on the ID
+Router.put("/update/:id", async (req, res, next) => {
+  const { id } = req.params;
+  const {
+    userName,
+    userTIN,
+    userAddress,
+    userPhone,
+    userRegion,
+    userActive,
+    userEmail,
+    userExemption,
+    userRating,
+  } = req.body;
+
+  const userData = {
+    C_email: userEmail,
+    C_status: userActive,
+    C_name: userName,
+    C_phone: userPhone,
+    C_exempted: userExemption,
+    C_tin: userTIN,
+    C_address: userAddress,
+    C_region: userRegion,
+    C_rating: userRating,
+  };
+  try {
+    await updateSupplier(userData, id);
+    return res.status(200).json({ message: "success" });
+  }
+  catch (err) {
+    logErrorMessages("" + err);
+    return res.status(500).json({ message: `Failed to update ${userName}` });
+  }
+});
 
 module.exports = Router;

@@ -11,11 +11,10 @@ import {
 // /* eslint-disable */
 
 // Projects
-import { fetchAllCustomersNSuppliers } from '../../apiActions/allApiCalls/customer';
-import CustomersSuppliersTable from './displayCusNSup';
+import SuppliersTable from './displaySupplier';
 import { LoadingSpinner } from '../../ui-component/loaderAPI';
-import AddSupnCustomers from './addSupCustomers';
-import VerifyTIN from '../../views/customerSuppliers/verifyTIN';
+import { fetchAllSupplier } from '../../apiActions/allApiCalls/supplier';
+import AddSupplier from './addSupplier';
 
 const CusNSupp = () => {
     const [submitted, setSubmitted] = useState(false);
@@ -33,7 +32,7 @@ const CusNSupp = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const customersNSuppliers = await fetchAllCustomersNSuppliers();
+            const customersNSuppliers = await fetchAllSupplier();
             setTimeout(() => {
                 setcustomersNsuppliers(customersNSuppliers);
                 setLoading(false);
@@ -56,23 +55,22 @@ const CusNSupp = () => {
                         customersNsuppliers.length > 0 ? (<>
                             <Paper>
                                 <Grid container sx={{ justifyContent: 'space-around', paddingBottom: 1, backgroundColor: 'darkblue', padding: 1, }}>
-                                    <Typography color='white' variant='h3'>Customers Management Page</Typography>
-                                    < VerifyTIN />
+                                    <Typography color='white' variant='h3'>Suppliers Portal</Typography>
                                     <Button
                                         variant='contained'
                                         color='inherit'
                                         size='medium'
                                         onClick={handleOpen}
                                     >
-                                        Add New User
+                                        Add New Supplier
                                     </Button>
                                 </Grid>
                                 <Box>
-                                    < CustomersSuppliersTable inData={customersNsuppliers} setSubmitted={setSubmitted} />
+                                    < SuppliersTable inData={customersNsuppliers} setSubmitted={setSubmitted} />
                                 </Box>
                             </Paper>
                             <Dialog open={open}>
-                                <AddSupnCustomers closeAddnewUser={handleClose} setSubmitted={setSubmitted} />
+                                <AddSupplier closeAddnewUser={handleClose} setSubmitted={setSubmitted} />
                             </Dialog>
                         </>) :
                             null

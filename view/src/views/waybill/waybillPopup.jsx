@@ -6,7 +6,7 @@ import {
     Popover,
     Typography,
 } from '@mui/material';
-import { SmallTextField } from '../../views/customerSuppliers/verifyTIN';
+import { SmallTextField } from '../../views/customer/verifyTIN';
 import { FetchWaybillInvoice } from '../../apiActions/allApiCalls/invoice';
 import WaybillForm from './waybillForm';
 

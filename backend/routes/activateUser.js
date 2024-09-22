@@ -1,5 +1,5 @@
 const Auth = require("express").Router();
-// const { logErrorMessages, logMessage } = require("../utils/saveLogfile");
+const { logErrorMessages, logMessage } = require("../utils/saveLogfile");
 const { executeQuery } = require("../database");
 const { verifyToken, decodeToken } = require("../utils/tokenActions");
 require('dotenv').config();
@@ -9,21 +9,21 @@ const { origin } = process.env;
 // Implement the activateUser function
 const activateUser = async(email) =>{
     try {
-        const sql = "UPDATE UserManagement SET activated = 'yes' WHERE Usr_email = ?";
+        const sql = "UPDATE usermanagement SET activated = 'yes' WHERE Usr_email = ?";
         return await executeQuery(sql, email);
     } catch (err) {
-        // logErrorMessages(`Unable to activate user: ${email}, error: `,JSON.stringify(err));
+        await logErrorMessages(`Unable to activate user: ${email}, error: `,JSON.stringify(err));
         return null;
     }
 }
 
   const getUserByEmail = async(email) =>{
     try {
-        const sql = `SELECT * FROM UserManagement WHERE Usr_email = ?`;
+        const sql = `SELECT * FROM usermanagement WHERE Usr_email = ?`;
         const user = await executeQuery(sql, email);
         return user;
     } catch (error) {
-        // logErrorMessages(`Couldn't query for user: ${email}, error: `,JSON.stringify(error));
+        await logErrorMessages(`Couldn't query for user: ${email}, error: `,JSON.stringify(error));
         return null;
     }
 }
@@ -67,28 +67,28 @@ Auth.get("/", async (req, res) => {
                             return res.json({statusMessage: 'successActivate', message: 'Your are activated successfully.', data: sanitizedData});
                         })
                         .catch((err)=>{
-                            // logErrorMessages(`error while activating ${email} with the error ${JSON.stringify(err)}`);
+                            logErrorMessages(`error while activating ${email} with the error ${JSON.stringify(err)}`);
                             return res.json({status: 'error', message: 'Oops! Something went wrong. Log in again'});
                         });
                     }
                     else{
-                        // logErrorMessages(`Email: ${email} attempted to activate the account, but it's already active.`);
+                        logErrorMessages(`Email: ${email} attempted to activate the account, but it's already active.`);
                         return res.json({status: 'error', message: 'You are already activated. Kindly log in'});
                     }
                 });
             }
             else{
-                // logErrorMessages(`Email: ${email} not found from the query result decoding from token`);
+                await logErrorMessages(`Email: ${email} not found from the query result decoding from token`);
                 return res.json({status: 'error', message: 'Something went bad. Please sign up again!'});
             }
         }
         else {
-            // logErrorMessages(`No email found in the token: ${decrypted}`);
+            await logErrorMessages(`No email found in the token: ${decrypted}`);
             return res.json({status: 'error', message: 'Oops! We failed to verify your ID. Please ask your administrator for new verification email'});
         }
     }
     else {
-        // logErrorMessages(`Verifying token error ${token}`);
+        await logErrorMessages(`Verifying token error ${token}`);
         return res.json({status: 'error', message: 'Something bad happend. Please ask your administrator for new verification email'});
     }
 });

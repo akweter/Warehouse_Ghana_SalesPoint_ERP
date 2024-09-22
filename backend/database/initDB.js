@@ -1,9 +1,9 @@
 // src/initDB.js
 const mysql = require("mysql2");
-const { DBTables } = require("./tables");
+const { logErrorMessages } = require("../utils/saveLogfile");
 require("dotenv").config();
 
-const { DB_NAME, DB_PORT, DB_USER, DB_PASSWD, DB_HOST } = process.env;
+const { DB_PORT, DB_USER, DB_PASSWD, DB_HOST } = process.env;
 
 const pool = mysql.createPool({
   host: DB_HOST,
@@ -19,32 +19,10 @@ const pool = mysql.createPool({
 function initializeDatabase() {
   pool.getConnection((err, connection) => {
     if (err) {
-      console.error(`Error connecting to the database: ${err}`);
+      logErrorMessages(`Error connecting to the database: ${err}`);
       return;
     }
-
-    connection.query(`CREATE DATABASE IF NOT EXISTS ${DB_NAME}`, (err) => {
-      if (err) {
-        console.error(`Error creating database: ${err}`);
-        connection.release();
-        return;
-      }
-
-      connection.changeUser({ database: DB_NAME }, (err) => {
-        if (err) {
-          console.error(`Error switching to database: ${err}`);
-          connection.release();
-          return;
-        }
-
-        connection.query(DBTables, (err) => {
-          if (err) {
-            console.error(`Error creating tables: ${err}`);
-          }
-          connection.release();
-        });
-      });
-    });
+    connection.release();
   });
 }
 

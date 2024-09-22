@@ -16,7 +16,6 @@ import {
 import WooOrders from './orders/order';
 import WooCustomers from './customers/customer';
 import WooProducts from './products/product';
-import WooAnalysis from './analysis/analysis';
 import {
     FetchWooSearchCustomer,
     FetchWooSearchOrder,
@@ -33,8 +32,7 @@ import {
 } from '../ui-component/styleEffects';
 import { SearchSharp } from '@mui/icons-material';
 import { GeneralCatchError } from '../utilities/errorAlert';
-
-const Analysis = () => <WooAnalysis />;
+/* eslint-disable */
 const Orders = () => <WooOrders />;
 const Customers = () => <WooCustomers />;
 const Products = () => <WooProducts />;

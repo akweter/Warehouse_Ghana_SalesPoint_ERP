@@ -264,6 +264,20 @@ Router.get("/:id", async (req, res, next) => {
   }
 });
 
+// Get user information based on the ID to reset password
+Router.get("/activate/:id", async (req, res, next) => {
+  const userID = req.params.id;
+  try {
+    const output = await oneUser(userID);
+    return executeRoute(output, res);
+  }
+  catch (err) {
+    logErrorMessages("Internal server error" + err);
+    return res.status(500).send("Internal server error");
+  }
+});
+
+
 /*********      UPDATE REQUESTS        *********/
 
 // Update user

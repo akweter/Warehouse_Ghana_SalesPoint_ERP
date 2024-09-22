@@ -19,7 +19,7 @@ export const fetchProductNameSearch = async (data) => {
 };
 
 // Fetch dashboard card product details
-export const fetchDashboardCardDetails = async (data) => {
+export const fetchDashboardCardDetails = async () => {
     const response = await requestMaking(`products/dashboard/card`, 'GET', null);
     if (response.ok) {
         return await response.json();

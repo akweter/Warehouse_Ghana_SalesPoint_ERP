@@ -2,8 +2,7 @@
 const Router = require("express").Router();
 
 // Projects
-const { executeRoute } = require("../utils/handler");
-const { logErrorMessages, logSuccessMessages } = require("../utils/saveLogfile");
+const { logErrorMessages } = require("../utils/saveLogfile");
 
 // controller
 const restructureInvoiceResult = require("../utils/invoiceModifier");
@@ -24,12 +23,13 @@ const {
   salesNRefundInvoices,
   deleteQuotation,
   deleteQuotationProducts,
+  fetchQuotations,
 } = require("../controller/salesNinvoices");
 
-// All invoices transaction
+// All original GRA invoices transaction
 Router.get("/", async (req, res) => {
   try {
-    const output = await salesNRefundInvoices("Invoice", "Proforma Invoice", "");
+    const output = await salesNRefundInvoices("Invoice", "Invoice", "Invoice");
     const modifiedOutput = restructureInvoiceResult(output);
     return res.status(200).json(modifiedOutput);
   }
@@ -75,15 +75,16 @@ Router.get("/sales", async (req, res) => {
   }
 });
 
-// Get all today invoices
-Router.get("/quote", async (req, res) => {
+// Get all quote || quotaion invoices
+Router.get("/quotes", async (req, res) => {
   try {
-    const output = await getAllQuoteInvoices();
-    return res.status(200).json(output);
+    const output = await salesNRefundInvoices("Proforma Invoice", "Proforma Invoice", "Proforma Invoice");
+    const modifiedOutput = restructureInvoiceResult(output);
+    return res.status(200).json(modifiedOutput);
   }
   catch (err) {
     logErrorMessages(`Error fetching Proforma Invoices ${err}`);
-    return res.status(500).send("Temporal server error. Kindly refresh");
+    return res.status(500).send("Fetching quotation invoice failed. Kindly refresh");
   }
 });
 

@@ -10,18 +10,14 @@ import {
     TextField,
     FormControlLabel,
     Checkbox,
-    InputLabel,
-    Select,
-    MenuItem,
     Slider,
     CircularProgress,
 } from '@mui/material';
 import { AlertError } from '../../utilities/errorAlert';
-import { postCustomerSupplier } from '../../apiActions/allApiCalls/customer';
 
-// /* eslint-disable */
+/* eslint-disable */
 
-const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
+const AddSupplier = ({ closeAddnewUser, setSubmitted }) => {
     const [errors, setErrors] = useState({});
     const [drop, setDrop] = useState(false);
     const [alert, setAlert] = useState({ message: '', color: '' });
@@ -32,7 +28,6 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
         userPhone: '',
         userAddress: '',
         userRegion: 'Local',
-        userType: 'customer',
         userRating: '',
         userTIN: '',
         userName: '',
@@ -105,8 +100,6 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
 
         try {
             setDrop(true);
-            const response = await postCustomerSupplier(formData);
-
             setTimeout(() => {
                 setAlert((e) => ({...e, message: `You've done it!`, color: 'success' }));
                 setOpenAlert(true);
@@ -122,7 +115,6 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                         userPhone: '',
                         userAddress: '',
                         userRegion: '',
-                        userType: '',
                         userRating: '',
                         userTIN: '',
                         userName: '',
@@ -143,7 +135,7 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
             <DialogContent>
                 <Box>
                     <Typography variant='h3' color="darkred" align='center' paddingBottom={2}>
-                        Add New Customer
+                        Add New Supplier
                     </Typography>
                     <Grid container spacing={2}>
                         <Grid item xs={3}>
@@ -261,27 +253,15 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                             </FormControl>
                         </Grid>
                         <Grid item xs={5}>
-                            <FormControl fullWidth>
-                                <InputLabel>User Type</InputLabel>
-                                <Select
-                                    name="userType"
-                                    required
-                                    value={formData.userType}
-                                    onChange={handleInputChange}
-                                >
-                                    {/* <MenuItem value="supplier">Supplier</MenuItem> */}
-                                    <MenuItem value="customer">Customer</MenuItem>
-                                </Select>
-                            </FormControl>
+                            <DialogActions>
+                                <Button onClick={closeAddnewUser} variant='outlined' color='error'>Cancel</Button>
+                                <Button onClick={handleFormSubmit} variant='outlined' color='primary'>{drop ? <CircularProgress open={drop} size='25px' /> : 'Submit'}</Button>
+                            </DialogActions>
                         </Grid>
                     </Grid>
                 </Box>
             </DialogContent>
-            <DialogActions>
-                <Button onClick={closeAddnewUser} variant='outlined' color='error'>Cancel</Button>
-                <Button onClick={handleFormSubmit} variant='outlined' color='primary'>{drop ? <CircularProgress open={drop} size='25px' /> : 'Submit'}</Button>
-            </DialogActions>
         </>
     );
 }
-export default AddSupnCustomers;
+export default AddSupplier;

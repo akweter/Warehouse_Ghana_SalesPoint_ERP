@@ -67,7 +67,7 @@ const addInvoiceProducts = async (Data) => {
             return await updateRefundProducts(update);
         }
         else {
-            await deleteQuotationProducts(invoiceNumber);
+            // await deleteQuotationProducts(invoiceNumber);
             await Promise.all(items.map(async (item) => {
                 const {
                     itemCode,

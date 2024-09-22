@@ -1,2 +1,0 @@
-POST /auth/login 200 246 - 9710.213 ms
-POST /auth/login 200 246 - 6317.574 ms

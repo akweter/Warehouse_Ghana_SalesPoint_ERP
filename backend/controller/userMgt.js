@@ -21,7 +21,7 @@ const allUsers = async () => {
     Usr_StaffID As staffID,
     Usr_status As accountStat
   FROM
-    UserManagement
+    usermanagement
   ORDER BY 
     Usr_name 
   ASC`;
@@ -36,7 +36,7 @@ const allUsers = async () => {
 
 // Return only active users
 const allActiveUsers = async () => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_status = 'active'";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_status = 'active'";
   try {
     const result = await executeQuery(sql);
     if (result) { return result }
@@ -48,7 +48,25 @@ const allActiveUsers = async () => {
 
 // return selected user
 const oneUser = async (id) => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_id = ?";
+  const sql = `
+    SELECT
+      Usr_name As userName,
+      Usr_FName As userFName,
+      Usr_LName As userLName,
+      Usr_type As accountType,
+      Usr_phone As telephone,
+      Usr_email As primaryEmail,
+      Usr_address As regAddress,
+      Usr_dept As orgDept,
+      Usr_reg_date As regDate,
+      Usr_dept As userDept,
+      activated As userSubscribed,
+      Usr_id As accountId,
+      Usr_StaffID As staffID,
+      Usr_status As accountStat
+    FROM usermanagement 
+    WHERE Usr_id = ?
+  `;
   try {
     const result = await executeQuery(sql, id);
     if (result) { return result }
@@ -60,7 +78,7 @@ const oneUser = async (id) => {
 
 // Login | Return data only when username or email matches the password.
 const adminUsers = async () => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_type = 'admin'";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_type = 'admin'";
   try {
     const result = await executeQuery(sql);
     if (result) { return result }
@@ -72,7 +90,7 @@ const adminUsers = async () => {
 
 // Accounts
 const allAcounts = async () => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_dept = 'accounts'";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_dept = 'accounts'";
   try {
     const result = await executeQuery(sql);
     if (result) { return result }
@@ -84,7 +102,7 @@ const allAcounts = async () => {
 
 // Procurement
 const procurementDept = async () => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_dept = 'procurement'";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_dept = 'procurement'";
   try {
     const result = await executeQuery(sql);
     if (result) { return result }
@@ -96,7 +114,7 @@ const procurementDept = async () => {
 
 // Sales Dept Users
 const salesDept = async () => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_dept = 'sales'";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_dept = 'sales'";
   try {
     const result = await executeQuery(sql);
     if (result) { return result }
@@ -108,7 +126,7 @@ const salesDept = async () => {
 
 // Marketing Dept Users
 const marketDept = async () => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_dept = 'marketing'";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_dept = 'marketing'";
   try {
     const result = await executeQuery(sql);
     if (result) { return result }
@@ -120,7 +138,7 @@ const marketDept = async () => {
 
 // HR Dept Users
 const hrDept = async () => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_dept = 'hr'";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_dept = 'hr'";
   try {
     const result = await executeQuery(sql);
     if (result) { return result }
@@ -132,7 +150,7 @@ const hrDept = async () => {
 
 // Legal Dept Users
 const legalDept = async () => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_dept = 'legal'";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_dept = 'legal'";
   try {
     const result = await executeQuery(sql);
     if (result) { return result }
@@ -144,7 +162,7 @@ const legalDept = async () => {
 
 // Logistics Dept Users
 const logisticsDept = async () => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_dept = 'logistics'";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_dept = 'logistics'";
   try {
     const result = await executeQuery(sql);
     if (result) { return result }
@@ -156,7 +174,7 @@ const logisticsDept = async () => {
 
 // IT admin users
 const itDept = async () => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_dept = 'IT'";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_dept = 'IT'";
   try {
     const result = await executeQuery(sql);
     if (result) { return result }
@@ -168,7 +186,7 @@ const itDept = async () => {
 
 // All super admin Users
 const allSuperAdminUsers = async () => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_type = 'superAdmin'";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_type = 'superAdmin'";
   try {
     const result = await executeQuery(sql);
     if (result) { return result }
@@ -180,7 +198,7 @@ const allSuperAdminUsers = async () => {
 
 // All default user
 const allDefaultUsers = async () => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_type = 'default'";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_type = 'default'";
   try {
     const result = await executeQuery(sql);
     if (result) { return result }
@@ -192,7 +210,7 @@ const allDefaultUsers = async () => {
 
 // All intern users
 const allInternUsers = async () => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_type = 'intern'";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_type = 'intern'";
   try {
     const result = await executeQuery(sql);
     if (result) { return result }
@@ -204,7 +222,7 @@ const allInternUsers = async () => {
 
 // All guest Users
 const allGuestUsers = async () => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_type = 'guest'";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_type = 'guest'";
   try {
     const result = await executeQuery(sql);
     if (result) { return result }
@@ -216,7 +234,7 @@ const allGuestUsers = async () => {
 
 // All CSM users
 const allCSMUsers = async () => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_type = 'CSM'";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_type = 'CSM'";
   try {
     const result = await executeQuery(sql);
     if (result) { return result }
@@ -228,7 +246,7 @@ const allCSMUsers = async () => {
 
 // All temporal
 const allTemporalUsers = async () => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_type = 'temporal'";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_type = 'temporal'";
   try {
     const result = await executeQuery(sql);
     if (result) { return result }
@@ -240,7 +258,7 @@ const allTemporalUsers = async () => {
 
 // Make search
 const Search = async (prop) => {
-  const sql = "SELECT Usr_id, Usr_name, Usr_phone, Usr_email FROM UserManagement WHERE activated = 'yes' AND (Usr_name LIKE ? OR Usr_phone LIKE ? OR Usr_email LIKE ?);";
+  const sql = "SELECT Usr_id, Usr_name, Usr_phone, Usr_email FROM usermanagement WHERE activated = 'yes' AND (Usr_name LIKE ? OR Usr_phone LIKE ? OR Usr_email LIKE ?);";
   try {
     const result = await executeQuery(sql, prop);
     if (result) { return result }
@@ -292,7 +310,7 @@ const updateUserPSD = async (data) => {
 
 // Log user into the system
 const loginUser = async (payload) => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_status = 'active' AND (Usr_email = ? OR Usr_name = ?)";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_status = 'active' AND (Usr_email = ? OR Usr_name = ?)";
   try {
     const result = await executeQuery(sql, payload);
     if (result) { return result }
@@ -304,7 +322,7 @@ const loginUser = async (payload) => {
 
 // Query user onto the system
 const signUpUser = async (email, username) => {
-  const sql = "SELECT * FROM UserManagement WHERE Usr_email = ? OR Usr_name = ?";
+  const sql = "SELECT * FROM usermanagement WHERE Usr_email = ? OR Usr_name = ?";
   const values = [email, username];
   try {
     const result = await executeQuery(sql, values);
@@ -329,7 +347,7 @@ const resetPassword = async (id) => {
 
 // Add user onto the system
 const AddNewUser = async (data) => {
-  const sql = "INSERT IGNORE INTO UserManagement (Usr_FName, Usr_LName, Usr_name, Usr_type, Usr_status, Usr_phone, Usr_email, Usr_address, Usr_dept, Usr_reg_date, passwd, activated, Usr_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  const sql = "INSERT IGNORE INTO usermanagement (Usr_FName, Usr_LName, Usr_name, Usr_type, Usr_status, Usr_phone, Usr_email, Usr_address, Usr_dept, Usr_reg_date, passwd, activated, Usr_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   try {
     const result = await executeQuery(sql, data);
     if (result) { return result }

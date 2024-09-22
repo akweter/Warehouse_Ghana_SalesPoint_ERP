@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import logo from '../assets/images/logo.webp';
 import '../assets/css/verifyEmail.css';
-import { fetchuserByID, updateUserPSD } from '../apiActions/allApiCalls/users';
+import { fetchuserByIDPsd, updateUserPSD } from '../apiActions/allApiCalls/users';
 import {
     Box,
     Button,
@@ -30,7 +30,7 @@ const VerifyEmail = () => {
     const fetchData = async () => {
         try {
             const id = window.location.pathname.split('/').pop();
-            const data = await fetchuserByID(id);
+            const data = await fetchuserByIDPsd(id);
             setUserData(data);
         }
         catch (error) {
@@ -56,6 +56,10 @@ const VerifyEmail = () => {
         setErrors({ ...errors, [name]: validationError });
         setFormData({ ...formData, [name]: value });
     };
+
+    const Alert = () =>{
+        window.alert('Issue will be reported soon!');
+    }
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
@@ -177,7 +181,7 @@ const VerifyEmail = () => {
                                                 fullWidth 
                                                 size='large' 
                                                 color='error'
-                                                onClick={()=>alert('Issue will be reported soon!')}
+                                                onClick={Alert}
                                             >
                                                 < IconExclamationMark />Report Issue
                                             </Button>

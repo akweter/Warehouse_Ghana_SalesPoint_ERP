@@ -39,7 +39,7 @@ export const fetchAllInvoices = async () => {
 
 // Fetch all invoice
 export const fetchAllQuotations = async () => {
-    const response = await requestMaking('invoices/quote', 'GET', null);
+    const response = await requestMaking('invoices/quotes', 'GET', null);
     if (response.ok) {
         return await response.json();
     }
@@ -139,6 +139,15 @@ export const fetchAutocompleteId = async () => {
 // Fetch Invoice details for Waybill
 export const FetchWaybillInvoice = async (id) => {
     const response = await requestMaking(`invoices/waybill/${id}`, 'GET', null);
+    if (response.ok) {
+        return await response.json();
+    }
+    return null;
+}
+
+// Fetch Quotation Invoice details for Waybill
+export const fetchQuoteInvoices = async () => {
+    const response = await requestMaking(`invoices/quotes`, 'GET', null);
     if (response.ok) {
         return await response.json();
     }

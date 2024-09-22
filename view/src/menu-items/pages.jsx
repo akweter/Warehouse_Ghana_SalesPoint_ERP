@@ -15,6 +15,14 @@ const pages = {
   type: 'group',
   children: [
     {
+      id: 'po-quotes',
+      title: 'Quotations',
+      type: 'item',
+      url: '/po-quotes',
+      icon: IconReportMoney,
+      breadcrumbs: false
+    },
+    {
       id: 'invoice',
       title: 'Invoices',
       type: 'item',
@@ -24,26 +32,26 @@ const pages = {
     },
     {
       id: 'refund',
-      title: 'Refund',
+      title: 'Refunds',
       type: 'item',
       url: '/refund',
       icon: IconReceiptRefund,
       breadcrumbs: false
     },
     {
-      id: 'order_checkout',
-      title: 'Order Checkout',
+      id: 'orders',
+      title: 'New Orders',
       type: 'item',
-      url: '/order/checkout',
+      url: '/orders/new',
       icon: IconTruckDelivery,
       breadcrumbs: false
     },
     {
-      id: 'po-quotes',
-      title: 'P.O & Quotations',
+      id: 'orders_supplied',
+      title: 'Supplied Orders',
       type: 'item',
-      url: '/po-quotes',
-      icon: IconReportMoney,
+      url: '/orders/supplied',
+      icon: IconTruckDelivery,
       breadcrumbs: false
     },
     {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { 
     Paper,
     Stack,
@@ -9,7 +9,6 @@ import {
 import { styled } from '@mui/material/styles';
 import { Close } from '@mui/icons-material';
 import { MasonryContainer, MasonryItem } from '../../../ui-component/styleEffects';
-import TopPerformingProducts from './topPerformingProducts';
 import Two from './two';
 import Three from './three';
 import Four from './four';
@@ -22,19 +21,12 @@ const DemoPaper = styled(Paper)(({ theme }) => ({
     width: '100%'
 }));
 
-const Analysis = () => <TopPerformingProducts />;
 const Orders = () => <Two />;
 const Customers = () => <Three />;
 const Products = () => <Four />;
-const components = [Orders, Customers, Products, Analysis];
+const components = [Orders, Customers, Products];
 
 const ProductStats = ({ closeDrawer }) => {
-    const [show, setShow] = useState([]);
-    const [data, setData] = useState([]);
-    const [alert, setAlert]= useState({message: '', color: 'success'});
-
-    useEffect(() => {}, []);
-    
     return (
         <Stack direction="row" overflow='scroll' width={1250} margin={1} border='2px solid blue' borderRadius={5}>
             <DemoPaper variant="outlined">
