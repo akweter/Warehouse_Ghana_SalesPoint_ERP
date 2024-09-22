@@ -156,7 +156,7 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, su
                     {
                         selectedRow.InvoiceStatus === "Proforma Invoice" ? (<>
                             <Button variant='contained' color='error' size='small' onClick={() => deleteQuote(selectedRow.InvoiceNumber)}>Delete</Button>
-                            <Button variant='contained' color='secondary' size='small' onClick={handleOpen}>Edit Quote</Button>
+                            <Button variant='contained' color='secondary' size='small' onClick={handleOpen}>Update Quote</Button>
                             <Button variant='contained' color='warning' size='small' onClick={handleCloseDialog}>Close</Button>
                         </>) : (<>                        
                             <Button variant='contained' color='secondary' size='medium' onClick={() => handleRefundBtnClick()}>Refund Invoice</Button>

@@ -38,7 +38,7 @@ const WaybillPopper = () => {
     return (
         <>
             <Button variant="contained" color='error' onClick={handleClick}>
-                <Typography color='white'>Print Waybill</Typography>                
+                <Typography color='white'>Generate Waybill</Typography>                
             </Button>
             <Popover
                 open={open}

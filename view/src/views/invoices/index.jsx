@@ -30,7 +30,6 @@ import MakeNewInvoice from './generateInvoice';
 import InvoiceDetails from './invoiceDetails';
 import InvoiceTemplate from './invoiceTemplate';
 import { AlertError, GeneralCatchError } from '../../utilities/errorAlert';
-import WaybillPopper from '../../views/waybill/waybillPopup';
 import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceholder';
 
 // /* eslint-disable */
@@ -312,11 +311,6 @@ const Invoice = () => {
                 <Grid item>
                     < MakeNewInvoice setSubmitted={setSubmitted} status={status} />
                 </Grid>
-                <Grid item>
-                    <WaybillPopper />
-                </Grid>
-                {/* <Grid item>
-                </Grid> */}
             </Grid>
             {
                 invoices.length > 0 ?
