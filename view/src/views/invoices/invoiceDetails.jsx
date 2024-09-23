@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState } from 'react';
 import {
     Button,
@@ -18,6 +19,7 @@ import {
     Stack,
     Chip,
     Slide,
+    DialogTitle,
 } from '@mui/material';
 import { CancelSharp } from '@mui/icons-material';
 import logo from '../../assets/images/logo.webp';
@@ -27,6 +29,7 @@ import RefundForms from '../refund/refundForm';
 const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, submitted, deleteQuote }) => {
     const [drop, setDrop] = useState(false);
     const [open, setOpen] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
     const [openRefDialog, setOpenRefDialog] = useState(false);
 
     const handleOpen = () => { setOpen(true); handleCloseDialog() }
@@ -37,6 +40,11 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, su
     const handleRefundBtnClick = () => {
         setOpenRefDialog(true);
         handleCloseDialog();
+    }
+
+    const deleteQuotation = (InvoiceNumber) => {
+        setOpenDelete(false);
+        deleteQuote(InvoiceNumber);
     }
 
     return (
@@ -155,7 +163,7 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, su
                 <DialogActions>
                     {
                         selectedRow.InvoiceStatus === "Proforma Invoice" ? (<>
-                            <Button variant='contained' color='error' size='small' onClick={() => deleteQuote(selectedRow.InvoiceNumber)}>Delete</Button>
+                            <Button variant='contained' color='error' size='small' onClick={() => setOpenDelete(true)}>Delete</Button>
                             <Button variant='contained' color='secondary' size='small' onClick={handleOpen}>Update Quote</Button>
                             <Button variant='contained' color='warning' size='small' onClick={handleCloseDialog}>Close</Button>
                         </>) : (<>                        
@@ -213,6 +221,17 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, su
                     refundInv={selectedRow}
                     setSubmitted={submitted}
                 />
+            </Dialog>            
+            <Dialog open={openDelete} sx={{ padding: '20px' }}>
+                <DialogTitle color='red' variant='h3'>Heads-Up</DialogTitle>
+                <DialogContent>
+                    <Typography variant='h4' align='center'>
+                        Are you sure you want to remove this quotation?</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenDelete(false)} variant='outlined' color='error'>Cancel</Button>
+                    <Button onClick={() => deleteQuotation(selectedRow.InvoiceNumber)} variant='contained' color='primary'>Remove</Button>
+                </DialogActions>
             </Dialog>
         </Box>
     );

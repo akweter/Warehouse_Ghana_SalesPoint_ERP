@@ -28,8 +28,8 @@ const requestMaking = async (route, method, bodyData) => {
         sessionStorage.setItem('Authorization', newToken);
         sessionStorage.setItem('userActiveURL', window.location.pathname);
       }
-      return response;
     }
+    return response;
 };
 
 export default requestMaking;

@@ -471,6 +471,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
             }
         }
         catch (error) {
+            console.log(error);
             setDrop(false);
             setAlert((e) => ({ ...e, message: "Invoice submission failed! Refresh and try again", color: 'error' }));
             setOpen(true);

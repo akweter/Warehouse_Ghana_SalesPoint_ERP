@@ -79,7 +79,7 @@ Router.post("/invoice", async (req, res) => {
     const Data = req.body;
 
     if (!Data || !Data.items || !Array.isArray(Data.items)) {
-        return res.json({ status: 'Error', message: 'Invalid data structure', data: Data });
+        return res.status(500).json({ status: 'Error', message: 'Invalid payload structure', data: Data });
     }
     const sanitizedPayload = sanitizePayload(Data);
     // logSuccessMessages(sanitizedPayload);
@@ -112,17 +112,13 @@ Router.post("/invoice", async (req, res) => {
         }
     }
     catch (error) {
-        if (error.response) {
-        }
-        else if (error.request) {
-            // The request was made but no response was received
-            logErrorMessages(`No response received from the server for request: ${error} `);
-            return res.json({ status: 'error', message: 'Empty response from GRA server' });
-        }
-        else {
-            // Something happened in setting up the request that triggered an error
-            logErrorMessages(`Request setup error: ${error}`);
-            return res.json({ status: 'error', message: `Oops! Something went wrong. Please reflesh and retry.` });
+        const { response: { data} } = error;
+        if (data) {
+            logErrorMessages(`Request to GRA backend failed: ${data.message}`);
+            return res.json({ status: 'error', message: data.message });
+        } else {
+            logErrorMessages(`Request to GRA backend failed: ${error}`);
+            return res.status(500).json({ status: 'error', message: `Request to GRA backend failed. Please retry.` });
         }
     }
 });
@@ -159,20 +155,13 @@ Router.post("/refund", async (req, res) => {
         }
     }
     catch (error) {
-        if (error.response) {
-            const { status, data } = error.response;
-            logErrorMessages(`${Data.userName} - ${data}, ${sanitizedPayload}`);
-            return res.status(status).json({ status: 'error', message: data });
-        }
-        else if (error.request) {
-            // The request was made but no response was received
-            logErrorMessages(`No response received from the server for request: ${error.request} `);
-            return res.json({ status: 'error', message: 'Empty response from GRA server' });
-        }
-        else {
-            // Something happened in setting up the request that triggered an error
-            logErrorMessages(`Request setup error: ${error}`);
-            return res.json({ status: 'error', message: `Oops! Something went wrong. Please reflesh and retry.` });
+        const { response: { data} } = error;
+        if (data) {
+            logErrorMessages(`Request to GRA backend failed: ${data.message}`);
+            return res.status(500).json({ status: 'error', message: data.message });
+        } else {
+            logErrorMessages(`Request to GRA backend failed: ${error}`);
+            return res.status(500).json({ status: 'error', message: `Request to GRA backend failed. Please retry.` });
         }
     }
 });
@@ -245,20 +234,13 @@ Router.post("/refund/cancellation", async (req, res) => {
         }
     }
     catch (error) {
-        if (error.response) {
-            const { status, data } = error.response;
-            logErrorMessages(`${Data.userName} - ${data}, ${Data}`);
-            return res.status(status).json({ status: 'error', message: data });
-        }
-        else if (error.request) {
-            // The request was made but no response was received
-            logErrorMessages(`No response received from the server for request: ${error.request} `);
-            return res.json({ status: 'error', message: 'Empty response from GRA server' });
-        }
-        else {
-            // Something happened in setting up the request that triggered an error
-            logErrorMessages(`Request setup error: ${error}`);
-            return res.json({ status: 'error', message: `Oops! Something went wrong. Please reflesh and retry.` });
+        const { response: { data} } = error;
+        if (data) {
+            logErrorMessages(`Request to GRA backend failed: ${data.message}`);
+            return res.status(500).json({ status: 'error', message: data.message });
+        } else {
+            logErrorMessages(`Request to GRA backend failed: ${error}`);
+            return res.status(500).json({ status: 'error', message: `Request to GRA backend failed. Please retry.` });
         }
     }
 });

@@ -49,7 +49,7 @@ const WaybillForm = ({ formData, closeDialog }) => {
                                         </td>
                                         <td width="10%" />
                                         <td width='45%'>
-                                            <h1>Delivery Note</h1>
+                                            <h1>Waybill</h1>
                                             <table width='100%'>
                                                 <tbody>
                                                     <tr>
@@ -61,7 +61,7 @@ const WaybillForm = ({ formData, closeDialog }) => {
                                                         <td>{formData[0].InvoiceNumber}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td><strong>Delivery Note #</strong></td>
+                                                        <td><strong>Waybill #</strong></td>
                                                         <td>{generateUUID()}</td>
                                                     </tr>
                                                     <tr>

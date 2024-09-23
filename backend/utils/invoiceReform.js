@@ -16,7 +16,7 @@ const filterFields = (obj, fieldsToRemove) => {
 
 // Trim the payload to GRA Standard
 const sanitizePayload = (data) => {
-    const itemsFieldsToRemove = [
+    const itemLevel = [
         "itemSubtotal",
         "totalVat",
         "totalLevy",
@@ -28,9 +28,11 @@ const sanitizePayload = (data) => {
         "alt",
         "refProQty",
         "invoiceType",
+        "businessPartnerName",
+        "userPhone",
     ];
 
-    const mainFieldsToRemove = [
+    const documentLevel = [
         "invCusId",
         "remarks",
         "unitPrice",
@@ -48,12 +50,13 @@ const sanitizePayload = (data) => {
         "invoiceType",
         "quote",
         "infoMsg",
+        "userPhone",
     ];
 
     let sanitizedPayload = { ...data };
-    sanitizedPayload = filterFields(sanitizedPayload, mainFieldsToRemove);
+    sanitizedPayload = filterFields(sanitizedPayload, documentLevel);
     sanitizedPayload.items = sanitizedPayload.items.map((item) =>
-        filterFields(item, itemsFieldsToRemove)
+        filterFields(item, itemLevel)
     );
     return sanitizedPayload;
 };
