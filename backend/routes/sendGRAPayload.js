@@ -4,7 +4,7 @@ const axios = require("axios");
 require('dotenv').config();
 
 const { GRA_ENDPOINT, GRA_KEY } = process.env;
-const { saveRefundInvoice } = require("../controller/salesNinvoices");
+const { saveRefundInvoice, updateQuotation } = require("../controller/salesNinvoices");
 const generateUUID = require("../utils/generateIDs");
 const {
     sanitizePayload,
@@ -27,6 +27,24 @@ const sampleGARResponse = {
         },
         qr_code: null,
     }
+}
+
+const updateDBWithGRAResponse = async(response) => {
+    const { data: { response: { message }, qr_code }} = response;
+        const payload = [
+            message.flag,
+            message.ysdcmrctim,
+            message.ysdcid,
+            message.ysdcrecnum,
+            message.ysdcintdata,
+            message.ysdcregsig,
+            message.ysdcmrc,
+            message.ysdcmrctim,
+            message.ysdctime,
+            qr_code,
+            message.num,
+        ];        
+        return await updateQuotation(payload);
 }
 
 // Verify Taxpayer TIN
@@ -62,8 +80,7 @@ Router.post("/quote", async (req, res) => {
     // logSuccessMessages(Data);
     try {
         if ((invoiceType && invoiceType === "Proforma Invoice") && (!infoMsg || infoMsg !== "quoteEdit")) {
-            await saveInvoiceToDB(Data, sampleGARResponse);
-            return res.status(200).json({status: "success", message: "Transaction success"});
+            return await saveInvoiceToDB(Data, sampleGARResponse);
         }
         await addInvoiceProducts(Data);
         res.status(200).json({status: "success", message: "Transaction success"});
@@ -84,32 +101,28 @@ Router.post("/invoice", async (req, res) => {
     const sanitizedPayload = sanitizePayload(Data);
     // logSuccessMessages(sanitizedPayload);
     try {
-        const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, {
-            timeout: 10000,
-            headers: { 'security_key': GRA_KEY,
-                'Content-Type': 'application/json'
-             }
-        });
-        if (response && response.status === 200) {
-            const resultMessage = response.data.response.status;
-            if (resultMessage) {
-                await saveInvoiceToDB(Data, response.data)
-                    .then(() => {
-                        return res.status(200).json({ status: 'success' });
-                    })
-                    .catch((error) => {
-                        logErrorMessages(`Failed to save invoice: ${error} to DB`);
-                        return res.json({ status: 'error', message: `Failed to save invoice: ${sanitizedPayload.invoiceNumber} to DB. Try new invoice` });
-                    });
+        await saveInvoiceToDB(Data, sampleGARResponse)
+        .then( async() => {
+            const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, {
+                timeout: 10000,
+                headers: { 
+                    'security_key': GRA_KEY,
+                    'Content-Type': 'application/json'
+                }
+            });
+            await updateDBWithGRAResponse(response);
+            return res.status(200).json({ status: 'success' });
+        })
+        .catch((error) => {
+            const { response: { data} } = error;
+            if (data) {
+                logErrorMessages(`Invoice failed: ${data.message}`);
+                return res.json({ status: 'error', message: data.message });
+            } else {
+                logErrorMessages(`Request to GRA backend failed: ${error}`);
+                return res.status(500).json({ status: 'error', message: `Invoice failed!` });
             }
-            else {
-                logErrorMessages(`Unknow GRA error for invoice ${sanitizedPayload}`);
-                return res.json({ status: 'error', message: 'Request GRA response indicates unknown error' });
-            }
-        }
-        else {
-            return res.json({ status: 'error', message: `Sending invoice: ${sanitizedPayload.invoiceNumber} to GRA Failed!` });
-        }
+        })
     }
     catch (error) {
         const { response: { data} } = error;
@@ -243,6 +256,38 @@ Router.post("/refund/cancellation", async (req, res) => {
             return res.status(500).json({ status: 'error', message: `Request to GRA backend failed. Please retry.` });
         }
     }
+});
+
+// make call back
+Router.post("/callback", async (req, res) => {
+    const Data = req.body;
+    const { invoiceNumber, reference, flag } = Data;
+
+    if (!Data || !Data.items || !Array.isArray(Data.items)) {
+        return res.status(500).json({ status: 'Error', message: 'Invalid payload structure', data: Data });
+    }
+
+    const cbPayload ={
+        reference: reference,
+        invoiceNumber: invoiceNumber,
+        flag: flag,
+    }
+    const response = await axios.post(`${GRA_ENDPOINT}/invoice/callback`, cbPayload, {
+        timeout: 10000,
+            headers: {
+                'security_key': GRA_KEY,
+                'Content-Type': 'application/json'
+            }
+        });
+        updateDBWithGRAResponse(response)
+        .then(result => {
+            console.log('Update successful:', result)
+            return res.status(200).json({ status: 'success' });
+        })
+        .catch(error => { 
+            console.error('Update failed!', error)
+            return res.status(500).json({ status: 'error', message: 'Failed! Please try again.' });
+        });
 });
 
 module.exports = Router;

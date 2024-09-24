@@ -10,7 +10,8 @@ import {
     Typography,
     Box,
     Stack,
-    Chip} from '@mui/material';
+    Chip,
+    Container} from '@mui/material';
 import Slide from '@mui/material/Slide';
 
 // /* eslint-disable */
@@ -21,6 +22,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const MakeNewInvoice = ({ setSubmitted, status }) => {
     const [drop, setDrop] = useState(false);
     const [open, setOpen] = useState(false);
+    const [callback, setCallback] = useState(false);
 
     const handleOpen = () => { setOpen(true); };
     const handleClose = () => { setOpen(false); };
@@ -42,37 +44,49 @@ const MakeNewInvoice = ({ setSubmitted, status }) => {
                 TransitionComponent={Transition}
                 transitionDuration={1000}
             >
-                <AppBar style={{ backgroundColor: '#151B4D' }}>
-                    <Toolbar sx={{ justifyContent: 'space-between' }}>
-                        <img src={logo} width={60} height={40} alt='Logo' />
-                        <Typography
-                            variant="h2"
-                            sx={{
-                                flex: 1,
-                                textAlign: 'center',
-                                color: 'white'
-                            }}
-                        >
-                            Make New Invoice
-                        </Typography>
-                        <Stack direction="row" spacing={1}>
-                            <Chip 
-                                variant="filled" 
-                                color={status === true ? 'primary' : 'error'}
-                                label={status === true ? 'GRA UP' : 'GRA DOWN'}
-                            />
-                        </Stack>
-                        <Box>
-                            <Button onClick={handleClose} fullWidth color='error' variant="contained" size='small' startIcon={<CancelSharpIcon />}>
-                                Cancel
-                            </Button>
-                        </Box>
-                    </Toolbar>
+                <AppBar position="static" sx={{ backgroundColor: '#151B4D' }}>
+                    <Container maxWidth="xl">
+                        <Toolbar disableGutters>
+                            <img src={logo} width={60} height={40} alt='Logo' />
+                            <Typography
+                                variant="h2"
+                                sx={{
+                                    flex: 1,
+                                    textAlign: 'center',
+                                    color: 'white'
+                                }}
+                            >
+                                Make New Invoice
+                            </Typography>
+                            <Box paddingRight={3}>
+                                <Button variant="contained" color='warning' onClick={() => setCallback(true)}>
+                                    <Typography>Request CallBack</Typography>
+                                </Button>
+                            </Box>
+                            <Stack direction="row" spacing={1}>
+                                <Chip
+                                    variant="filled" 
+                                    color={status ? 'primary' : 'error'}
+                                    label={status ? 'GRA UP' : 'GRA DOWN'}
+                                />
+                                <Button onClick={handleClose} fullWidth color='error' variant="contained" size='small' startIcon={<CancelSharpIcon />}>
+                                    Cancel
+                                </Button>
+                            </Stack>
+                        </Toolbar>
+                    </Container>
                 </AppBar>
                 <div style={{ marginTop: '10px' }}>
-                    < InvoiceForm setSubmitted={setSubmitted} setDrop={setDrop} drop={drop} BackdropOpen={setOpen}/>
+                    < InvoiceForm 
+                        setSubmitted={setSubmitted} 
+                        setDrop={setDrop} drop={drop} 
+                        BackdropOpen={setOpen} 
+                        callBack={callback}
+                        setCallBack={setCallback}
+                    />
                 </div>
             </Dialog>
+            <Box></Box>
         </div>
     );
 }

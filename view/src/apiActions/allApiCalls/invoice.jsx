@@ -175,6 +175,15 @@ export const postNewGRAInvoice = async (data) => {
     return null;
 };
 
+// post gra invoice callback
+export const postGRAInvoiceCallback = async (data) => {
+    const response = await requestMaking('gra/callback', 'POST', data);
+    if (response.ok) {
+        return await response.json();
+    }
+    return null;
+};
+
 // Peform Refund cancellation
 export const postRefundCancellation = async (data) => {
     const response = await requestMaking(`gra/refund/cancellation`, 'POST', data);

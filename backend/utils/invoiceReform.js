@@ -51,6 +51,7 @@ const sanitizePayload = (data) => {
         "quote",
         "infoMsg",
         "userPhone",
+        "callback",
     ];
 
     let sanitizedPayload = { ...data };

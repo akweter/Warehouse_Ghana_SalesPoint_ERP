@@ -51,12 +51,12 @@ import Screens from '../../ui-component/cardDivision';
 import { headerPayload, itemlistPayload } from '../../views/payload/payloadStructure';
 import { AlertError } from '../../utilities/errorAlert';
 import { ShowBackDrop } from '../../utilities/backdrop';
-import { fetchAutocompleteId, postNewGRAInvoice } from '../../apiActions/allApiCalls/invoice';
+import { fetchAutocompleteId, postGRAInvoiceCallback, postNewGRAInvoice } from '../../apiActions/allApiCalls/invoice';
 import { fetchProductNameSearch } from '../../apiActions/allApiCalls/product';
 import { fetchCustomerNameSearch } from '../../apiActions/allApiCalls/customer';
 import { computeStandardTaxes } from '../../utilities/computeAllTaxes';
  
-const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen }) => {
+const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen, callBack, setCallBack }) => {
     const [open, setOpen] = useState(false);
     const [compute, setCompute] = useState(false);
     const [cashCustomer, setCashCustomer] = useState(false);
@@ -155,6 +155,17 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
         }
     }, [])
 
+    useEffect(() => {
+        if (callBack) {
+            setHeader((state) => {
+                const newState = { ...state, callback: "yes" };
+                return newState;
+            });
+            submitFormToGRA();
+            setCallBack(false);
+        }
+    }, [callBack]);
+    
     // Fetch product and Customer Data
     useEffect(() => {
         fetchData();
@@ -424,7 +435,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
             });
         }
     }
-
+    
     // Submit form to GRA
     const submitFormToGRA = async () => {
         const mandatoryFields = [
@@ -456,8 +467,8 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
                 setDrop(true);
                 setTimeout(resolve, 2000);
             });
-            const data = await postNewGRAInvoice(header);
-            if (data.status === "Error") {
+            const data = callBack ? await postGRAInvoiceCallback(header) : await postNewGRAInvoice(header);
+            if (data.status === "error") {
                 const res = JSON.stringify(data.message);
                 setAlert((e) => ({ ...e, message: res, color: 'warning' }));
                 setOpen(true);
@@ -471,7 +482,6 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
             }
         }
         catch (error) {
-            console.log(error);
             setDrop(false);
             setAlert((e) => ({ ...e, message: "Invoice submission failed! Refresh and try again", color: 'error' }));
             setOpen(true);
@@ -857,97 +867,47 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
                                 fontSize: '18px',
                             }}
                         >
+                            <p><strong>Invoice #: </strong>{header.invoiceNumber}</p>
                             <p><strong>Customer: </strong>{header.businessPartnerName}</p>
                             <p><strong>Tin:</strong> {header.businessPartnerTin}</p>
                         </div>
                         <Grid container spacing={2}>
                             <TableContainer component={Paper}>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Description</TableCell>
-                                            <TableCell>Quantity</TableCell>
-                                            <TableCell>Price</TableCell>
-                                            <TableCell>Discount</TableCell>
-                                            <TableCell>Action</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {header.items.map((item, index) => (
-                                            <TableRow hover={true} key={index}>
-                                                <TableCell padding='normal' size='small'>{item.description || item.ProductName}</TableCell>
-                                                <TableCell padding='none' size='small'>{item.quantity || item.Quantity}</TableCell>
-                                                <TableCell padding='none' size='small'>{item.unitPrice || item.ProductPrice}</TableCell>
-                                                <TableCell padding='none' size='small'>{item.discountAmount || item.ProductDiscount}</TableCell>
-                                                <TableCell padding='none' size='small'>
-                                                    <Tooltip title="Edit">
-                                                        <IconButton onClick={() => handleEdit(index)}><EditIcon color='primary' /></IconButton>
-                                                    </Tooltip>
-                                                    <Tooltip title="Delete">
-                                                        <IconButton onClick={() => handleDelete(index)}><DeleteIcon color='error' /></IconButton>
-                                                    </Tooltip>
-                                                </TableCell>
+                                <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>Description</TableCell>
+                                                <TableCell>Quantity</TableCell>
+                                                <TableCell>Price</TableCell>
+                                                <TableCell>Discount</TableCell>
+                                                <TableCell>Action</TableCell>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                        </TableHead>
+                                        <TableBody>
+                                            {header.items.map((item, index) => (
+                                                <TableRow hover key={index}>
+                                                    <TableCell padding='normal' size='small'>{item.description || item.ProductName}</TableCell>
+                                                    <TableCell padding='none' size='small'>{item.quantity || item.Quantity}</TableCell>
+                                                    <TableCell padding='none' size='small'>{item.unitPrice || item.ProductPrice}</TableCell>
+                                                    <TableCell padding='none' size='small'>{item.discountAmount || item.ProductDiscount}</TableCell>
+                                                    <TableCell padding='none' size='small'>
+                                                        <Tooltip title="Edit">
+                                                            <IconButton onClick={() => handleEdit(index)}><EditIcon color='primary' /></IconButton>
+                                                        </Tooltip>
+                                                        <Tooltip title="Delete">
+                                                            <IconButton onClick={() => handleDelete(index)}><DeleteIcon color='error' /></IconButton>
+                                                        </Tooltip>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
                             </TableContainer>
-                            {/* Edit Dialog */}
-                            <Dialog open={openEditDialog} onClose={handleEditCancel}>
-                                <DialogTitle>Edit Item</DialogTitle>
-                                <DialogContent>
-                                    <Grid container spacing={2} py={3}>
-                                        <Grid item xs={12}>
-                                            <TextField
-                                                label="Description"
-                                                value={itemlists.description}
-                                                onChange={handleMainChange}
-                                                name='description'
-                                                fullWidth
-                                                disabled={true}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={4}>
-                                            <TextField
-                                                label="Quantity"
-                                                value={itemlists.quantity}
-                                                onChange={handleMainChange}
-                                                name='quantity'
-                                                fullWidth
-                                                type='number'
-                                            />
-                                        </Grid>
-                                        <Grid item xs={4}>
-                                            <TextField
-                                                label="Unit Price"
-                                                value={itemlists.unitPrice}
-                                                onChange={handleMainChange}
-                                                name='unitPrice'
-                                                fullWidth
-                                                type='number'
-                                            />
-                                        </Grid>
-                                        <Grid item xs={4}>
-                                            <TextField
-                                                label="Discount"
-                                                name='discountAmount'
-                                                value={itemlists.discountAmount}
-                                                onChange={handleMainChange}
-                                                fullWidth
-                                                type='number'
-                                            />
-                                        </Grid>
-                                    </Grid>
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button variant='outlined' onClick={handleEditCancel} color="error"> Cancel </Button>
-                                    <Button variant='outlined' onClick={handleEditSave} color="secondary"> Update </Button>
-                                </DialogActions>
-                            </Dialog>
                             <div className='remarkNtax'>
                                 <Box
                                     sx={{
-                                        p: 2,
                                         borderRadius: 2,
                                         bgcolor: 'background.default',
                                         display: 'grid',
@@ -1020,7 +980,60 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen 
                     </div>
                 </Screens.Item>
             </Box>
+            {/* Edit Dialog */}
+            <Dialog open={openEditDialog} onClose={handleEditCancel}>
+                <DialogTitle>Edit Item</DialogTitle>
+                <DialogContent>
+                    <Grid container spacing={2} py={3}>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Description"
+                                value={itemlists.description}
+                                onChange={handleMainChange}
+                                name='description'
+                                fullWidth
+                                disabled={true}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <TextField
+                                label="Quantity"
+                                value={itemlists.quantity}
+                                onChange={handleMainChange}
+                                name='quantity'
+                                fullWidth
+                                type='number'
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <TextField
+                                label="Unit Price"
+                                value={itemlists.unitPrice}
+                                onChange={handleMainChange}
+                                name='unitPrice'
+                                fullWidth
+                                type='number'
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <TextField
+                                label="Discount"
+                                name='discountAmount'
+                                value={itemlists.discountAmount}
+                                onChange={handleMainChange}
+                                fullWidth
+                                type='number'
+                            />
+                        </Grid>
+                    </Grid>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant='outlined' onClick={handleEditCancel} color="error"> Cancel </Button>
+                    <Button variant='outlined' onClick={handleEditSave} color="secondary"> Update </Button>
+                </DialogActions>
+            </Dialog>
         </ThemeProvider>
     </>);
 }
+
 export default InvoiceForm;
