@@ -68,7 +68,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
     const [itemlists, setItemLists] = useState(itemlistPayload);
     const [alert, setAlert] = useState({ message: '', color: 'success' });
 
-    // update the header and item state
+    // update the header and item state for qutation edit
     useEffect(() => {
         if (quoteProducts) {
             const {
@@ -93,6 +93,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                 customerPhone,
                 IssuerName,
                 CustomerID,
+                checkdID,
             } = quoteProducts;
             const headerDiscount = products.reduce((ProductDiscount, item) => ProductDiscount + parseFloat(item.ProductDiscount || 0), 0);
             setHeader((state) => ({
@@ -121,13 +122,13 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                 status: "Proforma Invoice",
                 userPhone: customerPhone,
                 delivery: "",
-                increment: "",
                 infoMsg: "quoteEdit",
                 nhil: NHIL,
                 getfund: GETFund,
                 covid: COVID,
                 cst: CST,
                 tourism: Tourism,
+                checkdID: checkdID
             }));
             // Set items state
             if (Array.isArray(products) && products.length > 0) {
@@ -155,6 +156,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
         }
     }, [])
 
+    // Make call back when the call back state is triggered from the index (main component)
     useEffect(() => {
         if (callBack) {
             setHeader((state) => {
@@ -259,12 +261,12 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
             try {
                 const response = await fetchAutocompleteId();
                 const number = response[0].numList + 1;
-                const output = `WG${year}M${month}${number}CSD`;
+                const output = `YG${year}M${month}${number}CSD`;
                 setHeader((state) => ({ ...state, invoiceNumber: output }));
             }
             catch (error) {
                 let num = Math.floor(Math.random() * 100) + 1;
-                const output = `WG${year}${month}${(day)}-${num}CSD`;
+                const output = `XG${year}${month}${(day)}-${num}CSD`;
                 // const output = `WG${year}${month}020CSD`;
                 setHeader((state) => ({ ...state, invoiceNumber: output }));
             }
@@ -698,7 +700,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                         defaultValue={new Date()}
                                         label="Invoice Date"
                                         sx={{ height: '10px' }}
-                                        maxDate={header.infoMsg || header.invoiceType === "Proforma Invoice" ? null : dayjs()}
+                                        maxDate={header.infoMsg /*|| header.invoiceType === "Proforma Invoice"*/ ? null : dayjs()}
                                         onChange={(e) => {
                                             const selectedDate = e.$d;
                                             const formattedDate = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;

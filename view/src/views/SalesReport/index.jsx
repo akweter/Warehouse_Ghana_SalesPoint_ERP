@@ -19,21 +19,22 @@ import {
     Dialog,
     DialogTitle
 } from '@mui/material'
-import { checkGRAServerStatus, deleteQuotation, fetchQuoteInvoices } from '../../apiActions/allApiCalls/invoice';
+import { checkGRAServerStatus, deleteQuotation, fetchQuoteInvoices, postNewGRAInvoice } from '../../apiActions/allApiCalls/invoice';
 import InvoiceDetails from '../invoices/invoiceDetails';
 import { AlertError, GeneralCatchError } from '../../utilities/errorAlert';
 import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceholder';
 import InvoiceTemplate from '../invoices/invoiceTemplate';
 import { UseFullPayload } from '../invoices/invoiceQuotePayload';
+import { formatDate } from '../../utilities/formatDate';
 
-/* eslint-disable */
+// /* eslint-disable */
 
 export default function SalesReport() {
     const [submitted, setSubmitted] = useState(false);
     const [status, setStatus] = useState(false);
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [loadQuote, setLoadQuote] = useState(false);
+    const [loadQuote, setLoadQuote] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
     const [openConfirm, setOpenConfirm] = useState(false);
     const [openPrintInvoice, setOpenPrintInvoice] = useState(false);
@@ -77,12 +78,6 @@ export default function SalesReport() {
         catch (error) {
             setStatus(false);
         }
-    };
-
-    // Format Date and Time to GRA Standard
-    const formatDate = (dateString) => {
-        const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
     // Sum Levied together
@@ -168,7 +163,7 @@ export default function SalesReport() {
                     </IconButton>
                     <IconButton onClick={() => handleQuoteToInvoiceBtnClick(params.row)}>
                         {
-                            loadQuote === true ? <CircularProgress size={20} color='secondary' /> :
+                            loadQuote === params.row.InvoiceNumber ? <CircularProgress size={20} color='secondary' /> :
                             <SendRounded fontSize='small' color='secondary' title='Invoice Quotation' />
                         }
                     </IconButton>
@@ -223,7 +218,7 @@ export default function SalesReport() {
     // Print invoice
     const handlePrintIcon = (row) => {
         setOpenPrintInvoice(false)
-        const invoiceTemplateHTML = renderInvoiceTemplate(row);
+        const invoiceTemplateHTML = ReactDOMServer.renderToStaticMarkup(< InvoiceTemplate data={row} />);
         setPrintInvoice([]);
         const printWindow = window.open('', '_blank');
         printWindow.document.body.innerHTML = invoiceTemplateHTML;
@@ -238,13 +233,7 @@ export default function SalesReport() {
         };
     }
 
-    const renderInvoiceTemplate = (row) => {
-        const invoiceTemplate = ReactDOMServer.renderToStaticMarkup(< InvoiceTemplate data={row} />);
-        return invoiceTemplate;
-    };
-
-
-    const handleQuoteToInvoiceBtnClick = async (row) => {
+    const handleQuoteToInvoiceBtnClick = (row) => {
         const payload = UseFullPayload(row);
         setHeader(payload);
         setOpenConfirm(true);
@@ -252,23 +241,22 @@ export default function SalesReport() {
 
     const sendPayload = async () => {
         try {
-            await new Promise((resolve) => {
-                setNotify((e) => ({ ...e, message: '', color: '' }));
-                setLoadQuote(true);
-                setOpenConfirm(false);
-                setTimeout(resolve, 2000);
-            });
-            await postNewGRAInvoice(header);
-            setNotify((e) => ({ ...e, message: "Invoice submitted to GRA success!", color: 'success' }));
-            setOpen(true);
-            setLoadQuote(false);
-            fetchData();
+            setLoadQuote(header.InvoiceNumber || header.invoiceNumber);
+            setOpenConfirm(false);
+
+            const response  = await postNewGRAInvoice(header);
+            if (response && response.status !== 'error') {
+                setNotify((e) => ({ ...e, message: "Invoice submitted to GRA success!", color: 'success' }));
+                fetchData();
+            } else {
+                setNotify((e) => ({ ...e, message: response.message || "Invoice submitted to GRA failed!", color: 'error' }));
+            }
         }
         catch (error) {
-            setNotify((e) => ({ ...e, message: "Invoice submitted to GRA failed!", color: 'error' }));
-            setOpen(true);
-            setLoadQuote(false);
+            setNotify((e) => ({ ...e, message: error.message || "Invoice submitted to GRA failed!", color: 'error' }));
         }
+        setOpen(true);
+        setLoadQuote(null);
     }
 
     const closeConfirm = () => {

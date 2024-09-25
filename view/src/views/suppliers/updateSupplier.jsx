@@ -20,7 +20,6 @@ import { updateSupplier } from '../../apiActions/allApiCalls/supplier';
 /* eslint-disable */
 
 const UpdateSupplier = ({ supplier, closeAddnewUser, setSubmitted }) => {
-    console.log('supplier',supplier);
     const [formData, setFormData] = useState({
         userEmail: supplier.supplierEmail || '',
         userActive: supplier.supplierStatus || '',

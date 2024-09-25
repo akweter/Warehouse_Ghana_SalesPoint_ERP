@@ -5,6 +5,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import {
     Close,
     Print as PrintIcon,
+    Undo,
     Visibility as VisibilityIcon
 } from '@mui/icons-material';
 import {
@@ -16,7 +17,8 @@ import {
     DialogActions,
     Button,
     Dialog,
-    DialogTitle
+    DialogTitle,
+    CircularProgress
 } from '@mui/material';
 
 // projects
@@ -24,6 +26,7 @@ import {
     checkGRAServerStatus,
     deleteQuotation,
     fetchAllInvoices,
+    postGRAInvoiceCallback,
     postNewGRAInvoice,
 } from '../../apiActions/allApiCalls/invoice';
 import MakeNewInvoice from './generateInvoice';
@@ -37,6 +40,7 @@ const Invoice = () => {
     const [submitted, setSubmitted] = useState(false);
     const [status, setStatus] = useState(false);
     const [open, setOpen] = useState(false);
+    const [drop, setDrop] = useState(null);
     const [loading, setLoading] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
     const [openConfirm, setOpenConfirm] = useState(false);
@@ -135,14 +139,14 @@ const Invoice = () => {
                 width: 70,
                 headerClassName: 'dataGridheader',
             },
-            {
-                field: 'InvoiceStatus',
-                headerName: 'Transaction',
-                description: 'Transaction Type',
-                flex: 1,
-                width: 70,
-                headerClassName: 'dataGridheader',
-            },
+            // {
+            //     field: 'InvoiceStatus',
+            //     headerName: 'Transaction',
+            //     description: 'Transaction Type',
+            //     flex: 1,
+            //     width: 70,
+            //     headerClassName: 'dataGridheader',
+            // },
             {
                 field: 'InvoiceDate',
                 headerName: 'Date',
@@ -197,10 +201,57 @@ const Invoice = () => {
                     <IconButton title='Print Invoice' onClick={() =>  pushPrintInvoiceData(params.row)}>
                         <PrintIcon fontSize='small' color='error' />
                     </IconButton>
-                </>),
+                    {params.row.QRCode ? null : (
+                        <>
+                            { drop === params.row.InvoiceNumber ? (
+                                <CircularProgress size={22} color='secondary'/>
+                            ) : (
+                                <IconButton 
+                                    title='Request Call Back' 
+                                    onClick={() =>  requestCallback(params.row)}
+                                >
+                                    <Undo fontSize='medium' color='secondary' />
+                                </IconButton>
+                            )}
+                        </>
+                    )}
+                </>)
             },
         ]
     });
+
+    // Call back to GRA backend
+    const requestCallback = async (payload) => {
+        setDrop(payload.InvoiceNumber);        
+        const load = { ...payload, flag: "INVOICE" }
+        console.log('chheckid',payload.checkdID);
+
+        try {
+            const response  = await postGRAInvoiceCallback(load);
+            if (response && response.status === 'success') {
+                setNotify((e) => ({
+                ...e, message: `Call back for invoice #: ${payload.InvoiceNumber} successful`, color: 'success'
+                }));
+                setOpen(true);
+            } else {
+                setNotify((e) => ({
+                    ...e, message: response.message, color: 'error'
+                }));
+                setOpen(true);
+            }
+        } catch (error) {
+            setNotify((e) => ({
+                ...e, message: `Call back for invoice #: ${payload.invoiceNumber} failed`, color: 'error'
+            }));
+            return setOpen(true);
+        } finally{
+            setOpen(true);
+            setDrop(null);
+        }
+        setDrop(null);
+        return setSubmitted(true);
+        
+    }
 
     // Delete quotation invoice
     const deleteQuote = async (invNum) => {
@@ -298,6 +349,9 @@ const Invoice = () => {
 
     return (
         <div>
+            {alert.message ? <GeneralCatchError alert={alert} handleClose={handleClose} open={open} /> : null}
+            {notify.message ? <AlertError alert={notify} handleClose={handleClose} open={open} /> : null}
+
             <Grid container justifyContent='space-evenly'
                 style={{
                     backgroundColor: 'darkblue',
@@ -335,8 +389,6 @@ const Invoice = () => {
                 </Box> :
                 < ProductPlaceholder />
             }
-            {alert.message ? <GeneralCatchError alert={alert} handleClose={handleClose} open={open} /> : null}
-            {notify.message ? <AlertError alert={notify} handleClose={handleClose} open={open} /> : null}
             {
                 selectedRow && (
                     <>

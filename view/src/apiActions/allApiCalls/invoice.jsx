@@ -168,20 +168,22 @@ export const postNewInvoice = async (data) => {
 // post gra new invoice
 export const postNewGRAInvoice = async (data) => {
     const endpoint = data.invoiceType === "Proforma Invoice" ? "gra/quote" : "gra/invoice";
-    const response = await requestMaking(endpoint, 'POST', data);
-    if (response.ok) {
+    // try {
+        const response = await requestMaking(endpoint, 'POST', data);
         return await response.json();
-    }
-    return null;
+    // } catch (error) {
+    //     return error;
+    // }
 };
 
-// post gra invoice callback
+// post gra invoice callback 
 export const postGRAInvoiceCallback = async (data) => {
-    const response = await requestMaking('gra/callback', 'POST', data);
-    if (response.ok) {
+    try {
+        const response = await requestMaking('gra/callback', 'POST', data);
         return await response.json();
+    } catch (error) {
+        return null;
     }
-    return null;
 };
 
 // Peform Refund cancellation
@@ -190,7 +192,7 @@ export const postRefundCancellation = async (data) => {
     if (response.ok) {
         return await response.json();
     }
-    return null;
+    return response;
 };
 
 // Delete quotation based on invoice

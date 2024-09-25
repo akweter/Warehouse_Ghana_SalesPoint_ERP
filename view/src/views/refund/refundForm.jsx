@@ -63,6 +63,7 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
                 SaleType,
                 DiscountType,
                 InvoiceDate,
+                CustomerID,
             } = refundInv;
 
             // Set header state
@@ -88,7 +89,7 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
                 groupReferenceId: "",
                 purchaseOrderReference: "",
                 invoiceType: "Partial_Refund",
-                invCusId: CustomerTIN,
+                invCusId: CustomerID,
                 remarks: Remarks,
                 status: "Partial_Refund"
             }));

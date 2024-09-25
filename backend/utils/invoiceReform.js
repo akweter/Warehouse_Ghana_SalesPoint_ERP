@@ -3,7 +3,7 @@ const {
     AddNewInvoices,
     saveInInvoiceProduct,
     updateRefundProducts,
-    deleteQuotationProducts,
+    updateQuotation,
 } = require("../controller/salesNinvoices");
 const generateUUID = require("./generateIDs");
 
@@ -62,9 +62,42 @@ const sanitizePayload = (data) => {
     return sanitizedPayload;
 };
 
+// update Database with gra QR code for a particular invoice number
+const updateDBWithGRAResponse = async (response) => {
+    const {
+        qr_code,
+        message: {
+            flag,
+            ysdcmrctim,
+            ysdcid,
+            ysdcrecnum,
+            ysdcintdata,
+            ysdcregsig,
+            ysdcmrc,
+            ysdctime,
+            num,
+        }
+    } = response.response;
+    const payload = [
+        flag,
+        ysdcmrctim,
+        ysdcid,
+        ysdcrecnum,
+        ysdcintdata,
+        ysdcregsig,
+        ysdcmrc,
+        ysdcmrctim,
+        ysdctime,
+        qr_code,
+        num,
+        flag,
+    ];
+    return await updateQuotation(payload);
+}
+
 // Save invoice or quotation products
 const addInvoiceProducts = async (Data) => {
-    const { items, invoiceType, flag, invoiceNumber, infoMsg } = Data;
+    const { items, flag, invoiceNumber } = Data;
     if (items) {
         // Save Refund invoice
         if (['REFUND', 'PARTIAL_REFUND'].includes(flag)) {
@@ -72,7 +105,7 @@ const addInvoiceProducts = async (Data) => {
         }
         else {
             // await deleteQuotationProducts(invoiceNumber);
-            await Promise.all(items.map(async (item) => {
+            const result = await Promise.all(items.map(async (item) => {
                 const {
                     itemCode,
                     unitPrice,
@@ -88,13 +121,9 @@ const addInvoiceProducts = async (Data) => {
                     quantity,
                     0,
                 ];
-                try {
-                    await saveInInvoiceProduct(data);
-                }
-                catch (error) {
-                    throw error;
-                }
+                return await saveInInvoiceProduct(data);
             }));
+            return result;
         }
     }
 }
@@ -102,6 +131,8 @@ const addInvoiceProducts = async (Data) => {
 // Save invoice or quotation
 const saveInvoiceToDB = async (Data, responseData) => {
     const {
+        AutoID,
+        checkdID,
         userName,
         totalAmount,
         transactionDate,
@@ -121,13 +152,15 @@ const saveInvoiceToDB = async (Data, responseData) => {
         calculationType,
         saleType,
         discountType,
-        increment,
         reference,
         delivery,
         invoiceType,
         userPhone,
         invCusId,
     } = Data;
+
+    // Customer basket
+    let checkID = null;
 
     // Customer basket
     let CID = null;
@@ -144,9 +177,21 @@ const saveInvoiceToDB = async (Data, responseData) => {
         return CID;
     }
 
+    // Generate unique ID to track and avoid saving duplicated info
+    const generateCheckID = (id) => {
+        if (checkID === null) {
+            if (!id || id === "") {
+                checkID = generateUUID();
+            } else {
+                checkID = id;
+            }
+        }
+        return checkID;
+    }
+
     const payload = [
-        0,
-        increment,
+        AutoID,
+        generateCheckID(checkdID),
         userName,
         totalAmount,
         invoiceType,
@@ -185,7 +230,7 @@ const saveInvoiceToDB = async (Data, responseData) => {
         businessPartnerTin,
         "",
         userPhone,
-        "",
+        "", 
         "Active",
         "",
         "Taxable",
@@ -193,17 +238,16 @@ const saveInvoiceToDB = async (Data, responseData) => {
         customerID(invCusId),
         new Date(),
     ];
-
     try {
         await AddNewInvoices(payload);
         if (businessPartnerTin === "C0000000000") {
             await addCustomer(customerAdd);
         }
-        return await addInvoiceProducts(Data);
-    }
-    catch (err) {
-        return err;
+        await addInvoiceProducts(Data);
+        return { status: 'success' }
+    } catch (error) {
+        return error;
     }
 };
 
-module.exports = { sanitizePayload, saveInvoiceToDB, addInvoiceProducts }
+module.exports = { sanitizePayload, saveInvoiceToDB, addInvoiceProducts, updateDBWithGRAResponse }

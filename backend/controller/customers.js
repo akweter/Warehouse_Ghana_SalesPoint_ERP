@@ -287,7 +287,7 @@ const Searches = async (prop) => {
 // Add new custoner
 const addCustomer = async (prop) => {
   const sql = `
-    INSERT INTO customers(
+    INSERT IGNORE INTO customers(
       C_name, 
       C_tin,
       C_address,  

@@ -1,17 +1,8 @@
 import { computeStandardTaxes } from '../../utilities/computeAllTaxes';
+import { formatDate } from '../../utilities/formatDate';
 import { getUserName } from '../../utilities/getUserName';
 
 export const UseFullPayload = (payload) => {
-    
-    // Set Date value according to GRA API standard
-    const formatDate = (date) => {
-        if (date) {
-            const parts = date.split('/');
-            const formattedDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-            return formattedDate;
-        }
-    }
-
     // update the header and item state
     const {
         CustomerTIN,
@@ -25,6 +16,8 @@ export const UseFullPayload = (payload) => {
         SaleType,
         DiscountType,
         InvoiceDate,
+        CustomerID,
+        checkdID,
     } = payload;
 
     // Set items state
@@ -94,7 +87,7 @@ export const UseFullPayload = (payload) => {
         reference: "",
         groupReferenceId: "",
         purchaseOrderReference: "",
-        invCusId: CustomerTIN,
+        invCusId: CustomerID,
         remarks: Remarks,
         status: "Invoice",
         quote: "Yes",
@@ -105,6 +98,7 @@ export const UseFullPayload = (payload) => {
         tourism: tourism,
         covid: covid,
         invoiceType: "Invoice",
+        checkdID: checkdID,
     };
     return newHeader;
 }

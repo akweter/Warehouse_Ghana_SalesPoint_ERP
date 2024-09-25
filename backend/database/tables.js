@@ -43,7 +43,7 @@ const DBTables =
 
         CREATE TABLE IF NOT EXISTS invoice (
             Inv_ID_auto int(15) NOT NULL,
-            autoIncrementID int(11) DEFAULT 0,
+            Inv_Check int(20) NOT NULL,
             Inv_user varchar(30) DEFAULT NULL,
             Inv_total_amt decimal(10,2) DEFAULT 0.00,
             Inv_status enum('Purchase','Invoice','Refund','Refund_Cancellation','Partial_Refund','Proforma Invoice') DEFAULT 'Proforma Invoice',

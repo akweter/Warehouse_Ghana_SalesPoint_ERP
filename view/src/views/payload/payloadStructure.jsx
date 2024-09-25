@@ -46,7 +46,8 @@ export const headerPayload = {
     items: [],
     invCusId: "",
     remarks: "",
-    invoiceType: "Invoice",
+    invoiceType: "Proforma Invoice",
     delivery: "",
     userPhone: "",
+    checkdID: ""
 }

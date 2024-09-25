@@ -62,6 +62,7 @@ const salesNRefundInvoices = async (a, b, c) => {
 	const sql = `
 	  SELECT
 		inv.Inv_ID_auto  AS AutoID,
+		inv.Inv_Check AS checkdID,
 		inv.Inv_Number AS InvoiceNumber,
 		inv.Inv_user AS IssuerName,
 		inv.Inv_status AS InvoiceStatus,
@@ -478,7 +479,7 @@ const Searches = async (payload) => {
 const AddNewInvoices = async (payload) => {
 	const sql = `
 	INSERT IGNORE INTO invoice(
-		Inv_ID_auto, autoIncrementID, Inv_user, Inv_total_amt, Inv_status, Inv_Calc_Type, Inv_date, currency, Inv_Sale_Type, Inv_Number, Inv_Customer_Tin, Inv_Cus_ID, Inv_discount, Inv_ext_Rate, Inv_vat, Inv_id, Inv_Reference, remarks, nhil, getfund, covid, cst, tourism, Inv_Discount_Type, ysdcid, ysdcrecnum, ysdcintdata, ysdcregsig, ysdcmrc, ysdcmrctim, ysdctime, qr_code, Inv_delivery_fee
+		Inv_ID_auto, Inv_Check, Inv_user, Inv_total_amt, Inv_status, Inv_Calc_Type, Inv_date, currency, Inv_Sale_Type, Inv_Number, Inv_Customer_Tin, Inv_Cus_ID, Inv_discount, Inv_ext_Rate, Inv_vat, Inv_id, Inv_Reference, remarks, nhil, getfund, covid, cst, tourism, Inv_Discount_Type, ysdcid, ysdcrecnum, ysdcintdata, ysdcregsig, ysdcmrc, ysdcmrctim, ysdctime, qr_code, Inv_delivery_fee
 	) VALUES(
 		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 	)`;
@@ -494,7 +495,7 @@ const AddNewInvoices = async (payload) => {
 const saveRefundInvoice = async (payload) => {
 	const sql = `
 	INSERT IGNORE INTO invoice(
-		Inv_ID_auto, autoIncrementID, Inv_user, Inv_total_amt, Inv_status, Inv_Calc_Type, Inv_date, currency, Inv_Sale_Type, Inv_Number, Inv_Customer_Tin, Inv_discount, Inv_ext_Rate, Inv_vat, Inv_id, Inv_Reference, remarks, nhil, getfund, covid, cst, tourism, Inv_Discount_Type, ysdcid, ysdcrecnum, ysdcintdata, ysdcregsig, ysdcmrc, ysdcmrctim, ysdctime, qr_code, Inv_delivery_fee
+		Inv_ID_auto, Inv_Check, Inv_user, Inv_total_amt, Inv_status, Inv_Calc_Type, Inv_date, currency, Inv_Sale_Type, Inv_Number, Inv_Customer_Tin, Inv_discount, Inv_ext_Rate, Inv_vat, Inv_id, Inv_Reference, remarks, nhil, getfund, covid, cst, tourism, Inv_Discount_Type, ysdcid, ysdcrecnum, ysdcintdata, ysdcregsig, ysdcmrc, ysdcmrctim, ysdctime, qr_code, Inv_delivery_fee
 	) VALUES(
 		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 	)`;
@@ -567,6 +568,8 @@ const updateInvoiceQRCodes = async (payload) => {
 		qr_code = ?
 	WHERE
 		Inv_Number = ?
+	AND 
+		Inv_status = ?
     `;
 	try {
 		const result = await executeQuery(sql, payload);
@@ -609,7 +612,6 @@ const deleteQuotation = async (invoiceNumber) => {
 
 // Delete quotation
 const deleteQuotationProducts = async (invoiceNumber) => {
-	console.log('deleteting invoice number', invoiceNumber);
 	const sql = `DELETE FROM invoice_products WHERE InvoiceNum_ID = ?`;
 	try {
 		const result = await executeQuery(sql, invoiceNumber);
