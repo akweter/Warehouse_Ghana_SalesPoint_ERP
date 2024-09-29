@@ -33,7 +33,7 @@ export const fetchSupplierNameSearch = async (data) => {
     if (response.ok) {
         return await response.json();
     }
-    return null;
+    return [];
 };
 
 // Post a supplier

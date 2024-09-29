@@ -249,11 +249,11 @@ Router.get("/query", async (req, res, next) => {
   const result = '%' + query + '%'
   try {
     const output = await querySupplier(result);
-    return executeRoute(output, res);
+    res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages("Searching supplier failed" + err);
+    res.status(500).send('Searching supplier failed');
   }
 });
 

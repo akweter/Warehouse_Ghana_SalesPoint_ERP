@@ -95,6 +95,7 @@ const salesNRefundInvoices = async (a, b, c) => {
 		invt.Itm_UOM AS uom,
 		invt.Itm_name AS ProductName,
 		invt.Itm_taxable AS ProductCategory,
+		ip._ID AS IPID,
 		ip.Product_Price AS ProductPrice,
 		ip.Product_Discount AS ProductDiscount,
 		ip.Product_Quantity AS Quantity,
@@ -511,8 +512,15 @@ const saveRefundInvoice = async (payload) => {
 // Save product for each invoice
 const saveInInvoiceProduct = async (payload) => {
 	const sql = `
-		INSERT IGNORE INTO invoice_products(
-			_ID, InvoiceNum_ID, Product_ID, Product_Price, Product_Discount, Product_Quantity, Product_Refunded_Quantity
+		INSERT IGNORE INTO 
+			invoice_products(
+				_ID, 
+				InvoiceNum_ID, 
+				Product_ID, 
+				Product_Price, 
+				Product_Discount, 
+				Product_Quantity, 
+				Product_Refunded_Quantity
 		) VALUES (
 			?, ?, ?, ?, ?, ?, ?
 		)
@@ -526,7 +534,37 @@ const saveInInvoiceProduct = async (payload) => {
 	}
 };
 
-// Update quote invoice
+// update invoice products in the database
+const updateInvoiceProducts =  async (payload, productID, invoiceNum) => {
+	const sql = `
+		UPDATE invoice_products
+		SET ?
+		WHERE _ID = ?
+		AND InvoiceNum_ID = ?
+	`;
+	try {
+	  const result = await executeQuery(sql, [payload, productID, invoiceNum]);
+	  if (result) { return result }
+	}
+	catch (error) {
+	  return error;
+	}
+}
+
+// Update complete invoice
+const updateInvoice_Quotation = async (invoice, checkID) => {
+	const sql = `
+		UPDATE invoice SET ? WHERE Inv_Check = ?`;
+	try {
+	  const result = await executeQuery(sql, [invoice, checkID]);
+	  if (result) { return result }
+	}
+	catch (error) {
+	  return error;
+	}
+}
+
+// Update quote invoice with GRA response
 const updateQuotation = async (payload) => {
 	const sql = `
 	UPDATE invoice SET
@@ -656,4 +694,6 @@ module.exports = {
 	updateQuotation,
 	deleteQuotation,
 	deleteQuotationProducts,
+	updateInvoice_Quotation,
+	updateInvoiceProducts,
 };

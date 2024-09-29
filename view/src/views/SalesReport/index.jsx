@@ -44,11 +44,23 @@ export default function SalesReport() {
     const [header, setHeader] = useState([]);
     const [alert, setAlert] = useState({ message: '', color: '' });
     const [notify, setNotify] = useState({ message: '', color: '' });
+    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 600);
 
     useEffect(() => {
         fetchData();
         testServer();
     }, [submitted, status]);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsSmallScreen(window.innerWidth < 600);
+        };
+        
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     // Fetch Invoices data from Database
     const fetchData = async () => {
@@ -100,6 +112,49 @@ export default function SalesReport() {
 
     // Set column for DataGrid
     const columns = useMemo(() => {
+        if (isSmallScreen) {
+            return [
+                {
+                    field: 'InvoiceDate',
+                    headerName: 'Date',
+                    description: 'Transaction Date',
+                    flex: 1.2,
+                    width: 70,
+                    headerClassName: 'dataGridheader',
+                },
+                {
+                    field: 'CustomerName',
+                    headerName: 'Customer',
+                    description: 'Customer Name',
+                    flex: 2,
+                    width: 70,
+                    headerClassName: 'dataGridheader',
+                },
+                {
+                    field: 'actions',
+                    headerName: 'ACTIONS',
+                    flex: 1.5,
+                    width: 150,
+                    sortable: false,
+                    headerClassName: 'dataGridheader',
+                    renderCell: (params) => (<>
+                        <IconButton title='View Invoice' onClick={() => handleViewIconClick(params.row)}>
+                            <VisibilityIcon fontSize='medium' color='primary' />
+                        </IconButton>
+                        <IconButton onClick={() => handleQuoteToInvoiceBtnClick(params.row)}>
+                            {
+                                loadQuote === params.row.InvoiceNumber ? <CircularProgress size={20} color='secondary' /> :
+                                <SendRounded fontSize='small' color='secondary' title='Invoice Quotation' />
+                            }
+                        </IconButton>
+                        <IconButton title='Print Invoice' onClick={() =>  pushPrintInvoiceData(params.row)}>
+                            <PrintIcon fontSize='small' color='error' />
+                        </IconButton>
+                    </>),
+                },
+            ]
+        }
+
         return [
             {
                 field: 'id',
@@ -172,8 +227,8 @@ export default function SalesReport() {
                     </IconButton>
                 </>),
             },
-        ]
-    });
+        ];
+    }, [isSmallScreen]);
 
     // Delete quotation invoice
     const deleteQuote = async (invNum) => {

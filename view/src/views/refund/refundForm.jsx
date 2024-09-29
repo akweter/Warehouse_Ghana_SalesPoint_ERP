@@ -8,7 +8,11 @@ import {
     TextField,
     Grid,
     Typography,
-    Box
+    Box,
+    Table,
+    TableRow,
+    TableCell,
+    TableBody
 } from '@mui/material';
 import { Cancel } from '@mui/icons-material';
 
@@ -63,7 +67,10 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
                 SaleType,
                 DiscountType,
                 InvoiceDate,
+                checkdID,
                 CustomerID,
+                DeliveryFee,
+                customerPhone,
             } = refundInv;
 
             // Set header state
@@ -91,7 +98,10 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
                 invoiceType: "Partial_Refund",
                 invCusId: CustomerID,
                 remarks: Remarks,
-                status: "Partial_Refund"
+                status: "Partial_Refund",
+                checkdID: checkdID,
+                delivery: DeliveryFee,
+                userPhone: customerPhone,
             }));
 
             // Set items state
@@ -226,14 +236,17 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
         try {
             setConfirmationOpen(false);
             const data = await postRefundInvoice(header);
-            setAlert((e) => ({ ...e, message: `${data.status}! Invoice refunded`, color: 'success' }));
-            setOpen(true);
-            setSubmitted(true);
+            if (data.status === 'error') {
+                setAlert((e) => ({ ...e, message: data.message, color: 'error' }));
+            } else {
+                setAlert((e) => ({ ...e, message: `${data.status}! Invoice refunded`, color: 'success' }));
+                setSubmitted(true);
+            }
         }
         catch (error) {
             setAlert((e) => ({ ...e, message: 'Refunding invoice failed!', color: 'error' }));
-            setOpen(true);
         }
+        setOpen(true);
         setDrop(true)
         setSubmitted(true);
     }
@@ -246,13 +259,39 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
             }
             {
                 header.items.length > 0 ? (<>
-                <Box sx={{ padding: '10px' }}>
+                <Box>
                     <Grid container sx={{ justifyContent: 'space-around', backgroundColor: 'darkblue' }}>
-                        <DialogTitle sx={{ fontSize: 18, color: 'white' }}>Cancel Invoice Transaction</DialogTitle>
-                        <DialogActions>
-                            <Button variant='contained' color='error' onClick={submitFullInvoice}>Total Void</Button>
-                            <Button variant='contained' color='warning' onClick={submitInvoice}>Partial Void</Button>
-                            <Button variant='outlined' color='error' onClick={handleClose}>< Cancel />Close</Button>
+                        <DialogTitle sx={{ fontSize: 18, color: 'white', flexGrow: 2 }}>Cancel Invoice Transaction</DialogTitle>
+                        <Table size='small' padding='checkbox' sx={{ width: 'auto', margin: 0 }}>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell><Typography color='white' variant='h4'>Customer</Typography></TableCell>
+                                    <TableCell>
+                                        <Typography color='white' noWrap={false} variant='body1' sx={{ wordWrap: 'break-word' }}>
+                                            {header.businessPartnerName}
+                                        </Typography>
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell><Typography color='white' variant='h4'>TIN</Typography></TableCell>
+                                    <TableCell>
+                                        <Typography color='white' noWrap={false} variant='body1' sx={{ wordWrap: 'break-word' }}>
+                                            {header.businessPartnerTin}
+                                        </Typography>
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                        <DialogActions sx={{ marginLeft: 'auto' }}>
+                            <Button 
+                                sx={{ margin: 0 }} 
+                                variant='contained' 
+                                color='error' 
+                                size='small' 
+                                onClick={handleClose}
+                            >
+                                <Cancel color='secondary' /> Close
+                            </Button>
                         </DialogActions>
                     </Grid>
                     <DialogContent sx={{ paddingX: 15 }}>
@@ -317,6 +356,12 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
                             ) : null
                         }
                     </DialogContent>
+                    <Grid container sx={{ justifyContent: 'space-around', backgroundColor: 'darkblue' }}>
+                        <DialogActions>
+                            <Button variant='contained' color='error' onClick={submitFullInvoice}>Total Void</Button>
+                            <Button variant='contained' color='warning' onClick={submitInvoice}>Partial Void</Button>
+                        </DialogActions>
+                    </Grid>
                 </Box>
                 </>) : null
             }

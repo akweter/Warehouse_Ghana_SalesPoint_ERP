@@ -1,9 +1,11 @@
-const { addCustomer } = require("../controller/customers");
+const { addCustomer, status } = require("../controller/customers");
 const {
     AddNewInvoices,
     saveInInvoiceProduct,
     updateRefundProducts,
     updateQuotation,
+    updateInvoice_Quotation,
+    updateInvoiceProducts,
 } = require("../controller/salesNinvoices");
 const generateUUID = require("./generateIDs");
 
@@ -30,6 +32,7 @@ const sanitizePayload = (data) => {
         "invoiceType",
         "businessPartnerName",
         "userPhone",
+        "invProID",
     ];
 
     const documentLevel = [
@@ -95,9 +98,12 @@ const updateDBWithGRAResponse = async (response) => {
     return await updateQuotation(payload);
 }
 
+// await updateInvoiceProducts(payload, IPID ,invoiceNumber);
+
 // Save invoice or quotation products
 const addInvoiceProducts = async (Data) => {
-    const { items, flag, invoiceNumber } = Data;
+    const { items, flag, invoiceNumber, infoMsg } = Data;
+
     if (items) {
         // Save Refund invoice
         if (['REFUND', 'PARTIAL_REFUND'].includes(flag)) {
@@ -111,8 +117,24 @@ const addInvoiceProducts = async (Data) => {
                     unitPrice,
                     discountAmount,
                     quantity,
+                    invProID,
                 } = item;
-                const data = [
+
+                // Customer basket
+                let productID = null;
+
+                // Generate customer ID
+                const product_ID = (id) => {
+                    if (productID === null) {
+                        if (!id || id === "") {
+                            productID = generateUUID();
+                        } else {
+                            productID = id;
+                        }
+                    }
+                    return productID;
+                }
+                const add = [
                     generateUUID(),
                     invoiceNumber,
                     itemCode,
@@ -121,7 +143,28 @@ const addInvoiceProducts = async (Data) => {
                     quantity,
                     0,
                 ];
-                return await saveInInvoiceProduct(data);
+                const update = {
+                    Product_Price: unitPrice,
+                    Product_Discount: discountAmount,
+                    Product_Quantity: quantity,
+                };
+                const addUpdate = [
+                    product_ID(invProID),
+                    invoiceNumber,
+                    itemCode,
+                    unitPrice,
+                    discountAmount,
+                    quantity,
+                    0,
+                ];
+                if (infoMsg && infoMsg === "quoteEdit") {
+                    await saveInInvoiceProduct(addUpdate).then(e => console.log('save products',e));
+                    await updateInvoiceProducts(update, invProID, invoiceNumber).then(e => console.log('update products',e));
+                    productID = null;
+                } else {
+                    await saveInInvoiceProduct(add);
+                }
+                return ({ status: 'success' })
             }));
             return result;
         }
@@ -157,6 +200,7 @@ const saveInvoiceToDB = async (Data, responseData) => {
         invoiceType,
         userPhone,
         invCusId,
+        infoMsg,
     } = Data;
 
     // Customer basket
@@ -176,7 +220,7 @@ const saveInvoiceToDB = async (Data, responseData) => {
         }
         return CID;
     }
-
+    // IPID
     // Generate unique ID to track and avoid saving duplicated info
     const generateCheckID = (id) => {
         if (checkID === null) {
@@ -188,6 +232,24 @@ const saveInvoiceToDB = async (Data, responseData) => {
         }
         return checkID;
     }
+
+    const invoiceData = {
+        Inv_total_amt: totalAmount,
+        Inv_Customer_Tin: businessPartnerTin,
+        Inv_discount: discountAmount,
+        Inv_ext_Rate: exchangeRate,
+        Inv_vat: totalVat,
+        remarks: remarks,
+        nhil: nhil,
+        getfund: getfund,
+        covid: covid,
+        cst: cst,
+        tourism: tourism,
+        Inv_Discount_Type: discountType,
+        Inv_delivery_fee: delivery,
+        Inv_Cus_ID: invCusId,
+        Inv_user: userName
+      };
 
     const payload = [
         AutoID,
@@ -238,12 +300,17 @@ const saveInvoiceToDB = async (Data, responseData) => {
         customerID(invCusId),
         new Date(),
     ];
+
     try {
-        await AddNewInvoices(payload);
+        if (infoMsg && infoMsg === "quoteEdit") {
+            await updateInvoice_Quotation(invoiceData, checkdID);
+        } else {
+            await AddNewInvoices(payload);
+        }       
         if (businessPartnerTin === "C0000000000") {
             await addCustomer(customerAdd);
         }
-        await addInvoiceProducts(Data);
+        await addInvoiceProducts(Data); 
         return { status: 'success' }
     } catch (error) {
         return error;

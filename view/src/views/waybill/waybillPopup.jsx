@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import { SmallTextField } from '../../views/customer/verifyTIN';
 import { FetchWaybillInvoice } from '../../apiActions/allApiCalls/invoice';
-import WaybillForm from './waybillForm';
+import WaybillForm from './waybilForm';
 
 const WaybillPopper = () => {
     const [data, setData] = useState("");

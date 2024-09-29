@@ -5,31 +5,23 @@ import { Visibility as VisibilityIcon } from '@mui/icons-material';
 import {
     IconButton,
     Grid,
-    Drawer,
     Typography,
-    Button,
 } from '@mui/material';
-import { IconCreditCardRefund } from '@tabler/icons-react';
 
 import { GeneralCatchError } from '../../utilities/errorAlert';
-import RefundCancellationForm from './refundCancelation';
-import DrawerContent from './showCancelRefunds';
 import { fetchRefundInvoices } from '../../apiActions/allApiCalls/refund';
 import InvoiceDetails from '../../views/invoices/invoiceDetails';
 
-/* eslint-disable */
+// /* eslint-disable */
 
 export default function Refund() {
-    const [open, setOpen] = useState(false);
-    const [openRefDialog, setOpenRefDialog] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
-    const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
     const [openGeneralCatch, setOpenGeneralCatch] = useState(false);
     const [invoices, setInvoices] = useState([]);
-    const [refundInv, setRefundInv] = useState([]);
     const [selectedRow, setSelectedRow] = useState(null);
     const [alert, setAlert] = useState({ message: '', color: '' });
+    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 600);
 
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
@@ -38,7 +30,18 @@ export default function Refund() {
 
     useEffect(() => {
         fetchData();
-    }, [submitted]);
+    }, []);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsSmallScreen(window.innerWidth < 600);
+        };
+        
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     const fetchData = async () => {
         try {
@@ -75,6 +78,39 @@ export default function Refund() {
     }
 
     const columns = useMemo(() => {
+        if (isSmallScreen) {
+            return [
+                {
+                    field: 'InvoiceDate',
+                    headerName: 'Date',
+                    description: 'Transaction Date',
+                    flex: 1.2,
+                    width: 70,
+                    headerClassName: 'dataGridheader',
+                },
+                {
+                    field: 'CustomerName',
+                    headerName: 'Customer',
+                    description: 'Customer Name',
+                    flex: 2,
+                    width: 200,
+                    headerClassName: 'dataGridheader',
+                },
+                {
+                    field: 'actions',
+                    headerName: 'View',
+                    flex: 1,
+                    width: 150,
+                    sortable: false,
+                    headerClassName: 'dataGridheader',
+                    renderCell: (params) => (<>
+                        <IconButton title='View Refund' onClick={() => handleViewIconClick(params.row)}>
+                            <VisibilityIcon fontSize='medium' color='secondary' />
+                        </IconButton>
+                    </>),
+                },
+            ]
+        }
         return [
             {
                 field: 'id',
@@ -136,7 +172,7 @@ export default function Refund() {
             },
             {
                 field: 'actions',
-                headerName: 'ACTIONS',
+                headerName: 'View',
                 flex: 1,
                 width: 150,
                 sortable: false,
@@ -145,41 +181,23 @@ export default function Refund() {
                     <IconButton title='View Refund' onClick={() => handleViewIconClick(params.row)}>
                         <VisibilityIcon fontSize='medium' color='secondary' />
                     </IconButton>
-                    <IconButton title='Cancel Refund' onClick={() => handleRefundBtnClick(params.row)}>
-                        <IconCreditCardRefund color='red' />
-                    </IconButton>
                 </>),
             },
-        ]
-    });
+        ];
+    }, [isSmallScreen]);
 
     const handleViewIconClick = (row) => {
         setSelectedRow(row);
         setOpenDialog(true);
     };
 
-    const handleRefundBtnClick = (row) => {
-        setRefundInv(row);
-        setOpenRefDialog(true);
-    }
-
-    const handleCloseRefDialog = () => setOpenRefDialog(false);
     const handleCloseDialog = () => setOpenDialog(false);
-    const toggleDrawer = (status) => () => setOpen(status);
     const getRowId = (row) => row.AutoID;
 
     return (
         <div>
             <Grid container sx={{ justifyContent: 'space-around', backgroundColor: 'darkblue', paddingTop: 1, paddingBottom: 1, }}>
                 <Typography color='white' variant='h3'>Refund Transactions</Typography>
-                <Button
-                    variant='contained'
-                    color='inherit'
-                    size='large'
-                    onClick={toggleDrawer(true)}
-                >
-                    <Typography variant='h5' color='darkred'>Cancelled Refunds</Typography>
-                </Button>
             </Grid>
             <Box sx={{ height: 600, width: '100%' }}>
                 <DataGrid
@@ -206,15 +224,6 @@ export default function Refund() {
                     selectedRow && (<>< InvoiceDetails selectedRow={selectedRow} openDialog={openDialog} handleCloseDialog={handleCloseDialog} /></>)
                 }
             </Box>
-            <Drawer anchor="right" open={open} onClose={toggleDrawer(false)}>
-                < DrawerContent />
-            </Drawer>
-            <RefundCancellationForm
-                open={openRefDialog}
-                handleClose={handleCloseRefDialog}
-                refData={refundInv ? refundInv : null}
-                setSubmitted={setSubmitted}
-            />
         </div>
     );
 }

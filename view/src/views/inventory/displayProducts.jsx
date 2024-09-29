@@ -1,15 +1,27 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { IconButton, Box, } from '@mui/material';
 import { EditNote } from '@mui/icons-material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import UploadCSVProducts from './uploadProducts';
 
-/* eslint-disable */
+// /* eslint-disable */
 
-const InventoryProductsTable = ({ products, loading, RefreshData }) => {
+const InventoryProductsTable = ({ products, loading }) => {
     const [open, setOpen] = useState(false);
     const [row, setRow] = useState([]);
     const [action, setAction] = useState(null);
+    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 600);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsSmallScreen(window.innerWidth < 600);
+        };
+        
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     const handleClose = () => { setOpen(false) }
 
@@ -43,6 +55,40 @@ const InventoryProductsTable = ({ products, loading, RefreshData }) => {
     );
 
     const columns = useMemo(() => {
+        if (isSmallScreen) {
+            return [
+                {
+                    field: 'productName',
+                    headerName: 'Product/Service Name',
+                    description: 'Product/Service details',
+                    width: 100,
+                    headerClassName: 'dataGridheader',
+                    flex: 2,
+                },
+                {
+                    field: 'unitPrice',
+                    headerName: 'Unit Price',
+                    description: 'Product/Service Unit Price',
+                    width: 50,
+                    flex: 1,
+                    headerClassName: 'dataGridheader',
+                },
+                {
+                    field: 'edit',
+                    headerName: 'Edit',
+                    width: 50,
+                    flex: 1,
+                    headerClassName: 'dataGridheader',
+                    sortable: false,
+                    renderCell: (params) => (<>
+                        <IconButton title='Edit product/service' onClick={() => handleEditconClick(params.row)}>
+                            <EditNote color='error' />
+                        </IconButton>
+                    </>),
+                },
+            ]
+        }
+        
         return [
             {
                 field: 'id',
@@ -131,9 +177,9 @@ const InventoryProductsTable = ({ products, loading, RefreshData }) => {
                         <EditNote color='error' />
                     </IconButton>
                 </>),
-            },
+            }
         ]
-    });
+    }, [isSmallScreen]);
 
     const handleEditconClick = (row) => {
         setRow(row);

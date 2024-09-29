@@ -29,12 +29,12 @@ const Inventory = Loadable(lazy(() => import('../views/inventory')));
 const Refund = Loadable(lazy(() => import('../views/refund')));
 const Users = Loadable(lazy(() => import('../views/userManagements')));
 const Warehouse = Loadable(lazy(() => import('../views/warehouse')));
-const OrderCheckout = Loadable(lazy(() => import('../views/order')));
+const OrderCheckout = Loadable(lazy(() => import('../views/waybill')));
 const SuppliedOrders = Loadable(lazy(() => import('../views/suppliedOrders')));
 const Auth = Loadable(lazy(() => import('../auth')));
 const Woocommerce = Loadable(lazy(() => import('../woocommerce')));
 const Tools = Loadable(lazy(() => import('../reports')));
-    
+
 // Function to get accountType from sessionStorage
 const getAccountType = () => {
   const systemUser = window.sessionStorage.getItem('userInfo');

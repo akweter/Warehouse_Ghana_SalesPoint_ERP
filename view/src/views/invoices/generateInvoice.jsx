@@ -46,30 +46,38 @@ const MakeNewInvoice = ({ setSubmitted, status }) => {
             >
                 <AppBar position="static" sx={{ backgroundColor: '#151B4D' }}>
                     <Container maxWidth="xl">
-                        <Toolbar disableGutters>
+                        <Toolbar disableGutters sx={{ flexWrap: 'wrap' }}>
                             <img src={logo} width={60} height={40} alt='Logo' />
                             <Typography
                                 variant="h2"
                                 sx={{
                                     flex: 1,
-                                    textAlign: 'center',
-                                    color: 'white'
+                                    textAlign: { xs: 'center', sm: 'left' },
+                                    color: 'white',
+                                    fontSize: { xs: '1rem', sm: '1.5rem' }
                                 }}
                             >
                                 Make New Invoice
                             </Typography>
-                            <Box paddingRight={3}>
+                            <Box paddingRight={3} sx={{ width: { xs: '100%', sm: 'auto' }, textAlign: { xs: 'center', sm: 'right' } }}>
                                 <Button variant="contained" color='warning' onClick={() => setCallback(true)}>
                                     <Typography>Request CallBack</Typography>
                                 </Button>
                             </Box>
-                            <Stack direction="row" spacing={1}>
+                            <Stack 
+                                direction="row" 
+                                spacing={1} sx={{ 
+                                    width: { xs: '100%', sm: 'auto' }, 
+                                    justifyContent: { xs: 'center', sm: 'flex-end' }, 
+                                    mt: { xs: 2, sm: 0 } 
+                                }}
+                            >
                                 <Chip
                                     variant="filled" 
                                     color={status ? 'primary' : 'error'}
                                     label={status ? 'GRA UP' : 'GRA DOWN'}
                                 />
-                                <Button onClick={handleClose} fullWidth color='error' variant="contained" size='small' startIcon={<CancelSharpIcon />}>
+                                <Button onClick={handleClose} fullWidth={false} color='error' variant="contained" size='small' startIcon={<CancelSharpIcon />}>
                                     Cancel
                                 </Button>
                             </Stack>

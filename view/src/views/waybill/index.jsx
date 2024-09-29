@@ -14,13 +14,14 @@ import {
 } from '@mui/material';
 
 // projects
-import { fetchAllInvoices } from '../../apiActions/allApiCalls/invoice';
+import { fetchQuoteInvoices } from '../../apiActions/allApiCalls/invoice';
 import { AlertError, GeneralCatchError } from '../../utilities/errorAlert';
-import WaybillPopper from '../../views/waybill/waybillPopup';
+import WaybillPopper from './waybillPopup';
 import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceholder';
+import WaybillForm from './waybilForm';
 
 // /* eslint-disable */
-export default function OrderCheckout(){
+export default function OrderCheckout() {
     const [submitted, setSubmitted] = useState(false);
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -29,16 +30,29 @@ export default function OrderCheckout(){
     const [selectedRow, setSelectedRow] = useState(null);
     const [alert, setAlert] = useState({ message: '', color: '' });
     const [notify, setNotify] = useState({ message: '', color: '' });
+    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 600);
 
     useEffect(() => {
         fetchData();
     }, [submitted]);
 
+    // Set Data Grid according to screens sizes
+    useEffect(() => {
+        const handleResize = () => {
+            setIsSmallScreen(window.innerWidth < 600);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
     // Fetch Invoices data from Database
     const fetchData = async () => {
         try {
             setLoading(true);
-            const invoicesData = await fetchAllInvoices();
+            const invoicesData = await fetchQuoteInvoices();
             setInvoices(invoicesData);
             setTimeout(() => {
                 setLoading(false);
@@ -74,6 +88,39 @@ export default function OrderCheckout(){
 
     // Set column for DataGrid
     const columns = useMemo(() => {
+        if (isSmallScreen) {
+            return [
+                {
+                    field: 'CustomerName',
+                    headerName: 'Customer',
+                    description: 'Customer Name',
+                    flex: 2,
+                    width: 70,
+                    headerClassName: 'dataGridheader',
+                },
+                {
+                    field: 'InvoiceDate',
+                    headerName: 'Date',
+                    description: 'Transaction Date',
+                    flex: 1,
+                    width: 70,
+                    headerClassName: 'dataGridheader',
+                },
+                {
+                    field: 'actions',
+                    headerName: '',
+                    flex: 1,
+                    width: 70,
+                    sortable: false,
+                    headerClassName: 'dataGridheader',
+                    renderCell: (params) => (<>
+                        <IconButton title='View Invoice' onClick={() => handleWaybilInfo(params.row)}>
+                            <Button >Despatch</Button>
+                        </IconButton>
+                    </>),
+                },
+            ]
+        }
         return [
             {
                 field: 'id',
@@ -172,7 +219,7 @@ export default function OrderCheckout(){
             setOpen(true);
         }
     }
-    
+
     return (
         <div>
             <Grid container justifyContent='space-evenly'
@@ -183,7 +230,7 @@ export default function OrderCheckout(){
                 }}
             >
                 <Grid item>
-                    <Typography color='white' variant='h3'>Confirmed Invoices | New Orders</Typography> 
+                    <Typography color='white' variant='h3'>Confirmed Invoices | New Orders</Typography>
                 </Grid>
                 <Grid item>
                     <WaybillPopper />
@@ -191,37 +238,38 @@ export default function OrderCheckout(){
             </Grid>
             {
                 invoices.length > 0 ?
-                <Box sx={{ height: 600, width: '100%' }}>
-                    <DataGrid
-                        rows={rowsWithIds}
-                        columns={columns}
-                        loading={loading ? loading : null}
-                        density='compact'
-                        editMode='cell'
-                        pageSize={5}
-                        disableRowSelectionOnClick={true}
-                        slots={{ toolbar: GridToolbar }}
-                        hideFooterSelectedRowCount={true}
-                        filterMode='client'
-                        slotProps={{
-                            toolbar: {
-                                showQuickFilter: true,
-                            },
-                        }}
-                    />
-                </Box> :
-                < ProductPlaceholder />
+                    <Box sx={{ height: 600, width: '100%' }}>
+                        <DataGrid
+                            rows={rowsWithIds}
+                            columns={columns}
+                            loading={loading ? loading : null}
+                            density='compact'
+                            editMode='cell'
+                            pageSize={5}
+                            disableRowSelectionOnClick={true}
+                            slots={{ toolbar: GridToolbar }}
+                            hideFooterSelectedRowCount={true}
+                            filterMode='client'
+                            slotProps={{
+                                toolbar: {
+                                    showQuickFilter: true,
+                                },
+                            }}
+                        />
+                    </Box> :
+                    < ProductPlaceholder />
             }
             {alert.message ? <GeneralCatchError alert={alert} handleClose={handleClose} open={open} /> : null}
             {notify.message ? <AlertError alert={notify} handleClose={handleClose} open={open} /> : null}
-            
-            <Dialog open={openDialog} sx={{ padding: '20px' }}>
-                <DialogTitle color='darkred' variant='h3'>Checkout Details</DialogTitle>
+
+            <Dialog open={openDialog} sx={{ padding: '20px' }} maxWidth='md'>
+                <DialogTitle color='darkred' variant='h3'>Waybill Details</DialogTitle>
                 <DialogContent>
-                    <Typography variant='body1' align='center'>
-                        <p>Driver&apos;s number</p>
-                        {JSON.stringify(selectedRow)}
-                    </Typography>
+                    <WaybillForm
+                        formData={selectedRow}
+                        closeDialog={handleCloseDialog}
+                        sendPayload={sendPayload}
+                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialog} variant='outlined' color='error'>Cancel</Button>

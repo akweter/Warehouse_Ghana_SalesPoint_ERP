@@ -14,7 +14,6 @@ import {
     FormControl,
     Grid,
     Paper,
-    Box,
     Stack,
     TextField,
     Button,
@@ -40,6 +39,8 @@ import {
     DialogActions,
     FormControlLabel,
     Checkbox,
+    Container,
+    TextareaAutosize,
 } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import dayjs from 'dayjs';
@@ -148,6 +149,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                         batchCode: "",
                         unitPrice: e.ProductPrice,
                         refProQty: e.RefundedQuantity,
+                        invProID: e.IPID,
                     };
                 });
                 setHeader((state) => ({ ...state, items: updatedItemLists }));
@@ -257,20 +259,21 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
         const year = currentDate.getFullYear() % 100;
         const month = currentDate.getMonth() + 1;
         const day = currentDate.getDate();
-        if (header.invoiceNumber === "") {
-            try {
-                const response = await fetchAutocompleteId();
-                const number = response[0].numList + 1;
-                const output = `YG${year}M${month}${number}CSD`;
-                setHeader((state) => ({ ...state, invoiceNumber: output }));
-            }
-            catch (error) {
-                let num = Math.floor(Math.random() * 100) + 1;
-                const output = `XG${year}${month}${(day)}-${num}CSD`;
-                // const output = `WG${year}${month}020CSD`;
-                setHeader((state) => ({ ...state, invoiceNumber: output }));
-            }
-        }
+            console.log('invoice number before',quoteProducts.invoiceNumber);
+        // if (!quoteProducts.invoiceNumber || quoteProducts.invoiceNumber === "") {
+        //     try {
+        //         const response = await fetchAutocompleteId();
+        //         const number = response[0].numList + 1;
+        //         const output = `OP${year}M${month}${number}CSD`;
+        //         setHeader((state) => ({ ...state, invoiceNumber: output }));
+        //     }
+        //     catch (error) {
+        //         let num = Math.floor(Math.random() * 100) + 1;
+        //         const output = `MG${year}${month}${(day)}-${num}CSD`;
+        //         // const output = `WG${year}${month}020CSD`;
+        //         setHeader((state) => ({ ...state, invoiceNumber: output }));
+        //     }
+        // }
     }
 
     // Get userName
@@ -499,26 +502,17 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                 (<AlertError open={open} alert={alert} handleClose={handleClose} />) :
                 (<ShowBackDrop open={drop} />)
             }
-            <Box
-                sx={{
-                    borderRadius: 2,
-                    bgcolor: 'background.default',
-                    display: 'grid',
-                    flexDirection: 'row',
-                    gridTemplateColumns: { md: '1.2fr 1.8fr' },
-                }}
-            >
-                <Screens.Item>
+            <Grid container spacing={2} padding={2}>
+                <Grid item order={{ xs: 2, md: 1 }} xs={12} md={6}>
                     <Grid container spacing={2} py={3}>
-                        <Grid item xs={cashCustomer === true ? 3 : 6}>
+                        <Grid item xs={12} md={cashCustomer === true ? 3 : 6}>
                             <FormControl fullWidth>
                                 <ToggleButtonGroup
                                     fullWidth
                                     size='small'
                                     color={header.infoMsg === true ? "primary" : "standard"}
                                     value={header.businessPartnerName || ""}
-                                    exclusive
-                                    disabled={header.infoMsg ? true : false}
+                                    // disabled={header.infoMsg ? true : false}
                                     name="businessPartnerName"
                                     onChange={CheckCashCustomer}
                                 >
@@ -527,7 +521,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                             </FormControl>
                         </Grid>
                         {cashCustomer === true ?
-                            <Grid item xs={8}>
+                            <Grid item xs={12} md={8}>
                                 <FormControl fullWidth>
                                     <TextField
                                         label="Cash Customer Name"
@@ -539,11 +533,11 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                 </FormControl>
                             </Grid>
                             :
-                            <Grid item xs={6}>
+                            <Grid item xs={12} md={6}>
                                 <FormControl fullWidth>
                                     <Autocomplete
                                         id="customer-search"
-                                        disabled={header.infoMsg ? true : false}
+                                        // disabled={header.infoMsg ? true : false}
                                         options={allSearch.customer}
                                         loading={loading}
                                         getOptionLabel={(option) => header.businessPartnerName !== 'Cash' ? option.customerName : ''}
@@ -555,6 +549,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                                     businessPartnerName: customerName,
                                                     businessPartnerTin: selecteduser.customerTIN,
                                                     invCusId: selecteduser.customerID,
+                                                    userPhone: selecteduser.customerPhone,
                                                 }));
                                             }
                                         }}
@@ -581,7 +576,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                 </FormControl>
                             </Grid>
                         }
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                             {cashCustomer === true ?
                                 <FormControl fullWidth>
                                     <TextField
@@ -602,7 +597,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                         name="saleType"
                                         value={header.saleType}
                                         onChange={handleMainChange}
-                                        disabled={header.infoMsg ? true : false}
+                                        // disabled={header.infoMsg ? true : false}
                                         size='small'
                                     >
                                         <MenuItem value='NORMAL'>Normal</MenuItem>
@@ -612,7 +607,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                 </FormControl>
                             }
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                             <FormControl fullWidth>
                                 <InputLabel id="calculationType">Invoice Type</InputLabel>
                                 <Select
@@ -630,7 +625,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                             <FormControl fullWidth>
                                 <InputLabel id="currency">Currency</InputLabel>
                                 <Select
@@ -640,7 +635,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                     name="currency"
                                     size='small'
                                     onChange={handleMainChange}
-                                    disabled={header.infoMsg ? true : false}
+                                    // disabled={header.infoMsg ? true : false}
                                     value={header.currency}
                                 >
                                     <MenuItem value='AED'>UAE Dirham (د.إ)</MenuItem>
@@ -659,7 +654,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                             <FormControl fullWidth>
                                 <InputLabel id="invoiceType">Transaction Type</InputLabel>
                                 <Select
@@ -668,7 +663,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                     label="invoiceType"
                                     name="invoiceType"
                                     size='small'
-                                    // disabled={header.infoMsg ? true : false}
+                                    disabled={header.infoMsg ? true : false}
                                     onChange={handleMainChange}
                                     value={header.invoiceType}
                                 >
@@ -677,7 +672,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                             <FormControl fullWidth>
                                 <TextField
                                     label="Exchange Rate"
@@ -686,11 +681,11 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                     name='exchangeRate'
                                     size='small'
                                     onChange={handleMainChange}
-                                    disabled={header.infoMsg ? true : false}
+                                    // disabled={header.infoMsg ? true : false}
                                 />
                             </FormControl>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                             <FormControl fullWidth>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker
@@ -699,8 +694,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                         format='YYYY-MM-DD'
                                         defaultValue={new Date()}
                                         label="Invoice Date"
-                                        sx={{ height: '10px' }}
-                                        maxDate={header.infoMsg /*|| header.invoiceType === "Proforma Invoice"*/ ? null : dayjs()}
+                                        maxDate={/*|| header.invoiceType === "Proforma Invoice"*/ dayjs()}
                                         onChange={(e) => {
                                             const selectedDate = e.$d;
                                             const formattedDate = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
@@ -710,7 +704,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                 </LocalizationProvider>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                             <FormControl fullWidth>
                                 <TextField
                                     label="Delivery/Shipping"
@@ -719,11 +713,11 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                     name='delivery'
                                     size='small'
                                     onChange={handleMainChange}
-                                    disabled={header.infoMsg ? true : false}
+                                    // disabled={header.infoMsg ? true : false}
                                 />
                             </FormControl>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                             <FormControlLabel
                                 label="Selective Discount"
                                 control={
@@ -736,7 +730,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                 }
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={12} md={12}>
                             <FormControl fullWidth>
                                 <Autocomplete
                                     id="product-search"
@@ -781,7 +775,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                 />
                             </FormControl>
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={12} md={4}>
                             <FormControl fullWidth>
                                 <TextField
                                     label="Price / Rate"
@@ -794,7 +788,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                 />
                             </FormControl>
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={12} md={4}>
                             <FormControl fullWidth>
                                 <TextField
                                     label="Quantity / Period"
@@ -807,7 +801,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                 />
                             </FormControl>
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={12} md={4}>
                             <FormControl fullWidth>
                                 <TextField
                                     label="Discount"
@@ -820,7 +814,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                 />
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={12} md={12}>
                             <Accordion>
                                 <AccordionSummary
                                     expandIcon={<ExpandMoreIcon />}
@@ -828,8 +822,9 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                     <Typography>Remarks</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
+                                    <TextareaAutosize></TextareaAutosize>
                                     <textarea
-                                        rows={4}
+                                        rows='100%'
                                         cols={65}
                                         value={header.remarks}
                                         onChange={handleMainChange}
@@ -838,7 +833,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                 </AccordionDetails>
                             </Accordion>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                             <FormControl fullWidth>
                                 <Stack direction="row" spacing={2}>
                                     <Button onClick={addItemsToBasket} fullWidth color='primary' variant="contained" size='large' startIcon={<AddShoppingCartOutlinedIcon />}>
@@ -847,7 +842,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                 </Stack>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                             <FormControl fullWidth>
                                 <Stack direction="row" spacing={2}>
                                     <Button onClick={submitFormToGRA} fullWidth color='success' variant="contained" size='large' startIcon={<SendSharpIcon />}>
@@ -857,71 +852,71 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                             </FormControl>
                         </Grid>
                     </Grid>
-                </Screens.Item>
-                <Screens.Item>
-                    <div style={{ width: '100%' }}>
-                        <div
-                            style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                padding: '0 30px',
-                                justifyContent: 'space-around',
-                                fontSize: '18px',
-                            }}
-                        >
-                            <p><strong>Invoice #: </strong>{header.invoiceNumber}</p>
-                            <p><strong>Customer: </strong>{header.businessPartnerName}</p>
-                            <p><strong>Tin:</strong> {header.businessPartnerTin}</p>
-                        </div>
-                        <Grid container spacing={2}>
-                            <TableContainer component={Paper}>
-                                <div style={{ maxHeight: 300, overflowY: 'auto' }}>
-                                    <Table>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>Description</TableCell>
-                                                <TableCell>Quantity</TableCell>
-                                                <TableCell>Price</TableCell>
-                                                <TableCell>Discount</TableCell>
-                                                <TableCell>Action</TableCell>
+                </Grid>
+                <Grid item order={{ xs: 1, md: 2 }} xs={12} md={6}>
+                    <Grid container>
+                        <Grid item xs={12}>
+                            <Grid container>
+                                <Grid item xs={12} md={3}>
+                                    <strong>Invoice #: </strong>{header.invoiceNumber}
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <strong>Customer: </strong>{header.businessPartnerName}
+                                </Grid>
+                                <Grid item xs={12} md={3}>
+                                    {
+                                        header.businessPartnerTin === 'C0000000000' ? (<>
+                                        <strong>Phone: </strong>{ header.userPhone}</>) : (<>
+                                        <strong>Tin: </strong> {header.businessPartnerTin}</>)
+                                    }
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                        <Grid item xs={12} pt={2}>
+                            <TableContainer component={Paper} style={{ height: 300, width: '100%', overflowX: 'auto' }}>
+                                <Table padding='checkbox'>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell padding='checkbox' width='30%'>Description</TableCell>
+                                            <TableCell padding='checkbox' width='20%'>Quantity</TableCell>
+                                            <TableCell padding='checkbox' width='20%'>Price</TableCell>
+                                            <TableCell padding='checkbox' width='20%'>Discount</TableCell>
+                                            <TableCell padding='checkbox' width='10%'>Action</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {header.items.map((item, index) => (
+                                            <TableRow hover key={index}>
+                                                <TableCell padding='checkbox'>{item.description || item.ProductName}</TableCell>
+                                                <TableCell padding='checkbox'>{item.quantity || item.Quantity}</TableCell>
+                                                <TableCell padding='checkbox'>{item.unitPrice || item.ProductPrice}</TableCell>
+                                                <TableCell padding='checkbox'>{item.discountAmount || item.ProductDiscount}</TableCell>
+                                                <TableCell padding='checkbox'>
+                                                    <Tooltip title="Edit">
+                                                        <IconButton onClick={() => handleEdit(index)}>
+                                                            <EditIcon color='primary' />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    <Tooltip title="Delete">
+                                                        <IconButton onClick={() => handleDelete(index)}>
+                                                            <DeleteIcon color='error' />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </TableCell>
                                             </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {header.items.map((item, index) => (
-                                                <TableRow hover key={index}>
-                                                    <TableCell padding='normal' size='small'>{item.description || item.ProductName}</TableCell>
-                                                    <TableCell padding='none' size='small'>{item.quantity || item.Quantity}</TableCell>
-                                                    <TableCell padding='none' size='small'>{item.unitPrice || item.ProductPrice}</TableCell>
-                                                    <TableCell padding='none' size='small'>{item.discountAmount || item.ProductDiscount}</TableCell>
-                                                    <TableCell padding='none' size='small'>
-                                                        <Tooltip title="Edit">
-                                                            <IconButton onClick={() => handleEdit(index)}><EditIcon color='primary' /></IconButton>
-                                                        </Tooltip>
-                                                        <Tooltip title="Delete">
-                                                            <IconButton onClick={() => handleDelete(index)}><DeleteIcon color='error' /></IconButton>
-                                                        </Tooltip>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </div>
+                                        ))}
+                                    </TableBody>
+                                </Table>
                             </TableContainer>
-                            <div className='remarkNtax'>
-                                <Box
-                                    sx={{
-                                        borderRadius: 2,
-                                        bgcolor: 'background.default',
-                                        display: 'grid',
-                                        gridTemplateColumns: { md: '1fr 1fr' },
-                                        gap: 2,
-                                    }}
-                                >
-                                    <Screens.Item key={1} elevation={2}>
-                                        <i style={{ textAlign: 'left', textDecoration: 'underline' }}>Remarks</i>
-                                        <p>{header.remarks ? header.remarks : null}</p>
-                                    </Screens.Item>
-                                    <Screens.Item key={2} elevation={2}>
+                            <Grid container spacing={2} pt={2}>
+                                <Grid item xs={12} md={6} padding={2}>
+                                    <Paper elevation={2}>
+                                        <Typography variant='h6'>Remarks</Typography>
+                                        <Container>{header.remarks}</Container>
+                                    </Paper>
+                                </Grid>
+                                <Grid item xs={12} md={6} padding={2}>
+                                    <Paper elevation={2}>
                                         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                             <tbody>
                                                 <tr>
@@ -975,13 +970,13 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                                 </tr>
                                             </tbody>
                                         </table>
-                                    </Screens.Item>
-                                </Box>
-                            </div>
+                                    </Paper>
+                                </Grid>
+                            </Grid>
                         </Grid>
-                    </div>
-                </Screens.Item>
-            </Box>
+                    </Grid>
+                </Grid>
+            </Grid>
             {/* Edit Dialog */}
             <Dialog open={openEditDialog} onClose={handleEditCancel}>
                 <DialogTitle>Edit Item</DialogTitle>

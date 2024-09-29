@@ -166,11 +166,6 @@ const Inventory = () => {
                     </Paper>
                 </Grid>
             </Grid>
-
-            {/* <Drawer anchor="right" open={openStat} onClose={toggleDrawer(false)}>
-                < ProductStats closeDrawer={toggleDrawer(false)}/>
-            </Drawer> */}
-
             <Box>
                 <InventoryProductsTable products={products} loading={loading} RefreshData={setSubmitted}/>
             </Box>

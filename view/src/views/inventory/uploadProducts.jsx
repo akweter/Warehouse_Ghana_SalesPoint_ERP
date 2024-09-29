@@ -97,17 +97,18 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action }) => 
 	// querying product and customer search
 	useEffect(() => {
 		setLoading(true);
-		const fetchData = async () => {
-			try {
-				const data = await fetchSupplierNameSearch(allSearch);
-				setAllSearch(data);
-			}
-			catch (error) {
-				setLoading(false);
-			}
-		}
 		fetchData();
-	}, [allSearch]);
+	}, []);
+
+	const fetchData = async () => {
+		try {
+			const data = await fetchSupplierNameSearch(allSearch);
+			setAllSearch(data);
+		}
+		catch (error) {
+			setLoading(false);
+		}
+	}
 
 	// Product active change
 	const changeProductStat = () => {
@@ -429,12 +430,12 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action }) => 
 											id="supplier-search"
 											options={allSearch}
 											loading={loading}
-											getOptionLabel={(option) => option.S_name ? option.S_name : "No Supplier found"}
+											getOptionLabel={(option) => option.supplierName ? option.supplierName : "No Supplier found"}
 											onChange={(event, selectedSupplier) => {
 												if (selectedSupplier) {
 													setFormData((oldValue) => ({
 														...oldValue,
-														productSupId: selectedSupplier.S_id,
+														productSupId: selectedSupplier.supplierID,
 													}));
 												}
 											}}
@@ -481,6 +482,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action }) => 
 											value={formData.productUOM || ''}
 											onChange={handleInputChange}
 										>
+											<MenuItem value="BAG">BAG</MenuItem>
 											<MenuItem value="BND">BUNDLE</MenuItem>
 											<MenuItem value="CTN">CARTON</MenuItem>
 											<MenuItem value="KG">KILOGRAM</MenuItem>

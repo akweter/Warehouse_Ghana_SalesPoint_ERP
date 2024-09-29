@@ -18,7 +18,6 @@ import {
     Button,
     Dialog,
     DialogTitle,
-    CircularProgress
 } from '@mui/material';
 
 // projects
@@ -35,7 +34,7 @@ import InvoiceTemplate from './invoiceTemplate';
 import { AlertError, GeneralCatchError } from '../../utilities/errorAlert';
 import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceholder';
 
-// /* eslint-disable */
+/* eslint-disable */
 const Invoice = () => {
     const [submitted, setSubmitted] = useState(false);
     const [status, setStatus] = useState(false);
@@ -51,11 +50,23 @@ const Invoice = () => {
     const [header, setHeader] = useState([]);
     const [alert, setAlert] = useState({ message: '', color: '' });
     const [notify, setNotify] = useState({ message: '', color: '' });
+    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 600);
 
     useEffect(() => {
         fetchData();
         testServer();
     }, [submitted, status]);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsSmallScreen(window.innerWidth < 600);
+        };
+        
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     // Fetch Invoices data from Database
     const fetchData = async () => {
@@ -113,20 +124,59 @@ const Invoice = () => {
 
     // Set column for DataGrid
     const columns = useMemo(() => {
+        if (isSmallScreen) {
+            return [
+                {
+                    field: 'InvoiceDate',
+                    headerName: 'Date',
+                    flex: 1,
+                    width: 70,
+                    headerClassName: 'dataGridheader',
+                },
+                {
+                    field: 'CustomerName',
+                    headerName: 'Customer',
+                    flex: 2,
+                    width: 200,
+                    headerClassName: 'dataGridheader',
+                },
+                {
+                    field: 'actions',
+                    headerName: 'ACTIONS',
+                    flex: 1,
+                    width: 150,
+                    sortable: false,
+                    headerClassName: 'dataGridheader',
+                    renderCell: (params) => (
+                        <>
+                            <IconButton title='View Invoice' onClick={() => handleViewIconClick(params.row)}>
+                                <VisibilityIcon fontSize='medium' color='primary' />
+                            </IconButton>
+                            <IconButton title='Print Invoice' onClick={() => pushPrintInvoiceData(params.row)}>
+                                <PrintIcon fontSize='small' color='error' />
+                            </IconButton>
+                            {params.row.QRCode ? null : (
+                                <IconButton title='Request Call Back' onClick={() => requestCallback(params.row)}>
+                                    <Undo fontSize='medium' color='secondary' />
+                                </IconButton>
+                            )}
+                        </>
+                    ),
+                },
+            ];
+        }
+
         return [
             {
                 field: 'id',
                 headerName: '#',
                 width: 10,
-                renderCell: (params) => {
-                    return params.row.id + 1;
-                },
+                renderCell: (params) => params.row.id + 1,
                 headerClassName: 'dataGridheader',
             },
             {
                 field: 'IssuerName',
                 headerName: 'Issuer',
-                description: 'Served By',
                 flex: 1,
                 width: 70,
                 headerClassName: 'dataGridheader',
@@ -134,23 +184,13 @@ const Invoice = () => {
             {
                 field: 'InvoiceNumber',
                 headerName: 'Invoice #',
-                description: 'Invoice number',
                 flex: 1,
                 width: 70,
                 headerClassName: 'dataGridheader',
             },
-            // {
-            //     field: 'InvoiceStatus',
-            //     headerName: 'Transaction',
-            //     description: 'Transaction Type',
-            //     flex: 1,
-            //     width: 70,
-            //     headerClassName: 'dataGridheader',
-            // },
             {
                 field: 'InvoiceDate',
                 headerName: 'Date',
-                description: 'Transaction Date',
                 flex: 1,
                 width: 70,
                 headerClassName: 'dataGridheader',
@@ -158,7 +198,6 @@ const Invoice = () => {
             {
                 field: 'CustomerName',
                 headerName: 'Customer',
-                description: 'Customer Name',
                 flex: 1,
                 width: 200,
                 headerClassName: 'dataGridheader',
@@ -166,7 +205,6 @@ const Invoice = () => {
             {
                 field: 'TotalAmount',
                 headerName: 'Total Amt',
-                description: 'Total Invoice Amount',
                 flex: 1,
                 width: 50,
                 headerClassName: 'dataGridheader',
@@ -174,7 +212,6 @@ const Invoice = () => {
             {
                 field: 'Levies',
                 headerName: 'Levies',
-                description: 'Total Invoice Levies',
                 flex: 1,
                 width: 40,
                 headerClassName: 'dataGridheader',
@@ -182,7 +219,6 @@ const Invoice = () => {
             {
                 field: 'VatAmount',
                 headerName: 'VAT',
-                description: 'Total Invoice VAT',
                 flex: 1,
                 width: 80,
                 headerClassName: 'dataGridheader',
@@ -194,37 +230,28 @@ const Invoice = () => {
                 width: 150,
                 sortable: false,
                 headerClassName: 'dataGridheader',
-                renderCell: (params) => (<>
-                    <IconButton title='View Invoice' onClick={() => handleViewIconClick(params.row)}>
-                        <VisibilityIcon fontSize='medium' color='primary' />
-                    </IconButton>
-                    <IconButton title='Print Invoice' onClick={() =>  pushPrintInvoiceData(params.row)}>
-                        <PrintIcon fontSize='small' color='error' />
-                    </IconButton>
-                    {params.row.QRCode ? null : (
-                        <>
-                            { drop === params.row.InvoiceNumber ? (
-                                <CircularProgress size={22} color='secondary'/>
-                            ) : (
-                                <IconButton 
-                                    title='Request Call Back' 
-                                    onClick={() =>  requestCallback(params.row)}
-                                >
-                                    <Undo fontSize='medium' color='secondary' />
-                                </IconButton>
-                            )}
-                        </>
-                    )}
-                </>)
+                renderCell: (params) => (
+                    <>
+                        <IconButton title='View Invoice' onClick={() => handleViewIconClick(params.row)}>
+                            <VisibilityIcon fontSize='medium' color='primary' />
+                        </IconButton>
+                        <IconButton title='Print Invoice' onClick={() => pushPrintInvoiceData(params.row)}>
+                            <PrintIcon fontSize='small' color='error' />
+                        </IconButton>
+                        {params.row.QRCode ? null : (
+                            <IconButton title='Request Call Back' onClick={() => requestCallback(params.row)}>
+                                <Undo fontSize='medium' color='secondary' />
+                            </IconButton>
+                        )}
+                    </>
+                ),
             },
-        ]
-    });
-
-    // Call back to GRA backend
+        ];
+    }, [isSmallScreen]);
+    
     const requestCallback = async (payload) => {
         setDrop(payload.InvoiceNumber);        
         const load = { ...payload, flag: "INVOICE" }
-        console.log('chheckid',payload.checkdID);
 
         try {
             const response  = await postGRAInvoiceCallback(load);
@@ -316,6 +343,7 @@ const Invoice = () => {
         return invoiceTemplate;
     };
 
+    // Send the payload to GRA backend
     const sendPayload = async () => {
         try {
             await new Promise((resolve) => {

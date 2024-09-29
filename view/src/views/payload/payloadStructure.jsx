@@ -19,6 +19,7 @@ export const itemlistPayload = {
     totalAmount: "",
     alt: '',
     refProQty: '',
+    invProID: '',
 }
 
 // GRA header payload structure
