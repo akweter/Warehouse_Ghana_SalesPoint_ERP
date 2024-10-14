@@ -7,7 +7,6 @@ import {
     Box,
     DialogContent,
     Typography,
-    DialogActions,
     Button,
     Dialog,
     DialogTitle
@@ -19,6 +18,7 @@ import { AlertError, GeneralCatchError } from '../../utilities/errorAlert';
 import WaybillPopper from './waybillPopup';
 import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceholder';
 import WaybillForm from './waybilForm';
+import { Close } from '@mui/icons-material';
 
 // /* eslint-disable */
 export default function OrderCheckout() {
@@ -48,6 +48,9 @@ export default function OrderCheckout() {
         };
     }, []);
 
+    const handleCloseDialog = () => setOpenDialog(false);
+    const handleClose = (event, reason) => { if (reason === 'clickaway') { return; } setOpen(false) };
+
     // Fetch Invoices data from Database
     const fetchData = async () => {
         try {
@@ -73,9 +76,6 @@ export default function OrderCheckout() {
         return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
-    const handleCloseDialog = () => setOpenDialog(false);
-    const handleClose = (event, reason) => { if (reason === 'clickaway') { return; } setOpen(false) };
-
     // Set Row for DataGrid
     const rowsWithIds = useMemo(() =>
         invoices.map((invoice, index) => ({
@@ -95,22 +95,14 @@ export default function OrderCheckout() {
                     headerName: 'Customer',
                     description: 'Customer Name',
                     flex: 2,
-                    width: 70,
-                    headerClassName: 'dataGridheader',
-                },
-                {
-                    field: 'InvoiceDate',
-                    headerName: 'Date',
-                    description: 'Transaction Date',
-                    flex: 1,
-                    width: 70,
+                    width: 200,
                     headerClassName: 'dataGridheader',
                 },
                 {
                     field: 'actions',
                     headerName: '',
                     flex: 1,
-                    width: 70,
+                    width: 100,
                     sortable: false,
                     headerClassName: 'dataGridheader',
                     renderCell: (params) => (<>
@@ -230,7 +222,7 @@ export default function OrderCheckout() {
                 }}
             >
                 <Grid item>
-                    <Typography color='white' variant='h3'>Confirmed Invoices | New Orders</Typography>
+                    <Typography color='white' variant='h3'>Outsource Paid Invoices</Typography>
                 </Grid>
                 <Grid item>
                     <WaybillPopper />
@@ -262,20 +254,19 @@ export default function OrderCheckout() {
             {alert.message ? <GeneralCatchError alert={alert} handleClose={handleClose} open={open} /> : null}
             {notify.message ? <AlertError alert={notify} handleClose={handleClose} open={open} /> : null}
 
-            <Dialog open={openDialog} sx={{ padding: '20px' }} maxWidth='md'>
-                <DialogTitle color='darkred' variant='h3'>Waybill Details</DialogTitle>
+            <Dialog open={openDialog} sx={{ padding: '20px' }} fullScreen>
+                <DialogTitle>
+                    <IconButton onClick={handleCloseDialog} color='secondary'>
+                        <Close color='error' fontSize='large'/>
+                    </IconButton>
+                </DialogTitle>
                 <DialogContent>
                     <WaybillForm
                         formData={selectedRow}
-                        closeDialog={handleCloseDialog}
                         sendPayload={sendPayload}
+                        closePopup={handleCloseDialog}
                     />
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseDialog} variant='outlined' color='error'>Cancel</Button>
-                    <Button onClick={() => window.alert('posting order checout data') /*sendPayload*/} variant='contained' color='primary'>Proceed</Button>
-                    <Button type='reset' onClick={sendPayload} />
-                </DialogActions>
             </Dialog>
         </div>
     );

@@ -69,7 +69,7 @@ const InventoryProductsTable = ({ products, loading }) => {
                     field: 'unitPrice',
                     headerName: 'Unit Price',
                     description: 'Product/Service Unit Price',
-                    width: 50,
+                    width: 100,
                     flex: 1,
                     headerClassName: 'dataGridheader',
                 },
@@ -150,14 +150,6 @@ const InventoryProductsTable = ({ products, loading }) => {
                 width: 200,
                 headerClassName: 'dataGridheader',
                 flex: 1,
-            },
-            {
-                field: 'taxType',
-                headerName: 'Tax type',
-                description: 'Class of tax the service/product belong',
-                width: 70,
-                flex: 1,
-                headerClassName: 'dataGridheader',
             },
             {
                 field: 'dateAdded',

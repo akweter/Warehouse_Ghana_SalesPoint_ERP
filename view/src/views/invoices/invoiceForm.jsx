@@ -44,6 +44,7 @@ import {
 } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import dayjs from 'dayjs';
+
 /* eslint-disable */
 
 // Projects
@@ -259,21 +260,22 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
         const year = currentDate.getFullYear() % 100;
         const month = currentDate.getMonth() + 1;
         const day = currentDate.getDate();
-            console.log('invoice number before',quoteProducts.invoiceNumber);
-        // if (!quoteProducts.invoiceNumber || quoteProducts.invoiceNumber === "") {
-        //     try {
-        //         const response = await fetchAutocompleteId();
-        //         const number = response[0].numList + 1;
-        //         const output = `OP${year}M${month}${number}CSD`;
-        //         setHeader((state) => ({ ...state, invoiceNumber: output }));
-        //     }
-        //     catch (error) {
-        //         let num = Math.floor(Math.random() * 100) + 1;
-        //         const output = `MG${year}${month}${(day)}-${num}CSD`;
-        //         // const output = `WG${year}${month}020CSD`;
-        //         setHeader((state) => ({ ...state, invoiceNumber: output }));
-        //     }
-        // }
+            // console.log('invoice number before',quoteProducts.invoiceNumber);
+            console.log('qp',quoteProducts);
+        if (!quoteProducts || quoteProducts.InvoiceNumber === "") {
+            try {
+                const response = await fetchAutocompleteId();
+                const number = response[0].numList + 1;
+                const output = `OP${year}M${month}${number}CSD`;
+                setHeader((state) => ({ ...state, invoiceNumber: output }));
+            }
+            catch (error) {
+                let num = Math.floor(Math.random() * 100) + 1;
+                const output = `MG${year}${month}${(day)}-${num}CSD`;
+                // const output = `WG${year}${month}020CSD`;
+                setHeader((state) => ({ ...state, invoiceNumber: output }));
+            }
+        }
     }
 
     // Get userName

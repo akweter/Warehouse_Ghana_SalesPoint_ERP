@@ -30,7 +30,6 @@ const Refund = Loadable(lazy(() => import('../views/refund')));
 const Users = Loadable(lazy(() => import('../views/userManagements')));
 const Warehouse = Loadable(lazy(() => import('../views/warehouse')));
 const OrderCheckout = Loadable(lazy(() => import('../views/waybill')));
-const SuppliedOrders = Loadable(lazy(() => import('../views/suppliedOrders')));
 const Auth = Loadable(lazy(() => import('../auth')));
 const Woocommerce = Loadable(lazy(() => import('../woocommerce')));
 const Tools = Loadable(lazy(() => import('../reports')));
@@ -122,15 +121,6 @@ const MainRoutes = {
         {
           path: '',
           element: <ProtectedRoute><OrderCheckout /></ProtectedRoute>
-        }
-      ]
-    },
-    {
-      path: 'orders/supplied',
-      children: [
-        {
-          path: '',
-          element: <ProtectedRoute><SuppliedOrders /></ProtectedRoute>
         }
       ]
     },

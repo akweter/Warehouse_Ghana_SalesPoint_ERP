@@ -68,6 +68,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "formik": "^2.4.5",
     "framer-motion": "^6.3.16",
+    "html2pdf.js": "^0.10.2",
     "immutable": "^4.3.0",
     "jsonwebtoken": "^9.0.2",
     "jspdf": "^2.5.1",

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Button,
     Dialog,
@@ -20,6 +20,7 @@ import {
     Chip,
     Slide,
     DialogTitle,
+    Container,
 } from '@mui/material';
 import { CancelSharp } from '@mui/icons-material';
 import logo from '../../assets/images/logo.webp';
@@ -31,6 +32,13 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, su
     const [open, setOpen] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
     const [openRefDialog, setOpenRefDialog] = useState(false);
+    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 600);
+
+    useEffect(() => {
+        const handleResize = () =>  setIsSmallScreen(window.innerWidth < 600);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const handleOpen = () => { setOpen(true); handleCloseDialog() }
     const handleClose = () => { setOpen(false); }
@@ -184,16 +192,24 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, su
                     <Toolbar sx={{ justifyContent: 'space-between' }}>
                         <img src={logo} width={60} height={40} alt='Logo' />
                         <Typography
-                            variant="h2"
+                            variant = { isSmallScreen ? "body1" : "h2"}
                             sx={{
                                 flex: 1,
-                                textAlign: 'center',
-                                color: 'white'
+                                textAlign: { xs: 'center', sm: 'left' },
+                                color: 'white',
+                                fontSize: { xs: '1rem', md: '1.5rem' },
                             }}
                         >
                             Update The Quotation
                         </Typography>
-                        <Stack direction="row" spacing={1}>
+                        <Stack
+                            direction="row" 
+                            spacing={1} sx={{ 
+                                width: { xs: '100%', sm: 'auto' }, 
+                                justifyContent: { xs: 'center', sm: 'flex-end' }, 
+                                mt: { xs: 2, sm: 0 } 
+                            }}
+                        >
                             <Chip
                                 variant="filled" 
                                 color={status === true ? 'primary' : 'error'}
@@ -207,9 +223,9 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, su
                         </Box>
                     </Toolbar>
                 </AppBar>
-                <div style={{ marginTop: '10px' }}>
+                <Container style={{ marginTop: isSmallScreen ? 60 : 0 }}>
                     < InvoiceForm setDrop={setDrop} drop={drop} BackdropOpen={setOpen} quoteProducts={selectedRow} setSubmitted={submitted} />
-                </div>
+                </Container>
             </Dialog>
             <Dialog
                 fullWidth

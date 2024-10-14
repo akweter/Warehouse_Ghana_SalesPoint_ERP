@@ -81,14 +81,6 @@ export default function Refund() {
         if (isSmallScreen) {
             return [
                 {
-                    field: 'InvoiceDate',
-                    headerName: 'Date',
-                    description: 'Transaction Date',
-                    flex: 1.2,
-                    width: 70,
-                    headerClassName: 'dataGridheader',
-                },
-                {
                     field: 'CustomerName',
                     headerName: 'Customer',
                     description: 'Customer Name',

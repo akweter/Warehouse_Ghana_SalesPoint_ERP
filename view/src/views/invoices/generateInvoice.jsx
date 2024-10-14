@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from '../../assets/images/logo.webp';
 import InvoiceForm from './invoiceForm';
 import CancelSharpIcon from '@mui/icons-material/CancelSharp';
@@ -14,7 +14,7 @@ import {
     Container} from '@mui/material';
 import Slide from '@mui/material/Slide';
 
-// /* eslint-disable */
+/* eslint-disable */
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
@@ -23,6 +23,13 @@ const MakeNewInvoice = ({ setSubmitted, status }) => {
     const [drop, setDrop] = useState(false);
     const [open, setOpen] = useState(false);
     const [callback, setCallback] = useState(false);
+    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 600);
+
+    useEffect(() => {
+        const handleResize = () =>  setIsSmallScreen(window.innerWidth < 600);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const handleOpen = () => { setOpen(true); };
     const handleClose = () => { setOpen(false); };
@@ -49,12 +56,12 @@ const MakeNewInvoice = ({ setSubmitted, status }) => {
                         <Toolbar disableGutters sx={{ flexWrap: 'wrap' }}>
                             <img src={logo} width={60} height={40} alt='Logo' />
                             <Typography
-                                variant="h2"
+                                variant = { isSmallScreen ? "h6" : "h2"}
                                 sx={{
                                     flex: 1,
                                     textAlign: { xs: 'center', sm: 'left' },
                                     color: 'white',
-                                    fontSize: { xs: '1rem', sm: '1.5rem' }
+                                    fontSize: { xs: '1rem', sm: '1.5rem' },
                                 }}
                             >
                                 Make New Invoice
@@ -84,7 +91,7 @@ const MakeNewInvoice = ({ setSubmitted, status }) => {
                         </Toolbar>
                     </Container>
                 </AppBar>
-                <div style={{ marginTop: '10px' }}>
+                <Container style={{ marginTop: isSmallScreen ? 50 : 0 }}>
                     < InvoiceForm 
                         setSubmitted={setSubmitted} 
                         setDrop={setDrop} drop={drop} 
@@ -92,7 +99,7 @@ const MakeNewInvoice = ({ setSubmitted, status }) => {
                         callBack={callback}
                         setCallBack={setCallback}
                     />
-                </div>
+                </Container>
             </Dialog>
             <Box></Box>
         </div>

@@ -1,4 +1,4 @@
-// /* eslint-disable */
+/* eslint-disable */
 
 // export const bcndOrigin = 'https://salespoint.backend.warehouseghana.com';
 // export const viewOrigin = 'https://salespoint.view.warehouseghana.com';

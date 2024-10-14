@@ -155,6 +155,7 @@ export const fetchQuoteInvoices = async () => {
 }
 
 /* ------------    POST REQUEST     -------------------*/
+
 // post new invoice
 export const postNewInvoice = async (data) => {
     const endpoint = data.invoiceType === "Proforma Invoice" ? "payload/quote" : "payload/invoice"; 
@@ -194,6 +195,15 @@ export const postRefundCancellation = async (data) => {
     }
     return response;
 };
+
+export const postWaybillData = async (payload) => {
+    try {
+        const response = await requestMaking('waybill', 'POST', payload);
+        return response.json();
+    } catch (error) {
+        return ({ status: 'error', message: error });
+    }
+}
 
 // Delete quotation based on invoice
 export const deleteQuotation = async (id) => {

@@ -294,7 +294,7 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
                             </Button>
                         </DialogActions>
                     </Grid>
-                    <DialogContent sx={{ paddingX: 15 }}>
+                    <DialogContent sx={{ paddingX: { xs: 3, md: 15 }}}>
                         {
                             Array.isArray(header.items) && header.items.length > 0 ? (
                                 header.items.map((item, index) =>

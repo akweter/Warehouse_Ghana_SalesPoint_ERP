@@ -127,16 +127,9 @@ const Invoice = () => {
         if (isSmallScreen) {
             return [
                 {
-                    field: 'InvoiceDate',
-                    headerName: 'Date',
-                    flex: 1,
-                    width: 70,
-                    headerClassName: 'dataGridheader',
-                },
-                {
                     field: 'CustomerName',
                     headerName: 'Customer',
-                    flex: 2,
+                    flex: 1.5,
                     width: 200,
                     headerClassName: 'dataGridheader',
                 },
@@ -144,7 +137,7 @@ const Invoice = () => {
                     field: 'actions',
                     headerName: 'ACTIONS',
                     flex: 1,
-                    width: 150,
+                    width: 100,
                     sortable: false,
                     headerClassName: 'dataGridheader',
                     renderCell: (params) => (

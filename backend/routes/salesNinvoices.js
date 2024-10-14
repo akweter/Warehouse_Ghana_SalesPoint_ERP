@@ -35,7 +35,7 @@ Router.get("/", async (req, res) => {
   }
   catch (err) {
     logErrorMessages(`Error fetching all invoices: ${err}`);
-    return res.status(500).send("Temporal server error. Kindly refresh");
+    res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
 
@@ -47,7 +47,7 @@ Router.get("/ten", async (req, res) => {
   }
   catch (err) {
     logErrorMessages(`Error fetching tenInvoices: ${err}`);
-    return res.status(500).send("Temporal server error. Kindly refresh");
+    res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
 
@@ -59,7 +59,7 @@ Router.get("/number", async (req, res) => {
   }
   catch (err) {
     logErrorMessages(`Error fetching allSalesInvNumbers: ${err}`);
-    return res.status(500).send("Temporal server error. Kindly refresh");
+    res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
 
@@ -71,7 +71,7 @@ Router.get("/sales", async (req, res) => {
   }
   catch (err) {
     logErrorMessages(`Error fetching today sales invoices ${err}`);
-    return res.status(500).send("Temporal server error. Kindly refresh");
+    res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
 
@@ -110,7 +110,7 @@ Router.get("/tax/month", async (req, res) => {
   }
   catch (err) {
     logErrorMessages(`Error fetching this month taxes ${err}`);
-    return res.status(500).send("Temporal server error. Kindly refresh");
+    res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
 
@@ -122,7 +122,7 @@ Router.get("/day/invoice", async (req, res) => {
   }
   catch (err) {
     logErrorMessages(`Error fetching this month taxes ${err}`);
-    return res.status(500).send("Temporal server error. Kindly refresh");
+    res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
 
@@ -134,7 +134,7 @@ Router.get("/today/sales", async (req, res) => {
   }
   catch (error) {
     logErrorMessages(`Error fetching today sales invoices ${err}`);
-    return res.status(500).send("Temporal server error. Kindly refresh");
+    res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
 
@@ -146,7 +146,7 @@ Router.get("/week/sales", async (req, res) => {
   }
   catch (err) {
     logErrorMessages(`Error fetching week sales invoices ${err}`);
-    return res.status(500).send("Temporal server error. Kindly refresh");
+    res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
 
@@ -158,7 +158,7 @@ Router.get("/month/sales", async (req, res) => {
   }
   catch (err) {
     logErrorMessages(`Error fetching month sales invoices ${err}`);
-    return res.status(500).send("Temporal server error. Kindly refresh");
+    res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
 
@@ -170,7 +170,7 @@ Router.get("/year/sales", async (req, res) => {
   }
   catch (err) {
     logErrorMessages(`Error fetching year sales today invoices ${err}`);
-    return res.status(500).send("Temporal server error. Kindly refresh");
+    res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
 
@@ -182,7 +182,7 @@ Router.get("/purchase", async (req, res) => {
   }
   catch (err) {
     logErrorMessages(`Error fetching purchase invoices: ${err}`);
-    return res.status(500).send("Temporal server error. Kindly refresh");
+    res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
 

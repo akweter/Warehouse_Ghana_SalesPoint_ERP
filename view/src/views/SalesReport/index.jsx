@@ -115,26 +115,18 @@ export default function SalesReport() {
         if (isSmallScreen) {
             return [
                 {
-                    field: 'InvoiceDate',
-                    headerName: 'Date',
-                    description: 'Transaction Date',
-                    flex: 1.2,
-                    width: 70,
-                    headerClassName: 'dataGridheader',
-                },
-                {
                     field: 'CustomerName',
                     headerName: 'Customer',
                     description: 'Customer Name',
-                    flex: 2,
-                    width: 70,
+                    flex: 1.5,
+                    width: 200,
                     headerClassName: 'dataGridheader',
                 },
                 {
                     field: 'actions',
                     headerName: 'ACTIONS',
-                    flex: 1.5,
-                    width: 150,
+                    flex: 1.2,
+                    width: 100,
                     sortable: false,
                     headerClassName: 'dataGridheader',
                     renderCell: (params) => (<>

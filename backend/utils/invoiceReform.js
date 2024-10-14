@@ -158,8 +158,8 @@ const addInvoiceProducts = async (Data) => {
                     0,
                 ];
                 if (infoMsg && infoMsg === "quoteEdit") {
-                    await saveInInvoiceProduct(addUpdate).then(e => console.log('save products',e));
-                    await updateInvoiceProducts(update, invProID, invoiceNumber).then(e => console.log('update products',e));
+                    await saveInInvoiceProduct(addUpdate);
+                    await updateInvoiceProducts(update, invProID, invoiceNumber);
                     productID = null;
                 } else {
                     await saveInInvoiceProduct(add);

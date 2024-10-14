@@ -40,17 +40,9 @@ const pages = {
     },
     {
       id: 'orders',
-      title: 'New Orders',
+      title: 'Deliveries',
       type: 'item',
       url: '/orders/new',
-      icon: IconTruckDelivery,
-      breadcrumbs: false
-    },
-    {
-      id: 'orders_supplied',
-      title: 'Supplied Orders',
-      type: 'item',
-      url: '/orders/supplied',
       icon: IconTruckDelivery,
       breadcrumbs: false
     },
