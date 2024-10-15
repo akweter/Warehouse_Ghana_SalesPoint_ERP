@@ -1,58 +1,44 @@
 import requestMaking from "../../auth/setHeaderToken";
 
+const handleRequest = async (url, method, data = null) => {
+    try {
+        const response = await requestMaking(url, method, data);
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return await response.json();
+        }        
+        return response;
+    } catch (error) {
+        return error;
+    }
+};
+
 // Fetch all supliers name
 export const fetchAllSupplier = async () => {
-    const response = await requestMaking(`suppliers`, 'GET', null)
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`suppliers`, 'GET');
 };
 
 // Fetch all local suppliers
 export const fetchAllLocalSuppliers = async () => {
-    const response = await requestMaking(`suppliers/locals`, 'GET', null)
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`suppliers/locals`, 'GET');
 };
 
 // Fetch all foreign supliers
 export const fetchAllForeignSuppliers = async () => {
-    const response = await requestMaking(`suppliers/foreigns`, 'GET', null)
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`suppliers/foreigns`, 'GET');
 };
 
 // Fetch customer name
 export const fetchSupplierNameSearch = async (data) => {
-    const response = await requestMaking(`suppliers/query?search=${data}`, 'GET', null)
-    if (response.ok) {
-        return await response.json();
-    }
-    return [];
+    return await handleRequest(`suppliers/query?search=${data}`, 'GET');
 };
 
 // Post a supplier
 export const postSupplier = async (data) => {
-    await requestMaking(`suppliers/add/new`, 'POST', data)
-    .then( async (res) => {
-        return await res.json();
-    })
-    .catch(() => {
-        return null;
-    });
+    return await handleRequest(`suppliers/add/new`, 'POST', data);
 };
 
 // Update supplier
 export const updateSupplier = async (id, data) => {
-    const response = await requestMaking(`suppliers/update/${id}`, 'put', data);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`suppliers/update/${id}`, 'put', data);
 };
-

@@ -99,7 +99,7 @@ export default function SignInForm() {
                                 } else {
                                     window.location.href = `${window.location.origin}${redirectUrl}`;
                                 }                                
-                            }, 1000);
+                            }, 100);
                         }
                         else if (body.message === 'email_sent') {
                             window.location.href = '/auth/verify';
@@ -138,8 +138,8 @@ export default function SignInForm() {
                         {loginStatus}
                         </Alert>
                     </Snackbar>
-                </div>) :
-                (loading ? <CircularProgress size={30}/> : null)
+                </div>) : null
+                
             }
         </div>
         <Container component="main" maxWidth="xs">
@@ -182,7 +182,7 @@ export default function SignInForm() {
                             variant='outlined' 
                             size='large'
                             type='button'
-                            onClick={handleSubmit}>Submit
+                            onClick={handleSubmit}> {loading ? <CircularProgress size={30}/> : 'Submit'}
                         </Button>
                     </Grid>
                 </Grid>

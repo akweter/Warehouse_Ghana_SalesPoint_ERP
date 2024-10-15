@@ -1,48 +1,46 @@
 import requestMaking from "../../auth/setHeaderToken";
 
+
+const handleRequest = async (url, method, data = null) => {
+    try {
+        const response = await requestMaking(url, method, data);
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return await response.json();
+        }        
+        return response;
+    } catch (error) {
+        return error;
+    }
+};
+
+// Fetch all company info
+export const fetchCompanyData = async () => {
+    return await handleRequest(`company`, 'GET');
+};
+
+
 // Fetch all customers
 export const fetchAllCustomersNSuppliers = async () => {
-    const response = await requestMaking('customers/customersnsuppliers', 'GET', null);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest('customers/customersnsuppliers', 'GET');
 };
 
 // Fetch all customers
 export const fetchAllCustomers = async () => {
-    const response = await requestMaking('customers', 'GET', null);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest('customers', 'GET');
 };
 
 // Fetch a customer name
 export const fetchCustomerNameSearch = async (data) => {
-    const response = await requestMaking(`customers/query?search=${data}`, 'GET', null)
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`customers/query?search=${data}`, 'GET');
 };
 
 // Post a customer or supplier
 export const postCustomerSupplier = async (data) => {
-    await requestMaking(`customers/add/new`, 'POST', data)
-    .then( async (res) => {
-        return await res.json();
-    })
-    .catch(() => {
-        return null;
-    });
+    return await handleRequest(`customers/add/new`, 'POST', data);
 };
 
 // Update supplier or customer details
 export const updateSupplierCustomer = async (id, data) => {
-    const response = await requestMaking(`customers/update/${id}`, 'put', data);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`customers/update/${id}`, 'put', data);
 };

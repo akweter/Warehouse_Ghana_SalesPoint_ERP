@@ -1,58 +1,46 @@
 import requestMaking from "../../auth/setHeaderToken";
 
+const handleRequest = async (url, method, data = null) => {
+    try {
+        const response = await requestMaking(url, method, data);
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return await response.json();
+        }        
+        return response;
+    } catch (error) {
+        return error;
+    }
+};
+
 // Fetch all refund invoices
 export const fetchRefundInvoices = async () => {
-    const response = await requestMaking(`refunds/`, 'GET', null);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`refunds/`, 'GET');
 };
 
 // Fetch all refunded products
 export const fetchRefundedProducts = async () => {
-    const response = await requestMaking(`refunds/products`, 'GET', null);
-    if (response === undefined) {
-        return [];
-    }
-    return await response.json();
-    
+    return await handleRequest(`refunds/products`, 'GET');
 };
 
 // Fetch all counted refund invoices
 export const fetchCountAllRefundInvoices = async () => {
-    const response = await requestMaking(`refunds/countall`, 'GET', null);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`refunds/countall`, 'GET');
 };
 
 // Fetch all refund invoices
 export const fetchRefundCancelledInvoices = async () => {
-    const response = await requestMaking(`refunds/cancelled`, 'GET', null);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`refunds/cancelled`, 'GET');
 };
 
 // Fetch all today refund invoices
 export const fetchAllTodayRefundsInvoices = async () => {
-    const response = await requestMaking('refunds/today', 'GET', null);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest('refunds/today', 'GET');
 };
 
 // Fetch all today refund invoices
 export const fetchTodayRefundsCancelledInvoices = async () => {
-    const response = await requestMaking('refundS/today/cancelled', 'GET', null);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest('refundS/today/cancelled', 'GET');
 };
 
 
@@ -60,9 +48,5 @@ export const fetchTodayRefundsCancelledInvoices = async () => {
 
 // Perform Refund Invoice
 export const postRefundInvoice = async (data) => {
-    const response = await requestMaking(`gra/refund`, 'POST', data);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`gra/refund`, 'POST', data);
 };

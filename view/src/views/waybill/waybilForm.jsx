@@ -39,7 +39,7 @@ const WaybillForm = ({ formData, closePopup }) => {
         .save(docName);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!form.mod || !form.despatchDate) {
             alert("Despatch Date cannot be empty.");
             return;
@@ -51,7 +51,7 @@ const WaybillForm = ({ formData, closePopup }) => {
                 CustomerID: formData.CustomerID,
                 ...form
             };
-            postWaybillData(payload);
+            await postWaybillData(payload);
             handlePDF();
             closePopup();
         } catch (error) {
@@ -258,7 +258,8 @@ const WaybillForm = ({ formData, closePopup }) => {
 
                 {/* Delivery details section */}
                 <table width='100%' cellPadding={2}>
-                    <tbody>
+                    <tbody>{
+                        form.mod && form.mod === "DELIVERY" ? <>
                         <tr>
                             <td><strong>Delivered By </strong></td>
                             <td>
@@ -288,7 +289,17 @@ const WaybillForm = ({ formData, closePopup }) => {
                                 <div style={{ padding: 15 }}></div>
                             </td>
                         </tr>
-                    </tbody>
+                        </> : <>
+                        <tr>
+                            <td><strong>Sales Rep</strong></td>
+                            <td>
+                                <input
+                                    style={{ border: '1px dashed gray', width: '100%', padding: 4 }}
+                                    value={formData.IssuerName}
+                                />
+                            </td>
+                        </tr>
+                    </>}</tbody>
                 </table>
 
                 <div style={{ height: 40 }}></div>

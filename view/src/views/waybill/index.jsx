@@ -15,7 +15,6 @@ import {
 // projects
 import { fetchQuoteInvoices } from '../../apiActions/allApiCalls/invoice';
 import { AlertError, GeneralCatchError } from '../../utilities/errorAlert';
-import WaybillPopper from './waybillPopup';
 import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceholder';
 import WaybillForm from './waybilForm';
 import { Close } from '@mui/icons-material';
@@ -224,9 +223,6 @@ export default function OrderCheckout() {
                 <Grid item>
                     <Typography color='white' variant='h3'>Outsource Paid Invoices</Typography>
                 </Grid>
-                <Grid item>
-                    <WaybillPopper />
-                </Grid>
             </Grid>
             {
                 invoices.length > 0 ?
@@ -254,13 +250,14 @@ export default function OrderCheckout() {
             {alert.message ? <GeneralCatchError alert={alert} handleClose={handleClose} open={open} /> : null}
             {notify.message ? <AlertError alert={notify} handleClose={handleClose} open={open} /> : null}
 
-            <Dialog open={openDialog} sx={{ padding: '20px' }} fullScreen>
-                <DialogTitle>
-                    <IconButton onClick={handleCloseDialog} color='secondary'>
-                        <Close color='error' fontSize='large'/>
+            <Dialog open={openDialog} fullScreen>
+                <DialogTitle sx={{ backgroundColor: 'darkblue' }}>
+                    <IconButton onClick={handleCloseDialog} color='secondary' sx={{ justifyContent: 'flex-end' }}>
+                        <Typography fontSize='1em' color='red'>Cancel</Typography> 
+                        <Close color='error' fontSize='medium'/>
                     </IconButton>
                 </DialogTitle>
-                <DialogContent>
+                <DialogContent sx={{ padding: '20px' }}>
                     <WaybillForm
                         formData={selectedRow}
                         sendPayload={sendPayload}

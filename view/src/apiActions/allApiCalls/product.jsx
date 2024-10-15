@@ -1,46 +1,44 @@
 import requestMaking from "../../auth/setHeaderToken";
 
+const handleRequest = async (url, method, data = null) => {
+    try {
+        const response = await requestMaking(url, method, data);
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return await response.json();
+        }        
+        return response;
+    } catch (error) {
+        return error;
+    }
+};
+
+// Fetch all company info
+export const fetchCompanyData = async () => {
+    return await handleRequest(`company`, 'GET');
+};
+
 // Fetch all products
 export const fetchAllProducts = async () => {
-    const response = await requestMaking('products', 'GET', null);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest('products', 'GET');
 };
 
 // Fetch product name
 export const fetchProductNameSearch = async (data) => {
-    const response = await requestMaking(`products/query?query=${data}`, 'GET', null);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`products/query?query=${data}`, 'GET');
 };
 
 // Fetch dashboard card product details
 export const fetchDashboardCardDetails = async () => {
-    const response = await requestMaking(`products/dashboard/card`, 'GET', null);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`products/dashboard/card`, 'GET');
 };
 
 // Add new products
 export const PostNewProducts = async (payload) => {
-    const response = await requestMaking('products/add', 'POST', payload);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest('products/add', 'POST', payload);
 };
 
 // Update product
 export const UpdateProduct = async (id, payload) => {
-    const response = await requestMaking(`products/${id}`, 'PUT', payload);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`products/${id}`, 'PUT', payload);
 };

@@ -1,18 +1,15 @@
 import { useNavigate } from 'react-router-dom';
+import nullLogo from '../../assets/images/nullLogo.svg'
 import {
     Box,
     Button,
     Container,
     Typography,
 } from "@mui/material";
-import nullLogo from '../../assets/images/nullLogo.svg'
 
 export default function NullPage() {
     const navigate = useNavigate();
-
-    const goBack = () => {
-        navigate(-1);
-    };
+    const goBack = () => navigate(-1);
 
     return (
         <>

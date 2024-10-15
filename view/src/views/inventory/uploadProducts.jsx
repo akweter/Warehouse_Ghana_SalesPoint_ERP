@@ -38,7 +38,7 @@ import { IconEraser } from '@tabler/icons';
 
 /* eslint-disable */
 
-const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action }) => {
+const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refreshPage }) => {
 	const [open, setOpen] = useState(false);
 	const [drop, setDrop] = useState(false);
 	const [loading, setLoading] = useState(false);
@@ -188,6 +188,16 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action }) => 
 
 	// Handle add button when clicked
 	const handleAdd = () => {
+		if (
+			!formData.productName ||
+			!formData.productUnitPrice ||
+			!formData.productStockQty ||
+			!formData.productCategory
+		) {
+			setAlert((e) => ({ ...e, message: 'Please the fields are required!. Cannot be left empty', color: 'error' }));
+			setOpen(true);
+			return;
+		}
 		if (selectedProduct) {
 			const updatedProducts = [...products, { ...selectedProduct, ...formData }];
 			setProducts(updatedProducts);
@@ -277,28 +287,22 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action }) => 
 				setDrop(true);
 				setTimeout(resolve, 2000);
 			});
-
 			const response = await UpdateOrPost();
 			const result = response.status;
 			if (result === 'success') {
-				setTimeout(() => {
-					setDrop(false);
-					// RefreshData(true);
-					window.location.reload();
-				
-					setTimeout(() => {
-						setAlert((e) => ({ ...e, message: "", color: "" }));
-						CloseDialog(false);
-						setProducts([]);
-					}, 500);
-				}, 500);
+				setAlert((e) => ({ ...e, message: "", color: "" }));
+				CloseDialog(false);
+				setProducts([]);
+			} else {
+				return;
 			}
 		}
 		catch (error) {
 			setDrop(false);
 			setAlert((e) => ({ ...e, message: 'Submission failed! \nPlease try again', color: 'error' }));
-			setOpen(false);
 		}
+		setOpen(false);
+		refreshPage;
 	};
 
 	return (

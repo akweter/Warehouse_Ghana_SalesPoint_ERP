@@ -1,12 +1,14 @@
+import { PeopleOutline } from '@mui/icons-material';
 import {
   IconReportMoney,
   IconFileInvoice,
   IconReceiptRefund,
-  IconBuildingStore,
-  IconBuildingWarehouse,
+  // IconBuildingStore,
+  // IconBuildingWarehouse,
   IconUsers,
   IconTruckDelivery,
   IconBuildingFactory,
+  IconListDetails,
 } from '@tabler/icons';
 import { IconUsersGroup } from '@tabler/icons-react';
 
@@ -59,28 +61,20 @@ const pages = {
       title: 'Inventory',
       type: 'item',
       url: '/stock',
-      icon: IconBuildingStore,
-      breadcrumbs: false
-    },
-    {
-      id: 'warehouse',
-      title: 'Warehouse',
-      type: 'item',
-      url: '/warehouse',
-      icon: IconBuildingWarehouse,
+      icon: IconListDetails,
       breadcrumbs: false
     },
     {
       id: 'suppliers',
-      title: 'Suppliers Directory',
+      title: 'Suppliers',
       type: 'item',
       url: '/suppliers',
-      icon: IconUsersGroup,
+      icon: IconUsers,
       breadcrumbs: false
     },
     {
       id: 'customer',
-      title: 'Customers Directory',
+      title: 'Customers',
       type: 'item',
       url: '/customers',
       icon: IconUsersGroup,
@@ -88,10 +82,10 @@ const pages = {
     },
     {
       id: 'users',
-      title: 'Employees Directory',
+      title: 'Users MGT',
       type: 'item',
       url: '/user',
-      icon: IconUsers,
+      icon: PeopleOutline,
       breadcrumbs: false
     }
   ]

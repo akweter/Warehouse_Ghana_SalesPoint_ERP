@@ -10,9 +10,6 @@ import {
     TextField,
     FormControlLabel,
     Checkbox,
-    InputLabel,
-    Select,
-    MenuItem,
     Slider,
     CircularProgress,
 } from '@mui/material';
@@ -31,7 +28,6 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
         userPhone: '',
         userAddress: '',
         userRegion: 'Local',
-        userType: 'customer',
         userRating: '',
         userTIN: '',
         userName: '',
@@ -119,7 +115,6 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                         userPhone: '',
                         userAddress: '',
                         userRegion: '',
-                        userType: '',
                         userRating: '',
                         userTIN: '',
                         userName: '',
@@ -255,20 +250,6 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                     value={formData.userAddress}
                                     onChange={handleInputChange}
                                 />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={5}>
-                            <FormControl fullWidth>
-                                <InputLabel>User Type</InputLabel>
-                                <Select
-                                    name="userType"
-                                    required
-                                    value={formData.userType}
-                                    onChange={handleInputChange}
-                                >
-                                    {/* <MenuItem value="supplier">Supplier</MenuItem> */}
-                                    <MenuItem value="customer">Customer</MenuItem>
-                                </Select>
                             </FormControl>
                         </Grid>
                     </Grid>

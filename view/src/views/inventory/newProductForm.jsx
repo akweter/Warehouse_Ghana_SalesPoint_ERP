@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { PostNewProducts } from '../../apiActions/allApiCalls/product';
 
-const NewProductForm = ({products}) => {
+const NewProductForm = ({products, refreshPage}) => {
     const [data, setData] = useState([]);
     
     const handleEdit = (index) => {
@@ -20,7 +20,8 @@ const NewProductForm = ({products}) => {
 
     const submitProducts = async () => {
         try {
-        const response = await PostNewProducts(data);
+            const response = await PostNewProducts(data);
+            refreshPage();
         } catch (error) {
             return null;
         }

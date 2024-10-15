@@ -60,10 +60,8 @@ export const fetchWooFailedOrders = async () => {
 
 // Search term/query
 export const FetchWooSearchOrder = async (input) => {
-    const queryTerm = `orders?search=${input}&context=edit`;
-    return await MakeWooRequest("GET", queryTerm);
+    return await MakeWooRequest("GET", `orders?search=${input}&context=edit`);
 };
-
 
 /* CUSTOMERS */
 

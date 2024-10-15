@@ -8,9 +8,6 @@ import {
     Grid,
     FormControl,
     TextField,
-    InputLabel,
-    Select,
-    MenuItem,
     FormControlLabel,
     Checkbox,
     Slider,
@@ -29,7 +26,6 @@ const UpdateCusNSup = ({ customer, closeAddnewUser, setSubmitted }) => {
         userPhone: customer.customerPhone || '',
         userAddress: customer.customerAddress || '',
         userRegion: customer.customerRegion || '',
-        userType: customer.userType || '',
         userRating: customer.customerRating || '',
         userTIN: customer.customerTIN || '',
         userName: customer.customerName || '',
@@ -128,7 +124,6 @@ const UpdateCusNSup = ({ customer, closeAddnewUser, setSubmitted }) => {
                                 userPhone: '',
                                 userAddress: '',
                                 userRegion: '',
-                                userType: '',
                                 userRating: '',
                                 userTIN: '',
                                 userName: '',
@@ -278,20 +273,6 @@ const UpdateCusNSup = ({ customer, closeAddnewUser, setSubmitted }) => {
                                     value={formData.userAddress}
                                     onChange={handleInputChange}
                                 />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={5}>
-                            <FormControl fullWidth>
-                                <InputLabel>User Type</InputLabel>
-                                <Select
-                                    name="userType"
-                                    required
-                                    value={formData.userType}
-                                    onChange={handleInputChange}
-                                >
-                                    <MenuItem value="supplier">Supplier</MenuItem>
-                                    <MenuItem value="customer">Customer</MenuItem>
-                                </Select>
                             </FormControl>
                         </Grid>
                     </Grid>

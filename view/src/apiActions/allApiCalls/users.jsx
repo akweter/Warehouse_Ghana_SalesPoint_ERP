@@ -1,81 +1,58 @@
 import requestMaking from "../../auth/setHeaderToken";
 
-/* ======================================================================================================== */
+const handleRequest = async (url, method, data = null) => {
+    try {
+        const response = await requestMaking(url, method, data);
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return await response.json();
+        }        
+        return response;
+    } catch (error) {
+        return error;
+    }
+};
 
 // Fetch fetch all users
 export const fetchAllUsers = async () => {
-    const response = await requestMaking(`users`, 'GET', null)
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`users`, 'GET');
 };
 
 // Fetch specific user data
 export const fetchuserByID = async (id) => {
-    const response = await requestMaking(`users/${id}`, 'get', null);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`users/${id}`, 'get');
 };
 
 // Fetch specific user data and set password
 export const fetchuserByIDPsd = async (id) => {
-    const response = await requestMaking(`users/${id}`, 'get', null);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`users/${id}`, 'get');
 };
-
-
 
 /* ======================================================================================================== */
 
 // Update user details
 export const updateUserDetails = async (id, data) => {
-    const response = await requestMaking(`users/${id}`, 'put', data);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`users/${id}`, 'put', data);
 };
 
 // Update user status
 export const updateUserStatus = async (id, data) => {
-    const response = await requestMaking(`users/status/${id}`, 'put', data);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`users/status/${id}`, 'put', data);
 };
 
 // Update user password
 export const updateUserPSD = async (id, data) => {
-    const response = await requestMaking(`auth/psd/${id}`, 'put', data);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`auth/psd/${id}`, 'put', data);
 };
 
 /* ======================================================================================================== */
 
 // Send Email to user
 export const sendEmailToUser = async (user) => {
-    const response = await requestMaking(`auth/sendemail`, 'post', user);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`auth/sendemail`, 'post', user);
 };
 
 // Add New User
 export const postNewUser = async (user) => {
-    const response = await requestMaking(`auth/signup`, 'post', user);
-    if (response.ok) {
-        return await response.json();
-    }
-    return null;
+    return await handleRequest(`auth/signup`, 'post', user);
 };

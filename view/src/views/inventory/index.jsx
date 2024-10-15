@@ -25,6 +25,7 @@ const Inventory = () => {
 
     const handleOpen = () => { setOpen(true) }
     const handleClose = () => { setOpen(false) }
+    const RefreshPage = () => { setSubmitted(true) }
 
     useEffect(() => {
         fetchData();
@@ -33,17 +34,15 @@ const Inventory = () => {
 
     // Fetch datagrid details
     const fetchData = async () => {
+        setLoading(true);
         try {
-            setLoading(true);
             const products = await fetchAllProducts();
             setProducts(products);
-            setTimeout(() => {
-                setLoading(false);
-            }, 1000);
         }
         catch (error) {
-            setLoading(true);
+            return;
         }
+        setLoading(false);
     }
 
     // Card details
@@ -167,9 +166,16 @@ const Inventory = () => {
                 </Grid>
             </Grid>
             <Box>
-                <InventoryProductsTable products={products} loading={loading} RefreshData={setSubmitted}/>
+                <InventoryProductsTable 
+                    products={products} 
+                    loading={loading}                    
+                />
             </Box>
-            <UploadCSVProducts openDialog={open} CloseDialog={handleClose} RefreshData={setSubmitted} />
+            <UploadCSVProducts 
+                openDialog={open} 
+                CloseDialog={handleClose}
+                refreshPage={RefreshPage}
+            />
         </>
     );
 }

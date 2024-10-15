@@ -16,10 +16,10 @@ const AuthenticationRoutes = {
   element: <MinimalLayout />,
   children: [
     { path: '/auth/login', element: <Login />},
-    { path: '*', element: <NullPage />},
     { path: '/auth/verify/:id', element: <VerifyEmail />},
     { path: '/auth/verify/', element: <ShowEmail />},
     { path: '/activate', element:  <VerifyToken />},
+    { path: '*', element: <ProtectedRoute> <NullPage /> </ProtectedRoute>},
     { path: '/auth/logout', element: <ProtectedRoute> <LogOut /> </ProtectedRoute>},
     { path: '/403', element: <ProtectedRoute> <ForbiddenPage /> </ProtectedRoute>},
   ]

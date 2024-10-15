@@ -58,11 +58,19 @@ const CusNSupp = () => {
                                     <Typography color='white' variant='h3'>Suppliers Portal</Typography>
                                     <Button
                                         variant='contained'
+                                        color='warning'
+                                        size='medium'
+                                        onClick={() => alert('Coming soon!')}
+                                    >
+                                        Add Bulk Supplier
+                                    </Button>
+                                    <Button
+                                        variant='contained'
                                         color='inherit'
                                         size='medium'
                                         onClick={handleOpen}
                                     >
-                                        Add New Supplier
+                                        Add Single Supplier
                                     </Button>
                                 </Grid>
                                 <Box>

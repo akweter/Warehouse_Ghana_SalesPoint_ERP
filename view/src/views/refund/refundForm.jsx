@@ -241,6 +241,7 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
             } else {
                 setAlert((e) => ({ ...e, message: `${data.status}! Invoice refunded`, color: 'success' }));
                 setSubmitted(true);
+                handleClose();
             }
         }
         catch (error) {
