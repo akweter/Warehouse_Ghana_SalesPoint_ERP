@@ -16,6 +16,7 @@ import CustomersSuppliersTable from './displayCustomers';
 import { LoadingSpinner } from '../../ui-component/loaderAPI';
 import AddSupnCustomers from './addCustomers';
 import VerifyTIN from './verifyTIN';
+import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceholder';
 
 const CusNSupp = () => {
     const [submitted, setSubmitted] = useState(false);
@@ -46,41 +47,34 @@ const CusNSupp = () => {
         }
     }
 
-    return (
-        <>
-            {
-                loading ?
-                <LoadingSpinner /> :
-                <>
+    return (<>
+        <Paper>
+            <Grid container sx={{ justifyContent: 'space-around', paddingBottom: 1, backgroundColor: 'darkblue', padding: 1, }}>
+                <Typography color='white' variant='h3'>Customers Management Page</Typography>
+                <VerifyTIN />
+                <Button
+                    variant='contained'
+                    color='inherit'
+                    size='medium'
+                    onClick={handleOpen}
+                >
+                    Add New User
+                </Button>
+            </Grid>
+            <Box>
+                {loading ?  <LoadingSpinner /> : <>
                     {
-                        customersNsuppliers.length > 0 ? (<>
-                            <Paper>
-                                <Grid container sx={{ justifyContent: 'space-around', paddingBottom: 1, backgroundColor: 'darkblue', padding: 1, }}>
-                                    <Typography color='white' variant='h3'>Customers Management Page</Typography>
-                                    < VerifyTIN />
-                                    <Button
-                                        variant='contained'
-                                        color='inherit'
-                                        size='medium'
-                                        onClick={handleOpen}
-                                    >
-                                        Add New User
-                                    </Button>
-                                </Grid>
-                                <Box>
-                                    < CustomersSuppliersTable inData={customersNsuppliers} setSubmitted={setSubmitted} />
-                                </Box>
-                            </Paper>
-                            <Dialog open={open}>
-                                <AddSupnCustomers closeAddnewUser={handleClose} setSubmitted={setSubmitted} />
-                            </Dialog>
-                        </>) :
-                            null
+                        customersNsuppliers.length > 0 ?
+                        <CustomersSuppliersTable inData={customersNsuppliers} setSubmitted={setSubmitted} />
+                        : <ProductPlaceholder />
                     }
-                </>
-            }
-        </>
-    );
+                </>}
+            </Box>
+        </Paper>
+        <Dialog open={open}>
+            <AddSupnCustomers closeAddnewUser={handleClose} setSubmitted={setSubmitted} />
+        </Dialog>
+    </>);
 }
 
 export default CusNSupp;

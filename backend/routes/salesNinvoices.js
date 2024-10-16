@@ -18,12 +18,10 @@ const {
   getAllSalesInvoices,
   ThisMonthTaxes,
   ThisMonthTotalInvoicenDate,
-  getAllQuoteInvoices,
   getWaybillInvoice,
   salesNRefundInvoices,
   deleteQuotation,
   deleteQuotationProducts,
-  fetchQuotations,
 } = require("../controller/salesNinvoices");
 
 // All original GRA invoices transaction
@@ -186,22 +184,6 @@ Router.get("/purchase", async (req, res) => {
   }
 });
 
-// delete quotation
-Router.delete("/quote/del/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const output = await deleteQuotation(id);
-    if (output) {
-      await deleteQuotationProducts(id);
-    }
-    res.status(200).json({message: `Transaction: ${id} removed!`});
-  }
-  catch (error) {
-    logErrorMessages(error);
-    res.status(500).json({message: "Delete failed!. Kindly refresh and retry"});
-  }
-});
-
 // Search Invoice
 Router.get("/search", async (req, res) => {
   const query = req.query.q;
@@ -226,6 +208,22 @@ Router.get("/:id", async (req, res) => {
   catch (err) {
     logErrorMessages(`Error fetching invoice with id: ${userID}, Error: ${err}`);
     return res.status(500).send("Internal server error");
+  }
+});
+
+// delete quotation
+Router.delete("/quote/del/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const output = await deleteQuotation(id);
+    if (output) {
+      await deleteQuotationProducts(id);
+    }
+    res.status(200).json({message: `Transaction: ${id} removed!`});
+  }
+  catch (error) {
+    logErrorMessages(error);
+    res.status(500).json({message: "Delete failed!. Kindly refresh and retry"});
   }
 });
 

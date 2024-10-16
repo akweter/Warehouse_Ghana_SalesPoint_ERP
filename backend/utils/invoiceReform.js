@@ -1,11 +1,10 @@
-const { addCustomer, status } = require("../controller/customers");
+const { addCustomer } = require("../controller/customers");
 const {
     AddNewInvoices,
     saveInInvoiceProduct,
-    updateRefundProducts,
     updateQuotation,
-    updateInvoice_Quotation,
-    updateInvoiceProducts,
+    deleteQuotationProducts,
+    updateRefundProducts,
 } = require("../controller/salesNinvoices");
 const generateUUID = require("./generateIDs");
 
@@ -98,78 +97,193 @@ const updateDBWithGRAResponse = async (response) => {
     return await updateQuotation(payload);
 }
 
-// await updateInvoiceProducts(payload, IPID ,invoiceNumber);
+// Save invoice or quotation
+// const saveInvoiceToDB = async (Data, responseData) => {
+//     const {
+//         AutoID,
+//         checkdID,
+//         userName,
+//         totalAmount,
+//         transactionDate,
+//         currency,
+//         invoiceNumber,
+//         businessPartnerTin,
+//         businessPartnerName,
+//         discountAmount,
+//         totalVat,
+//         exchangeRate,
+//         remarks,
+//         nhil,
+//         getfund,
+//         covid,
+//         cst,
+//         tourism,
+//         calculationType,
+//         saleType,
+//         discountType,
+//         reference,
+//         delivery,
+//         invoiceType,
+//         userPhone,
+//         invCusId,
+//         items,
+//         flag,
+//     } = Data;
 
-// Save invoice or quotation products
-const addInvoiceProducts = async (Data) => {
-    const { items, flag, invoiceNumber, infoMsg } = Data;
+//     // Customer basket
+//     let checkID = null;
 
-    if (items) {
-        // Save Refund invoice
-        if (['REFUND', 'PARTIAL_REFUND'].includes(flag)) {
-            return await updateRefundProducts(update);
-        }
-        else {
-            // await deleteQuotationProducts(invoiceNumber);
-            const result = await Promise.all(items.map(async (item) => {
-                const {
-                    itemCode,
-                    unitPrice,
-                    discountAmount,
-                    quantity,
-                    invProID,
-                } = item;
+//     // Customer basket
+//     let CID = null;
 
-                // Customer basket
-                let productID = null;
+//     // Generate customer ID
+//     const customerID = (id) => {
+//         if (CID === null) {
+//             if (!id || id === "") {
+//                 CID = generateUUID();
+//             } else {
+//                 CID = id;
+//             }
+//         }
+//         return CID;
+//     }
+    
+//     // Generate unique ID to track and avoid saving duplicated info
+//     const generateCheckID = (id) => {
+//         if (checkID === null) {
+//             if (!id || id === "") {
+//                 checkID = generateUUID();
+//             } else {
+//                 checkID = id;
+//             }
+//         }
+//         return checkID;
+//     }
 
-                // Generate customer ID
-                const product_ID = (id) => {
-                    if (productID === null) {
-                        if (!id || id === "") {
-                            productID = generateUUID();
-                        } else {
-                            productID = id;
-                        }
-                    }
-                    return productID;
-                }
-                const add = [
-                    generateUUID(),
-                    invoiceNumber,
-                    itemCode,
-                    unitPrice,
-                    discountAmount,
-                    quantity,
-                    0,
-                ];
-                const update = {
-                    Product_Price: unitPrice,
-                    Product_Discount: discountAmount,
-                    Product_Quantity: quantity,
-                };
-                const addUpdate = [
-                    product_ID(invProID),
-                    invoiceNumber,
-                    itemCode,
-                    unitPrice,
-                    discountAmount,
-                    quantity,
-                    0,
-                ];
-                if (infoMsg && infoMsg === "quoteEdit") {
-                    await saveInInvoiceProduct(addUpdate);
-                    await updateInvoiceProducts(update, invProID, invoiceNumber);
-                    productID = null;
-                } else {
-                    await saveInInvoiceProduct(add);
-                }
-                return ({ status: 'success' })
-            }));
-            return result;
-        }
-    }
-}
+//     const payload = [
+//         AutoID,
+//         generateCheckID(checkdID),
+//         userName,
+//         totalAmount,
+//         invoiceType,
+//         calculationType,
+//         transactionDate,
+//         currency,
+//         saleType,
+//         invoiceNumber,
+//         businessPartnerTin,
+//         customerID(invCusId),
+//         discountAmount,
+//         exchangeRate,
+//         totalVat,
+//         generateUUID(),
+//         reference,
+//         remarks,
+//         nhil,
+//         getfund,
+//         covid,
+//         cst,
+//         tourism,
+//         discountType,
+//         responseData.response.message.ysdcid,
+//         responseData.response.message.ysdcrecnum,
+//         responseData.response.message.ysdcintdata,
+//         responseData.response.message.ysdcregsig,
+//         responseData.response.message.ysdcmrc,
+//         responseData.response.message.ysdcmrctim,
+//         responseData.response.message.ysdctime,
+//         responseData.response.qr_code,
+//         delivery,
+//     ];
+
+//     const customerAdd = [
+//         businessPartnerName,
+//         businessPartnerTin,
+//         "",
+//         userPhone,
+//         "",
+//         "Active",
+//         "",
+//         "Taxable",
+//         2,
+//         customerID(invCusId),
+//         new Date(),
+//     ];
+
+//     try {
+//         //saving into DB invoice, refund, quotattion, quotation edit
+//         await AddNewInvoices(payload);
+
+//         // saving cash customers to DB
+//         if (businessPartnerTin === "C0000000000") {
+//             await addCustomer(customerAdd);
+//         }
+
+//         // saving invoice products
+//         if (items) {
+//             if (flag === 'REFUND' || flag === 'PARTIAL_REFUND') {
+//                 const result = await Promise.all(items.map(async (item) => {
+//                     const {
+//                         quantity,
+//                         invProID,
+//                     } = item;
+                    
+//                     // Single product payload
+//                     const updateProductVoid = [
+//                         quantity,
+//                         invProID,
+//                         invoiceNumber
+//                     ];
+//                     const updaterefundqty = await updateRefundProducts(updateProductVoid);
+//                     console.log(`update one product refund qty => ${updateProductVoid}  \n response`, updaterefundqty);
+//                 }));
+//                 console.log('update all refund products', result);
+//                 return result;
+//             } else {
+//                 await deleteQuotationProducts(invoiceNumber);
+//                 const result = await Promise.all(items.map(async (item) => {
+//                     const {
+//                         itemCode,
+//                         unitPrice,
+//                         discountAmount,
+//                         quantity,
+//                         invProID,
+//                     } = item;
+
+//                     // Generate product ID
+//                     const product_ID = (id) => {
+//                         let productID = null;
+                        
+//                         if (productID === null) {
+//                             if (!id || id === "") {
+//                                 productID = generateUUID();
+//                             } else {
+//                                 productID = id;
+//                             }
+//                         }
+//                         return productID;
+//                     }
+//                     // Single product payload
+//                     const productPayload = [
+//                         product_ID(invProID),
+//                         invoiceNumber,
+//                         itemCode,
+//                         unitPrice,
+//                         discountAmount,
+//                         quantity,
+//                         0,
+//                     ];
+//                     const savingProduct = await saveInInvoiceProduct(productPayload);
+//                     console.log(`adding product => ${productPayload}  \n response`, savingProduct);
+//                 }));
+//                 return result;
+//             }
+//         }
+//         return { status: 'success', message: 'Transaction successful' }
+//     } catch (error) {
+//         return ({ status: 'error', message: error });
+//     }
+// };
 
 // Save invoice or quotation
 const saveInvoiceToDB = async (Data, responseData) => {
@@ -200,56 +314,26 @@ const saveInvoiceToDB = async (Data, responseData) => {
         invoiceType,
         userPhone,
         invCusId,
-        infoMsg,
+        items,
+        flag,
     } = Data;
 
-    // Customer basket
     let checkID = null;
-
-    // Customer basket
     let CID = null;
 
-    // Generate customer ID
     const customerID = (id) => {
         if (CID === null) {
-            if (!id || id === "") {
-                CID = generateUUID();
-            } else {
-                CID = id;
-            }
+            CID = id || generateUUID();
         }
         return CID;
-    }
-    // IPID
-    // Generate unique ID to track and avoid saving duplicated info
+    };
+
     const generateCheckID = (id) => {
         if (checkID === null) {
-            if (!id || id === "") {
-                checkID = generateUUID();
-            } else {
-                checkID = id;
-            }
+            checkID = id || generateUUID();
         }
         return checkID;
-    }
-
-    const invoiceData = {
-        Inv_total_amt: totalAmount,
-        Inv_Customer_Tin: businessPartnerTin,
-        Inv_discount: discountAmount,
-        Inv_ext_Rate: exchangeRate,
-        Inv_vat: totalVat,
-        remarks: remarks,
-        nhil: nhil,
-        getfund: getfund,
-        covid: covid,
-        cst: cst,
-        tourism: tourism,
-        Inv_Discount_Type: discountType,
-        Inv_delivery_fee: delivery,
-        Inv_Cus_ID: invCusId,
-        Inv_user: userName
-      };
+    };
 
     const payload = [
         AutoID,
@@ -292,7 +376,7 @@ const saveInvoiceToDB = async (Data, responseData) => {
         businessPartnerTin,
         "",
         userPhone,
-        "", 
+        "",
         "Active",
         "",
         "Taxable",
@@ -302,19 +386,60 @@ const saveInvoiceToDB = async (Data, responseData) => {
     ];
 
     try {
-        if (infoMsg && infoMsg === "quoteEdit") {
-            await updateInvoice_Quotation(invoiceData, checkdID);
-        } else {
-            await AddNewInvoices(payload);
-        }       
+        await AddNewInvoices(payload);
         if (businessPartnerTin === "C0000000000") {
             await addCustomer(customerAdd);
         }
-        await addInvoiceProducts(Data); 
-        return { status: 'success' }
+        if (items) {
+            if (flag === 'REFUND' || flag === 'PARTIAL_REFUND') {
+                return await handleRefundItems(items, invoiceNumber);
+            } else {
+                await deleteQuotationProducts(invoiceNumber);
+                return await handleInvoiceItems(items, invoiceNumber);
+            }
+        }
+        return { status: 'success', message: 'Transaction successful' };
     } catch (error) {
-        return error;
+        return { status: 'error', message: error };
     }
 };
 
-module.exports = { sanitizePayload, saveInvoiceToDB, addInvoiceProducts, updateDBWithGRAResponse }
+const handleRefundItems = async (items, invoiceNumber) => {
+    const results = await Promise.all(items.map(async (item) => {
+        const { quantity, invProID } = item;
+        const updateProductVoid = [quantity, invProID, invoiceNumber];
+        const result = await updateRefundProducts(updateProductVoid);
+        console.log(`Update one product refund qty => ${updateProductVoid}  \n response`, result);
+        return result;
+    }));
+    console.log('Update all refund products', results);
+    return results;
+};
+
+const handleInvoiceItems = async (items, invoiceNumber) => {
+    const results = await Promise.all(items.map(async (item) => {
+        const { itemCode, unitPrice, discountAmount, quantity, invProID } = item;
+        const product_ID = invProID || generateUUID();
+
+        const productPayload = [
+            product_ID,
+            invoiceNumber,
+            itemCode,
+            unitPrice,
+            discountAmount,
+            quantity,
+            0,
+        ];
+
+        const savingProduct = await saveInInvoiceProduct(productPayload);
+        console.log(`Adding product => ${productPayload}  \n response`, savingProduct);
+        return savingProduct;
+    }));
+    return results;
+};
+
+module.exports = { 
+    sanitizePayload, 
+    saveInvoiceToDB, 
+    updateDBWithGRAResponse,
+}

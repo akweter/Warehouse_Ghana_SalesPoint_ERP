@@ -77,7 +77,7 @@ export default function OrderCheckout() {
 
     // Set Row for DataGrid
     const rowsWithIds = useMemo(() =>
-        invoices.map((invoice, index) => ({
+        invoices.length > 0 && invoices.map((invoice, index) => ({
             id: index,
             ...invoice,
             InvoiceDate: formatDate(invoice.InvoiceDate)

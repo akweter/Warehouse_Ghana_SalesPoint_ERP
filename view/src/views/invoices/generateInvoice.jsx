@@ -81,8 +81,8 @@ const MakeNewInvoice = ({ setSubmitted, status }) => {
                             >
                                 <Chip
                                     variant="filled" 
-                                    color={status ? 'primary' : 'error'}
-                                    label={status ? 'GRA UP' : 'GRA DOWN'}
+                                    color={status === true ? 'primary' : 'error'}
+                                    label={status === true ? 'GRA UP' : 'GRA DOWN'}
                                 />
                                 <Button onClick={handleClose} fullWidth={false} color='error' variant="contained" size='small' startIcon={<CancelSharpIcon />}>
                                     Cancel

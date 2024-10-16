@@ -100,6 +100,7 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
 
         try {
             setDrop(true);
+            
             setTimeout(() => {
                 setAlert((e) => ({...e, message: `You've done it!`, color: 'success' }));
                 setOpenAlert(true);

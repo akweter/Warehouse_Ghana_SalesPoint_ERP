@@ -3,8 +3,10 @@ const express = require("express");
 const axios = require("axios");
 require('dotenv').config();
 
+const Router = express.Router();
+
 const { GRA_ENDPOINT, GRA_KEY } = process.env;
-const { saveRefundInvoice, updateQuotation } = require("../controller/salesNinvoices");
+const { saveRefundInvoice } = require("../controller/salesNinvoices");
 const generateUUID = require("../utils/generateIDs");
 const {
     sanitizePayload,
@@ -12,8 +14,6 @@ const {
     addInvoiceProducts,
     updateDBWithGRAResponse,
 } = require("../utils/invoiceReform");
-
-const Router = express.Router();
 
 const sampleGARResponse = {
     response: {
@@ -62,10 +62,10 @@ Router.post("/quote", async (req, res) => {
     // const sanitizedPayload = sanitizePayload(Data);
     // logSuccessMessages(Data);
     try {
-        if (invoiceType && invoiceType === "Proforma Invoice") {
+        // if (invoiceType && invoiceType === "Proforma Invoice") {
             await saveInvoiceToDB(Data, sampleGARResponse);
-        }
-        await addInvoiceProducts(Data);
+        // }
+        // await addInvoiceProducts(Data);
         res.status(200).json({ status: "success", message: "Transaction success" });
     }
     catch (error) {
@@ -90,14 +90,15 @@ Router.post("/quote", async (req, res) => {
 // Post and save invoice records
 Router.post("/invoice", async (req, res) => {
     const Data = req.body;
+
     if (!Data || !Data.items || !Array.isArray(Data.items)) {
         logErrorMessages('Invalid payload structure: ', Data)
         return res.status(500).json({ status: 'Error', message: 'Invalid payload structure' });
     }
+
     const sanitizedPayload = sanitizePayload(Data);
-    // logSuccessMessages(sanitizedPayload);
+    // logSuccessMessages(Data);
     try {
-        await saveInvoiceToDB(Data, sampleGARResponse);
         const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, {
             timeout: 10000,
             headers: {
@@ -105,8 +106,8 @@ Router.post("/invoice", async (req, res) => {
                 'Content-Type': 'application/json'
             }
         });
-        await updateDBWithGRAResponse(response.data);
-        return res.status(200).json({ status: 'success', message: 'Invoice successful' });
+        await saveInvoiceToDB(Data, response.data);
+        res.status(200).json({ status: 'success', message: 'Invoice successful' });
     }
     catch (error) {
         if (error.response) {
@@ -139,23 +140,16 @@ Router.post("/refund", async (req, res) => {
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, { headers: { 'security_key': GRA_KEY } });
         if (response && response.status === 200) {
-            const resultMessage = response.data.response.status;
-            if (resultMessage) {
-                await saveInvoiceToDB(Data, response.data)
-                    .then(() => {
-                        return res.status(200).json({ status: 'success' });
-                    })
-                    .catch(() => {
-                        logErrorMessages(`Failed to save invoice to DB: ${sanitizedPayload}`);
-                        return res.json({ status: 'error', message: `Failed to save invoice: ${sanitizedPayload.invoiceNumber} to DB. Try new invoice` });
-                    });
+            if (response.data.response.status) {
+                await saveInvoiceToDB(Data, response.data);
+                res.status(200).json({ status: "success", message: "Refund transaction success" });
             }
             else {
-                logErrorMessages(`Unknow GRA error for invoice ${sanitizedPayload}`);
+                logErrorMessages(`Unknow GRA error for refund ${JSON.stringify(response.data)}`);
                 return res.json({ status: 'error', message: 'GRA response indicates unknown error' });
             }
         } else {
-            return res.json({ status: 'error', message: `Sending invoice: ${sanitizedPayload.invoiceNumber} to GRA Failed!` });
+            res.json({ status: 'error', message: `Sending invoice: ${sanitizedPayload.invoiceNumber} to GRA Failed!` });
         }
     }
     catch (error) {
@@ -187,8 +181,7 @@ Router.post("/refund/cancellation", async (req, res) => {
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/cancellation`, Data, { headers: { 'security_key': GRA_KEY } });
         if (response && response.status === 200) {
-            const resultMessage = response.data.response.status;
-            if (resultMessage) {
+            if (response.data.response.status) {
                 const { invoiceNumber, reference, userName, flag, totalAmount } = Data;
                 const payload = [
                     null,
@@ -225,23 +218,15 @@ Router.post("/refund/cancellation", async (req, res) => {
                     null,
                     null,
                 ];
-
-                await saveRefundInvoice(payload)
-                    .then(() => {
-                        logSuccessMessages(`${userName} - ${flag} on reference ${reference} for invoice ${invoiceNumber}`);
-                        return res.status(200).json({ status: 'success' });
-                    })
-                    .catch(() => {
-                        logErrorMessages(`Failed to save refund cancelation invoice for: ${Data.invoiceNumber}`);
-                        return res.json({ status: 'error', message: `Failed to save invoice: ${Data.invoiceNumber}` });
-                    });
+                await saveRefundInvoice(payload);
             }
             else {
-                logErrorMessages(`Unknow GRA error for invoice`);
+                logErrorMessages(`Unknow GRA error for invoice cancellation ${JSON.stringify(response.data)}`);
                 return res.json({ status: 'error', message: 'GRA response indicates unknown error' });
             }
         } else {
-            return res.json({ status: 'error', message: `Sending invoice: ${sanitizedPayload.invoiceNumber} to GRA Failed!` });
+            logErrorMessages(`Sending invoice cancellation to GRA failed ${JSON.stringify(response.data)}`);
+            res.json({ status: 'error', message: `Transaction failed` });
         }
     }
     catch (error) {

@@ -66,7 +66,6 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
                 Remarks,
                 SaleType,
                 DiscountType,
-                InvoiceDate,
                 checkdID,
                 CustomerID,
                 DeliveryFee,
@@ -99,7 +98,7 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
                 invCusId: CustomerID,
                 remarks: Remarks,
                 status: "Partial_Refund",
-                checkdID: checkdID,
+                checkdID: "",
                 delivery: DeliveryFee,
                 userPhone: customerPhone,
             }));
@@ -107,7 +106,6 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
             // Set items state
             if (Array.isArray(products) && products.length > 0) {
                 const updatedItemLists = products.map((e) => {
-
                     const qty = e.Quantity;
                     setOriginalQuantities((val) => ({ ...val, [e.itemCode]: qty }));
                     setCurrentQuantities((val) => ({ ...val, [e.itemCode]: qty }));
@@ -130,6 +128,7 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
                         totalVat: "",
                         totalLevy: "",
                         totalAmount: "",
+                        invProID: e.IPID,
                         alt: "",
                         refProQty: e.RefundedQuantity,
                     };

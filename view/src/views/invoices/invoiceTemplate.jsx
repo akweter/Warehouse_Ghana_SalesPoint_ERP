@@ -85,7 +85,7 @@ const InvoiceTemplate = ({ data }) => {
 								</tbody>
 							</table>
 						) :
-						(<div>Products not available</div>)
+						(<div>Products unavailable</div>)
 				}
 			</table>
 

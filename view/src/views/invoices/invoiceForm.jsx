@@ -171,11 +171,6 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
         }
     }, [callBack]);
     
-    // Fetch product and Customer Data
-    useEffect(() => {
-        fetchData();
-    }, [allSearch.customer, allSearch.product]);
-
     useEffect(() => {
         setUserName();
         setInvoiceNumber();
@@ -230,21 +225,21 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
     }, [compute, header]);
 
     // search product and customer information
-    const fetchData = async() => {
+    const fetchProductsCustomers = async() => {
         try {
             setLoading(true);
             if (allSearch.customer.length < 1) {
                 const result = await fetchCustomerNameSearch(allSearch.customer);
                 SetAllSearch((prevState) => ({ 
                     ...prevState, 
-                    customer: result 
+                    customer: result || [],
                 }));
             }
             if (allSearch.product.length < 1) {
                 const data = await fetchProductNameSearch(allSearch.product);
                 SetAllSearch((prevState) => ({ 
                     ...prevState, 
-                    product: data 
+                    product: data || [],
                 }));
             }
         }
@@ -260,19 +255,17 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
         const year = currentDate.getFullYear() % 100;
         const month = currentDate.getMonth() + 1;
         const day = currentDate.getDate();
-            // console.log('invoice number before',quoteProducts.invoiceNumber);
-            console.log('qp',quoteProducts);
+        const secs = currentDate.getSeconds();
         if (!quoteProducts || quoteProducts.InvoiceNumber === "") {
             try {
                 const response = await fetchAutocompleteId();
                 const number = response[0].numList + 1;
-                const output = `OP${year}M${month}${number}CSD`;
+                const output = `G${year}M${month}${day}${number}CSD`;
                 setHeader((state) => ({ ...state, invoiceNumber: output }));
             }
             catch (error) {
                 let num = Math.floor(Math.random() * 100) + 1;
-                const output = `MG${year}${month}${(day)}-${num}CSD`;
-                // const output = `WG${year}${month}020CSD`;
+                const output = `G${year}${month}${(day)}-${num}CSD`;
                 setHeader((state) => ({ ...state, invoiceNumber: output }));
             }
         }
@@ -539,6 +532,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                 <FormControl fullWidth>
                                     <Autocomplete
                                         id="customer-search"
+                                        onKeyDownCapture={fetchProductsCustomers}
                                         // disabled={header.infoMsg ? true : false}
                                         options={allSearch.customer}
                                         loading={loading}
@@ -736,6 +730,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                             <FormControl fullWidth>
                                 <Autocomplete
                                     id="product-search"
+                                    onKeyDownCapture={fetchProductsCustomers}
                                     options={allSearch.product}
                                     loading={loading}
                                     getOptionLabel={(option) => option.productName ? option.productName : ''}

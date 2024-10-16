@@ -49,7 +49,7 @@ export default function DashBoardInvoice() {
     };
 
     const rowsWithIds = useMemo(() =>
-        invoices.map((invoice, index) => ({
+        invoices.length > 0 && invoices.map((invoice, index) => ({
             id: index + 1,
             ...invoice,
             Inv_date: formatDate(invoice.Inv_date),
