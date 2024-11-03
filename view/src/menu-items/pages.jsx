@@ -42,10 +42,18 @@ const pages = {
     },
     {
       id: 'orders',
+      title: 'Despatch',
+      type: 'item',
+      url: '/orders/despatch',
+      icon: IconTruckDelivery,
+      breadcrumbs: false
+    },
+    {
+      id: 'deliveries',
       title: 'Deliveries',
       type: 'item',
-      url: '/orders/new',
-      icon: IconTruckDelivery,
+      url: '/orders/deliveries',
+      icon: IconFileInvoice,
       breadcrumbs: false
     },
     {

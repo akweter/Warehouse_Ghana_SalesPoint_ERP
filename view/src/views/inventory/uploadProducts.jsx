@@ -281,28 +281,25 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 
 	// Submit product to server
 	const submitProducts = async () => {
+		setDrop(true);
 		try {
-			await new Promise((resolve) => {
-				setAlert((e) => ({ ...e, message: null, color: null }));
-				setDrop(true);
-				setTimeout(resolve, 2000);
-			});
 			const response = await UpdateOrPost();
 			const result = response.status;
 			if (result === 'success') {
 				setAlert((e) => ({ ...e, message: "", color: "" }));
 				CloseDialog(false);
 				setProducts([]);
+				refreshPage();
 			} else {
 				return;
 			}
 		}
 		catch (error) {
 			setDrop(false);
-			setAlert((e) => ({ ...e, message: 'Submission failed! \nPlease try again', color: 'error' }));
+			setAlert((e) => ({ ...e, message: 'Operation failed! \nPlease refresh try again', color: 'error' }));
 		}
-		setOpen(false);
-		refreshPage;
+		setDrop(false);
+		setOpen(true);
 	};
 
 	return (
@@ -405,6 +402,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 									<FormControl fullWidth>
 										<InputLabel>{formData.productTaxType === "" ? "Standard" : "Tax Type"}</InputLabel>
 										<Select
+											disabled={true}
 											name="productTaxType"
 											// required
 											value={formData.productTaxType || ''}

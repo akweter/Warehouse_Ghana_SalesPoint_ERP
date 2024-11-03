@@ -18,7 +18,7 @@ const restructureInvoiceResult = require("../utils/invoiceModifier");
 // all refund Invoices
 Router.get("/", async (req, res) => {
     try {
-        const output = await salesNRefundInvoices('Partial_Refund', 'Refund', 'Refund_Cancellation');
+        const output = await salesNRefundInvoices('Partial_Refund', 'Refund', 'Refund_Cancellation', 'http');
         const modifiedOutput = restructureInvoiceResult(output);
         return res.status(200).json(modifiedOutput);
     }

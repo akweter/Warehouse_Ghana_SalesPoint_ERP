@@ -57,8 +57,16 @@ const sixMonthAverageItemsSold = async () => {
 	}
 };
 
-// Retrieve all sales or refunded invoices 
-const salesNRefundInvoices = async (a, b, c) => {
+// Retrieve all sales or refunded invoices or quotation invoices
+const salesNRefundInvoices = async (a, b, c, d) => {
+	let qrCodeFilter;
+	if (d === 'http') {
+		qrCodeFilter = "qr_code IS NOT NULL AND qr_code LIKE 'http%'";
+	} else if (d === 'null') {
+		qrCodeFilter = "qr_code IS NULL";
+	} else {
+		throw new Error('Invalid qrCodeCondition parameter');
+	}
 	const sql = `
 	  SELECT
 		inv.Inv_ID_auto  AS AutoID,
@@ -120,12 +128,12 @@ const salesNRefundInvoices = async (a, b, c) => {
 		inventory invt ON ip.Product_ID = invt.Itm_id
 	  WHERE
 		Inv_status IN (?, ?, ?)
+	  AND (${qrCodeFilter})
 	  ORDER BY
-		inv.Inv_ID_auto 
+		inv.Inv_ID_auto
 	  DESC`;
 	try {
 		return await executeQuery(sql, [a, b, c]);
-		;
 	}
 	catch (error) {
 		return error;
@@ -142,7 +150,6 @@ const allSalesInvNumbers = async () => {
   `;
 	try {
 		return await executeQuery(sql);
-		
 	}
 	catch (error) {
 		return error;
@@ -689,6 +696,8 @@ const updateQuotation = async (payload) => {
 		qr_code = ?
 	WHERE
 		Inv_Number = ?
+	AND 
+		Inv_status = 'Invoice'
     `;
 	try {
 		return await executeQuery(sql, payload);

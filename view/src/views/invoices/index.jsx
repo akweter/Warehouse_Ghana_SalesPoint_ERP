@@ -243,7 +243,7 @@ const Invoice = () => {
     }, [isSmallScreen]);
     
     const requestCallback = async (payload) => {
-        setDrop(payload.InvoiceNumber);        
+        setDrop(payload.InvoiceNumber);
         const load = { ...payload, flag: "INVOICE" }
 
         try {

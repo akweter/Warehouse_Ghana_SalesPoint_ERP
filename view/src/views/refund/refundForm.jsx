@@ -235,6 +235,7 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
         try {
             setConfirmationOpen(false);
             const data = await postRefundInvoice(header);
+            setOpen(true);
             if (data.status === 'error') {
                 setAlert((e) => ({ ...e, message: data.message, color: 'error' }));
             } else {
@@ -246,9 +247,9 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
         catch (error) {
             setAlert((e) => ({ ...e, message: 'Refunding invoice failed!', color: 'error' }));
         }
-        setOpen(true);
         setDrop(true)
-        setSubmitted(true);
+        setAlert((e) => ({ ...e, message: null, color: '' }));
+        setSubmitted;
     }
 
     return (

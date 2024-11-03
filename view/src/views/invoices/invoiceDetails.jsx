@@ -50,6 +50,10 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, su
         handleCloseDialog();
     }
 
+    const handleRefresh = () => {
+        submitted;
+    }
+
     const deleteQuotation = (InvoiceNumber) => {
         setOpenDelete(false);
         deleteQuote(InvoiceNumber);
@@ -235,7 +239,7 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, su
                 <RefundForms
                     handleClose={closeRefundDialog}
                     refundInv={selectedRow}
-                    setSubmitted={submitted}
+                    setSubmitted={handleRefresh}
                 />
             </Dialog>            
             <Dialog open={openDelete} sx={{ padding: '20px' }}>

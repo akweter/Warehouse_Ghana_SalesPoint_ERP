@@ -55,7 +55,7 @@ const WaybillForm = ({ formData, closePopup }) => {
             handlePDF();
             closePopup();
         } catch (error) {
-            console.error('PDF generation error: ', error);
+            return;
         }
     }
 

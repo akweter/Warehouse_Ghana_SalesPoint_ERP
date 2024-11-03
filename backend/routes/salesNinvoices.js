@@ -27,7 +27,7 @@ const {
 // All original GRA invoices transaction
 Router.get("/", async (req, res) => {
   try {
-    const output = await salesNRefundInvoices("Invoice", "Invoice", "Invoice");
+    const output = await salesNRefundInvoices("Invoice", "Invoice", "Invoice", 'http');
     const modifiedOutput = restructureInvoiceResult(output);
     return res.status(200).json(modifiedOutput);
   }
@@ -37,10 +37,23 @@ Router.get("/", async (req, res) => {
   }
 });
 
+// Get all quote || quotaion invoices
+Router.get("/quotes", async (req, res) => {
+  try {
+    const output = await salesNRefundInvoices("Proforma Invoice", "Proforma Invoice", "Proforma Invoice", 'null');
+    const modifiedOutput = restructureInvoiceResult(output);
+    return res.status(200).json(modifiedOutput);
+  }
+  catch (err) {
+    logErrorMessages(`Error fetching Proforma Invoices ${err}`);
+    return res.status(500).send("Fetching quotation invoice failed. Kindly refresh");
+  }
+});
+
 // 10 recent transactions only
 Router.get("/ten", async (req, res) => {
   try {
-    const output = await salesNRefundInvoices('Invoice','Partial_Refund', 'Refund');
+    const output = await salesNRefundInvoices('Invoice','Partial_Refund', 'Refund', 'http');
     return res.status(200).json(output);
   }
   catch (err) {
@@ -70,19 +83,6 @@ Router.get("/sales", async (req, res) => {
   catch (err) {
     logErrorMessages(`Error fetching today sales invoices ${err}`);
     res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
-  }
-});
-
-// Get all quote || quotaion invoices
-Router.get("/quotes", async (req, res) => {
-  try {
-    const output = await salesNRefundInvoices("Proforma Invoice", "Proforma Invoice", "Proforma Invoice");
-    const modifiedOutput = restructureInvoiceResult(output);
-    return res.status(200).json(modifiedOutput);
-  }
-  catch (err) {
-    logErrorMessages(`Error fetching Proforma Invoices ${err}`);
-    return res.status(500).send("Fetching quotation invoice failed. Kindly refresh");
   }
 });
 

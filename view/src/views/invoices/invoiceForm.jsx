@@ -260,12 +260,12 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
             try {
                 const response = await fetchAutocompleteId();
                 const number = response[0].numList + 1;
-                const output = `G${year}M${month}${day}${number}CSD`;
+                const output = `WG${year}M${month}${day}${number}CSD`;
                 setHeader((state) => ({ ...state, invoiceNumber: output }));
             }
             catch (error) {
                 let num = Math.floor(Math.random() * 100) + 1;
-                const output = `G${year}${month}${(day)}-${num}CSD`;
+                const output = `WG${year}${month}${(day)}-${num}CSD`;
                 setHeader((state) => ({ ...state, invoiceNumber: output }));
             }
         }
@@ -471,21 +471,19 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
             if (data.status === "error") {
                 const res = JSON.stringify(data.message);
                 setAlert((e) => ({ ...e, message: res, color: 'warning' }));
-                setOpen(true);
             }
             else {
-                setSubmitted(true)
                 setDrop(false);
                 setAlert((e) => ({ ...e, message: data.status, color: 'success' }));
-                setOpen(true);
-                BackdropOpen(false);
             }
         }
         catch (error) {
             setDrop(false);
             setAlert((e) => ({ ...e, message: "Invoice submission failed! Refresh and try again", color: 'error' }));
-            setOpen(true);
         }
+        setOpen(true);
+        BackdropOpen(false);
+        setSubmitted(true)
     };
 
     // handle alerts
@@ -507,7 +505,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                     size='small'
                                     color={header.infoMsg === true ? "primary" : "standard"}
                                     value={header.businessPartnerName || ""}
-                                    // disabled={header.infoMsg ? true : false}
+                                    disabled={header.infoMsg ? true : false}
                                     name="businessPartnerName"
                                     onChange={CheckCashCustomer}
                                 >
@@ -533,7 +531,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                                     <Autocomplete
                                         id="customer-search"
                                         onKeyDownCapture={fetchProductsCustomers}
-                                        // disabled={header.infoMsg ? true : false}
+                                        disabled={header.infoMsg ? true : false}
                                         options={allSearch.customer}
                                         loading={loading}
                                         getOptionLabel={(option) => header.businessPartnerName !== 'Cash' ? option.customerName : ''}

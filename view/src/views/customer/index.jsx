@@ -65,14 +65,20 @@ const CusNSupp = () => {
                 {loading ?  <LoadingSpinner /> : <>
                     {
                         customersNsuppliers.length > 0 ?
-                        <CustomersSuppliersTable inData={customersNsuppliers} setSubmitted={setSubmitted} />
+                        <CustomersSuppliersTable 
+                            inData={customersNsuppliers} 
+                            setSubmitted={setSubmitted} 
+                            />
                         : <ProductPlaceholder />
                     }
                 </>}
             </Box>
         </Paper>
         <Dialog open={open}>
-            <AddSupnCustomers closeAddnewUser={handleClose} setSubmitted={setSubmitted} />
+            <AddSupnCustomers 
+                closeAddnewUser={handleClose} 
+                setSubmitted={setSubmitted} 
+            />
         </Dialog>
     </>);
 }

@@ -138,7 +138,8 @@ Router.post("/refund", async (req, res) => {
     const sanitizedPayload = sanitizePayload(Data);
     // logSuccessMessages(sanitizedPayload);
     try {
-        const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, { headers: { 'security_key': GRA_KEY } });
+        const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, { headers: { 'security_key': GRA_KEY }, timeout: 5000});
+
         if (response && response.status === 200) {
             if (response.data.response.status) {
                 await saveInvoiceToDB(Data, response.data);
@@ -166,7 +167,7 @@ Router.post("/refund", async (req, res) => {
             return res.json({ status: 'error', message: errorMessage });
         } else {
             logErrorMessages(`Request to GRA backend failed: ${error.message || error}`);
-            return res.status(500).json({ status: 'error', message: 'Invoice failed! Please retry.' });
+            return res.status(500).json({ status: 'error', message: 'Refund failed! Please retry.' });
         }
     }
 });

@@ -25,7 +25,6 @@ const Inventory = () => {
 
     const handleOpen = () => { setOpen(true) }
     const handleClose = () => { setOpen(false) }
-    const RefreshPage = () => { setSubmitted(true) }
 
     useEffect(() => {
         fetchData();
@@ -174,7 +173,7 @@ const Inventory = () => {
             <UploadCSVProducts 
                 openDialog={open} 
                 CloseDialog={handleClose}
-                refreshPage={RefreshPage}
+                refreshPage={() => setSubmitted(prev => !prev)}
             />
         </>
     );

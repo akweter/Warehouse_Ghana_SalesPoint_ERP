@@ -221,7 +221,7 @@ export default function OrderCheckout() {
                 }}
             >
                 <Grid item>
-                    <Typography color='white' variant='h3'>Outsource Paid Invoices</Typography>
+                    <Typography color='white' variant='h3'>Despatch Orders</Typography>
                 </Grid>
             </Grid>
             {
