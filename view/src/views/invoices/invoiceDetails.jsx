@@ -21,6 +21,7 @@ import {
     Slide,
     DialogTitle,
     Container,
+    IconButton,
 } from '@mui/material';
 import { CancelSharp } from '@mui/icons-material';
 import logo from '../../assets/images/logo.webp';
@@ -50,20 +51,24 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, su
         handleCloseDialog();
     }
 
-    const handleRefresh = () => {
-        submitted;
-    }
+    const handleRefresh = () => { submitted; }
 
     const deleteQuotation = (InvoiceNumber) => {
         setOpenDelete(false);
         deleteQuote(InvoiceNumber);
     }
-
+ 
     return (
         <Box>
-            <Dialog open={openDialog} maxWidth='lg'>
+            <Dialog open={openDialog} maxWidth='md' fullWidth>
+                <DialogTitle sx={{ backgroundColor: 'darkblue', display: 'flex', justifyContent: 'space-between', gap: 1 }}>
+                    <div/>
+                    <Typography sx={{ fontSize: '22px', fontWeight: '600', color: 'white' }}>Transaction Details</Typography>
+                    <IconButton onClick={handleCloseDialog} color='error'>
+                        <Typography fontSize='1em' color='red'>Close</Typography>
+                    </IconButton>
+                </DialogTitle>
                 <DialogContent>
-                    <Typography sx={{ fontSize: '22px', textAlign: "center", fontWeight: '600', fontStyle: 'italic' }}>Invoice Details</Typography>
                     <TableContainer component={Paper}>
                         <Table sx={{ borderCollapse: 'collapse' }} size='small' width='100%'>
                             <TableHead>
@@ -172,15 +177,15 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, su
                         <p>Products not available</p>
                     )}
                 </DialogContent>
-                <DialogActions>
+                <DialogActions sx={{ backgroundColor: 'darkblue', display: 'flex', justifyContent: 'flex-end', gap: 1, padding: 2 }}>
                     {
-                        selectedRow.InvoiceStatus === "Proforma Invoice" ? (<>
-                            <Button variant='contained' color='error' size='small' onClick={() => setOpenDelete(true)}>Delete</Button>
-                            <Button variant='contained' color='secondary' size='small' onClick={handleOpen}>Update Quote</Button>
-                            <Button variant='contained' color='warning' size='small' onClick={handleCloseDialog}>Close</Button>
-                        </>) : (<>                        
-                            <Button variant='contained' color='secondary' size='medium' onClick={() => handleRefundBtnClick()}>Refund Invoice</Button>
-                            <Button variant='contained' color='error' size='medium' onClick={handleCloseDialog}>Close</Button>
+                        selectedRow.InvoiceStatus === "Proforma Invoice" && (<>
+                            <Button variant='contained' color='error' size='medium' onClick={() => setOpenDelete(true)}>Delete Quote</Button>
+                            <Button variant='contained' color='warning' size='medium' onClick={handleOpen}>Update Quote</Button>
+                        </>)
+                    }{
+                        selectedRow.InvoiceStatus === "Invoice" && (<>                        
+                            <Button variant='contained' color='warning' size='medium' onClick={() => handleRefundBtnClick()}>Refund Invoice</Button>
                         </>)
                     }
                 </DialogActions>

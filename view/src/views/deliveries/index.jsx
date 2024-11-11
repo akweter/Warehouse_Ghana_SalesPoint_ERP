@@ -8,21 +8,24 @@ import {
     DialogContent,
     Typography,
     Dialog,
-    DialogTitle
+    DialogTitle,
+    Button
 } from '@mui/material';
-import { Visibility as VisibilityIcon } from '@mui/icons-material';
+import { Close, Visibility as VisibilityIcon } from '@mui/icons-material';
 
 // projects
 import { GeneralCatchError } from '../../utilities/errorAlert';
 import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceholder';
 import DeliveryDetails from './deliveryDetails';
 import { fetchDeliveries } from '../../apiActions/allApiCalls/deliveries';
+import ReceiptForm from '../receipt/receiptForm';
 
 // /* eslint-disable */
 export default function Deliveries() {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
+    const [receiptFormDialog, openReceiptDialog] = useState(false);
     const [invoices, setInvoices] = useState([]);
     const [selectedRow, setSelectedRow] = useState(null);
     const [alert, setAlert] = useState({ message: '', color: '' });
@@ -45,6 +48,7 @@ export default function Deliveries() {
     }, []);
 
     const handleCloseDialog = () => setOpenDialog(false);
+    const closeReceiptForm = () => openReceiptDialog(false);
     const handleClose = (event, reason) => { if (reason === 'clickaway') { return; } setOpen(false) };
 
     // Fetch Invoices data from Database
@@ -94,13 +98,26 @@ export default function Deliveries() {
                     field: 'actions',
                     headerName: '',
                     flex: 1,
-                    width: 100,
+                    width: 20,
                     sortable: false,
                     headerClassName: 'dataGridheader',
                     renderCell: (params) => (<>
                         <IconButton title='View Details' onClick={() => handleWaybilInfo(params.row)}>
                             <VisibilityIcon fontSize='medium' color='primary'/>
                         </IconButton>
+                    </>),
+                },
+                {
+                    field: 'receipt',
+                    headerName: '',
+                    flex: 1,
+                    width: 100,
+                    sortable: false,
+                    headerClassName: 'dataGridheader',
+                    renderCell: (params) => (<>
+                        <Button variant='contained' color='warning' title='View Details' onClick={() => handleReceiptPrint(params.row)}>
+                            <Typography title='Print Receipt' color='darkblue'>Receipt</Typography>
+                        </Button>
                     </>),
                 }
             ]
@@ -167,7 +184,6 @@ export default function Deliveries() {
                 field: 'actions',
                 headerName: '',
                 flex: 1,
-                width: 70,
                 sortable: false,
                 headerClassName: 'dataGridheader',
                 renderCell: (params) => (<>
@@ -176,6 +192,18 @@ export default function Deliveries() {
                     </IconButton>
                 </>),
             },
+            {
+                field: 'receipt',
+                headerName: '',
+                flex: 1,
+                sortable: false,
+                headerClassName: 'dataGridheader',
+                renderCell: (params) => (<>
+                    <Button variant='contained' color='warning' title='View Details' onClick={() => handleReceiptPrint(params.row)}>
+                        <Typography title='Print Receipt' color='darkblue'>Print Receipt</Typography>
+                    </Button>
+                </>),
+            }
         ]
     });
 
@@ -183,6 +211,12 @@ export default function Deliveries() {
     const handleWaybilInfo = (row) => {
         setSelectedRow(row);
         setOpenDialog(true);
+    };
+
+    // Open receipt view
+    const handleReceiptPrint = (row) => {
+        setSelectedRow(row);
+        openReceiptDialog(true);
     };
 
     return (
@@ -239,6 +273,21 @@ export default function Deliveries() {
                     <DeliveryDetails
                         selectedRow={selectedRow}                    
                         close={handleClose}
+                    />
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={receiptFormDialog} fullScreen>
+                <DialogTitle sx={{ backgroundColor: 'darkblue' }}>
+                    <IconButton onClick={closeReceiptForm} color='secondary' sx={{ justifyContent: 'flex-end' }}>
+                        <Typography fontSize='1em' color='red'>Cancel</Typography> 
+                        <Close color='error' fontSize='medium'/>
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent sx={{ padding: '20px' }}>
+                    <ReceiptForm
+                        closePopup={closeReceiptForm}
+                        formData={selectedRow}
                     />
                 </DialogContent>
             </Dialog>

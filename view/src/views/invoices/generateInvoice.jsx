@@ -53,7 +53,7 @@ const MakeNewInvoice = ({ setSubmitted, status }) => {
             >
                 <AppBar position="static" sx={{ backgroundColor: '#151B4D' }}>
                     <Container maxWidth="xl">
-                        <Toolbar disableGutters sx={{ flexWrap: 'wrap' }}>
+                        <Toolbar disableGutters sx={{ flexWrap: 'wrap', justifyContent: 'space-between' }}>
                             <img src={logo} width={60} height={40} alt='Logo' />
                             <Typography
                                 variant = { isSmallScreen ? "h6" : "h2"}

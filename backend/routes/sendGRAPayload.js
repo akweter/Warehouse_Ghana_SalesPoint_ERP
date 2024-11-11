@@ -131,15 +131,15 @@ Router.post("/invoice", async (req, res) => {
 // Post and save refund records
 Router.post("/refund", async (req, res) => {
     const Data = req.body;
-
     if (!Data || !Data.items || !Array.isArray(Data.items)) {
         return res.json({ status: 'Error', message: 'Invalid data structure', data: Data });
     }
     const sanitizedPayload = sanitizePayload(Data);
     // logSuccessMessages(sanitizedPayload);
     try {
-        const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, { headers: { 'security_key': GRA_KEY }, timeout: 5000});
-
+        const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, { 
+            headers: { 'security_key': GRA_KEY }, 
+            timeout: 10000});
         if (response && response.status === 200) {
             if (response.data.response.status) {
                 await saveInvoiceToDB(Data, response.data);
@@ -150,7 +150,7 @@ Router.post("/refund", async (req, res) => {
                 return res.json({ status: 'error', message: 'GRA response indicates unknown error' });
             }
         } else {
-            res.json({ status: 'error', message: `Sending invoice: ${sanitizedPayload.invoiceNumber} to GRA Failed!` });
+            res.json({ status: 'error', message: `Refunding invoice: ${sanitizedPayload.invoiceNumber} to GRA Failed!` });
         }
     }
     catch (error) {
@@ -264,7 +264,7 @@ Router.post("/callback", async (req, res) => {
     }
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/invoice/callback`, cbPayload, {
-            timeout: 20000,
+            timeout: 10000,
             headers: {
                 'security_key': GRA_KEY,
                 'Content-Type': 'application/json'

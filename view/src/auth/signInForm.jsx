@@ -29,13 +29,13 @@ export default function SignInForm() {
         const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
         const userRegex = /^[A-Za-z0-9._-]{4,}$/;
         if (emailRegex.test(value) || userRegex.test(value)) { return ''; }
-        return 'Invalid username or email address';
+        return `* Four characters miminum`;
     };
     
     const validatePassword = (value) => {
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%^&*_\-+=?]).{6,}$/
         if (passwordRegex.test(value)) { return ''; }
-        return 'Invalid password';
+        return `* Uppercase, lowercase, number, symbol`;
     };
     
     const handleInputChange = (e) => {

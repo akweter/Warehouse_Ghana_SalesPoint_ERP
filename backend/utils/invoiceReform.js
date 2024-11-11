@@ -234,7 +234,7 @@ const saveInvoiceToDB = async (Data, responseData) => {
                         invProID,
                         invoiceNumber
                     ];
-                    const updaterefundqty = await updateRefundProducts(updateProductVoid);
+                    await updateRefundProducts(updateProductVoid);
                 }));
                 return result;
             } else {

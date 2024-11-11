@@ -45,7 +45,7 @@ import {
 import { ThemeProvider } from '@mui/material/styles';
 import dayjs from 'dayjs';
 
-/* eslint-disable */
+// /* eslint-disable */
 
 // Projects
 import '../../assets/css/form.css';
@@ -232,14 +232,18 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                 const result = await fetchCustomerNameSearch(allSearch.customer);
                 SetAllSearch((prevState) => ({ 
                     ...prevState, 
-                    customer: result || [],
+                    customer: Array.isArray(result) 
+                    ? result.sort((a, b) => a.customerName.localeCompare(b.customerName)) 
+                    : [],
                 }));
             }
             if (allSearch.product.length < 1) {
                 const data = await fetchProductNameSearch(allSearch.product);
                 SetAllSearch((prevState) => ({ 
                     ...prevState, 
-                    product: data || [],
+                    product: Array.isArray(data) 
+                    ? data.sort((a, b) => a.productName.localeCompare(b.productName)) 
+                    : [],
                 }));
             }
         }
@@ -255,7 +259,6 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
         const year = currentDate.getFullYear() % 100;
         const month = currentDate.getMonth() + 1;
         const day = currentDate.getDate();
-        const secs = currentDate.getSeconds();
         if (!quoteProducts || quoteProducts.InvoiceNumber === "") {
             try {
                 const response = await fetchAutocompleteId();
@@ -452,7 +455,6 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
             'totalAmount',
             'items'
         ];
-
         const emptyFields = mandatoryFields.filter(field => !header[field] || header[field] === '');
 
         if (emptyFields.length > 0) {
@@ -460,30 +462,26 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
             setAlert((e) => ({ ...e, message: errorMessage, color: 'error' }));
             return setOpen(true);
         }
-
+        setDrop(true);
         try {
-            await new Promise((resolve) => {
-                setAlert((e) => ({ ...e, message: '', color: '' }));
-                setDrop(true);
-                setTimeout(resolve, 2000);
-            });
             const data = callBack ? await postGRAInvoiceCallback(header) : await postNewGRAInvoice(header);
             if (data.status === "error") {
                 const res = JSON.stringify(data.message);
                 setAlert((e) => ({ ...e, message: res, color: 'warning' }));
             }
             else {
-                setDrop(false);
-                setAlert((e) => ({ ...e, message: data.status, color: 'success' }));
+                setSubmitted(true);
+                setAlert((e) => ({ ...e, message: 'Transaction Succssful!', color: 'success' }));
+                setTimeout(() => {
+                    BackdropOpen(false);
+                }, 1000);
             }
         }
         catch (error) {
-            setDrop(false);
             setAlert((e) => ({ ...e, message: "Invoice submission failed! Refresh and try again", color: 'error' }));
         }
+        setDrop(false);
         setOpen(true);
-        BackdropOpen(false);
-        setSubmitted(true)
     };
 
     // handle alerts
@@ -491,10 +489,10 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
 
     return (<>
         <ThemeProvider theme={Screens.lightTheme}>
-            {alert.message ?
-                (<AlertError open={open} alert={alert} handleClose={handleClose} />) :
-                (<ShowBackDrop open={drop} />)
-            }
+            
+            { open && <AlertError open={open} alert={alert} handleClose={handleClose} /> }
+            { drop && <ShowBackDrop open={drop} /> }
+
             <Grid container spacing={2} padding={2}>
                 <Grid item order={{ xs: 2, md: 1 }} xs={12} md={6}>
                     <Grid container spacing={2} py={3}>
@@ -527,10 +525,9 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                             </Grid>
                             :
                             <Grid item xs={12} md={6}>
-                                <FormControl fullWidth>
+                                <FormControl fullWidth onClick={fetchProductsCustomers}>
                                     <Autocomplete
                                         id="customer-search"
-                                        onKeyDownCapture={fetchProductsCustomers}
                                         disabled={header.infoMsg ? true : false}
                                         options={allSearch.customer}
                                         loading={loading}
@@ -725,10 +722,9 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                             />
                         </Grid>
                         <Grid item xs={12} md={12}>
-                            <FormControl fullWidth>
+                            <FormControl fullWidth onClick={fetchProductsCustomers}>
                                 <Autocomplete
                                     id="product-search"
-                                    onKeyDownCapture={fetchProductsCustomers}
                                     options={allSearch.product}
                                     loading={loading}
                                     getOptionLabel={(option) => option.productName ? option.productName : ''}

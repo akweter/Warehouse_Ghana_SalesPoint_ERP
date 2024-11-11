@@ -523,37 +523,124 @@ const AddNewInvoices = async (payload) => {
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
         )
         ON DUPLICATE KEY UPDATE 
-            Inv_user = VALUES(Inv_user),
-            Inv_total_amt = VALUES(Inv_total_amt),
-            Inv_status = VALUES(Inv_status),
-            Inv_Calc_Type = VALUES(Inv_Calc_Type),
-            Inv_date = VALUES(Inv_date),
-            currency = VALUES(currency),
-            Inv_Sale_Type = VALUES(Inv_Sale_Type),
-            Inv_Number = VALUES(Inv_Number),
-            Inv_Customer_Tin = VALUES(Inv_Customer_Tin),
-            Inv_Cus_ID = VALUES(Inv_Cus_ID),
-            Inv_discount = VALUES(Inv_discount),
-            Inv_ext_Rate = VALUES(Inv_ext_Rate),
-            Inv_vat = VALUES(Inv_vat),
-            Inv_id = VALUES(Inv_id),
-            Inv_Reference = VALUES(Inv_Reference),
-            remarks = VALUES(remarks),
-            nhil = VALUES(nhil),
-            getfund = VALUES(getfund),
-            covid = VALUES(covid),
-            cst = VALUES(cst),
-            tourism = VALUES(tourism),
-            Inv_Discount_Type = VALUES(Inv_Discount_Type),
-            ysdcid = VALUES(ysdcid),
-            ysdcrecnum = VALUES(ysdcrecnum),
-            ysdcintdata = VALUES(ysdcintdata),
-            ysdcregsig = VALUES(ysdcregsig),
-            ysdcmrc = VALUES(ysdcmrc),
-            ysdcmrctim = VALUES(ysdcmrctim),
-            ysdctime = VALUES(ysdctime),
-            qr_code = VALUES(qr_code),
-            Inv_delivery_fee = VALUES(Inv_delivery_fee)
+            Inv_user = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_user) 
+				ELSE Inv_user 
+			END,
+			Inv_total_amt = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_total_amt) 
+				ELSE Inv_total_amt 
+			END,
+			Inv_status = VALUES(Inv_status), -- Keep the same status
+			Inv_Calc_Type = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_Calc_Type) 
+				ELSE Inv_Calc_Type 
+			END,
+			Inv_date = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_date) 
+				ELSE Inv_date 
+			END,
+			currency = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(currency) 
+				ELSE currency 
+			END,
+			Inv_Sale_Type = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_Sale_Type) 
+				ELSE Inv_Sale_Type 
+			END,
+			Inv_Number = VALUES(Inv_Number), -- Allow updating the number if needed
+			Inv_Customer_Tin = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_Customer_Tin) 
+				ELSE Inv_Customer_Tin 
+			END,
+			Inv_Cus_ID = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_Cus_ID) 
+				ELSE Inv_Cus_ID 
+			END,
+			Inv_discount = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_discount) 
+				ELSE Inv_discount 
+			END,
+			Inv_ext_Rate = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_ext_Rate) 
+				ELSE Inv_ext_Rate 
+			END,
+			Inv_vat = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_vat) 
+				ELSE Inv_vat 
+			END,
+			Inv_id = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_id) 
+				ELSE Inv_id 
+			END,
+			Inv_Reference = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_Reference) 
+				ELSE Inv_Reference 
+			END,
+			remarks = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(remarks) 
+				ELSE remarks 
+			END,
+			nhil = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(nhil) 
+				ELSE nhil 
+			END,
+			getfund = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(getfund) 
+				ELSE getfund 
+			END,
+			covid = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(covid) 
+				ELSE covid 
+			END,
+			cst = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(cst) 
+				ELSE cst 
+			END,
+			tourism = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(tourism) 
+				ELSE tourism 
+			END,
+			Inv_Discount_Type = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_Discount_Type) 
+				ELSE Inv_Discount_Type 
+			END,
+			ysdcid = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(ysdcid) 
+				ELSE ysdcid 
+			END,
+			ysdcrecnum = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(ysdcrecnum) 
+				ELSE ysdcrecnum 
+			END,
+			ysdcintdata = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(ysdcintdata) 
+				ELSE ysdcintdata 
+			END,
+			ysdcregsig = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(ysdcregsig) 
+				ELSE ysdcregsig 
+			END,
+			ysdcmrc = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(ysdcmrc) 
+				ELSE ysdcmrc 
+			END,
+			ysdcmrctim = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(ysdcmrctim) 
+				ELSE ysdcmrctim 
+			END,
+			ysdctime = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(ysdctime) 
+				ELSE ysdctime 
+			END,
+			qr_code = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(qr_code) 
+				ELSE qr_code 
+			END,
+			Inv_delivery_fee = CASE 
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_delivery_fee) 
+				ELSE Inv_delivery_fee 
+			END;
     `;
     try {
         return await executeQuery(sql, payload);
@@ -561,23 +648,6 @@ const AddNewInvoices = async (payload) => {
         return error;
     }
 };
-
-// // Save invoices to the DB
-// const AddNewInvoices = async (payload) => {
-// 	const sql = `
-// 	INSERT IGNORE INTO invoice(
-// 		Inv_ID_auto, Inv_Check, Inv_user, Inv_total_amt, Inv_status, Inv_Calc_Type, Inv_date, currency, Inv_Sale_Type, Inv_Number, Inv_Customer_Tin, Inv_Cus_ID, Inv_discount, Inv_ext_Rate, Inv_vat, Inv_id, Inv_Reference, remarks, nhil, getfund, covid, cst, tourism, Inv_Discount_Type, ysdcid, ysdcrecnum, ysdcintdata, ysdcregsig, ysdcmrc, ysdcmrctim, ysdctime, qr_code, Inv_delivery_fee
-// 	) VALUES(
-// 		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-// 	)`;
-// 	try {
-// 		return await executeQuery(sql, payload);
-// 		
-// 	}
-// 	catch (error) {
-// 		return error;
-// 	}
-// };
 
 const saveRefundInvoice = async (payload) => {
 	const sql = `
@@ -625,30 +695,6 @@ const saveInInvoiceProduct = async (payload) => {
         return error;
     }
 };
-
-// const saveInInvoiceProduct = async (payload) => {
-// 	const sql = `
-// 		INSERT IGNORE INTO 
-// 			invoice_products(
-// 				_ID, 
-// 				InvoiceNum_ID, 
-// 				Product_ID, 
-// 				Product_Price, 
-// 				Product_Discount, 
-// 				Product_Quantity, 
-// 				Product_Refunded_Quantity
-// 		) VALUES (
-// 			?, ?, ?, ?, ?, ?, ?
-// 		)
-// 	`;
-// 	try {
-// 		return await executeQuery(sql, payload);
-// 		
-// 	}
-// 	catch (error) {
-// 		return error;
-// 	}
-// };
 
 // update invoice products in the database
 const updateInvoiceProducts =  async (payload, productID, invoiceNum) => {
