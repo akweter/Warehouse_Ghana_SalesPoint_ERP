@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { ShowBackDrop } from '../../utilities/backdrop';
 import { AlertError } from '../../utilities/errorAlert';
-import { updateSupplierCustomer } from '../../apiActions/allApiCalls/customer';
+import { updateCustomer } from '../../apiActions/allApiCalls/customer';
 
 /* eslint-disable */
 
@@ -43,9 +43,9 @@ const UpdateCusNSup = ({ customer, closeAddnewUser, setSubmitted }) => {
             case 'userEmail':
                 const userEmail = /^[a-zA-Z0-9.\-_-]+@[a-zA-Z0-9.\-_-]+\.[a-zA-Z]{2,}$/;
                 return userEmail.test(value) ? '' : 'Invalid email address';
-            case 'userPhone':
-                const userPhone = /^[0-9]{10}$/;
-                return userPhone.test(value) ? '' : 'Telephone should be 10 characters. Alphabet and symbol not allowed!';
+            // case 'userPhone':
+            //     const userPhone = /^[0-9]{10}$/;
+            //     return userPhone.test(value) ? '' : 'Telephone should be 10 characters. Alphabet and symbol not allowed!';
             case 'userName':
                 const userName = /^[A-Za-z._ -]{4,}$/;
                 return userName.test(value) ? '' : 'Full name must be at least 4 characters long!';
@@ -104,48 +104,35 @@ const UpdateCusNSup = ({ customer, closeAddnewUser, setSubmitted }) => {
         setErrors(validationErrors);
         if (Object.keys(validationErrors).length > 0) { return }
         
-
         try {
             setDrop(true);
-            const response = await updateSupplierCustomer(customer.customerID, formData);
-            setTimeout(() => {
-                if (response.message === 'success') {
-                    setTimeout(() => {
-                        setAlert({ message: `${formData.userName || formData.userEmail} updated successfully`, color: 'success' });
-                        setOpenAlert(true);
-
-                        setTimeout(() => {
-                            setSubmitted(true);
-                            closeAddnewUser();
-                            setFormData((e) => ({
-                                ...e,
-                                userEmail: '',
-                                userActive: '',
-                                userPhone: '',
-                                userAddress: '',
-                                userRegion: '',
-                                userRating: '',
-                                userTIN: '',
-                                userName: '',
-                                userExemption: '',
-                            }));
-                            setDrop(true);
-                        }, 1000);
-                    }, 2000);
-                }
-                else {
-                    setDrop(false);
-                    setAlert({ message: response.message, color: 'error' });
-                }
-            }, 500)
+            const response = await updateCustomer(customer.customerID, formData);
+            if (response.status === 'success') {
+                setAlert({ message: `${formData.userName || formData.userEmail} updated successfully`, color: 'success' });
+                setSubmitted(true);
+                closeAddnewUser();
+                setFormData((e) => ({
+                    ...e,
+                    userEmail: '',
+                    userActive: '',
+                    userPhone: '',
+                    userAddress: '',
+                    userRegion: '',
+                    userRating: '',
+                    userTIN: '',
+                    userName: '',
+                    userExemption: '',
+                }));
+            }
+            else {
+                setAlert({ message: response.message, color: 'error' });
+            }
         }
         catch (error) {
-            setDrop(false);
-            setAlert({
-                message: 'Oops! Something went wrong. Please refresh and retry',
-                color: 'error',
-            });
+            setAlert({ message: 'Could not updated customer. Please refresh and retry', color: 'error', });
         }
+        setDrop(false);
+        setOpenAlert(true);
     };
 
     return (

@@ -1,22 +1,16 @@
+
+// /* eslint-disable */
 import React, { useCallback, useState, useEffect } from 'react';
 import Upload from '../../assets/images/Upload.webp';
 import { useDropzone } from 'react-dropzone';
 import {
 	Button,
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
-	Paper,
 	Grid,
 	TextField,
 	InputLabel,
 	MenuItem,
 	Select,
 	Typography,
-	Box,
 	FormControl,
 	Autocomplete,
 	CircularProgress,
@@ -25,18 +19,17 @@ import {
 	AppBar,
 	Toolbar,
 	Dialog,
-	Slide,
+	IconButton,
 } from '@mui/material';
-import { PostNewProducts, UpdateProduct } from '../../apiActions/allApiCalls/product';
+import { IconEraser } from '@tabler/icons';
 import { CancelSharp, Delete, Edit } from '@mui/icons-material';
+import { PostNewProducts, UpdateProduct } from '../../apiActions/allApiCalls/product';
 import { fetchSupplierNameSearch } from '../../apiActions/allApiCalls/supplier';
 import ProductTemplate from './productTemplate';
 import { Stack } from '@mui/system';
 import { ShowBackDrop } from '../../utilities/backdrop';
 import { AlertError } from '../../utilities/errorAlert';
-import { IconEraser } from '@tabler/icons';
 
-/* eslint-disable */
 
 const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refreshPage }) => {
 	const [open, setOpen] = useState(false);
@@ -45,6 +38,8 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 	const [products, setProducts] = useState([]);
 	const [selectedProduct, setSelectedProduct] = useState(null);
 	const [allSearch, setAllSearch] = useState([])
+	const [alert, setAlert] = useState({ message: '', color: '' });
+	const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 600);
 	const [formData, setFormData] = useState({
 		productCategory: '',
 		productName: '',
@@ -58,7 +53,6 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 		productID: '',
 		productUOM: '',
 	});
-	const [alert, setAlert] = useState({ message: '', color: '' });
 
 	// update form state with incoming product
 	useEffect(() => {
@@ -96,18 +90,28 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 
 	// querying product and customer search
 	useEffect(() => {
-		setLoading(true);
 		fetchData();
 	}, []);
 
+	// Set Data Grid according to screens sizes
+    useEffect(() => {
+        const handleResize = () => setIsSmallScreen(window.innerWidth < 600);
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
 	const fetchData = async () => {
+		setLoading(true);
 		try {
 			const data = await fetchSupplierNameSearch(allSearch);
 			setAllSearch(data);
 		}
 		catch (error) {
-			setLoading(false);
+			return;
 		}
+		setLoading(false);
 	}
 
 	// Product active change
@@ -122,7 +126,6 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 	const handleDrop = useCallback((acceptedFiles) => {
 		acceptedFiles.forEach((file) => {
 			const reader = new FileReader();
-
 			reader.onload = async (e) => {
 				const csvData = new TextDecoder('utf-8').decode(e.target.result);
 				const jsonData = csvData
@@ -154,7 +157,6 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 					});
 				setProducts(jsonData);
 			};
-
 			reader.readAsArrayBuffer(file);
 		});
 	}, []);
@@ -306,10 +308,11 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 		<>
 			<Dialog
 				maxWidth="xl"
+				fullWidth
 				open={openDialog}
-				TransitionComponent={Slide}
+				// TransitionComponent={Slide}
 				transitionDuration={700}
-				sx={{ background: 'white' }}
+				// sx={{ background: 'white' }}
 			>
 				{
 					alert.message ? (
@@ -321,7 +324,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 				<AppBar style={{ backgroundColor: '#151B4D' }}>
 					<Toolbar sx={{ gap: 2 }}>
 						<Typography
-							variant="h2"
+							variant={isSmallScreen ? 'h6' : "h2"}
 							sx={{
 								flex: 1,
 								textAlign: 'center',
@@ -333,7 +336,15 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 						<Grid item>
 							<FormControl fullWidth>
 								<Stack direction="row" spacing={2}>
-									<Button onClick={clearProductsData} fullWidth color='warning' variant="contained" size='small' startIcon={<IconEraser />}>Clear Products</Button>
+									<Button
+										onClick={clearProductsData} 
+										fullWidth color='warning' 
+										variant="contained" 
+										size='small' 
+										startIcon={<IconEraser />}
+									>
+										Clear Products
+									</Button>
 								</Stack>
 							</FormControl>
 						</Grid>
@@ -341,240 +352,243 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 						<Grid item>
 							<FormControl fullWidth>
 								<Stack direction="row" spacing={2}>
-									<Button onClick={clearData} fullWidth color='error' variant="contained" size='small' startIcon={<CancelSharp />}>Cancel</Button>
+									<IconButton
+										onClick={clearData} 
+										color='inherit' 
+										variant="contained" 
+										size='small'
+									>
+										<CancelSharp color='error'/>
+									</IconButton>
 								</Stack>
 							</FormControl>
 						</Grid>
 					</Toolbar>
 				</AppBar>
-				<Grid container spacing={2} padding={3}>
-					<Box
-						sx={{
-							borderRadius: 4,
-							bgcolor: 'background.default',
-							display: 'grid',
-							flexDirection: 'row',
-							gridTemplateColumns: { md: '1fr 2fr' },
-							gap: 2
-						}}
-					>
-						<Box>
-							<Typography variant='h3' color="darkred" align='center' paddingBottom={2}>
-								Add Single Product
-							</Typography>
-							<Grid container spacing={2}>
-								<Grid item xs={12}>
-									<FormControl fullWidth>
-										<TextField
-											label="Product Name"
-											required
-											name="productName"
-											value={formData.productName || ''}
-											onChange={handleInputChange}
-										/>
-									</FormControl>
-								</Grid>
-								<Grid item xs={6}>
-									<FormControl fullWidth>
-										<TextField
-											label="Unit Price"
-											required
-											name="productUnitPrice"
-											type='number'
-											value={formData.productUnitPrice || ''}
-											onChange={handleInputChange}
-										/>
-									</FormControl>
-								</Grid>
-								<Grid item xs={6}>
-									<FormControl fullWidth>
-										<TextField
-											label="Stock Quantity"
-											required
-											name="productStockQty"
-											type="number"
-											value={formData.productStockQty || ''}
-											onChange={handleInputChange}
-										/>
-									</FormControl>
-								</Grid>
-								<Grid item xs={6}>
-									<FormControl fullWidth>
-										<InputLabel>{formData.productTaxType === "" ? "Standard" : "Tax Type"}</InputLabel>
-										<Select
-											disabled={true}
-											name="productTaxType"
-											// required
-											value={formData.productTaxType || ''}
-											onChange={handleInputChange}
-										>
-											<MenuItem value="">STANDARD</MenuItem>
-											<MenuItem value="CST">CST</MenuItem>
-											<MenuItem value="TRSM">TOURISM</MenuItem>
-											<MenuItem value="EXM">EXEMPTED</MenuItem>
-										</Select>
-									</FormControl>
-								</Grid>
-								<Grid item xs={6}>
-									<FormControl fullWidth>
-										<TextField
-											label="Item Category"
-											required
-											name="productCategory"
-											value={formData.productCategory || ''}
-											onChange={handleInputChange}
-										/>
-									</FormControl>
-								</Grid>
-								<Grid item xs={6}>
-									<FormControl fullWidth>
-										<Autocomplete
-											id="supplier-search"
-											options={allSearch}
-											loading={loading}
-											getOptionLabel={(option) => option.supplierName ? option.supplierName : "No Supplier found"}
-											onChange={(event, selectedSupplier) => {
-												if (selectedSupplier) {
-													setFormData((oldValue) => ({
-														...oldValue,
-														productSupId: selectedSupplier.supplierID,
-													}));
-												}
-											}}
-											renderInput={(params) => (
-												<TextField
-													{...params}
-													label="Supplier Name"
-													variant="outlined"
-													color="primary"
-													size="medium"
-													fullWidth
-													InputProps={{
-														...params.InputProps,
-														endAdornment: (
-															<>
-																{loading ? <CircularProgress color="primary" size={20} /> : null}
-																{params.InputProps.endAdornment}
-															</>
-														),
-													}}
-												/>
-											)}
-										/>
-									</FormControl>
-								</Grid>
-								<Grid item xs={6}>
-									<FormControlLabel
-										label={formData.productStatus === "Active" ? "Active" : "Inactive"}
-										control={
-											<Checkbox
-												checked={formData.productStatus === "Active"}
-												onChange={changeProductStat}
-												color="secondary"
-											/>
-										}
-									/>
-								</Grid>
-								<Grid item xs={6}>
-									<FormControl fullWidth>
-										<InputLabel>UOM</InputLabel>
-										<Select
-											name="productUOM"
-											required
-											value={formData.productUOM || ''}
-											onChange={handleInputChange}
-										>
-											<MenuItem value="BAG">BAG</MenuItem>
-											<MenuItem value="BND">BUNDLE</MenuItem>
-											<MenuItem value="CTN">CARTON</MenuItem>
-											<MenuItem value="KG">KILOGRAM</MenuItem>
-											<MenuItem value="LTR">LITER</MenuItem>
-											<MenuItem value="M">MITER</MenuItem>
-											<MenuItem value="ML">MILLIMETER (ML)</MenuItem>
-											<MenuItem value="PC">PIECE</MenuItem>
-											<MenuItem value="PKT">PACKET</MenuItem>
-											<MenuItem value="PND">POUND</MenuItem>
-											<MenuItem value="ROLL">ROLL</MenuItem>
-											<MenuItem value="SG">SINGLE</MenuItem>
-											<MenuItem value="TIER">TIER</MenuItem>
-											<MenuItem value="YD">YARD</MenuItem>
-										</Select>
-									</FormControl>
-								</Grid>
-								<Grid item xs={6}>
-									<Button
-										variant='contained'
-										color='info'
-										size='large'
-										fullWidth
-										onClick={handleAdd}
-									>
-										Add Product
-									</Button>
-								</Grid>
-							</Grid>
-						</Box>
-						<Box>
-							<Typography variant='h3' color="darkred" align='center' paddingBottom={2}>
-								Upload Excel Bulk Products
-							</Typography>
+				<Grid container marginTop={isSmallScreen ? 7 : 0} spacing={2} padding={3} minHeight={isSmallScreen ? 500 : 600}>
+					<Grid item xs={12} lg={8} justifyContent='stretch' alignItems='center'>
+						<Typography 
+							variant={isSmallScreen ? 'subtitle1' : 'h3'} 
+							color="darkred" 
+							align='center' 
+							paddingBottom={2}
+						>
+							Upload Excel Bulk Products
+						</Typography>
 							{products.length > 0 ? (
-								<>
-									<TableContainer component={Paper} style={{ marginTop: '20px' }}>
-										<Table style={{ minWidth: '100%' }}>
-											<TableHead>
-												<TableRow>
-													<TableCell padding='none'>Product/Service</TableCell>
-													<TableCell padding='none'>Stock QTY</TableCell>
-													<TableCell padding='none'>Unit Price</TableCell>
-													<TableCell padding='none'>Tax Type</TableCell>
-													<TableCell padding='none'>UOM</TableCell>
-													{/* <TableCell padding='none'>Status</TableCell> */}
-													{/* <TableCell padding='none'>Edit | Del</TableCell> */}
-												</TableRow>
-											</TableHead>
-											<TableBody>
-												{products.map((e) => (
-													<>
-														<TableRow>
-															<TableCell padding='none'>{e.productName || ''}</TableCell>
-															<TableCell padding='none'>{e.productStockQty || ''}</TableCell>
-															<TableCell padding='none'>{e.productUnitPrice || ''}</TableCell>
-															<TableCell padding='none'>{e.productTaxType === "" ? 'STANDARD' : e.productTaxType || ''}</TableCell>
-															<TableCell padding='none'>{e.productUOM || ''}</TableCell>
-															<TableCell padding='none'>
-																<Button size='small' variant='outlined' color={e.productStatus && e.productStatus === "Active" ? "success" : "error"}>
-																	{e.productStatus || 'Inactive'}
-																</Button>
-															</TableCell>
-															<TableCell padding='none'>
-																<Edit fontSize='small' onClick={() => handleEdit(e.key)} color='primary' sx={{ cursor: 'pointer' }} />
-																<Delete fontSize='small' onClick={() => handleDelete(e.key)} color='error' sx={{ cursor: 'pointer' }} />
-															</TableCell>
-														</TableRow>
-													</>
-												))}
-											</TableBody>
-										</Table>
-									</TableContainer>
+								<div style={{ justifyContent: 'stretch', alignItems: 'center' }} >
+									<table width='100%' border={1}>
+										<thead style={{ fontWeight: 'bolder' }}>
+											<tr>
+												<td>{isSmallScreen ? 'Item' : 'Product/Service'}</td>
+												<td>{isSmallScreen ? 'Stock' : 'Stock QTY'}</td>
+												<td>{isSmallScreen ? 'Price' : 'Unit Price'}</td>
+												<td>{isSmallScreen ? 'Type' : 'Tax Type'}</td>
+												<td>UOM</td>
+											</tr>
+										</thead>
+										<tbody>
+											{products.map((e) => (<>
+												<tr style={{ backgroundColor: e.productStatus !== "Active" ? 'lightgoldenrodyellow' : '' }}>
+													<td>{e.productName || ''}</td>
+													<td>{e.productStockQty || ''}</td>
+													<td>{e.productUnitPrice || ''}</td>
+													<td>{e.productTaxType === "" ? 'STANDARD' : e.productTaxType || ''}</td>
+													<td>{e.productUOM || ''}</td>
+													<td>
+														<Edit
+															fontSize='small' 
+															onClick={() => handleEdit(e.key)} 
+															color='primary' 
+															sx={{ cursor: 'pointer' }} 
+														/>
+														<Delete 
+															fontSize='small' 
+															onClick={() => handleDelete(e.key)} 
+															color='error' 
+															sx={{ cursor: 'pointer' }} 
+														/>
+													</td>
+												</tr>
+											</>))}
+										</tbody>
+									</table>
 									<Button
 										variant='outlined'
 										color='primary'
-										size='large'
 										onClick={submitProducts}
-										style={{ marginTop: '20px' }}
+										sx={{ marginTop: 2, alignItems: 'center', textAlign: 'center' }}
 									>
 										Submit
-									</Button>
-								</>
+									</Button>								
+								</div>
 							) : (
-								<div {...getRootProps()} style={{ border: '2px dashed #eee', padding: '20px', textAlign: 'center' }}>
+								<div {...getRootProps()} style={{ border: '2px dashed #eee', margin: isSmallScreen ? 0 : '20px', textAlign: 'center' }}>
 									<input {...getInputProps()} />
-									<img src={Upload} alt='' width="30%" height="20%" />
+									<img src={Upload} alt='click to upload product' width="70%" height="70%" />
 								</div>
 							)}
-						</Box>
-					</Box >
+					</Grid>
+					<Grid item xs={12} lg={4} justifyContent='stretch' alignItems='center' paddingBottom={2}>
+						<Typography 
+							variant={isSmallScreen ? 'subtitle1' : 'h3'} 
+							color="darkred"
+							align='center' 
+							paddingBottom={2}
+						>
+							Add Single Product
+						</Typography>
+						<Grid container spacing={2}>
+							<Grid item xs={12}>
+								<FormControl fullWidth>
+									<TextField
+										label="Product Name"
+										required
+										name="productName"
+										value={formData.productName || ''}
+										onChange={handleInputChange}
+									/>
+								</FormControl>
+							</Grid>
+							<Grid item xs={12}>
+								<FormControl fullWidth>
+									<TextField
+										label="Unit Price"
+										required
+										name="productUnitPrice"
+										type='number'
+										value={formData.productUnitPrice || ''}
+										onChange={handleInputChange}
+									/>
+								</FormControl>
+							</Grid>
+							<Grid item xs={12}>
+								<FormControl fullWidth>
+									<TextField
+										label="Stock Quantity"
+										required
+										name="productStockQty"
+										type="number"
+										value={formData.productStockQty || ''}
+										onChange={handleInputChange}
+									/>
+								</FormControl>
+							</Grid>
+							<Grid item xs={12}>
+								<FormControl fullWidth>
+									<InputLabel>{formData.productTaxType === "" ? "Standard" : "Tax Type"}</InputLabel>
+									<Select
+										disabled={true}
+										name="productTaxType"
+										// required
+										value={formData.productTaxType || ''}
+										onChange={handleInputChange}
+									>
+										<MenuItem value="">STANDARD</MenuItem>
+										<MenuItem value="CST">CST</MenuItem>
+										<MenuItem value="TRSM">TOURISM</MenuItem>
+										<MenuItem value="EXM">EXEMPTED</MenuItem>
+									</Select>
+								</FormControl>
+							</Grid>
+							<Grid item xs={12}>
+								<FormControl fullWidth>
+									<TextField
+										label="Item Category"
+										required
+										name="productCategory"
+										value={formData.productCategory || ''}
+										onChange={handleInputChange}
+									/>
+								</FormControl>
+							</Grid>
+							<Grid item xs={12}>
+								<FormControl fullWidth>
+									<Autocomplete
+										id="supplier-search"
+										options={allSearch}
+										loading={loading}
+										getOptionLabel={(option) => option.supplierName ? option.supplierName : "No Supplier found"}
+										onChange={(event, selectedSupplier) => {
+											if (selectedSupplier) {
+												setFormData((oldValue) => ({
+													...oldValue,
+													productSupId: selectedSupplier.supplierID,
+												}));
+											}
+										}}
+										renderInput={(params) => (
+											<TextField
+												{...params}
+												label="Supplier Name"
+												variant="outlined"
+												color="primary"
+												size="medium"
+												fullWidth
+												InputProps={{
+													...params.InputProps,
+													endAdornment: (
+														<>
+															{loading ? <CircularProgress color="primary" size={20} /> : null}
+															{params.InputProps.endAdornment}
+														</>
+													),
+												}}
+											/>
+										)}
+									/>
+								</FormControl>
+							</Grid>
+							<Grid item xs={12}>
+								<FormControl fullWidth>
+									<InputLabel>UOM</InputLabel>
+									<Select
+										name="productUOM"
+										required
+										value={formData.productUOM || ''}
+										onChange={handleInputChange}
+									>
+										<MenuItem value="BAG">BAG</MenuItem>
+										<MenuItem value="BND">BUNDLE</MenuItem>
+										<MenuItem value="CTN">CARTON</MenuItem>
+										<MenuItem value="KG">KILOGRAM</MenuItem>
+										<MenuItem value="LTR">LITER</MenuItem>
+										<MenuItem value="M">MITER</MenuItem>
+										<MenuItem value="ML">MILLIMETER (ML)</MenuItem>
+										<MenuItem value="PC">PIECE</MenuItem>
+										<MenuItem value="PKT">PACKET</MenuItem>
+										<MenuItem value="PND">POUND</MenuItem>
+										<MenuItem value="ROLL">ROLL</MenuItem>
+										<MenuItem value="SG">SINGLE</MenuItem>
+										<MenuItem value="TIER">TIER</MenuItem>
+										<MenuItem value="YD">YARD</MenuItem>
+									</Select>
+								</FormControl>
+							</Grid>
+							<Grid item xs={12}>
+								<FormControlLabel
+									label={formData.productStatus === "Active" ? "Active" : "Inactive"}
+									control={
+										<Checkbox
+											checked={formData.productStatus === "Active"}
+											onChange={changeProductStat}
+											color="secondary"
+										/>
+									}
+								/>
+							</Grid>
+							<Grid item xs={12}>
+								<Button
+									variant='contained'
+									color='info'
+									fullWidth
+									onClick={handleAdd}
+								>
+									Add Product
+								</Button>
+							</Grid>
+						</Grid>
+					</Grid>
 				</Grid>
 			</Dialog>
 		</>

@@ -14,12 +14,15 @@ import {
     CircularProgress,
 } from '@mui/material';
 import { AlertError } from '../../utilities/errorAlert';
+import { postCustomer } from '../../apiActions/allApiCalls/customer';
+import { verifyTIN } from '../../apiActions/allApiCalls/invoice';
 
 /* eslint-disable */
 
 const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
     const [errors, setErrors] = useState({});
     const [drop, setDrop] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [alert, setAlert] = useState({ message: '', color: '' });
     const [openAlert, setOpenAlert] = useState(false);
     const [formData, setFormData] = useState({
@@ -40,9 +43,9 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
             case 'userEmail':
                 const userEmail = /^[a-zA-Z0-9.\-_-]+@[a-zA-Z0-9.\-_-]+\.[a-zA-Z]{2,}$/;
                 return userEmail.test(value) ? '' : 'Invalid email address';
-            case 'userPhone':
-                const userPhone = /^[0-9]{10}$/;
-                return userPhone.test(value) ? '' : 'Telephone should be 10 characters. Alphabet and symbol not allowed!';
+            // case 'userPhone':
+            //     const userPhone = /^[0-9]{10}$/;
+            //     return userPhone.test(value) ? '' : 'Telephone should be 10 characters. Alphabet and symbol not allowed!';
             case 'userName':
                 const userName = /^[A-Za-z._ -]{4,}$/;
                 return userName.test(value) ? '' : 'Full name must be at least 4 characters long!';
@@ -53,6 +56,30 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                 return '';
         }
     };
+
+    // fetch customer legal name from GRA and update the state
+    const verifyCustomerTin = async () => {
+        if (formData.userTIN === 'C0000000000' || formData.userTIN === 'E0000000000') {
+            return;
+        }
+        try {
+            setLoading(true);
+            const result = await verifyTIN(formData.userTIN);
+            if (result.status !== 'error') {
+                console.log(result);
+                setFormData((state) => ({...state, userName: result.data.name}));
+            } else {
+                console.log(result);
+                setAlert((e) => ({...e, message: 'Customer name not found', color: 'error' }));
+                // setFormData((state) => ({...state, userName: result.data.name}));
+            }            
+        }
+        catch (error) {
+            setAlert((e) => ({...e, message: 'Customer TIN does not exist at GRA', color: 'error' }));            
+        }
+        setLoading(false);
+        setOpenAlert(true);     
+    }
     
     // Handle form user input
     const handleInputChange = (e) => {
@@ -99,40 +126,37 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
         if (Object.keys(validationErrors).length > 0) { return }
 
         try {
-            setDrop(true);
-            
-            setTimeout(() => {
+            const response = await postCustomer(formData)
+            if (response.status === 'success') {
                 setAlert((e) => ({...e, message: `You've done it!`, color: 'success' }));
-                setOpenAlert(true);
-
-                setTimeout(() => {
-                    setDrop(true);
-                    closeAddnewUser();
-                    setSubmitted(true);
-                    setFormData((e) => ({
-                        ...e,
-                        userEmail: '',
-                        userActive: '',
-                        userPhone: '',
-                        userAddress: '',
-                        userRegion: '',
-                        userRating: '',
-                        userTIN: '',
-                        userName: '',
-                        userExemption: '',
-                    }));
-                }, 1000);
-            }, 2000);
+                closeAddnewUser();
+                setSubmitted(true);
+                setFormData((e) => ({
+                    ...e,
+                    userEmail: '',
+                    userActive: '',
+                    userPhone: '',
+                    userAddress: '',
+                    userRegion: '',
+                    userRating: '',
+                    userTIN: '',
+                    userName: '',
+                    userExemption: '',
+                }));
+            } else {
+                setAlert((e) => ({...e, message: response.message, color: 'error' }));
+            }
         }
         catch (error) {
-            setAlert({ message: 'Ooops! Something went wrong. Please refresh and retry', color: 'error' });
-            setOpenAlert(true);
+            setAlert((state) => ({...state, message: 'Could not add user. Please refresh and retry', color: 'error' }));
         }
+        setDrop(true);
+        setOpenAlert(true);
     };
     
     return (
         <>
-            {alert.message ? (<AlertError open={openAlert} alert={alert} />) : null}
+            {alert.message ? (<AlertError open={openAlert} alert={alert} handleClose={()=>setOpenAlert(false)} />) : null}
             <DialogContent>
                 <Box>
                     <Typography variant='h3' color="darkred" align='center' paddingBottom={2}>
@@ -141,7 +165,7 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                     <Grid container spacing={2}>
                         <Grid item xs={3}>
                             <FormControlLabel
-                                label={formData.userActive === "Active" ? "Active" : "Inactive"}
+                                label={formData.userActive}
                                 control={
                                     <Checkbox
                                         onChange={changeUserStat}
@@ -153,7 +177,7 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                         </Grid>
                         <Grid item xs={3}>
                             <FormControlLabel
-                                label={formData.userRegion === "Local" ? "Local" : "Foreign"}
+                                label={formData.userRegion}
                                 control={
                                     <Checkbox
                                         onChange={changeUserStat}
@@ -165,7 +189,7 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                         </Grid>
                         <Grid item xs={3}>
                             <FormControlLabel
-                                label={formData.userExemption === "Taxable" ? "Taxable" : "Exempted"}
+                                label={formData.userExemption}
                                 control={
                                     <Checkbox
                                         onChange={changeUserStat}
@@ -179,9 +203,9 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                             <FormControl fullWidth>
                                 Rating
                                 <Slider
-                                    min={0} 
-                                    max={5} 
+                                    min={0}
                                     defaultValue={3}
+                                    max={5}
                                     onChange={handleInputChange}
                                     valueLabelDisplay='on'
                                     name='userRating'
@@ -189,26 +213,14 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                 />
                             </FormControl>
                         </Grid>
-                        <Grid item xs={7}>
-                            <FormControl fullWidth>
-                                <TextField
-                                    label="Full Name"
-                                    required
-                                    name="userName"
-                                    value={formData.userName}
-                                    onChange={handleInputChange}
-                                    error={!!errors.userName}
-                                    helperText={errors.userName}
-                                />
-                            </FormControl>
-                        </Grid>
                         <Grid item xs={5}>
                             <FormControl fullWidth>
                                 <TextField
-                                    label="TIN or ID Number"
+                                    label="TIN or Ghana Card"
                                     required
                                     name="userTIN"
                                     value={formData.userTIN}
+                                    onBlur={verifyCustomerTin}
                                     onChange={handleInputChange}
                                     error={!!errors.userTIN}
                                     helperText={errors.userTIN}
@@ -218,13 +230,14 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                         <Grid item xs={7}>
                             <FormControl fullWidth>
                                 <TextField
-                                    label="Email"
+                                    label={loading ? 'Loading Legal name from GRA' : 'Full Name'}
+                                    disabled={loading}
                                     required
-                                    name="userEmail"
-                                    value={formData.userEmail}
+                                    name="userName"
+                                    value={formData.userName}
                                     onChange={handleInputChange}
-                                    error={!!errors.userEmail}
-                                    helperText={errors.userEmail}
+                                    error={!!errors.userName}
+                                    helperText={errors.userName}
                                 />
                             </FormControl>
                         </Grid>
@@ -239,6 +252,19 @@ const AddSupnCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                     onChange={handleInputChange}
                                     error={!!errors.userPhone}
                                     helperText={errors.userPhone}
+                                />
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={7}>
+                            <FormControl fullWidth>
+                                <TextField
+                                    label="Email"
+                                    required
+                                    name="userEmail"
+                                    value={formData.userEmail}
+                                    onChange={handleInputChange}
+                                    error={!!errors.userEmail}
+                                    helperText={errors.userEmail}
                                 />
                             </FormControl>
                         </Grid>

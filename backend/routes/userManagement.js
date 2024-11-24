@@ -31,11 +31,11 @@ const {
 Router.get("/", async (req, res, next) => {
   try {
     const output = await allUsers();
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });;
+    res.status(500).json({ status: 'error', message: 'something went bad' });;
   }
 });
 
@@ -43,11 +43,11 @@ Router.get("/", async (req, res, next) => {
 Router.get("/admins", async (req, res, next) => {
   try {
     const output = await adminUsers();
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -55,11 +55,11 @@ Router.get("/admins", async (req, res, next) => {
 Router.get("/active", async (req, res, next) => {
   try {
     const output = await allActiveUsers();
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -67,11 +67,11 @@ Router.get("/active", async (req, res, next) => {
 Router.get("/account", async (req, res, next) => {
   try {
     const output = await allAcounts();
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -79,11 +79,11 @@ Router.get("/account", async (req, res, next) => {
 Router.get("/procurement", async (req, res, next) => {
   try {
     const output = await procurementDept();
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -91,11 +91,11 @@ Router.get("/procurement", async (req, res, next) => {
 Router.get("/sales", async (req, res, next) => {
   try {
     const output = await salesDept();
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -103,11 +103,11 @@ Router.get("/sales", async (req, res, next) => {
 Router.get("/hr", async (req, res, next) => {
   try {
     const output = await hrDept();
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -115,11 +115,11 @@ Router.get("/hr", async (req, res, next) => {
 Router.get("/legal", async (req, res, next) => {
   try {
     const output = await legalDept();
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -127,11 +127,11 @@ Router.get("/legal", async (req, res, next) => {
 Router.get("/logistic", async (req, res, next) => {
   try {
     const output = await logisticsDept();
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -139,11 +139,11 @@ Router.get("/logistic", async (req, res, next) => {
 Router.get("/IT", async (req, res, next) => {
   try {
     const output = await itDept();
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -151,11 +151,11 @@ Router.get("/IT", async (req, res, next) => {
 Router.get("/market", async (req, res, next) => {
   try {
     const output = await marketDept();
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -163,11 +163,11 @@ Router.get("/market", async (req, res, next) => {
 Router.get("/superadmin", async (req, res, next) => {
   try {
     const output = await allSuperAdminUsers();
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -175,11 +175,11 @@ Router.get("/superadmin", async (req, res, next) => {
 Router.get("/default", async (req, res, next) => {
   try {
     const output = await allDefaultUsers();
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -187,11 +187,11 @@ Router.get("/default", async (req, res, next) => {
 Router.get("/internal", async (req, res, next) => {
   try {
     const output = await allInternUsers();
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -199,11 +199,11 @@ Router.get("/internal", async (req, res, next) => {
 Router.get("/guest", async (req, res, next) => {
   try {
     const output = await allGuestUsers();
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -211,11 +211,11 @@ Router.get("/guest", async (req, res, next) => {
 Router.get("/csm", async (req, res, next) => {
   try {
     const output = await allCSMUsers();
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -224,11 +224,11 @@ Router.get("/temporal", async (req, res, next) => {
   const Header = res.setHeader("Content-Type", "application/json");
   try {
     const output = await allTemporalUsers();
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -239,11 +239,11 @@ Router.get("/search", async (req, res, next) => {
   const Value = [searchTerm, searchTerm, searchTerm];
   try {
     const output = await Search(Value);
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -252,11 +252,11 @@ Router.get("/:id", async (req, res, next) => {
   const userID = req.params.id;
   try {
     const output = await oneUser(userID);
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -265,11 +265,11 @@ Router.get("/activate/:id", async (req, res, next) => {
   const userID = req.params.id;
   try {
     const output = await oneUser(userID);
-    res.status(200).json({ status: 'success', message: output });
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ status: 'error', message: 'something went bad' });
+    res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -307,7 +307,7 @@ Router.put("/:id", async (req, res) => {
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ message: `Failed to update ${username}` });
+    res.status(500).json({ message: `Failed to update ${username}` });
   }
 });
 
@@ -322,7 +322,7 @@ Router.put("/status/:id", async (req, res) => {
     return res.status(200).json({ message: "success" });
   } catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 

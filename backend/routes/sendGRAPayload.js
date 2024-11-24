@@ -52,7 +52,6 @@ Router.post("/quote", async (req, res) => {
         if (error.response) {
             const { data } = error.response;
             let errorMessage;
-
             if (Array.isArray(data.errors) && data.errors.length > 0) {
                 errorMessage = data.errors.join(', ');
             }

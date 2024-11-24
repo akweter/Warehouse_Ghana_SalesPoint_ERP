@@ -22,14 +22,14 @@ const {
 const { updateSupplier, addSupplier } = require("../controller/suppliers");
 
 // all customers and suppliers
-Router.get("/customersnsuppliers", async (req, res, next) => {
+Router.get("/products", async (req, res, next) => {
   try {
     const output = await allCus_Inv_Pro();
-    return res.status(200).json(output);
+    res.status(200).json(output);
   }
-  catch (err) {
+  catch (err) { 
     logErrorMessages("Select All customers error" + err, req.headers.keyid);
-    return res.status(500).send("Fetching all customers failed");
+    res.status(500).send("Fetching all customers failed");
   }
 });
 
@@ -37,11 +37,11 @@ Router.get("/customersnsuppliers", async (req, res, next) => {
 Router.get("/", async (req, res, next) => {
   try {
     const output = await allCustomers();
-    return res.status(200).json(output);
+    res.status(200).json(output);
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).send("Temporal server error. Kindly refresh");
+    res.status(500).send("Temporal server error. Kindly refresh");
   }
 });
 
@@ -168,7 +168,7 @@ Router.post("/add/new", async (req, res, next) => {
   ];
   try {
     const output = await addCustomer(payload);
-    res.status(200).json({ status: 'success', data: output });
+    res.status(200).json({ status: 'success', message: 'customer added succesfully' });
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
@@ -204,11 +204,11 @@ Router.put("/update/:id", async (req, res) => {
   };
   try {
     await updateCustomer(userData, id);
-    return res.status(200).json({ message: "success" });
+    res.status(200).json({ status: 'success', message: "customer updated successfully" });
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
-    return res.status(500).json({ message: `Failed to update ${userName}` });
+    res.status(500).json({ message: `Failed to update ${userName}` });
   }
 });
 

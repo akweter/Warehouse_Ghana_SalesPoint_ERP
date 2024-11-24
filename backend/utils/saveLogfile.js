@@ -26,7 +26,8 @@ const logServerMessages = async (message) => {
         return await fs.promises.appendFile(logFilePath, error);
     }
 };
-// Save server logs
+
+// Save server logs to DB
 // const logServerMessages = async(message) =>{
 //     const logTime = new Date().toLocaleString();
 //     const log = [ "", logTime, message]

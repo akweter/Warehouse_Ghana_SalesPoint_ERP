@@ -43,9 +43,9 @@ const UpdateSupplier = ({ supplier, closeAddnewUser, setSubmitted }) => {
             case 'userEmail':
                 const userEmail = /^[a-zA-Z0-9.\-_-]+@[a-zA-Z0-9.\-_-]+\.[a-zA-Z]{2,}$/;
                 return userEmail.test(value) ? '' : 'Invalid email address';
-            case 'userPhone':
-                const userPhone = /^[0-9]{10}$/;
-                return userPhone.test(value) ? '' : 'Telephone should be 10 characters. Alphabet and symbol not allowed!';
+            // case 'userPhone':
+            //     const userPhone = /^[0-9]{10}$/;
+            //     return userPhone.test(value) ? '' : 'Telephone should be 10 characters. Alphabet and symbol not allowed!';
             case 'userName':
                 const userName = /^[A-Za-z._ -]{4,}$/;
                 return userName.test(value) ? '' : 'Full name must be at least 4 characters long!';

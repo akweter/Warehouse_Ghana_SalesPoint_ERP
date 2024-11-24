@@ -12,7 +12,6 @@ export default function Purchases(){
 
     useEffect(() => {
         fetchData();
-        // FormatDate(allActions);
     }, []);
 
     const fetchData = async () => {

@@ -22,7 +22,7 @@ export const fetchCompanyData = async () => {
 
 // Fetch all customers
 export const fetchAllCustomersNSuppliers = async () => {
-    return await handleRequest('customers/customersnsuppliers', 'GET');
+    return await handleRequest('customers/products', 'GET');
 };
 
 // Fetch all customers
@@ -35,12 +35,12 @@ export const fetchCustomerNameSearch = async (data) => {
     return await handleRequest(`customers/query?search=${data}`, 'GET');
 };
 
-// Post a customer or supplier
-export const postCustomerSupplier = async (data) => {
+// Post a customer
+export const postCustomer = async (data) => {
     return await handleRequest(`customers/add/new`, 'POST', data);
 };
 
-// Update supplier or customer details
-export const updateSupplierCustomer = async (id, data) => {
+// Update customer details
+export const updateCustomer = async (id, data) => {
     return await handleRequest(`customers/update/${id}`, 'put', data);
 };

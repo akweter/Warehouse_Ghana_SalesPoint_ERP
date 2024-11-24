@@ -38,9 +38,9 @@ const UpdateUser = ({ user, closeAddnewUser, setSubmitted }) => {
 
     const validateField = (name, value) => {
         switch (name) {
-            case 'userPhone':
-                const userPhone = /^[0-9]{10}$/;;
-                return userPhone.test(value) ? '' : 'Telephone should be 10 characters. Alphabet and symbol not allowed!';
+            // case 'userPhone':
+            //     const userPhone = /^[0-9]{10}$/;;
+            //     return userPhone.test(value) ? '' : 'Telephone should be 10 characters. Alphabet and symbol not allowed!';
             case 'fname':
                 const userFName = /^[A-Za-z._-]{2,}$/;
                 return userFName.test(value) ? '' : 'First name must be at least 2 characters long.  Numeric not allowed!';
