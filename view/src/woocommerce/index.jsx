@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import {
     Grid,
@@ -22,8 +23,6 @@ import {
     FetchWooSearchProduct
 } from '../apiActions/allApiCalls/woocommerce';
 import {
-    MasonryContainer,
-    MasonryItem,
     ResultItem,
     ResultsContainer,
     Search,
@@ -32,12 +31,6 @@ import {
 } from '../ui-component/styleEffects';
 import { SearchSharp } from '@mui/icons-material';
 import { GeneralCatchError } from '../utilities/errorAlert';
-/* eslint-disable */
-const Orders = () => <WooOrders />;
-const Customers = () => <WooCustomers />;
-const Products = () => <WooProducts />;
-
-const components = [Orders, Customers, Products];
 
 const WoocommerceApi = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -166,29 +159,25 @@ const WoocommerceApi = () => {
                         </Box>
                     </Search>
                 </Toolbar>
-                <Paper sx={{ backgroundColor: 'white', width: '100%', textAlign: 'center', justifyContent: 'center' }}>
-                </Paper>
+                
                 <Grid container spacing={2}>
-                    <MasonryContainer>
-                        {components.map((Component, index) => (
-                            <MasonryItem key={index}>
-                                <Component />
-                            </MasonryItem>
-                        ))}
-                    </MasonryContainer>
+                    <Grid item sm={12} xl={6}><WooOrders /> </Grid>
+                    <Grid item sm={12} xl={6}><WooCustomers /> </Grid>
+                    <Grid item sm={12} xl={6}><WooProducts /> </Grid>
+                    <Grid item sm={12} xl={6}><h1>Analysis</h1></Grid>
                 </Grid>
-                <ResultsContainer>
-                    {
-                        results.length > 0 && (
-                            results.map((result, index) => (
-                                <ResultItem key={index}>
-                                    <Typography variant="body1">{result.name}</Typography>
-                                </ResultItem>
-                            ))
-                        )
-                    }
-                </ResultsContainer>
             </Box>
+            <ResultsContainer>
+                {
+                    results.length > 0 && (
+                        results.map((result, index) => (
+                            <ResultItem key={index}>
+                                <Typography variant="body1">{result.name}</Typography>
+                            </ResultItem>
+                        ))
+                    )
+                }
+            </ResultsContainer>
         </>
     );
 };

@@ -9,12 +9,26 @@ const requestMaking = async (route, method, bodyData) => {
   const url = `${bcndOrigin}/${route}`;
   const token = headerToken();
 
+  // Retrieve the userInfo from sessionStorage and parse it
+  const userInfo = sessionStorage.getItem('userInfo');
+  let accountId = null;
+
+  if (userInfo) {
+    const parsedUserInfo = JSON.parse(userInfo);
+    accountId = parsedUserInfo.accountId;
+  }
+
+  const headers = {
+    'Content-Type': 'application/json',
+    Authorization: token ? `Bearer ${token}` : null,
+  };
+  if (accountId) {
+    headers['keyID'] = accountId;
+  }
+
   const response = await fetch(url, {
     method: method,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: token ? `Bearer ${token}` : null,
-    },
+    headers: headers,
     body: bodyData ? JSON.stringify(bodyData) : null,
   });
 

@@ -22,6 +22,10 @@ const DeliveryDetails = ({ selectedRow }) => {
                             <TableCell component="td" scope="row">{selectedRow.InvoiceNumber || 'Unavailable'}</TableCell>
                         </TableRow>
                         <TableRow>
+                            <TableCell component="th" scope="row">Totoal Amount:</TableCell>
+                            <TableCell component="td" scope="row">{selectedRow.Currency || ''}: {selectedRow.TotalAMount || 0.00}</TableCell>
+                        </TableRow>
+                        <TableRow>
                             <TableCell component="th" scope="row">Served By:</TableCell>
                             <TableCell component="td" scope="row">{selectedRow.IssuerName || 'Unavailable'}</TableCell>
                         </TableRow>

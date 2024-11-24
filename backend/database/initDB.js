@@ -19,7 +19,7 @@ const pool = mysql.createPool({
 function initializeDatabase() {
   pool.getConnection((err, connection) => {
     if (err) {
-      logErrorMessages(`Error connecting to the database: ${err}`);
+      logErrorMessages(`Error connecting to the database: ${err}`, 'NA');
       return;
     }
     connection.release();

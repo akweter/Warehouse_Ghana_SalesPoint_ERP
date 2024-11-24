@@ -2,8 +2,9 @@ const { executeQuery } = require("../database");
 
 // Save tokens to the DB
 const SaveNewTokensQuery = async (payload) => {
+    console.log('tokens', payload);
     const sql = `
-        INSERT IGNORE INTO 
+        INSERT INTO 
             tokens (
                 UserName, 
                 TokenValue, 
@@ -19,12 +20,7 @@ const SaveNewTokensQuery = async (payload) => {
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )
     `;
-    try {
-        const response = await executeQuery(sql, payload);
-        if (response) { return response }
-    } catch (error) {
-        return error;
-    }
+    return await executeQuery(sql, payload);
 };
 
 module.exports = {

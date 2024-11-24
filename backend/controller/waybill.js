@@ -30,14 +30,7 @@ const saveNewWayBill = async (data) => {
             deliveryName = VALUES(deliveryName),
             deliveryPhone = VALUES(deliveryPhone)
 	  `;
-	try {
-		const result = await executeQuery(sql, data);
-		if (result) { return result };
-        return data;
-	}
-	catch (error) {
-		return error;
-	}
+      return await executeQuery(sql, data);
 };
 
 module.exports = {

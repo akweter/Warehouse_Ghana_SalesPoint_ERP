@@ -27,37 +27,19 @@ const allProducts = async () => {
   LEFT JOIN 
     usermanagement AS u ON i.Itm_usr_id = u.Usr_id
   `;
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql);
 };
 
 // Return the number for all products
 const sumAllProducts = async () => {
-  const sql = "SELECT SUM(Itm_qty) AS TotalStock FROM inventory";
-  try {
-    const result = await executeQuery(sql)
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  const sql = `SELECT SUM(Itm_qty) AS TotalStock FROM inventory`;
+  return await executeQuery(sql);
 }
 
 // Return the number for all out pf stock products
 const allOutOfStockProducts = async () => {
-  const sql = `SELECT COUNT(Itm_qty) As lowStock FROM inventory WHERE Itm_qty = 0;`;
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  const sql = `SELECT COUNT(Itm_qty) As lowStock FROM inventory WHERE Itm_qty = 0`;
+  return await executeQuery(sql);
 }
 
 // Return the number for low stock products
@@ -75,13 +57,7 @@ const allLowProducts = async () => {
       suppliers ON inventory.Itm_sup_id = suppliers.S_id
     WHERE 
       Itm_qty <= 50`;
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+      return await executeQuery(sql);
 }
 
 // Return the number of Top products
@@ -122,25 +98,13 @@ const allTopProducts = async () => {
     ORDER BY 
       InvoiceYear DESC, InvoiceMonth DESC, TotalQuantitySold DESC
   `;
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql);
 }
 
 // Return the number of Top products
 const noStockProducts = async () => {
   const sql = `SELECT COUNT(*) AS ZeroStockCount FROM inventory WHERE Itm_qty = 0`;
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql);
 }
 
 //searchOnlyProduct
@@ -170,101 +134,71 @@ const searchOnlyProduct = async (product) => {
   WHERE
     Itm_status <> 'Inactive' AND (Itm_name LIKE ?)
   `;
-  try {
-    const result = await executeQuery(sql, product);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, product);
 };
 
 // Return inventory based on the inventory status
 const oneProduct = async (prop) => {
-  const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_id = ?";
-  try {
+  const sql = `
+    SELECT  
+      Itm_autoincrement, 
+      Itm_id, 
+      Itm_cat, 
+      Itm_name, 
+      Itm_status, 
+      Itm_qty, 
+      Itm_price, 
+      Itm_sup_id, 
+      Itm_usr_id, 
+      Itm_taxable, 
+      itm_date 
+    FROM 
+      inventory 
+    WHERE 
+      Itm_id = ?"`;
     return await executeQuery(sql, prop);
-  }
-  catch (error) {
-    return error;
-  }
 };
 
 // Return products based on auto increment
 const oneProductAutoIncrement = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_autoincrement = ?";
-  try {
-    return await executeQuery(sql, prop);
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, prop);
 };
 
 // Return exempted products
 const Exempt = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND  Itm_taxable = ?";
-  try {
-    return await executeQuery(sql, prop);
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, prop);
 };
 
 // Return products based on tax value
 const taxOnProduct = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND  Itm_taxable = ?";
-  try {
-    return await executeQuery(sql, prop);
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, prop);
 };
 
 // Return products/product based the user who add the product
 const addedUser = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND  Itm_usr_id = ?";
-  try {
-    return await executeQuery(sql, prop);
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, prop);
 };
 
 // Return products/product based on product supplier
 const productSupplier = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND  Itm_sup_id = ?";
-  try {
-    return await executeQuery(sql, prop);
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, prop);
 };
 
 // Return products/product based on date selection
 const dateAdded = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND  Itm_date >= ? AND Itm_date <= ?";
-  try {
-    return await executeQuery(sql, prop);
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, prop);  
 };
 
 // Return search products/product
 const searchProduct = async (prop) => {
   const sql = "SELECT  Itm_autoincrement, Itm_id, Itm_cat, Itm_name, Itm_status, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date FROM inventory WHERE Itm_status <> 'Inactive' AND (Itm_name LIKE ? OR Itm_price LIKE ? OR itm_date LIKE ?); ";
-  try {
-    return await executeQuery(sql, prop);
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, prop);  
 };
 
 
@@ -273,12 +207,7 @@ const searchProduct = async (prop) => {
 // add s using excel
 const addExcelProducts = async (prop) => {
   const sql = "INSERT IGNORE INTO inventory (Itm_autoincrement, Itm_cat, Itm_name, Itm_status, Itm_img, Itm_qty, Itm_price, Itm_sup_id, Itm_usr_id, Itm_taxable, itm_date, Itm_id, Itm_UOM) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-  try {
-    return await executeQuery(sql, prop);
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, prop); 
 };
 
 /***********  UPDATE PRODUCT  ***********/

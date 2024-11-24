@@ -77,7 +77,7 @@ const Invoice = () => {
             setTimeout(() => {
                 setLoading(false);
                 setSubmitted(false);
-            }, 1900);
+            }, 1500);
         }
         catch (error) {
             setInvoices([]);
@@ -393,7 +393,7 @@ const Invoice = () => {
                     <DataGrid
                         rows={rowsWithIds}
                         columns={columns}
-                        loading={loading ? loading : null}
+                        loading={loading || null}
                         density='compact'
                         editMode='cell'
                         pageSize={5}

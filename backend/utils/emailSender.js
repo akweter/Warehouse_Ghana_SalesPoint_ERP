@@ -1,7 +1,7 @@
-const { logErrorMessages, logMessage } = require('../saveLogfile');
-
-const nodemailer = require('nodemailer');
 require('dotenv').config();
+const nodemailer = require('nodemailer');
+const { logErrorMessages, logMessage} = require('./saveLogfile');
+
 const { EMAIL_HOST, EMAIL_PORT, EMAIL_SEC, EMAIL_USER, EMAIL_PSD, origin } = process.env;
 
 // Send email
@@ -50,14 +50,13 @@ const userLogin = (email) => {
 	return {
 		from: EMAIL_USER,
 		to: email,
-		subject: 'Account Login',
+		subject: 'Account Login | WG ERP',
 		html: `
 				<div style="text-align: center;">
 					<address style="font-size: 17px;">Sign In activitiy found on this account.</address>
 					<p style="color: #0B0F63; font-size: 15px; font-family: "Times New Roman", Times, serif;">
-						<strong>
-							Did you just log into the ERP? <br/>
-							If no kindly file a complaint to your administrator
+						<strong><br/>
+							Kindly file a complaint to your administrator if you have not.
 						</strong>
 					</p>
 					<p>
@@ -100,29 +99,29 @@ const resetPassword = (email, emailToken) => {
 };
 
 // Email transporter
-const sendVerificationEmail = async (email, emailToken, type) => {
+const sendVerificationEmail = async (email, emailToken, type, adminAccountID) => {
 	try {
 		if (!isValidEmail(email)) {
 			return { status: 'error', message: 'Please log in with your email instead' };
 		}
 		if (type === 'login') {
 			await transporter.sendMail(userLogin(email));
-			logMessage(`Login email sent to ${email}`);
+			logMessage(`Login email sent to ${email}`, adminAccountID);
 			return 200;
 		}
 		if (type === 'reset') {
 			await transporter.sendMail(resetPassword(email, emailToken));
-			logMessage(`Reset password sent to ${email}`);
+			logMessage(`Reset password sent to ${email}`, adminAccountID);
 			return { status: 'success', message: 'email_sent'};
 		}
 		else {
 			await transporter.sendMail(verifyEmail(email, emailToken));
-			logMessage(`Verification email sent to ${email}`);
+			logMessage(`Verification email sent to ${email}`, adminAccountID);
 			return { status: 'success', message: 'email_sent'};
 		}
 	}
 	catch (error) {
-		logErrorMessages(`Sending verification email failed: `+(error));
+		logErrorMessages(`Sending verification email failed: ${error}`, req.headers.keyid);
 		return `Sending verification email failed`;
 	}
 };

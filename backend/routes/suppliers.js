@@ -2,9 +2,7 @@
 const Router = require("express").Router();
 
 // Projects
-const { executeRoute } = require("../utils/handler");
-
-// controller
+const { logErrorMessages } = require("../utils/saveLogfile");
 const {
   allSuppliers,
   oneSupplier,
@@ -25,7 +23,6 @@ const {
   updateSupplier,
   addSupplier,
 } = require("../controller/suppliers");
-const { logErrorMessages } = require("../utils/saveLogfile");
 
 /**********************************      GET REQUESTS      *********************************/
 // Retrieve All Suppliers
@@ -38,7 +35,7 @@ Router.get("/", async (req, res, next) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).send("Internal server error");
   }
 });
@@ -47,10 +44,10 @@ Router.get("/", async (req, res, next) => {
 Router.get("/foreigns", async (req, res) => {
   try {
     const output = await foreignSuppliers();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (error) {
-    logErrorMessages(`Error fetching local suppliers: ${err}`);
+    logErrorMessages(`Error fetching local suppliers: ${err}`, req.headers.keyid);
     return res.status(500).send("Temporal server error. Kindly refresh");
   }
 });
@@ -59,10 +56,10 @@ Router.get("/foreigns", async (req, res) => {
 Router.get("/locals", async (req, res) => {
   try {
     const output = await localSuppliers();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (error) {
-    logErrorMessages(`Error fetching foreign suppliers: ${err}`);
+    logErrorMessages(`Error fetching foreign suppliers: ${err}`, req.headers.keyid);
     return res.status(500).send("Temporal server error. Kindly refresh");
   }
 });
@@ -78,7 +75,7 @@ Router.get("/stats", async (req, res, next) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).send("Internal server error");
   }
 });
@@ -94,7 +91,7 @@ Router.get("/type", async (req, res, next) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).send("Internal server error");
   }
 });
@@ -110,7 +107,7 @@ Router.get("/rating", async (req, res, next) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).send("Internal server error");
   }
 });
@@ -126,7 +123,7 @@ Router.get("/product", async (req, res, next) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).send("Internal server error");
   }
 });
@@ -142,7 +139,7 @@ Router.get("/exempted", async (req, res, next) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).send("Internal server error");
   }
 });
@@ -158,7 +155,7 @@ Router.get("/tin", async (req, res, next) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).send("Internal server error");
   }
 });
@@ -174,7 +171,7 @@ Router.get("/email", async (req, res, next) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).send("Internal server error");
   }
 });
@@ -190,7 +187,7 @@ Router.get("/active/type", async (req, res, next) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).send("Internal server error");
   }
 });
@@ -206,7 +203,7 @@ Router.get("/inactive/type", async (req, res, next) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).send("Internal server error");
   }
 });
@@ -222,7 +219,7 @@ Router.get("/active/rating", async (req, res, next) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).send("Internal server error");
   }
 });
@@ -238,7 +235,7 @@ Router.get("/inactive/rating", async (req, res, next) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).send("Internal server error");
   }
 });
@@ -268,7 +265,7 @@ Router.get("/:id", async (req, res, next) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).send("Internal server error");
   }
 });
@@ -306,7 +303,7 @@ Router.post("/add/new", async (req, res) => {
     res.status(200).json({ status: 'success', data: output });
   }
   catch (err) {
-    logErrorMessages((err));
+    logErrorMessages(err, req.headers.keyid);
     res.status(500).send("Adding new supplier failed! Please try again");
   }
 });
@@ -342,7 +339,7 @@ Router.put("/update/:id", async (req, res, next) => {
     return res.status(200).json({ message: "success" });
   }
   catch (err) {
-    logErrorMessages("" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).json({ message: `Failed to update ${userName}` });
   }
 });

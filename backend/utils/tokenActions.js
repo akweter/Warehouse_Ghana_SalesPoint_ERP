@@ -1,4 +1,8 @@
 const jwt = require('jsonwebtoken');
+const { Myip } = require('./userIPData');
+const generateUUID = require('./generateIDs');
+const { SaveNewTokensQuery } = require('../controller/tokens');
+const { sendVerificationEmail } = require('./emailSender');
 require('dotenv').config();
 
 const { JWT_ACCESS_TOKEN } = process.env;
@@ -42,11 +46,45 @@ const refreshAccessToken = async (oldToken) => {
   }
 };
 
+// Send email and save token
+const saveToken_SendEmail = async (userEmail, username, reqParam, type, adminAccountID) => {
+	const ipInfo = await Myip();
+	const userAgent = reqParam.get('User-Agent');
+	const emailToken = generateJWTToken(userEmail);
+	const getExp = decodeToken(emailToken);
+	const expTime = getExp.exp;
+	const expPeriod = new Date(expTime * 1000);
+	const generatedTime = new Date();
+
+	const TokenVals = [
+		username,
+		emailToken,
+		expPeriod,
+		generatedTime,
+		'JWT',
+		'unused',
+		ipInfo.ip,
+		ipInfo.country,
+		userAgent,
+		generateUUID(),
+	];
+
+	try {
+		await SaveNewTokensQuery(TokenVals);
+		return await sendVerificationEmail(userEmail, emailToken, type, adminAccountID);
+	}
+	catch (err) {
+		await logErrorMessages(`Failed to save token ${JSON.stringify(TokenVals)} for ${username}. Error ${err}`, adminAccountID);
+		return err;
+	}
+}
+
 const Data = { 
   generateJWTToken, 
   verifyToken, 
   decodeToken,
   refreshAccessToken,
+  saveToken_SendEmail,
 }
 
 module.exports = Data;

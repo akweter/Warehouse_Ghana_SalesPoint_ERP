@@ -2,9 +2,7 @@
 const Router = require("express").Router();
 
 // Projects
-const { executeRoute } = require("../utils/handler");
-
-// controller
+const { logErrorMessages } = require("../utils/saveLogfile");
 const {
   oneUser,
   allUsers,
@@ -28,18 +26,16 @@ const {
   updateUserStatus,
   updateUser,
 } = require("../controller/userMgt");
-const { logErrorMessages } = require("../utils/saveLogfile");
 
 // Get all users
 Router.get("/", async (req, res, next) => {
-  const Cookie = res.cookie('authlevel', 'allurs', { expires: new Date(Date.now() + 900000), path: '/users' });
   try {
     const output = await allUsers();
-    return await executeRoute(output, res, Cookie);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Temporal server error. Kindly refresh");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });;
   }
 });
 
@@ -47,11 +43,11 @@ Router.get("/", async (req, res, next) => {
 Router.get("/admins", async (req, res, next) => {
   try {
     const output = await adminUsers();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -59,11 +55,11 @@ Router.get("/admins", async (req, res, next) => {
 Router.get("/active", async (req, res, next) => {
   try {
     const output = await allActiveUsers();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -71,11 +67,11 @@ Router.get("/active", async (req, res, next) => {
 Router.get("/account", async (req, res, next) => {
   try {
     const output = await allAcounts();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -83,11 +79,11 @@ Router.get("/account", async (req, res, next) => {
 Router.get("/procurement", async (req, res, next) => {
   try {
     const output = await procurementDept();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -95,11 +91,11 @@ Router.get("/procurement", async (req, res, next) => {
 Router.get("/sales", async (req, res, next) => {
   try {
     const output = await salesDept();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -107,11 +103,11 @@ Router.get("/sales", async (req, res, next) => {
 Router.get("/hr", async (req, res, next) => {
   try {
     const output = await hrDept();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -119,11 +115,11 @@ Router.get("/hr", async (req, res, next) => {
 Router.get("/legal", async (req, res, next) => {
   try {
     const output = await legalDept();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -131,11 +127,11 @@ Router.get("/legal", async (req, res, next) => {
 Router.get("/logistic", async (req, res, next) => {
   try {
     const output = await logisticsDept();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -143,11 +139,11 @@ Router.get("/logistic", async (req, res, next) => {
 Router.get("/IT", async (req, res, next) => {
   try {
     const output = await itDept();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -155,11 +151,11 @@ Router.get("/IT", async (req, res, next) => {
 Router.get("/market", async (req, res, next) => {
   try {
     const output = await marketDept();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -167,11 +163,11 @@ Router.get("/market", async (req, res, next) => {
 Router.get("/superadmin", async (req, res, next) => {
   try {
     const output = await allSuperAdminUsers();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -179,11 +175,11 @@ Router.get("/superadmin", async (req, res, next) => {
 Router.get("/default", async (req, res, next) => {
   try {
     const output = await allDefaultUsers();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -191,11 +187,11 @@ Router.get("/default", async (req, res, next) => {
 Router.get("/internal", async (req, res, next) => {
   try {
     const output = await allInternUsers();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -203,11 +199,11 @@ Router.get("/internal", async (req, res, next) => {
 Router.get("/guest", async (req, res, next) => {
   try {
     const output = await allGuestUsers();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -215,11 +211,11 @@ Router.get("/guest", async (req, res, next) => {
 Router.get("/csm", async (req, res, next) => {
   try {
     const output = await allCSMUsers();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -228,11 +224,11 @@ Router.get("/temporal", async (req, res, next) => {
   const Header = res.setHeader("Content-Type", "application/json");
   try {
     const output = await allTemporalUsers();
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -243,11 +239,11 @@ Router.get("/search", async (req, res, next) => {
   const Value = [searchTerm, searchTerm, searchTerm];
   try {
     const output = await Search(Value);
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -256,11 +252,11 @@ Router.get("/:id", async (req, res, next) => {
   const userID = req.params.id;
   try {
     const output = await oneUser(userID);
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -269,11 +265,11 @@ Router.get("/activate/:id", async (req, res, next) => {
   const userID = req.params.id;
   try {
     const output = await oneUser(userID);
-    return executeRoute(output, res);
+    res.status(200).json({ status: 'success', message: output });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
-    return res.status(500).send("Internal server error");
+    logErrorMessages(err, req.headers.keyid);
+    return res.status(500).json({ status: 'error', message: 'something went bad' });
   }
 });
 
@@ -310,7 +306,7 @@ Router.put("/:id", async (req, res) => {
     return res.status(200).json({ message: "success" });
   }
   catch (err) {
-    logErrorMessages("Internal server error" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).json({ message: `Failed to update ${username}` });
   }
 });
@@ -325,7 +321,7 @@ Router.put("/status/:id", async (req, res) => {
     const output = await updateUserStatus(data);
     return res.status(200).json({ message: "success" });
   } catch (err) {
-    logErrorMessages("Internal server error" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).json({ message: "Internal server error" });
   }
 });

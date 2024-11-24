@@ -71,7 +71,7 @@ export default function SalesReport() {
             setTimeout(() => {
                 setLoading(false);
                 setSubmitted(false);
-            }, 1900);
+            }, 1500);
         }
         catch (error) {
             setInvoices([]);
@@ -339,7 +339,7 @@ export default function SalesReport() {
                     <DataGrid
                         rows={rowsWithIds}
                         columns={columns}
-                        loading={loading ? loading : null}
+                        loading={loading || null}
                         density='compact'
                         editMode='cell'
                         pageSize={5}

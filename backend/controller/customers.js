@@ -41,61 +41,31 @@ const allCus_Inv_Pro = async () => {
     ORDER BY 
       i.C_Added_date DESC
   `;
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql);
 };
 
 // Return all active customers
 const allCustomers = async () => {
   const sql = "SELECT * FROM customers WHERE C_status IN ('active')";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql);
 };
 
 // Return only given status customers
 const status = async (prop) => {
   const sql = "SELECT * FROM customers WHERE AND C_status = ?";
-  try {
-    const result = await executeQuery(sql, prop);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, prop);
 };
 
 // Select active customers based on their TIN
 const CustomerByTIn = async (id) => {
   const sql = "SELECT * FROM customers WHERE C_status = 'active' AND C_tin = ?";
-  try {
-    const result = await executeQuery(sql, id);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, id);
 };
 
 // Select active customers based on their region
 const Region = async (prop) => {
   const sql = "SELECT * FROM customers WHERE C_status = 'active' AND C_region = ?";
-  try {
-    const result = await executeQuery(sql, prop);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, prop);
 };
 
 // Select local and active customers based on their Exemption
@@ -108,13 +78,7 @@ const Exempt = async (prop) => {
     FROM customers 
     WHERE 
       C_status = 'active' AND C_region = 'local' AND C_exempted = ?`;
-  try {
-    const result = await executeQuery(sql, prop);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, prop);
 };
 
 // Select active customers based on their Status
@@ -135,12 +99,7 @@ const oneRating = async (prop) => {
     FROM customers 
     WHERE C_status = 'active' AND C_rating = ?
   `;
-  try {
-    return await executeQuery(sql, prop);
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, prop);
 };
 
 // Return Search Customer
@@ -163,13 +122,7 @@ const queryCustomer = async (customer) => {
     WHERE 
       C_status  <> 'inactive' AND (C_name LIKE ?) 
     LIMIT 10`;
-  try {
-    const result = await executeQuery(sql, customer);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, customer);
 };
 
 
@@ -182,13 +135,7 @@ const fortyThree = async () => {
     GROUP BY Itm_name
     ORDER BY total_sales DESC;
     `;
-  try {
-    const result = await executeQuery(sql);
-    if(result ){ return result;};;
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql);
 };
 
 
@@ -205,13 +152,7 @@ const fortyTwo = async () => {
     ORDER BY total_purchases 
     DESC LIMIT 3;
     `;
-  try {
-    const result = await executeQuery(sql);
-    if(result ){ return result;};;
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql);
 };
 
 
@@ -226,13 +167,7 @@ const thirtyTwo = async () => {
     ORDER BY total_purchases DESC
     LIMIT 3;
     `;
-  try {
-    const result = await executeQuery(sql);
-    if(result ){ return result };
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql);
 };
 
 
@@ -246,13 +181,7 @@ const fortyEight = async () => {
     ORDER BY avg_purchase_amount DESC
     LIMIT 5;
     `;
-  try {
-    const result = await executeQuery(sql);
-    if(result ){ return result;};;
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql);
 };
 
 
@@ -275,14 +204,8 @@ const Searches = async (prop) => {
       customers 
     WHERE 
       C_status = 'active' AND (C_name LIKE ? OR C_tin LIKE ? OR C_phone LIKE ? OR C_email LIKE ?)`;
-  try {
-    const result = await executeQuery(sql, prop);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
-};
+  return await executeQuery(sql, prop);
+}
 
 // Add new custoner
 const addCustomer = async (prop) => {
@@ -303,25 +226,13 @@ const addCustomer = async (prop) => {
     VALUES (
       ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
     )`;
-  try {
-    const result = await executeQuery(sql, prop);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, prop);
 }
 
 // Update customer
 const updateCustomer = async (customerData, customerId) => {
   const sql = "UPDATE customers SET ? WHERE C_id = ?";
-  try {
-    const result = await executeQuery(sql, [customerData, customerId]);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, [customerData, customerId]);
 }
 
 module.exports = {

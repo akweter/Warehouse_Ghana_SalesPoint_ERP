@@ -25,25 +25,13 @@ const allUsers = async () => {
   ORDER BY 
     Usr_name 
   ASC`;
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql);
 };
 
 // Return only active users
 const allActiveUsers = async () => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_status = 'active'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql);
 };
 
 // return selected user
@@ -67,205 +55,116 @@ const oneUser = async (id) => {
     FROM usermanagement 
     WHERE Usr_id = ?
   `;
-  try {
-    const result = await executeQuery(sql, id);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql, id);
 };
 
 // Login | Return data only when username or email matches the password.
 const adminUsers = async () => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_type = 'admin'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql);
 };
 
 // Accounts
 const allAcounts = async () => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_dept = 'accounts'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql);
 };
 
 // Procurement
 const procurementDept = async () => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_dept = 'procurement'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql);
 };
 
 // Sales Dept Users
 const salesDept = async () => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_dept = 'sales'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql);
 };
 
 // Marketing Dept Users
 const marketDept = async () => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_dept = 'marketing'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql);
 };
 
 // HR Dept Users
 const hrDept = async () => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_dept = 'hr'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql);
 };
 
 // Legal Dept Users
 const legalDept = async () => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_dept = 'legal'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql);
 };
 
 // Logistics Dept Users
 const logisticsDept = async () => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_dept = 'logistics'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql);
 };
 
 // IT admin users
 const itDept = async () => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_dept = 'IT'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql);
 };
 
 // All super admin Users
 const allSuperAdminUsers = async () => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_type = 'superAdmin'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql);
 };
 
 // All default user
 const allDefaultUsers = async () => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_type = 'default'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql);
 };
 
 // All intern users
 const allInternUsers = async () => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_type = 'intern'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql);
 };
 
 // All guest Users
 const allGuestUsers = async () => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_type = 'guest'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql);
 };
 
 // All CSM users
 const allCSMUsers = async () => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_type = 'CSM'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql);
 };
 
 // All temporal
 const allTemporalUsers = async () => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_type = 'temporal'";
-  try {
-    const result = await executeQuery(sql);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql);
 };
 
 // Make search
 const Search = async (prop) => {
-  const sql = "SELECT Usr_id, Usr_name, Usr_phone, Usr_email FROM usermanagement WHERE activated = 'yes' AND (Usr_name LIKE ? OR Usr_phone LIKE ? OR Usr_email LIKE ?);";
-  try {
-    const result = await executeQuery(sql, prop);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  const sql = `
+    SELECT 
+      Usr_id, Usr_name, Usr_phone, Usr_email 
+    FROM 
+      usermanagement 
+    WHERE 
+      activated = 'yes' 
+    AND (
+      Usr_name LIKE ? 
+    OR 
+      Usr_phone LIKE ? 
+    OR 
+      Usr_email LIKE ?
+    )`;
+    return await executeQuery(sql, prop);
 };
 
 /********************   UPDATE REQUESTS   ****************************/
@@ -273,37 +172,19 @@ const Search = async (prop) => {
 // Update user details
 const updateUser = async (userData, userId) => {
   const sql = "UPDATE usermanagement SET ? WHERE Usr_id = ?";
-  try {
-    const result = await executeQuery(sql, [userData, userId]);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql, [userData, userId]);
 }
 
 // Update user stats
 const updateUserStatus = async (prop) => {
   const sql = "UPDATE usermanagement SET Usr_status = ? WHERE Usr_id = ?";
-  try {
-    const result = await executeQuery(sql, prop);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, prop);
 };
 
 // Update user password
 const updateUserPSD = async (data) => {
   const sql = "UPDATE usermanagement SET passwd=? WHERE Usr_id = ?";
-  try {
-    const result = await executeQuery(sql, data);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, data);
 };
 
 /********************   POST REQUESTS   ****************************/
@@ -311,50 +192,32 @@ const updateUserPSD = async (data) => {
 // Log user into the system
 const loginUser = async (payload) => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_status = 'active' AND (Usr_email = ? OR Usr_name = ?)";
-  try {
-    const result = await executeQuery(sql, payload);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  return await executeQuery(sql, payload);
 };
 
 // Query user onto the system
 const signUpUser = async (email, username) => {
   const sql = "SELECT * FROM usermanagement WHERE Usr_email = ? OR Usr_name = ?";
-  const values = [email, username];
-  try {
-    const result = await executeQuery(sql, values);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  const values = [email, username];  
+  return await executeQuery(sql, values);
 };
 
 // Reset user password
 const resetPassword = async (id) => {
   const sql = `UPDATE usermanagement SET passwd='test', activated='no' WHERE Usr_id=?`;
-  try {
-    const result = await executeQuery(sql, id);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+    return await executeQuery(sql, id);
 }
 
 // Add user onto the system
 const AddNewUser = async (data) => {
-  const sql = "INSERT IGNORE INTO usermanagement (Usr_FName, Usr_LName, Usr_name, Usr_type, Usr_status, Usr_phone, Usr_email, Usr_address, Usr_dept, Usr_reg_date, passwd, activated, Usr_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-  try {
-    const result = await executeQuery(sql, data);
-    if (result) { return result }
-  }
-  catch (error) {
-    return error;
-  }
+  const sql = `
+    INSERT IGNORE INTO 
+      usermanagement (
+        Usr_FName, Usr_LName, Usr_name, Usr_type, Usr_status, Usr_phone, Usr_email, Usr_address, Usr_dept, Usr_reg_date, passwd, activated, Usr_id
+      ) VALUES (
+       ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+      )`;
+    return await executeQuery(sql, data);
 };
 
 const allActions = {

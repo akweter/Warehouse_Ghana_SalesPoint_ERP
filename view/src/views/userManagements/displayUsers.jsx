@@ -88,7 +88,9 @@ const UserRow = ({ user, setSubmitted }) => {
 						{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
 					</IconButton>
 				</TableCell>
-				<TableCell padding='none' style={{ cursor: 'pointer' }} component="th" scope="row" onClick={openData}>{user.userName}</TableCell>
+				<TableCell padding='none' style={{ cursor: 'pointer' }} component="th" scope="row">
+					<Button variant='text' onClick={() => window.alert(`you just selected ${user.userName}`)}>{user.userName}</Button>
+				</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{user.primaryEmail}</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{user.telephone || '-'}</TableCell>
 				<TableCell padding='none' style={{ cursor: 'pointer' }} onClick={openData}>{user.regDate}</TableCell>
@@ -146,10 +148,6 @@ const UserRow = ({ user, setSubmitted }) => {
 									<TableRow>
 										<TableCell padding='none'>Address</TableCell>
 										<TableCell padding='none'>{user.regAddress || '-'}</TableCell>
-									</TableRow>
-									<TableRow>
-										<TableCell padding='none'>Activities</TableCell>
-										<TableCell padding='none'><Button variant='text'>Click Here</Button>{/*{user.tags.map(e => e.productName).join(', ')}*/}</TableCell>
 									</TableRow>
 								</TableHead>
 							</Table>

@@ -5,53 +5,17 @@ const bcrypt = require('bcryptjs');
 const { origin } = process.env;
 
 // Projects
+const generateUUID = require("../utils/generateIDs");
 const { logMessage, logErrorMessages, logSuccessMessages } = require('../utils/saveLogfile');
-const { generateJWTToken, decodeToken, } = require("../utils/tokenActions");
-const { SaveNewTokensQuery } = require("../controller/tokens");
-const { Myip } = require('../utils/ipinfo');
-const { sendVerificationEmail } = require("../utils/emails/emailSender");
+const { generateJWTToken, saveToken_SendEmail, } = require("../utils/tokenActions");
+const { Myip } = require('../utils/userIPData');
+const { sendVerificationEmail } = require("../utils/emailSender");
 const {
 	loginUser,
 	signUpUser,
 	AddNewUser,
-	updateUserPSD,
 	resetPassword,
 } = require("../controller/userMgt");
-const generateUUID = require("../utils/generateIDs");
-
-// Send email and save token
-const saveToken_SendEmail = async (userEmail, username, reqParam, type) => {
-	const ipInfo = await Myip();
-	const userAgent = reqParam.get('User-Agent');
-	const emailToken = generateJWTToken(userEmail);
-	const getExp = decodeToken(emailToken);
-	const expTime = getExp.exp;
-	const expPeriod = new Date(expTime * 1000);
-	const generatedTime = new Date();
-
-	const TokenVals = [
-		username,
-		emailToken,
-		expPeriod,
-		generatedTime,
-		'JWT',
-		'unused',
-		ipInfo.ip,
-		ipInfo.country,
-		userAgent,
-		generateUUID(),
-	];
-
-	try {
-		SaveNewTokensQuery(TokenVals);
-		const response = await sendVerificationEmail(userEmail, emailToken, type);
-		return response;
-	}
-	catch (err) {
-		logErrorMessages(`Failed to save ${TokenVals} for ${username} to the DB ${JSON.stringify(err)}`);
-		return err;
-	}
-}
 
 // Login
 Auth.post("/login", async (req, res, next) => {
@@ -59,7 +23,7 @@ Auth.post("/login", async (req, res, next) => {
 	const ipInfo = await Myip();
 
 	if (!ipInfo) {
-		logErrorMessages(`Login failed | No internet for user: ${email}`);
+		await logErrorMessages(`${email} tried logging in but not connected to internet`, email);
 		return res.json({ status: 'error', message: 'You are not connected to internet' });
 	}
 	if (!email) {
@@ -77,7 +41,6 @@ Auth.post("/login", async (req, res, next) => {
 					const status = e.activated;
 					const passwd = e.passwd;
 					const userEmail = e.Usr_email;
-					const userName = e.Usr_name;
 
 					const sanitizedData = {
 						userName: e.Usr_name,
@@ -94,7 +57,7 @@ Auth.post("/login", async (req, res, next) => {
 						.then( async (result) => {
 							if (result === true) {
 								if (status === 'yes') {
-									await sendVerificationEmail(userEmail, emailToken, type = "login");
+									await sendVerificationEmail(userEmail, emailToken, type = "login", req.headers.keyid);
 									res.setHeader('Access-Control-Allow-Origin', `${origin}`);
 									res.setHeader('Content-Type', 'application/json');
 									res.setHeader('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization');
@@ -105,23 +68,23 @@ Auth.post("/login", async (req, res, next) => {
 									res.status(200).send({ statusMessage: 'successLogin', data: sanitizedData });	
 								}
 								else {
-									await sendVerificationEmail(userEmail, emailToken, type = null)
+									await sendVerificationEmail(userEmail, emailToken, type = null, req.headers.keyid)
 										.then((response) => {
 											res.status(200).send(response);
 										})
 										.catch((err) => {
-											logErrorMessages(JSON.stringify(err));
+											logErrorMessages(JSON.stringify(err), e.Usr_id);
 											res.send({ status: 'error', message: `Failed to send account activation email to ${userEmail}` });
 										});
 								}
 							}
 							else {
-								logErrorMessages(`Login but wrong password for ${userEmail}`);
-								res.json({ status: 'error', message: 'Invalid password' });
+								logErrorMessages(`Login but wrong password for ${userEmail}`, e.Usr_id);
+								res.json({ status: 'error', message: 'Invalid credentials' });
 							}
 						})
 						.catch((err) => {
-							logErrorMessages(`bcrypt unable to login: ${(err)})`);
+							logErrorMessages(`bcrypt unable to login: ${(err)})`, e.Usr_id);
 							next();
 						});
 				});
@@ -131,7 +94,7 @@ Auth.post("/login", async (req, res, next) => {
 			}
 		}
 		catch (err) {
-			logErrorMessages(`Internal server error for ${req.body.Usr_email}: ` + err);
+			logErrorMessages(`User login failed ${req.body.Usr_email}: ${JSON.stringify(err)}`, email);
 			res.json({ status: 'error', message: 'Login failed. Please try again after 5 minutes' });
 		}
 	}
@@ -157,7 +120,7 @@ Auth.post("/signup", async (req, res) => {
 	try {
 		const output = await signUpUser(userEmail, username);
 		if (output.length > 0) {
-			logErrorMessages(`Cannot Add: ${username}, ${userEmail}, Already exist`);
+			logErrorMessages(`Cannot Add: ${username}, ${userEmail}, Already exist`, req.headers.keyid);
 			return res.json({ status: 'error', message: 'Username or Email Exist! Please Log in' });
 		}
 		else {
@@ -181,43 +144,31 @@ Auth.post("/signup", async (req, res) => {
 			];
 
 			await AddNewUser(Vals)
-				.then(() => {
-					logSuccessMessages(`New User Added: ${username}, ${userEmail}`);
-					saveToken_SendEmail(userEmail, username, req, type = null)
-						.then((response) => {
-							res.status(200).send(response);
-						})
-						.catch((err) => {
-							logErrorMessages(JSON.stringify(err));
-							return res.send({ status: 'error', message: 'Failed to send user Verification details to user.' });
-						});
-				})
-				.catch((err) => {
-					logErrorMessages(`Error adding user: ${username + ` ` + ipInfo.ip + ` ` + err} to the DB`);
-					return res.send({ status: 'error', message: 'Failed to send user Verification details to user.' });
+				.then( async() => {
+					logSuccessMessages(`New User Added: ${username}, ${userEmail}`, req.headers.keyid);
+					await saveToken_SendEmail(userEmail, username, req, type = null, req.headers.keyid);
+					res.status(200).json({status: 'success', message: 'Adding user successful'});
 				});
 		}
 	}
 	catch (err) {
-		logErrorMessages(`Error adding user: ${username + `, IP: ` + ipInfo.ip + `, Error: ` + err} to the DB`);
-		return res.send({ status: 'error', message: "Oops! Something went wrong"});
+		logErrorMessages(`Error adding user: ${username + `, IP: ` + ipInfo.ip + `, Error: ` + err} to the DB`, req.headers.keyid);
+		return res.send({ status: 'error', message: "Account registration failed. Try again"});
 	}
 });
 
 // Update user password based on the ID
-Auth.put("/psd/:id", async (req, res, next) => {
+Auth.put("/psd/:id", async (req, res) => {
 	const { id } = req.params;
 	const { psd } = req.body;
 	const hashpsswd = await bcrypt.hash(psd, 12);
-	const data = [hashpsswd, id];
 	try {
-		const output = await updateUserPSD(data);
-		logMessage(`${id} update paswword succussful`);
+		logMessage(`${id} update paswword succussful`, req.headers.keyid);
 		return res.status(200).json({ message: 'success' });
 	}
 	catch (err) {
-		logErrorMessages("Internal server error" + err);
-		return res.status(500).send("Internal server error");
+		logErrorMessages(`Adding user error ${JSON.stringify(err)}`, req.headers.keyid);
+		return res.status(500).json({ status: 'error', message: "Opps something went wrong" });
 	}
 });
 
@@ -226,18 +177,18 @@ Auth.post("/sendemail", async (req, res) => {
 	const { userName, primaryEmail, accountId } = req.body;
 	await resetPassword(accountId)
 	.then( async() => {
-		await saveToken_SendEmail(primaryEmail, userName, req, type = 'reset')
+		await saveToken_SendEmail(primaryEmail, userName, req, type = 'reset', req.headers.keyid)
 		.then((response) => {
 			res.status(200).send(response);
 		})
-		.catch((err) => {
-			logErrorMessages(JSON.stringify(err));
-			res.status(500).send({ status: 'error', message: `Failed to save password reset for ${primaryEmail}` });
+		.catch(() => {
+			logErrorMessages(`Failed to save password reset for ${primaryEmail} JSON.stringify(err)`, req.headers.keyid);
+			res.status(500).json({ status: 'error', message: 'Oops something went wrong' });
 		});
 	})
 	.catch((err) => {
-		logErrorMessages(JSON.stringify(err));
-		res.status(500).send({ status: 'error', message: `Failed to send password reset to ${primaryEmail}` });
+		logErrorMessages(`Failed to send password reset to ${primaryEmail}: ${JSON.stringify(err)}`, req.headers.keyid);
+		res.status(500).json({ status: 'error', message: 'Oops something went wrong' });
 	});	
 });
 

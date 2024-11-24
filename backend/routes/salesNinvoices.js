@@ -1,10 +1,7 @@
-// Modules
 const Router = require("express").Router();
 
 // Projects
 const { logErrorMessages } = require("../utils/saveLogfile");
-
-// controller
 const restructureInvoiceResult = require("../utils/invoiceModifier");
 const {
   oneInvoice,
@@ -32,7 +29,7 @@ Router.get("/", async (req, res) => {
     return res.status(200).json(modifiedOutput);
   }
   catch (err) {
-    logErrorMessages(`Error fetching all invoices: ${err}`);
+    logErrorMessages(`Error fetching all invoices: ${err}`, req.headers.keyid);
     res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
@@ -45,7 +42,7 @@ Router.get("/quotes", async (req, res) => {
     return res.status(200).json(modifiedOutput);
   }
   catch (err) {
-    logErrorMessages(`Error fetching Proforma Invoices ${err}`);
+    logErrorMessages(`Error fetching Proforma Invoices ${err}`, req.headers.keyid);
     return res.status(500).send("Fetching quotation invoice failed. Kindly refresh");
   }
 });
@@ -57,7 +54,7 @@ Router.get("/ten", async (req, res) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages(`Error fetching tenInvoices: ${err}`);
+    logErrorMessages(`Error fetching tenInvoices: ${err}`, req.headers.keyid);
     res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
@@ -69,7 +66,7 @@ Router.get("/number", async (req, res) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages(`Error fetching allSalesInvNumbers: ${err}`);
+    logErrorMessages(`Error fetching allSalesInvNumbers: ${err}`, req.headers.keyid);
     res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
@@ -81,7 +78,7 @@ Router.get("/sales", async (req, res) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages(`Error fetching today sales invoices ${err}`);
+    logErrorMessages(`Error fetching today sales invoices ${err}`, req.headers.keyid);
     res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
@@ -95,7 +92,7 @@ Router.get("/waybill/:id", async (req, res) => {
     return res.status(200).json(modifiedOutput);
   }
   catch (err) {
-    logErrorMessages(`Error fetching Proforma Invoices ${JSON.stringify(err)}`);
+    logErrorMessages(`Error fetching Proforma Invoices ${JSON.stringify(err)}`, req.headers.keyid);
     return res.status(500).send("Something unexpected happened. Kindly try again");
   }
 });
@@ -107,7 +104,7 @@ Router.get("/tax/month", async (req, res) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages(`Error fetching this month taxes ${err}`);
+    logErrorMessages(`Error fetching this month taxes ${err}`, req.headers.keyid);
     res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
@@ -119,7 +116,7 @@ Router.get("/day/invoice", async (req, res) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages(`Error fetching this month taxes ${err}`);
+    logErrorMessages(`Error fetching this month taxes ${err}`, req.headers.keyid);
     res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
@@ -131,7 +128,7 @@ Router.get("/today/sales", async (req, res) => {
     return res.status(200).json(output);
   }
   catch (error) {
-    logErrorMessages(`Error fetching today sales invoices ${err}`);
+    logErrorMessages(`Error fetching today sales invoices ${err}`, req.headers.keyid);
     res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
@@ -143,7 +140,7 @@ Router.get("/week/sales", async (req, res) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages(`Error fetching week sales invoices ${err}`);
+    logErrorMessages(`Error fetching week sales invoices ${err}`, req.headers.keyid);
     res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
@@ -155,7 +152,7 @@ Router.get("/month/sales", async (req, res) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages(`Error fetching month sales invoices ${err}`);
+    logErrorMessages(`Error fetching month sales invoices ${err}`, req.headers.keyid);
     res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
@@ -167,7 +164,7 @@ Router.get("/year/sales", async (req, res) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages(`Error fetching year sales today invoices ${err}`);
+    logErrorMessages(`Error fetching year sales today invoices ${err}`, req.headers.keyid);
     res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
@@ -179,7 +176,7 @@ Router.get("/purchase", async (req, res) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages(`Error fetching purchase invoices: ${err}`);
+    logErrorMessages(`Error fetching purchase invoices: ${err}`, req.headers.keyid);
     res.status(500).json({status: "error", message: "Operations failed. Kindly refresh"});
   }
 });
@@ -193,7 +190,7 @@ Router.get("/search", async (req, res) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages(`Error searching through invoices: ${err}`);
+    logErrorMessages(`Error searching through invoices: ${err}`, req.headers.keyid);
     return res.status(500).send("Internal server error");
   }
 });
@@ -206,7 +203,7 @@ Router.get("/:id", async (req, res) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages(`Error fetching invoice with id: ${userID}, Error: ${err}`);
+    logErrorMessages(`Error fetching invoice with id: ${userID}, Error: ${err}`, req.headers.keyid);
     return res.status(500).send("Internal server error");
   }
 });
@@ -222,7 +219,7 @@ Router.delete("/quote/del/:id", async (req, res) => {
     res.status(200).json({message: `Transaction: ${id} removed!`});
   }
   catch (error) {
-    logErrorMessages(error);
+    logErrorMessages(error, req.headers.keyid);
     res.status(500).json({message: "Delete failed!. Kindly refresh and retry"});
   }
 });

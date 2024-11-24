@@ -12,7 +12,7 @@ require('dotenv').config();
 
 // Projects
 const { origin } = process.env;
-const cache = require('./utils/caching/index');
+const cache = require('./utils/requestCache');
 const indexRouter = require('./routes/index');
 const wooCommerce = require('./routes/woocommerce');
 const usersRoute = require('./routes/userManagement');
@@ -28,6 +28,7 @@ const Refunds = require('./routes/refund');
 const Payload = require('./routes/sendPayload');
 const GRAPayload = require('./routes/sendGRAPayload');
 const Company = require('./routes/company');
+const UsersActions = require('./routes/activityTrails');
 const Forbidden = require('./auth/globalHeaderToken');
 const { logErrorMessages } = require('./utils/saveLogfile');
 
@@ -91,6 +92,7 @@ server.use('/refunds', Refunds);
 server.use('/payload', Payload);
 server.use('/gra', GRAPayload);
 server.use('/company', Company);
+server.use('/useractions', UsersActions);
 
 // Custom 404 error handling
 server.use((req, res, next) => {
@@ -102,7 +104,7 @@ server.use((req, res, next) => {
 
 // Global error handler
 server.use((err, req, res, next) => {
-  logErrorMessages(err.stack);
+  logErrorMessages(err.stack, req.headers.keyid);
   res.status(err.status || 500).json({
     message: err.message || 'Something went wrong!',
     status: err.status || 500

@@ -1,10 +1,8 @@
-// Modules
 const Router = require("express").Router();
 
 // Projects
 const { logErrorMessages } = require("../utils/saveLogfile"); 
-
-// controller
+const restructureInvoiceResult = require("../utils/invoiceModifier");
 const {
     cancelledRefundInvoices,
     TodayAllRefundsInvoice,
@@ -13,7 +11,6 @@ const {
     allRefundedProducts,
     salesNRefundInvoices,
 } = require("../controller/salesNinvoices");
-const restructureInvoiceResult = require("../utils/invoiceModifier");
 
 // all refund Invoices
 Router.get("/", async (req, res) => {
@@ -23,7 +20,7 @@ Router.get("/", async (req, res) => {
         return res.status(200).json(modifiedOutput);
     }
     catch (err) {
-        logErrorMessages(`Error fetching all refunded Invoices ${err}`);
+        logErrorMessages(`Error fetching all refunded Invoices ${err}`, req.headers.keyid);
         return res.status(500).send("Operations failed. Kindly refresh");
     }
 });
@@ -35,7 +32,7 @@ Router.get("/today", async (req, res) => {
         return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching today refunds ${err}`);
+        logErrorMessages(`Error fetching today refunds ${err}`, req.headers.keyid);
         return res.status(500).send("Operations failed. Kindly refresh");
     }
 });
@@ -47,7 +44,7 @@ Router.get("/today/cancelled", async (req, res) => {
         return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching today cancelled refunds ${err}`);
+        logErrorMessages(`Error fetching today cancelled refunds ${err}`, req.headers.keyid);
         return res.status(500).send("Operations failed. Kindly refresh");
     }
 });
@@ -59,7 +56,7 @@ Router.get("/products", async (req, res) => {
         return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching refund products ${err}`);
+        logErrorMessages(`Error fetching refund products ${err}`, req.headers.keyid);
         return res.status(500).send("Operations failed. Kindly refresh");
     }
 });
@@ -71,7 +68,7 @@ Router.get("/countall", async (req, res) => {
         return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching count refund Invoices with products: ${err}`);
+        logErrorMessages(`Error fetching count refund Invoices with products: ${err}`, req.headers.keyid);
         return res.status(500).send("Operations failed. Kindly refresh");
     }
 });
@@ -83,7 +80,7 @@ Router.get("/cancelled", async (req, res) => {
         return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching refund cancellation invoices: ${err}`);
+        logErrorMessages(`Error fetching refund cancellation invoices: ${err}`, req.headers.keyid);
         return res.status(500).send("Operations failed. Kindly refresh");
     }
 });

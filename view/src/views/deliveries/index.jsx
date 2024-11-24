@@ -11,7 +11,7 @@ import {
     DialogTitle,
     Button
 } from '@mui/material';
-import { Close, Visibility as VisibilityIcon } from '@mui/icons-material';
+import { Visibility as VisibilityIcon } from '@mui/icons-material';
 
 // projects
 import { GeneralCatchError } from '../../utilities/errorAlert';
@@ -280,8 +280,7 @@ export default function Deliveries() {
             <Dialog open={receiptFormDialog} fullScreen>
                 <DialogTitle sx={{ backgroundColor: 'darkblue' }}>
                     <IconButton onClick={closeReceiptForm} color='secondary' sx={{ justifyContent: 'flex-end' }}>
-                        <Typography fontSize='1em' color='red'>Cancel</Typography> 
-                        <Close color='error' fontSize='medium'/>
+                        <Typography fontSize='1em' color='red'>Cancel</Typography>
                     </IconButton>
                 </DialogTitle>
                 <DialogContent sx={{ padding: '20px' }}>

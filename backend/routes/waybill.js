@@ -35,7 +35,7 @@ Router.post("/", async (req, res) => {
         return res.status(200).json({ status: 'success', message: 'success saving waybill data' });
     }
     catch (err) {
-        logErrorMessages(`Error fetching all refunded Invoices ${err}`);
+        logErrorMessages(`Error fetching all refunded Invoices ${err}`, req.headers.keyid);
         return res.status(500).json({status: 'error', message: "Operations failed. Kindly refresh"});
     }
 });

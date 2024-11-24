@@ -2,8 +2,7 @@ const { executeQuery } = require("../database/index");
 
 // Return all company data
 const getCompanyData = async () => {
-    const sql = "SELECT * FROM company";
-    return executeQuery(sql);
+    return executeQuery("SELECT * FROM company");
 };
 
 // Post company info

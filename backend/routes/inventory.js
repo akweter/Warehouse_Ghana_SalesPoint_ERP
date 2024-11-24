@@ -1,10 +1,8 @@
-// Modules
 const Router = require("express").Router();
 
-// Projects
-const { executeRoute } = require("../utils/handler");
-
-// controller
+// projects
+const { logSuccessMessages, logErrorMessages } = require("../utils/saveLogfile");
+const generateUUID = require("../utils/generateIDs");
 const {
 	allProducts,
 	oneProduct,
@@ -23,8 +21,7 @@ const {
 	allTopProducts,
 	noStockProducts,
 } = require("../controller/Inventory");
-const { logSuccessMessages, logErrorMessages } = require("../utils/saveLogfile");
-const generateUUID = require("../utils/generateIDs");
+
 
 // all products
 Router.get("/", async (req, res) => {
@@ -33,7 +30,7 @@ Router.get("/", async (req, res) => {
 		return res.status(200).json(output);
 	}
 	catch (err) {
-		logErrorMessages("Internal server error" + err);
+		logErrorMessages(err, req.headers.keyid);
 		return res.status(500).send("Temporal server error. Kindly refresh");
 	}
 });
@@ -57,7 +54,7 @@ Router.get("/dashboard/card", async (req, res) => {
 		res.status(200).send(result);
 	}
 	catch (err) {
-		logErrorMessages("Inventory fetch error" + err);
+		logErrorMessages(err, req.headers.keyid);
 		res.status(500).send("Something unexpected happened!");
 	}
 });
@@ -71,7 +68,7 @@ Router.get("/query", async (req, res) => {
 		return res.status(200).json(output);
 	}
 	catch (err) {
-		logErrorMessages("error searching products" + err);
+		logErrorMessages(err, req.headers.keyid);
 		return res.status(500).send("Temporal server error. Kindly refresh");
 	}
 });
@@ -84,7 +81,7 @@ Router.get("/user", async (req, res) => {
 		return res.status(200).json(output);
 	}
 	catch (err) {
-		logErrorMessages("Internal server error" + err);
+		logErrorMessages(err, req.headers.keyid);
 		return res.status(500).send("Internal server error");
 	}
 });
@@ -97,7 +94,7 @@ Router.get("/supplier", async (req, res) => {
 		return res.status(200).json(output);
 	}
 	catch (err) {
-		logErrorMessages("Internal server error" + err);
+		logErrorMessages(err, req.headers.keyid);
 		return res.status(500).send("Internal server error");
 	}
 });
@@ -110,7 +107,7 @@ Router.get("/taxable", async (req, res) => {
 		return res.status(200).json(output);
 	}
 	catch (err) {
-		logErrorMessages("Internal server error" + err);
+		logErrorMessages(err, req.headers.keyid);
 		return res.status(500).send("Internal server error");
 	}
 });
@@ -127,7 +124,7 @@ Router.get("/date", async (req, res) => {
 		return res.status(200).json(output);
 	}
 	catch (err) {
-		logErrorMessages("Internal server error" + err);
+		logErrorMessages(err, req.headers.keyid);
 		return res.status(500).send("Internal server error");
 	}
 });
@@ -142,7 +139,7 @@ Router.get("/search", async (req, res) => {
 		return res.status(200).json(output);
 	}
 	catch (err) {
-		logErrorMessages("Internal server error" + err);
+		logErrorMessages(err, req.headers.keyid);
 		return res.status(500).send("Internal server error");
 	}
 });
@@ -155,7 +152,7 @@ Router.get("/alt/:id", async (req, res) => {
 		return res.status(200).json(output);
 	}
 	catch (err) {
-		logErrorMessages("Internal server error" + err);
+		logErrorMessages(err, req.headers.keyid);
 		return res.status(500).send("Internal server error");
 	}
 });
@@ -168,7 +165,7 @@ Router.get("/:id", async (req, res) => {
 		return res.status(200).json(output);
 	}
 	catch (err) {
-		logErrorMessages("Internal server error" + err);
+		logErrorMessages(err, req.headers.keyid);
 		return res.status(500).send("Internal server error");
 	}
 });
@@ -210,7 +207,7 @@ Router.post("/add", (req, res) => {
 
 		try {
 			await addExcelProducts(Payload);
-			logSuccessMessages(`Product: ${productName} added succesfully`);
+			logSuccessMessages(`Product: ${productName} added succesfully`, req.headers.keyid);
 			res.status(200).json({ status: "success", message: `Products added succesfully` });
 		}
 		catch (error) {
@@ -249,11 +246,11 @@ Router.put("/:id", async (req, res) => {
 	
 	try {
 		await updateProduct(payload, id);
-		logSuccessMessages(`Product: ${productName} updated succesfully`);
+		logSuccessMessages(`Product: ${productName} updated succesfully`, req.headers.keyid);
 		res.status(200).json({ status: "success", message: `Product updated succesfully` });
 	}
 	catch (err) {
-		logErrorMessages("Internal server error" + err);
+		logErrorMessages(err, req.headers.keyid);
 		return res.status(500).json({ status: 'error', message: `Failed to update ${productName}` });
 	}
 });

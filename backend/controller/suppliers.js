@@ -25,12 +25,7 @@ const querySupplier = async (user) => {
 	AND 
 		(S_name LIKE ?) 
 	LIMIT 10`;
-	try {
 		return await executeQuery(sql, user);
-	}
-	catch (error) {
-		return error;
-	}
 };
 
 // Retrieve All Suppliers
@@ -48,73 +43,38 @@ const allSuppliers = async () => {
 			S_rating AS supplierRating, 
 			S_id AS supplierID, 
 			S_Added_date AS supplierAddedDate 
-		FROM suppliers
-	`;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result }
-	}
-	catch (error) {
-		return error;
-	}
+		FROM suppliers`;	
+		return await executeQuery(sql);
 };
 
 // Fetch all active foreign suppliers
 const foreignSuppliers = async () => {
 	const sql = `SELECT * FROM suppliers WHERE S_status = 'active' AND S_region = 'foreign'`;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result }
-	}
-	catch (error) {
-		return error;
-	}
+	return await executeQuery(sql);
 }
 
 // Fetch all active local suppliers
 const localSuppliers = async () => {
 	const sql = `SELECT * FROM suppliers WHERE S_status = 'active' AND S_region = 'local'`;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result }
-	}
-	catch (error) {
-		return error;
-	}
+		return await executeQuery(sql);
 }
 
 // Retrieve Suppliers by ID
 const oneSupplier = async (id) => {
 	const sql = "SELECT * FROM suppliers WHERE S_id = ?";
-	try {
-		const result = await executeQuery(sql, id);
-		if (result) { return result }
-	}
-	catch (error) {
-		return error;
-	}
+		return await executeQuery(sql, id);
 };
 
 // Retrieve Active/Non Active Suppliers
 const supplierStats = async (id) => {
 	const sql = "SELECT * FROM suppliers S_status = ?";
-	try {
-		return await executeQuery(sql, id);
-	}
-	catch (error) {
-		return error;
-	}
+	return await executeQuery(sql, id);
 };
 
 // Retrieve Suppliers by Type
 const suppliersByType = async (id) => {
 	const sql = "SELECT * FROM suppliers WHERE S_region = ?";
-	try {
-		return await executeQuery(sql, id);
-	}
-	catch (error) {
-		return error;
-	}
+	return await executeQuery(sql, id);
 };
 
 // Retrieve Suppliers by Rating
@@ -126,34 +86,19 @@ const suppliersByRating = async (rating) => {
 // Retrieve Suppliers by Product ID:
 const suppliersByProduct = async (id) => {
 	const sql = "SELECT S_name, S_tin, S_region, S_status FROM suppliers S_pro_sell_id = ?";
-	try {
-		return await executeQuery(sql, id);
-	}
-	catch (error) {
-		return error;
-	}
+	return await executeQuery(sql, id);
 };
 
 // Retrieve Suppliers by Exemption Status
 const suppliersByExemption = async (id) => {
 	const sql = "SELECT S_name, S_tin, S_region, S_status FROM suppliers WHERE Sup_exempted = ?";
-	try {
-		return await executeQuery(sql, id);
-	}
-	catch (error) {
-		return error;
-	}
+	return await executeQuery(sql, id);
 };
 
 // Retrieve Suppliers by Tin Number
 const suppliersByTin = async (id) => {
 	const sql = "SELECT * FROM suppliers WHERE S_tin = ?";
-	try {
-		return await executeQuery(sql, id);
-	}
-	catch (error) {
-		return error;
-	}
+	return await executeQuery(sql, id);
 };
 
 // Retrieve Suppliers by Email
@@ -165,33 +110,13 @@ const suppliersByEmail = async (email) => {
 // Retrieve Suppliers by Status = active and Type = ?
 const activeSupplierByType = async (id) => {
 	const sql = "SELECT S_name, S_tin, S_region, S_status FROM suppliers WHERE S_status = 'active' AND S_region = ?";
-	try {
-		try {
-			return await executeQuery(sql, id);
-		}
-		catch (error) {
-			return error;
-		}
-	}
-	catch (error) {
-		return error;
-	}
+	return await executeQuery(sql, id);
 };
 
 // Retrieve Suppliers by Status = inactive and Type = ?
 const inactiveSuppliersByType = async (id) => {
 	const sql = "SELECT S_name, S_tin, S_region, S_status Suppliers WHERE S_status = 'inactive' AND S_region = ?";
-	try {
-		try {
-			return await executeQuery(sql, id);
-		}
-		catch (error) {
-			return error;
-		}
-	}
-	catch (error) {
-		return error;
-	}
+	return await executeQuery(sql, id);
 };
 
 // Retrieve the percentage of total sales contributed by each supplier in the last 6 months
@@ -204,42 +129,23 @@ const salesPercentBySuppliers = async () => {
 	  JOIN inventory ON suppliers.S_id = inventory.Itm_sup_id
 	  JOIN invoice_products ON inventory.Itm_id = invoice_products.Product_ID
 	  WHERE Inv_date >= NOW() - INTERVAL 6 MONTH
-	  GROUP BY S_name;
-	`;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result };
-	}
-	catch (error) {
-		return error;
-	}
+	  GROUP BY S_name`;	
+	return await executeQuery(sql);
 };
 
 
 // Retrieve the total number of suppliers
 const sumAllSuppliers = async () => {
 	const sql = `
-	  SELECT COUNT(*) AS total_suppliers FROM suppliers
-	`;
-	try {
-		const result = await executeQuery(sql);
-		if (result) { return result; };;
-	}
-	catch (error) {
-		return error;
-	}
+	  SELECT COUNT(*) AS total_suppliers FROM suppliers`
+	return await executeQuery(sql);
 };
 
 
 // Retrieve active Suppliers with specific Rating
 const activeSuppliersByRating = async (prop) => {
 	const sql = "SELECT S_name, S_rating, S_region FROM suppliers WHERE S_status = 'active' AND S_rating = ?";
-	try {
-		return await executeQuery(sql);
-	}
-	catch (error) {
-		return error;
-	}
+	return await executeQuery(sql);
 };
 
 // Retrieve inactive Suppliers with specific Rating
@@ -268,13 +174,7 @@ const addSupplier = async (prop) => {
 	  VALUES (
 		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 	  )`;
-	try {
-	  const result = await executeQuery(sql, prop);
-	  if (result) { return result }
-	}
-	catch (error) {
-	  return error;
-	}
+	return await executeQuery(sql, prop);
   }
 
 // Update customer or supplier
@@ -284,13 +184,7 @@ const updateSupplier = async (supplieData, supplierrId) => {
 		SET ? 
 		WHERE C_id = ?
 	`;
-	try {
-	  const result = await executeQuery(sql, [supplieData, supplierrId]);
-	  if (result) { return result }
-	}
-	catch (error) {
-	  return error;
-	}
+	return await executeQuery(sql, [supplieData, supplierrId]);
   }
 
 

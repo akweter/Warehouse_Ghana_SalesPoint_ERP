@@ -15,7 +15,7 @@ export const AlertError = ({ alert, open, handleClose }) => {
     return (
         <Snackbar
             open={open}
-            autoHideDuration={4000}
+            autoHideDuration={5000}
             onClose={handleClose}
             TransitionComponent={Slide}
             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}

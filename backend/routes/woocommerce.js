@@ -1,6 +1,8 @@
 // Packages
 const Router = require("express").Router();
 
+// projects
+const { logErrorMessages } = require("../utils/saveLogfile");
 const {
   getAllOrders,
   getOneOrder,
@@ -9,7 +11,6 @@ const {
   getAllCustomers,
   getOneCustomer
 } = require("../controller/woocommerce");
-const { logErrorMessages } = require("../utils/saveLogfile");
 
 // Get all orders
 Router.get("/order", async (req, res, next) => {
@@ -18,7 +19,7 @@ Router.get("/order", async (req, res, next) => {
     res.status(200).json({ status: 'success', data: allOrders });
   }
   catch (err) {
-    logErrorMessages(JSON.stringify(err));
+    logErrorMessages(err, req.headers.keyid);
     res.status(500).send(null);
   }
 });
@@ -31,7 +32,7 @@ Router.get("/order/:id", async (req, res, next) => {
     res.status(200).json({ status: 'success', data: oneOrder });
   }
   catch (err) {
-    logErrorMessages(`error fetching product: ${req.params.id}`, JSON.stringify(err));
+    logErrorMessages(`error fetching product: ${req.params.id} error: ${err}`, req.headers.keyid);
     res.status(500).send(null);
   }
 });
@@ -43,7 +44,7 @@ Router.get("/product", async (req, res, next) => {
     res.status(200).json({ status: 'success', data: allProducts });
   }
   catch (err) {
-    logErrorMessages(`Could not query woocommerce product`, JSON.stringify(err));
+    logErrorMessages(`Could not query woocommerce product. error: ${err}`, req.headers.keyid);
     res.status(500).send(null);
   }
 });
@@ -56,7 +57,7 @@ Router.get("/product/:id", async (req, res, next) => {
     res.status(200).json({ status: 'success', data: oneProduct });
   }
   catch (err) {
-    logErrorMessages(`Error fetching product: ${req.params.id}`, JSON.stringify(err));
+    logErrorMessages(`Error fetching product: ${req.params.id}. error: ${err}`, req.headers.keyid);
     res.status(500).send(null);
   }
 });
@@ -68,7 +69,7 @@ Router.get("/customer", async (req, res, next) => {
     res.status(200).json(allCustomers);
   }
   catch (err) {
-    logErrorMessages(`error fetching customer`, JSON.stringify(err));
+    logErrorMessages(`error fetching customer. error: ${err}`, req.headers.keyid);
     res.status(500).send(null);
   }
 });
@@ -81,7 +82,7 @@ Router.get("/customer/:id", async (req, res, next) => {
     res.status(200).json(oneCustomer);
   }
   catch (err) {
-    logErrorMessages(`cannot fetch customer ${req.params.id}`, JSON.stringify(err));
+    logErrorMessages(`cannot fetch customer ${req.params.id}. error: ${err}`, req.headers.keyid);
     res.status(500).send(null);
   }
 });

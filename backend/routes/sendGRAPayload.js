@@ -1,4 +1,4 @@
-const { logErrorMessages, logSuccessMessages } = require("../utils/saveLogfile");
+const { logErrorMessages, logSuccessMessages, logAllMessage } = require("../utils/saveLogfile");
 const express = require("express");
 const axios = require("axios");
 require('dotenv').config();
@@ -11,24 +11,9 @@ const generateUUID = require("../utils/generateIDs");
 const {
     sanitizePayload,
     saveInvoiceToDB,
-    addInvoiceProducts,
     updateDBWithGRAResponse,
 } = require("../utils/invoiceReform");
-
-const sampleGARResponse = {
-    response: {
-        message: {
-            ysdcid: null,
-            ysdcrecnum: null,
-            ysdcintdata: null,
-            ysdcregsig: null,
-            ysdcmrc: null,
-            ysdcmrctim: null,
-            ysdctime: null,
-        },
-        qr_code: null,
-    }
-}
+const { sampleGARResponse } = require("../utils");
 
 // Verify Taxpayer TIN
 Router.get("/verify/tin/:id", async (req, res) => {
@@ -58,15 +43,10 @@ Router.get("/status", async (req, res) => {
 // Post Proforma Invoices
 Router.post("/quote", async (req, res) => {
     const Data = req.body;
-    const { invoiceType } = Data;
-    // const sanitizedPayload = sanitizePayload(Data);
-    // logSuccessMessages(Data);
     try {
-        // if (invoiceType && invoiceType === "Proforma Invoice") {
-            await saveInvoiceToDB(Data, sampleGARResponse);
-        // }
-        // await addInvoiceProducts(Data);
-        res.status(200).json({ status: "success", message: "Transaction success" });
+        await saveInvoiceToDB(Data, sampleGARResponse);
+        await logAllMessage(`Quotation number: ${Data.invoiceNumber} submitted sucessfully`, req.headers.keyid);
+        res.status(200).json({ status: "success", message: "Quotation transaction success" });
     }
     catch (error) {
         if (error.response) {
@@ -78,10 +58,10 @@ Router.post("/quote", async (req, res) => {
             }
             else if (data.message) { errorMessage = data.message;}
             else { errorMessage = 'Unknown error occurred';}
-            logErrorMessages(`Quotation failed: ${errorMessage}`);
+            logErrorMessages(`Quotation failed: ${errorMessage}`, req.headers.keyid);
             return res.status(400).json({ status: 'error', message: errorMessage });
         } else {
-            logErrorMessages(`Request to GRA backend failed: ${error.message || error}`);
+            logErrorMessages(`Request to GRA backend failed: ${JSON.stringify(error)}`, req.headers.keyid);
             return res.status(500).json({ status: 'error', message: 'Quotation failed! Please retry.' });
         }
     }
@@ -92,12 +72,12 @@ Router.post("/invoice", async (req, res) => {
     const Data = req.body;
 
     if (!Data || !Data.items || !Array.isArray(Data.items)) {
-        logErrorMessages('Invalid payload structure: ', Data)
+        logErrorMessages(`Invalid payload structure: ${Data}`, req.headers.keyid)
         return res.status(500).json({ status: 'Error', message: 'Invalid payload structure' });
     }
 
     const sanitizedPayload = sanitizePayload(Data);
-    // logSuccessMessages(Data);
+    // logSuccessMessages(Data, req.headers.keyid);
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, {
             timeout: 10000,
@@ -107,6 +87,7 @@ Router.post("/invoice", async (req, res) => {
             }
         });
         await saveInvoiceToDB(Data, response.data);
+        logAllMessage(`Invoice number: ${sanitizedPayload.invoiceNumber} submitted sucessfully`, req.headers.keyid);
         res.status(200).json({ status: 'success', message: 'Invoice successful' });
     }
     catch (error) {
@@ -119,10 +100,10 @@ Router.post("/invoice", async (req, res) => {
             }
             else if (data.message) { errorMessage = data.message;}
             else { errorMessage = 'Unknown error occurred';}
-            logErrorMessages(`Invoice failed: ${errorMessage}`);
+            logErrorMessages(`Invoice failed: ${errorMessage}`, req.headers.keyid);
             return res.status(400).json({ status: 'error', message: errorMessage });
         } else {
-            logErrorMessages(`Request to GRA backend failed: ${error.message || error}`);
+            logErrorMessages(`Request to GRA backend failed: ${error.message || error}`, req.headers.keyid);
             return res.status(500).json({ status: 'error', message: 'Invoice failed! Please retry.' });
         }
     }
@@ -135,7 +116,7 @@ Router.post("/refund", async (req, res) => {
         return res.json({ status: 'Error', message: 'Invalid data structure', data: Data });
     }
     const sanitizedPayload = sanitizePayload(Data);
-    // logSuccessMessages(sanitizedPayload);
+    // logSuccessMessages(sanitizedPayload, req.headers.keyid);
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, { 
             headers: { 'security_key': GRA_KEY }, 
@@ -146,7 +127,7 @@ Router.post("/refund", async (req, res) => {
                 res.status(200).json({ status: "success", message: "Refund transaction success" });
             }
             else {
-                logErrorMessages(`Unknow GRA error for refund ${JSON.stringify(response.data)}`);
+                logErrorMessages(`Unknow GRA error for refund ${JSON.stringify(response.data)}`, req.headers.keyid);
                 return res.json({ status: 'error', message: 'GRA response indicates unknown error' });
             }
         } else {
@@ -163,10 +144,10 @@ Router.post("/refund", async (req, res) => {
             }
             else if (data.message) { errorMessage = data.message;}
             else { errorMessage = 'Unknown error occurred';}
-            logErrorMessages(`Refund failed: ${errorMessage}`);
+            logErrorMessages(`Refund failed: ${errorMessage}`, req.headers.keyid);
             return res.json({ status: 'error', message: errorMessage });
         } else {
-            logErrorMessages(`Request to GRA backend failed: ${error.message || error}`);
+            logErrorMessages(`Request to GRA backend failed: ${error.message || error}`, req.headers.keyid);
             return res.status(500).json({ status: 'error', message: 'Refund failed! Please retry.' });
         }
     }
@@ -222,11 +203,11 @@ Router.post("/refund/cancellation", async (req, res) => {
                 await saveRefundInvoice(payload);
             }
             else {
-                logErrorMessages(`Unknow GRA error for invoice cancellation ${JSON.stringify(response.data)}`);
+                logErrorMessages(`Unknow GRA error for invoice cancellation ${JSON.stringify(response.data)}`, req.headers.keyid);
                 return res.json({ status: 'error', message: 'GRA response indicates unknown error' });
             }
         } else {
-            logErrorMessages(`Sending invoice cancellation to GRA failed ${JSON.stringify(response.data)}`);
+            logErrorMessages(`Sending invoice cancellation to GRA failed ${JSON.stringify(response.data)}`, req.headers.keyid);
             res.json({ status: 'error', message: `Transaction failed` });
         }
     }
@@ -240,10 +221,10 @@ Router.post("/refund/cancellation", async (req, res) => {
             }
             else if (data.message) { errorMessage = data.message;}
             else { errorMessage = 'Unknown error occurred';}
-            logErrorMessages(`Refund Cancellation failed: ${errorMessage}`);
+            logErrorMessages(`Refund Cancellation failed: ${errorMessage}`, req.headers.keyid);
             return res.status(400).json({ status: 'error', message: errorMessage });
         } else {
-            logErrorMessages(`Request to GRA backend failed: ${error.message || error}`);
+            logErrorMessages(`Request to GRA backend failed: ${error.message || error}`, req.headers.keyid);
             return res.status(500).json({ status: 'error', message: 'Invoice failed! Please retry.' });
         }
     }
@@ -283,10 +264,10 @@ Router.post("/callback", async (req, res) => {
             }
             else if (data.message) { errorMessage = data.message;}
             else { errorMessage = 'Unknown error occurred';}
-            logErrorMessages(`Error for callback: ${errorMessage}`);
+            logErrorMessages(`Error for callback: ${errorMessage}`, req.headers.keyid);
             return res.status(400).json({ status: 'error', message: errorMessage });
         } else {
-            logErrorMessages(`Request to GRA backend failed: ${error.message || error}`);
+            logErrorMessages(`Request to GRA backend failed: ${error.message || error}`, req.headers.keyid);
             return res.status(500).json({ status: 'error', message: 'Invoice failed! Please retry.' });
         }
     }

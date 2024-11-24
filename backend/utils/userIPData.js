@@ -22,6 +22,6 @@ const Myip = async () => {
   }
 }
 
-const Data = { Myip }
-
-module.exports = Data;
+module.exports = { 
+  Myip,
+}

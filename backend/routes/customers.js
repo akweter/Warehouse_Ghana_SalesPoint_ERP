@@ -28,7 +28,7 @@ Router.get("/customersnsuppliers", async (req, res, next) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("Select All customers error" + err);
+    logErrorMessages("Select All customers error" + err, req.headers.keyid);
     return res.status(500).send("Fetching all customers failed");
   }
 });
@@ -40,7 +40,7 @@ Router.get("/", async (req, res, next) => {
     return res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).send("Temporal server error. Kindly refresh");
   }
 });
@@ -54,7 +54,7 @@ Router.get("/query", async (req, res, next) => {
     res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("" + err);
+    logErrorMessages(err, req.headers.keyid);
     res.status(500).send({ status: "error", message: "product not found" });
   }
 });
@@ -67,7 +67,7 @@ Router.get("/status", async (req, res, next) => {
     res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages((err));
+    logErrorMessages(err, req.headers.keyid);
     res.status(500).send({ status: "error", message: "Status not found" });
   }
 });
@@ -80,7 +80,7 @@ Router.get("/region", async (req, res, next) => {
     res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("" + err);
+    logErrorMessages(err, req.headers.keyid);
     res.status(500).send({ status: "error", message: "region not found" });
   }
 });
@@ -93,7 +93,7 @@ Router.get("/exempt", async (req, res, next) => {
     res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages((err));
+    logErrorMessages(err, req.headers.keyid);
     res.status(500).send({ status: "error", message: "exemption not found" });
   }
 });
@@ -106,7 +106,7 @@ Router.get("/rate/one", async (req, res, next) => {
     res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("" + err);
+    logErrorMessages(err, req.headers.keyid);
     res.status(500).send({ status: "error", message: "The rating is not found for the tp" });
   }
 });
@@ -121,7 +121,7 @@ Router.get("/search", async (req, res, next) => {
     res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("" + err);
+    logErrorMessages(err, req.headers.keyid);
     res.status(500).send({ status: "error", message: "Search for tp not found" });
   }
 });
@@ -134,7 +134,7 @@ Router.get("/:id", async (req, res, next) => {
     res.status(200).json(output);
   }
   catch (err) {
-    logErrorMessages("" + err);
+    logErrorMessages(err, req.headers.keyid);
     res.status(500).send({ status: "error", message: "Customer information not found" });
   }
 });
@@ -171,7 +171,7 @@ Router.post("/add/new", async (req, res, next) => {
     res.status(200).json({ status: 'success', data: output });
   }
   catch (err) {
-    logErrorMessages((err));
+    logErrorMessages(err, req.headers.keyid);
     res.status(500).send("Adding new customer failed! Please try again");
   }
 });
@@ -207,7 +207,7 @@ Router.put("/update/:id", async (req, res) => {
     return res.status(200).json({ message: "success" });
   }
   catch (err) {
-    logErrorMessages("" + err);
+    logErrorMessages(err, req.headers.keyid);
     return res.status(500).json({ message: `Failed to update ${userName}` });
   }
 });

@@ -2,28 +2,13 @@ const { logErrorMessages, logSuccessMessages } = require("../utils/saveLogfile")
 const express = require("express");
 require('dotenv').config();
 
-const { saveRefundInvoice } = require("../controller/salesNinvoices");
 const {
     sanitizePayload,
     saveInvoiceToDB,
 } = require("../utils/invoiceReform");
+const { sampleGARResponse } = require("../utils");
 
 const Router = express.Router();
-
-const responseData = {
-    response: {
-        message: {
-            ysdcid: null,
-            ysdcrecnum: null,
-            ysdcintdata: null,
-            ysdcregsig: null,
-            ysdcmrc: null,
-            ysdcmrctim: null,
-            ysdctime: null,
-        },
-        qr_code: null,
-    },
-}
 
 // Post and save invoice records
 Router.post("/invoice", async (req, res) => {
@@ -32,14 +17,14 @@ Router.post("/invoice", async (req, res) => {
         return res.json({ status: 'Error', message: 'Invalid data structure', data: Data });
     }
     const sanitizedPayload = sanitizePayload(Data);
-    // logSuccessMessages(JSON.stringify(sanitizedPayload));
+    // logSuccessMessages(JSON.stringify(sanitizedPayload), req.headers.keyid);
     try {
-        await saveInvoiceToDB(Data, sanitizedPayload, responseData)
+        await saveInvoiceToDB(Data, sanitizedPayload, sampleGARResponse)
             .then(() => {
                 return res.status(200).json({ status: 'success' });
             })
             .catch((err) => {
-                logErrorMessages(JSON.stringify(err));
+                logErrorMessages(JSON.stringify(err), req.headers.keyid);
                 return res.json({
                     status: 'error',
                     message: `Failed to save invoice: ${sanitizedPayload.invoiceNumber} to DB. Try new invoice`
@@ -48,7 +33,7 @@ Router.post("/invoice", async (req, res) => {
     }
     catch (error) {
         const { status, data } = error.response;
-        logErrorMessages(`${Data.userName} - ${JSON.stringify(error)}, ${JSON.stringify(sanitizedPayload)}`);
+        logErrorMessages(`${Data.userName} - ${JSON.stringify(error)}, ${JSON.stringify(sanitizedPayload)}`, req.headers.keyid);
         return res.status(status).json({ status: 'error', message: data });
     }
 });
@@ -61,13 +46,13 @@ Router.post("/refund", async (req, res) => {
         return res.json({ status: 'Error', message: 'Invalid data structure', data: Data });
     }
     const sanitizedPayload = sanitizePayload(Data);
-    // logSuccessMessages(JSON.stringify(sanitizedPayload));
+    // logSuccessMessages(JSON.stringify(sanitizedPayload), req.headers.keyid);
     try {
         if (sanitizedPayload.length > 0) {
             await saveInvoiceToDB(Data, sanitizedPayload, response.data)
                 .then(() => { return res.status(200).json({ status: 'success' }) })
                 .catch((err) => {
-                    logErrorMessages(`Failed to save invoice to DB: ${err}`);
+                    logErrorMessages(`Failed to save invoice to DB: ${err}`, req.headers.keyid);
                     return res.json({ status: 'error', message: `Failed to save invoice: ${sanitizedPayload.invoiceNumber} to DB.` });
                 });
         } else {
@@ -76,7 +61,7 @@ Router.post("/refund", async (req, res) => {
     }
     catch (error) {
         const { status, data } = error.response;
-        logErrorMessages(`${Data.userName} - ${JSON.stringify(data)}, ${JSON.stringify(sanitizedPayload)}`);
+        logErrorMessages(`${Data.userName} - ${JSON.stringify(data)}, ${JSON.stringify(sanitizedPayload)}`, req.headers.keyid);
         return res.status(status).json({ status: 'error', message: data });
     }
 });
