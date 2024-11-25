@@ -31,7 +31,7 @@ import { IconEraser } from '@tabler/icons';
 import { CancelSharp } from '@mui/icons-material';
 
 
-const AddSupplier = ({ closeAddnewUser, setSubmitted }) => {
+const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
     const [errors, setErrors] = useState({});
     const [drop, setDrop] = useState(false);
     const [open, setOpen] = useState(false);
@@ -484,4 +484,4 @@ const AddSupplier = ({ closeAddnewUser, setSubmitted }) => {
         </>
     );
 }
-export default AddSupplier;
+export default UploadCustomers;

@@ -4,6 +4,7 @@ import {
     Grid,
     Paper,
     Typography,
+    Button,
 } from "@mui/material";
 
 // /* eslint-disable */
@@ -12,7 +13,6 @@ import {
 import SuppliersTable from './displaySupplier';
 import { LoadingSpinner } from '../../ui-component/loaderAPI';
 import { fetchAllSupplier } from '../../apiActions/allApiCalls/supplier';
-import AddSupplier from './addSupplier';
 
 const CusNSupp = () => {
     const [submitted, setSubmitted] = useState(false);
@@ -49,7 +49,14 @@ const CusNSupp = () => {
                             <Paper>
                                 <Grid container sx={{ justifyContent: 'space-around', paddingBottom: 1, backgroundColor: 'darkblue', padding: 1, }}>
                                     <Typography color='white' variant='h3'>Suppliers Portal</Typography>
-                                    <AddSupplier />
+                                    <Button
+                                        variant='contained'
+                                        color='inherit'
+                                        size='medium'
+                                        onClick={()=>window.alert('Coming soon!')}
+                                    >
+                                        Upload Suppliers
+                                    </Button>
                                 </Grid>
                                 <Box>
                                     < SuppliersTable inData={customersNsuppliers} setSubmitted={setSubmitted} />

@@ -17,6 +17,7 @@ import { LoadingSpinner } from '../../ui-component/loaderAPI';
 import AddSupnCustomers from './addCustomers';
 import VerifyTIN from './verifyTIN';
 import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceholder';
+import UploadCustomers from './uploadCustomers';
 
 const CusNSupp = () => {
     const [submitted, setSubmitted] = useState(false);
@@ -52,6 +53,7 @@ const CusNSupp = () => {
             <Grid container sx={{ justifyContent: 'space-around', paddingBottom: 1, backgroundColor: 'darkblue', padding: 1, }}>
                 <Typography color='white' variant='h3'>Customers Management Page</Typography>
                 <VerifyTIN />
+                <UploadCustomers />
                 <Button
                     variant='contained'
                     color='inherit'
