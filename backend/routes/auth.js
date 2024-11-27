@@ -57,7 +57,7 @@ Auth.post("/login", async (req, res, next) => {
 						.then( async (result) => {
 							if (result === true) {
 								if (status === 'yes') {
-									await sendVerificationEmail(userEmail, emailToken, type = "login", req.headers.keyid);
+									await sendVerificationEmail(userEmail, emailToken, type = "login", e.Usr_id);
 									res.setHeader('Access-Control-Allow-Origin', `${origin}`);
 									res.setHeader('Content-Type', 'application/json');
 									res.setHeader('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization');
@@ -65,10 +65,11 @@ Auth.post("/login", async (req, res, next) => {
 									res.setHeader('Access-Control-Expose-Headers', 'Authorization');
 									res.setHeader('Authorization', `${emailToken}`);
 									res.setHeader('Cache-Control', 'no-cache');
-									res.status(200).send({ statusMessage: 'successLogin', data: sanitizedData });	
+									await logMessage(`${userEmail} logged in the ERP. Details: ${JSON.stringify(ipInfo)}`, e.Usr_id);
+									res.status(200).send({ statusMessage: 'successLogin', data: sanitizedData });
 								}
 								else {
-									await sendVerificationEmail(userEmail, emailToken, type = null, req.headers.keyid)
+									await sendVerificationEmail(userEmail, emailToken, type = null, e.Usr_id)
 										.then((response) => {
 											res.status(200).send(response);
 										})

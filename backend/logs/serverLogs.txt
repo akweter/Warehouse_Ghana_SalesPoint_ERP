@@ -5,3 +5,14 @@
 24/11/2024, 13:00:15: Server restarted at 13:00:15
 25/11/2024, 08:42:23: Server restarted at 08:42:23
 25/11/2024, 16:25:54: Unhandled Rejection at:
+27/11/2024, 07:31:41: Server restarted at 07:31:41
+27/11/2024, 15:29:25: Server restarted at 15:29:25
+27/11/2024, 15:33:05: Unhandled Rejection at:
+27/11/2024, 15:35:42: Unhandled Rejection at:
+27/11/2024, 15:35:59: Server restarted at 15:35:59
+27/11/2024, 15:36:14: Unhandled Rejection at:
+27/11/2024, 15:36:54: Server restarted at 15:36:54
+27/11/2024, 15:37:15: Unhandled Rejection at:
+27/11/2024, 15:37:15: Unhandled Rejection at:
+27/11/2024, 15:40:50: Server restarted at 15:40:50
+27/11/2024, 16:17:07: Server restarted at 16:17:07

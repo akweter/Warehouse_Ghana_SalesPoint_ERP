@@ -34,9 +34,9 @@ const Auth = Loadable(lazy(() => import('../auth')));
 const Woocommerce = Loadable(lazy(() => import('../woocommerce')));
 const Tools = Loadable(lazy(() => import('../reports')));
 
-// Function to get accountType from sessionStorage
+// Function to get accountType from localStorage
 const getAccountType = () => {
-  const systemUser = window.sessionStorage.getItem('userInfo');
+  const systemUser = window.localStorage.getItem('userInfo');
   if (systemUser) {
     const parseSystemUser = JSON.parse(systemUser);
     return parseSystemUser.accountType;

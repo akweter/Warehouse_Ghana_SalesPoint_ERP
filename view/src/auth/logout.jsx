@@ -2,11 +2,11 @@ import { useEffect } from 'react';
 
 export default function LogOut() {
   useEffect(() => {
-    const redirectUrl = sessionStorage.getItem('userActiveURL');
+    const redirectUrl = localStorage.getItem('userActiveURL');
     document.cookie = "";
     localStorage.clear();
-    sessionStorage.clear();
-    window.sessionStorage.setItem('userActiveURL', redirectUrl);
+    localStorage.clear();
+    window.localStorage.setItem('userActiveURL', redirectUrl);
     window.location.href='/auth/login';
   });
 }

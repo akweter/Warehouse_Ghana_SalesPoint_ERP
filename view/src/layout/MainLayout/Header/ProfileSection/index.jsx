@@ -47,7 +47,7 @@ const ProfileSection = () => {
   };
 
   const getUserName = () => {
-    const systemUser = window.sessionStorage.getItem('userInfo');
+    const systemUser = window.localStorage.getItem('userInfo');
     if (systemUser) {
       const parseSystemUser = JSON.parse(systemUser);
       const systemUserName = parseSystemUser.userName;

@@ -73,10 +73,10 @@ export default function SignInForm() {
                 if (body.statusMessage === 'successLogin') { 
                     setloginStatus((state) => ({...state, color: 'success', message: 'login succesful. You are being redirected'}));
                     setTimeout(() => {
-                        sessionStorage.setItem('userInfo', JSON.stringify(body.data));
-                        sessionStorage.setItem('usrlogstat', response.status);
-                        sessionStorage.setItem('Authorization', t);
-                        const redirectUrl = sessionStorage.getItem('userActiveURL');
+                        localStorage.setItem('userInfo', JSON.stringify(body.data));
+                        localStorage.setItem('usrlogstat', response.status);
+                        localStorage.setItem('Authorization', t);
+                        const redirectUrl = localStorage.getItem('userActiveURL');
                         if (redirectUrl === null || redirectUrl === undefined || redirectUrl === "") {
                             window.location.href = window.location.origin;
                         } else {

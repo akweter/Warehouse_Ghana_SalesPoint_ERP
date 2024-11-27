@@ -276,7 +276,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
 
     // Get userName
     const setUserName = () => {
-        const systemUser = window.sessionStorage.getItem('userInfo');
+        const systemUser = window.localStorage.getItem('userInfo');
         if ( header.userName === "" && systemUser) {
             const parseSystemUser = JSON.parse(systemUser);
             const systemUserName = parseSystemUser.userName;

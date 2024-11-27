@@ -19,9 +19,9 @@ export default function VerifyToken() {
                     const t = response.headers.get('Authorization');
                     const result  = response.data;
                     if (result.statusMessage === 'successActivate') {
-                        sessionStorage.setItem('userInfo', JSON.stringify(response.data.data));
-                        sessionStorage.setItem('usrlogstat', '200');
-                        sessionStorage.setItem('Authorization', t);
+                        localStorage.setItem('userInfo', JSON.stringify(response.data.data));
+                        localStorage.setItem('usrlogstat', '200');
+                        localStorage.setItem('Authorization', t);
                         if (result.data.connect === 'test') {
                             window.location.href = `${viewOrigin}/auth/verify/${result.data.accountId}`;
                         }

@@ -27,6 +27,7 @@ import { PostNewProducts, UpdateProduct } from '../../apiActions/allApiCalls/pro
 import { fetchSupplierNameSearch } from '../../apiActions/allApiCalls/supplier';
 import ProductTemplate from './productTemplate';
 import { Stack } from '@mui/system';
+import Papa from 'papaparse';
 import { ShowBackDrop } from '../../utilities/backdrop';
 import { AlertError } from '../../utilities/errorAlert';
 
@@ -124,42 +125,17 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
  
 	// handle product excel drop
 	const handleDrop = useCallback((acceptedFiles) => {
-		acceptedFiles.forEach((file) => {
-			const reader = new FileReader();
-			reader.onload = async (e) => {
-				const csvData = new TextDecoder('utf-8').decode(e.target.result);
-				const jsonData = csvData
-					.split('\n')
-					.map((row) => row.split(','))
-					.filter((row) => row.some((cell) => cell.trim() !== ''))
-					.map((row, index) => {
-						const [
-							productCategory,
-							productName,
-							productStatus,
-							productStockQty,
-							productUnitPrice,
-							productSupId,
-							productTaxType,
-							productUOM,
-						] = row.map((value) => value.trim());
-						return {
-							key: index,
-							productCategory,
-							productName,
-							productStatus,
-							productStockQty,
-							productUnitPrice,
-							productSupId,
-							productTaxType,
-							productUOM,
-						};
-					});
-				setProducts(jsonData);
-			};
-			reader.readAsArrayBuffer(file);
-		});
-	}, []);
+        acceptedFiles.forEach((file) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const csvData = e.target.result;
+                const jsonData = Papa.parse(csvData, { header: true, skipEmptyLines: true }).data;
+                setProducts(jsonData);
+            };
+            reader.readAsText(file);
+        });
+    }, []);
+
 
 	// edit selected row or for data
 	const handleEdit = (index) => {
@@ -182,10 +158,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 	// Hanlde form onchange
 	const handleInputChange = (e) => {
 		const { name, value } = e.target;
-		setFormData({
-			...formData,
-			[name]: value,
-		});
+		setFormData({ ...formData, [name]: value, });
 	};
 
 	// Handle add button when clicked
@@ -235,7 +208,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 		const Dating = new Date();
 		const formattedDate = `${Dating.getFullYear()}-${String(Dating.getMonth() + 1).padStart(2, '0')}-${String(Dating.getDate()).padStart(2, '0')}`;
 
-		const systemUser = window.sessionStorage.getItem('userInfo');
+		const systemUser = window.localStorage.getItem('userInfo');
 		if (systemUser) {
 			const parseSystemUser = JSON.parse(systemUser);
 			const systemUserName = parseSystemUser.accountId;

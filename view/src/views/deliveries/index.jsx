@@ -115,8 +115,8 @@ export default function Deliveries() {
                     sortable: false,
                     headerClassName: 'dataGridheader',
                     renderCell: (params) => (<>
-                        <Button variant='contained' color='warning' title='View Details' onClick={() => handleReceiptPrint(params.row)}>
-                            <Typography title='Print Receipt' color='darkblue'>Receipt</Typography>
+                        <Button variant='text' onClick={() => handleReceiptPrint(params.row)}>
+                            <Typography title='Print Receipt'>Print Receipt</Typography>
                         </Button>
                     </>),
                 }
@@ -199,8 +199,8 @@ export default function Deliveries() {
                 sortable: false,
                 headerClassName: 'dataGridheader',
                 renderCell: (params) => (<>
-                    <Button variant='contained' color='warning' title='View Details' onClick={() => handleReceiptPrint(params.row)}>
-                        <Typography title='Print Receipt' color='darkblue'>Print Receipt</Typography>
+                    <Button variant='text' onClick={() => handleReceiptPrint(params.row)}>
+                        <Typography title='Print Receipt'>Print Receipt</Typography>
                     </Button>
                 </>),
             }

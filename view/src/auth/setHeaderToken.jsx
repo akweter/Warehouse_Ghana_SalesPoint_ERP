@@ -1,7 +1,7 @@
 import { bcndOrigin } from "./origins";
 
 const headerToken = () => {
-  const token = sessionStorage.getItem('Authorization');
+  const token = localStorage.getItem('Authorization');
   return token ? token : null;
 };
 
@@ -9,8 +9,8 @@ const requestMaking = async (route, method, bodyData) => {
   const url = `${bcndOrigin}/${route}`;
   const token = headerToken();
 
-  // Retrieve the userInfo from sessionStorage and parse it
-  const userInfo = sessionStorage.getItem('userInfo');
+  // Retrieve the userInfo from localStorage and parse it
+  const userInfo = localStorage.getItem('userInfo');
   let accountId = null;
 
   if (userInfo) {
@@ -33,14 +33,14 @@ const requestMaking = async (route, method, bodyData) => {
   });
 
   if (response.status === 401) {
-    sessionStorage.setItem('userActiveURL', window.location.pathname);
+    localStorage.setItem('userActiveURL', window.location.pathname);
     window.location.href = "/403";
   }
   if (response.ok) {
     const newToken = response.headers.get('Authorization');
     if (newToken) {
-      sessionStorage.setItem('Authorization', newToken);
-      sessionStorage.setItem('userActiveURL', window.location.pathname);
+      localStorage.setItem('Authorization', newToken);
+      localStorage.setItem('userActiveURL', window.location.pathname);
     }
   }
   return response;

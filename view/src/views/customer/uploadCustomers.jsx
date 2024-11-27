@@ -9,12 +9,8 @@ import {
     Button,
 	Grid,
 	TextField,
-	InputLabel,
-	MenuItem,
-	Select,
 	Typography,
 	FormControl,
-	Autocomplete,
 	CircularProgress,
 	FormControlLabel,
 	Checkbox,
@@ -29,6 +25,8 @@ import { AlertError } from '../../utilities/errorAlert';
 import Upload from '../../assets/images/Upload.webp';
 import { IconEraser } from '@tabler/icons';
 import { CancelSharp } from '@mui/icons-material';
+import Papa from 'papaparse';
+import CustomerTemplate from './customerTemplate';
 
 
 const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
@@ -39,6 +37,7 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
     const [openAlert, setOpenAlert] = useState(false);
     const [customers, setCustomers] = useState([]);
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 600);
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [formData, setFormData] = useState({
         userEmail: '',
         userActive: 'Active',
@@ -61,49 +60,22 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
     }, []);
 
     // handle product excel drop
-	const handleDrop = useCallback((acceptedFiles) => {
-		acceptedFiles.forEach((file) => {
-			const reader = new FileReader();
-			reader.onload = async (e) => {
-				const csvData = new TextDecoder('utf-8').decode(e.target.result);
-				const jsonData = csvData
-					.split('\n')
-					.map((row) => row.split(','))
-					.filter((row) => row.some((cell) => cell.trim() !== ''))
-					.map((row, index) => {
-						const [
-							Telephone,
-							FullName,
-							Status,
-							Rating,
-							Address,
-							TinGhanaCard,
-							TaxType,
-							Email,
-                            Destination
-						] = row.map((value) => value.trim());
-						return {
-							key: index,
-							Telephone,
-							FullName,
-							Status,
-							Rating,
-							Address,
-							TinGhanaCard,
-							TaxType,
-							Email,
-                            Destination
-						};
-					});
-				setCustomers(jsonData);
-			};
-			reader.readAsArrayBuffer(file);
-		});
-	}, []);
+    const handleDrop = useCallback((acceptedFiles) => {
+        acceptedFiles.forEach((file) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const csvData = e.target.result;
+                const jsonData = Papa.parse(csvData, { header: true, skipEmptyLines: true }).data;
+                setCustomers(jsonData);
+            };
+            reader.readAsText(file);
+        });
+    }, []);
 
     const handleClose = () => {
         setOpen(false);
         setCustomers([]);
+        setErrors({});
     }
 
     // handle esxel drop
@@ -119,11 +91,11 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
             //     const userPhone = /^[0-9]{10}$/;
             //     return userPhone.test(value) ? '' : 'Telephone should be 10 characters. Alphabet and symbol not allowed!';
             case 'userName':
-                const userName = /^[A-Za-z._ -]{4,}$/;
-                return userName.test(value) ? '' : 'Full name must be at least 4 characters long!';
-            // case 'userTIN':
-            //     const userGhCardTIN = /^(P00|C00)[0-9xX]{8}$|^GHA-[0-9xX]{9}-?[0-9xX]?$/;
-            //     return userGhCardTIN.test(value) ? '' : 'Invalid TIN or Ghana Card number';
+                const userName = /^[A-Za-z._ -]{3,}$/;
+                return userName.test(value) ? '' : 'Full name must be at least 3 characters long!';
+            case 'userTIN':
+                const userGhCardTIN = /^[a-zA-Z0-9]{10}$|^[a-zA-Z0-9]{11}$|^[a-zA-Z0-9]{15}$/;
+                return userGhCardTIN.test(value) ? '' : 'Confirm the length of TIN or Ghana Card again';
             default:
                 return '';
         }
@@ -161,48 +133,70 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
         }));
     };
 
+    // clear customers table state
+    // Clear products from the state and close dialog
+	const clearCustomersData = () => {
+		setCustomers([]);
+	}
+
+    // Handle add button when clicked
+	const handleAdd = () => {
+        const validationErrors = {};
+    
+        Object.keys(formData).forEach((name) => {
+            const value = formData[name];
+            const error = validateField(name, value);
+            if (error) {
+                validationErrors[name] = error;
+            }
+        });
+    
+        setErrors(validationErrors);
+        if (Object.keys(validationErrors).length > 0) { return }
+    
+        if (selectedCustomer) {
+            setCustomers([...customers, { ...selectedCustomer, ...formData }]);
+            setSelectedCustomer(null);
+        } else {
+            setCustomers([...customers, { key: Date.now(), ...formData }]);
+        }
+    
+        // Clear form data after adding the customer
+        setFormData({
+            userEmail: '',
+            userActive: '',
+            userPhone: '',
+            userAddress: '',
+            userRegion: '',
+            userRating: 1,
+            userTIN: '',
+            userName: '',
+            userExemption: '',
+        });
+    };
+     
+
     // Submit form to backend
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-        const validationErrors = {};
-        Object.keys(formData).forEach(async (name) => {
-            const value = formData[name];
-            const error = validateField(name, value);
-            if (error) { validationErrors[name] = error }
-        });
-        setErrors(validationErrors);
-        if (Object.keys(validationErrors).length > 0) { return }
-
         try {
-            setDrop(true);
+            setDrop(true);  // Show loading indicator
+            // Simulate async operation or make an API call
+            await someAsyncFunction();
+            setAlert({ message: "You've done it!", color: 'success' });
+            setOpenAlert(true);
+    
             setTimeout(() => {
-                setAlert((e) => ({...e, message: `You've done it!`, color: 'success' }));
-                setOpenAlert(true);
-
-                setTimeout(() => {
-                    setDrop(true);
-                    closeAddnewUser();
-                    setSubmitted(true);
-                    setFormData((e) => ({
-                        ...e,
-                        userEmail: '',
-                        userActive: '',
-                        userPhone: '',
-                        userAddress: '',
-                        userRegion: '',
-                        userRating: '',
-                        userTIN: '',
-                        userName: '',
-                        userExemption: '',
-                    }));
-                }, 1000);
-            }, 2000);
-        }
-        catch (error) {
+                setDrop(false); // Hide loading indicator
+                closeAddnewUser();
+                setSubmitted(true);
+            }, 1000);
+        } catch (error) {
             setAlert({ message: 'Ooops! Something went wrong. Please refresh and retry', color: 'error' });
             setOpenAlert(true);
         }
     };
+    
     
     return (
         <>
@@ -221,7 +215,7 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
                 TransitionComponent={Slide} 
                 transitionDuration={700}
             >
-                {alert.message ? (<AlertError open={openAlert} alert={alert} />) : null}
+                {alert.message ? (<AlertError open={openAlert} alert={alert} handleClose={()=>setOpenAlert(false)} />) : null}
 
                 <AppBar style={{ backgroundColor: '#151B4D' }}>
 					<Toolbar sx={{ gap: 2 }}>
@@ -239,18 +233,18 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
 							<FormControl fullWidth>
 								<Stack direction="row" spacing={2}>
 									<Button
-										onClick={()=>window.alert('coming soon!')} 
+										onClick={clearCustomersData} 
 										fullWidth color='warning' 
 										variant="contained" 
 										size='small' 
 										startIcon={<IconEraser />}
 									>
-										Clear Products
+										Clear Customers Table
 									</Button>
 								</Stack>
 							</FormControl>
 						</Grid>
-						{/* < ProductTemplate /> */}
+						< CustomerTemplate />
 						<Grid item>
 							<FormControl fullWidth>
 								<Stack direction="row" spacing={2}>
@@ -294,23 +288,23 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                 <table width='100%' border={1}>
                                     <thead style={{ fontWeight: 'bolder' }}>
                                         <tr>
-                                            <td>{isSmallScreen ? 'Item' : 'Product/Service'}</td>
-                                            <td>{isSmallScreen ? 'Stock' : 'Stock QTY'}</td>
-                                            <td>{isSmallScreen ? 'Price' : 'Unit Price'}</td>
-                                            <td>{isSmallScreen ? 'Type' : 'Tax Type'}</td>
-                                            <td>UOM</td>
+                                            <td>{isSmallScreen ? 'Customer' : 'Customer'}</td>
+                                            <td>{isSmallScreen ? 'ID' : 'TIN/Gh Card'}</td>
+                                            <td>Category</td>
+                                            <td>Email</td>
+                                            <td>Destination</td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {customers && customers.map((e) => (<>
-                                            <tr style={{ backgroundColor: e.Status !== "Active" ? 'lightgoldenrodyellow' : '' }}>
+                                            <tr key={e.index + 1} style={{ backgroundColor: e.Status !== "Active" ? 'lightgoldenrodyellow' : '' }}>
                                                 <td>{e.FullName || ''}</td>
-                                                <td>{e.Rating || ''}</td>
-                                                <td>{e.Address || ''}</td>
-                                                <td>{e.TaxType === "" ? 'STANDARD' : e.TaxType || ''}</td>
+                                                <td>{e.TinGhanaCard || ''}</td>
+                                                <td>{e.Category || ''}</td>
                                                 <td>{e.Email || ''}</td>
-                                                <td>
-                                                    {/* <Edit
+                                                <td>{e.Destination || ''}</td>
+                                                {/* <td>
+                                                    <Edit
                                                         fontSize='small' 
                                                         onClick={() => handleEdit(e.key)} 
                                                         color='primary' 
@@ -321,19 +315,20 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                                         onClick={() => handleDelete(e.key)} 
                                                         color='error' 
                                                         sx={{ cursor: 'pointer' }} 
-                                                    /> */}
-                                                </td>
+                                                    />
+                                                </td> */}
                                             </tr>
                                         </>))}
                                     </tbody>
                                 </table>
                                 <Button
-                                    variant='outlined'
+                                    variant='contained'
                                     color='primary'
-                                    onClick={()=>window.alert('coming soon!')}
+                                    size='large'
+                                    onClick={handleFormSubmit}
                                     sx={{ marginTop: 2, alignItems: 'center', textAlign: 'center' }}
                                 >
-                                    Submit
+                                    {drop ? <CircularProgress open={drop} size='25px' /> : 'Submit'}
                                 </Button>								
                             </div>
                         ) : (
@@ -471,8 +466,14 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <DialogActions>
-                                            <Button onClick={closeAddnewUser} variant='outlined' color='error'>Cancel</Button>
-                                            <Button onClick={handleFormSubmit} variant='outlined' color='primary'>{drop ? <CircularProgress open={drop} size='25px' /> : 'Submit'}</Button>
+                                            <Button 
+                                                onClick={handleAdd} 
+                                                variant='contained' 
+                                                color='warning'
+                                                fullWidth
+                                            >
+                                                Add Customer
+                                            </Button>
                                         </DialogActions>
                                     </Grid>
                                 </Grid>

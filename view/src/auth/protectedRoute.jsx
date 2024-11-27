@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 function ProtectedRoute({ children }) {
-  const logSuccess = sessionStorage.getItem('usrlogstat');
+  const logSuccess = localStorage.getItem('usrlogstat');
   useEffect(() => {
     if (!logSuccess || logSuccess !== '200') {
       window.location.href = "/auth/login"
