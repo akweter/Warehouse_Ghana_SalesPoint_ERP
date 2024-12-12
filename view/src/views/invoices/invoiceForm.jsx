@@ -42,14 +42,12 @@ import {
     Container,
     TextareaAutosize,
 } from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
 import dayjs from 'dayjs';
 
 // /* eslint-disable */
 
 // Projects
 import '../../assets/css/form.css';
-import Screens from '../../ui-component/cardDivision';
 import { headerPayload, itemlistPayload } from '../../views/payload/payloadStructure';
 import { AlertError } from '../../utilities/errorAlert';
 import { ShowBackDrop } from '../../utilities/backdrop';
@@ -359,8 +357,9 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
     // handle header onchange
     const handleMainChange = (event) => {
         const { name, value } = event.target;
-        setHeader({ ...header, [name]: value });
-        setItemLists({ ...itemlists, [name]: value });
+        const formValue = value.toUpperCase();
+        setHeader({ ...header, [name]: formValue });
+        setItemLists({ ...itemlists, [name]: formValue });
         setCompute(false);
     };
 
@@ -488,8 +487,6 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
     const handleClose = (event, reason) => { if (reason === 'clickaway') { return; } setOpen(false); };
 
     return (<>
-        <ThemeProvider theme={Screens.lightTheme}>
-            
             { open && <AlertError open={open} alert={alert} handleClose={handleClose} /> }
             { drop && <ShowBackDrop open={drop} /> }
 
@@ -1020,7 +1017,6 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                     <Button variant='outlined' onClick={handleEditSave} color="secondary"> Update </Button>
                 </DialogActions>
             </Dialog>
-        </ThemeProvider>
     </>);
 }
 

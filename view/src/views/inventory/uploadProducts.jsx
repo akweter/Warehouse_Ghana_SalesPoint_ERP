@@ -158,7 +158,8 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 	// Hanlde form onchange
 	const handleInputChange = (e) => {
 		const { name, value } = e.target;
-		setFormData({ ...formData, [name]: value, });
+		const formValue = value.toUpperCase();
+		setFormData({ ...formData, [name]: formValue, });
 	};
 
 	// Handle add button when clicked
@@ -358,6 +359,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 												<td>{isSmallScreen ? 'Price' : 'Unit Price'}</td>
 												<td>{isSmallScreen ? 'Type' : 'Tax Type'}</td>
 												<td>UOM</td>
+												{/* <td></td> */}
 											</tr>
 										</thead>
 										<tbody>

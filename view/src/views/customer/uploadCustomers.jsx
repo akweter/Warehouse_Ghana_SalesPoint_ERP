@@ -20,34 +20,38 @@ import {
 	IconButton,
     Slide,
     Stack,
+    Rating,
 } from '@mui/material';
 import { AlertError } from '../../utilities/errorAlert';
 import Upload from '../../assets/images/Upload.webp';
 import { IconEraser } from '@tabler/icons';
-import { CancelSharp } from '@mui/icons-material';
+import { CancelSharp, Delete, Edit } from '@mui/icons-material';
 import Papa from 'papaparse';
 import CustomerTemplate from './customerTemplate';
+import { postCustomer } from '../../apiActions/allApiCalls/customer';
+import { verifyTIN } from '../../apiActions/allApiCalls/invoice';
 
-
-const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
+const UploadCustomers = ({ setSubmitted }) => {
     const [errors, setErrors] = useState({});
     const [drop, setDrop] = useState(false);
-    const [open, setOpen] = useState(false);
-    const [alert, setAlert] = useState({ message: '', color: '' });
-    const [openAlert, setOpenAlert] = useState(false);
-    const [customers, setCustomers] = useState([]);
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 600);
+    const [open, setOpen] = useState(false);
+    const [openAlert, setOpenAlert] = useState(false);
+    const [load, setLoad] = useState(false);
+    const [cashCustomer, setCashCustomer] = useState(false);
+    const [alert, setAlert] = useState({ message: '', color: '' });
+    const [customers, setCustomers] = useState([]);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [formData, setFormData] = useState({
-        userEmail: '',
-        userActive: 'Active',
-        userPhone: '',
-        userAddress: '',
-        userRegion: 'Local',
-        userRating: '',
-        userTIN: '',
-        userName: '',
-        userExemption: 'Taxable',
+        Email: '',
+        Status: 'Active',
+        Telephone: '',
+        Address: '',
+        Destination: 'Local',
+        Rating: 1,
+        TinGhanaCard: '',
+        FullName: '',
+        Category: 'Taxable',
     });
 
     // Set Data Grid according to screens sizes
@@ -59,7 +63,31 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
         };
     }, []);
 
-    // handle product excel drop
+    // Reqquest Customer TIN
+    const TinRequest = async () => {
+        if ( 
+            formData.TinGhanaCard === "C0000000000" || 
+            formData.TinGhanaCard === "" || 
+            formData.TinGhanaCard === "E0000000000"
+        ) { 
+            return setCashCustomer(!cashCustomer);
+        }
+        setLoad(true);
+        try {
+            const response = await verifyTIN(formData.TinGhanaCard);
+            if (response.status === "SUCCESS") {
+                setFormData(prevState => ({ ...prevState, FullName: response.data.name }));                
+            } else {
+                setCashCustomer(!cashCustomer);
+            }
+        } catch (error) {
+            console.log('');
+        }
+        setOpenAlert(true);
+        setLoad(false);
+    }
+
+    // handle Customer excel drop
     const handleDrop = useCallback((acceptedFiles) => {
         acceptedFiles.forEach((file) => {
             const reader = new FileReader();
@@ -71,11 +99,12 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
             reader.readAsText(file);
         });
     }, []);
-
+    
     const handleClose = () => {
         setOpen(false);
         setCustomers([]);
         setErrors({});
+        setFormData({});
     }
 
     // handle esxel drop
@@ -84,18 +113,18 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
     // Validate user input in fields
     const validateField = (name, value) => {
         switch (name) {
-            case 'userEmail':
-                const userEmail = /^[a-zA-Z0-9.\-_-]+@[a-zA-Z0-9.\-_-]+\.[a-zA-Z]{2,}$/;
-                return userEmail.test(value) ? '' : 'Invalid email address';
-            // case 'userPhone':
-            //     const userPhone = /^[0-9]{10}$/;
-            //     return userPhone.test(value) ? '' : 'Telephone should be 10 characters. Alphabet and symbol not allowed!';
-            case 'userName':
-                const userName = /^[A-Za-z._ -]{3,}$/;
-                return userName.test(value) ? '' : 'Full name must be at least 3 characters long!';
-            case 'userTIN':
-                const userGhCardTIN = /^[a-zA-Z0-9]{10}$|^[a-zA-Z0-9]{11}$|^[a-zA-Z0-9]{15}$/;
-                return userGhCardTIN.test(value) ? '' : 'Confirm the length of TIN or Ghana Card again';
+            case 'Email':
+                const Email = /^[a-zA-Z0-9.\-_-]+@[a-zA-Z0-9.\-_-]+\.[a-zA-Z]{2,}$/;
+                return Email.test(value) ? '' : 'Invalid email address';
+            // case 'Telephone':
+            //     const Telephone = /^[0-9]{10}$/;
+            //     return Telephone.test(value) ? '' : 'Telephone should be 10 characters. Alphabet and symbol not allowed!';
+            case 'FullName':
+                const FullName = /^[A-Za-z._ -]{3,}$/;
+                return FullName.test(value) ? '' : 'Full name must be at least 3 characters long!';
+            // case 'TinGhanaCard':
+            //     const userGhCardTIN = /^[a-zA-Z0-9]{10}$|^[a-zA-Z0-9]{11}$|^[a-zA-Z0-9]{15}$/;
+            //     return userGhCardTIN.test(value) ? '' : 'Confirm the length of TIN or Ghana Card again';
             default:
                 return '';
         }
@@ -104,9 +133,28 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
     // Handle form user input
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        if (name === 'FullName') {
+            const isFullNameExist = customers.some(customer => customer.FullName.toUpperCase() === value.toUpperCase());
+            if (isFullNameExist) {
+                setErrors({ ...errors, FullName: 'Customer name exists' });
+            } else {
+                setErrors({ ...errors, FullName: '' });
+            }
+        }
+
+        if (name === 'Rating') {
+            const numericValue = Number(value);
+            setFormData({ ...formData, [name]: numericValue });
+        } else {
+            const validationError = validateField(name, value);
+            setErrors({ ...errors, [name]: validationError });
+            setFormData({ ...formData, [name]: value });
+        }
+
         const validationError = validateField(name, value);
         setErrors({ ...errors, [name]: validationError });
-        setFormData({ ...formData, [name]: value });
+        const formValue = value.toUpperCase();
+        setFormData({ ...formData, [name]: formValue });
     };
 
     // handle check inputs
@@ -115,13 +163,13 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
         let value;
         
         switch (name) {
-            case 'userActive':
+            case 'Status':
                 value = checked ? 'Inactive' : 'Active';
                 break;
-            case 'userRegion':
+            case 'Destination':
                 value = checked ? 'Foreign' : 'Local';
                 break;
-            case 'userExemption':
+            case 'Category':
                 value = checked ? 'Exempted' : 'Taxable';
                 break;
             default:
@@ -134,15 +182,19 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
     };
 
     // clear customers table state
-    // Clear products from the state and close dialog
+    // Clear Customers from the state and close dialog
 	const clearCustomersData = () => {
 		setCustomers([]);
 	}
 
     // Handle add button when clicked
 	const handleAdd = () => {
-        const validationErrors = {};
-    
+        const validationErrors = {};    
+        
+        const isFullNameExist = customers.some(customer => customer.FullName.toUpperCase() === formData.FullName.toUpperCase());
+        if (isFullNameExist) {
+            validationErrors.FullName = 'Customer already exists';
+        }
         Object.keys(formData).forEach((name) => {
             const value = formData[name];
             const error = validateField(name, value);
@@ -153,50 +205,76 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
     
         setErrors(validationErrors);
         if (Object.keys(validationErrors).length > 0) { return }
-    
+
         if (selectedCustomer) {
-            setCustomers([...customers, { ...selectedCustomer, ...formData }]);
+            setCustomers([...customers, { ...formData }]);
             setSelectedCustomer(null);
         } else {
-            setCustomers([...customers, { key: Date.now(), ...formData }]);
+            setCustomers([...customers, { ...formData }]);
         }
-    
         // Clear form data after adding the customer
         setFormData({
-            userEmail: '',
-            userActive: '',
-            userPhone: '',
-            userAddress: '',
-            userRegion: '',
-            userRating: 1,
-            userTIN: '',
-            userName: '',
-            userExemption: '',
+            Email: '',
+            Status: 'Active',
+            Telephone: '',
+            Address: '',
+            Destination: 'Local',
+            Rating: 1,
+            TinGhanaCard: '',
+            FullName: '',
+            Category: 'Taxable',
         });
     };
-     
+    
+    // edit selected row or for data
+	const handleEdit = (name) => {
+		const editedCustomer = customers.find((cus) => cus.FullName === name);
+		setSelectedCustomer(editedCustomer);
+		setFormData({
+            Email: editedCustomer.Email,
+            Status: editedCustomer.Status,
+            Telephone: editedCustomer.Telephone,
+            Address: editedCustomer.Address,
+            Destination: editedCustomer.Destination,
+            Rating: editedCustomer.Rating,
+            TinGhanaCard: editedCustomer.TinGhanaCard,
+            FullName: editedCustomer.FullName,
+            Category: editedCustomer.Category,
+		});
+		const updatedCustomers = customers.filter((cus) => cus.FullName !== name);
+		setCustomers(updatedCustomers);
+	};
+
+    // When Delete button clicked
+	const handleDelete = (name) => {
+		const updatedCustomers = customers.filter((cus) => cus.FullName !== name);
+		setCustomers(updatedCustomers);
+	};
 
     // Submit form to backend
-    const handleFormSubmit = async (e) => {
-        e.preventDefault();
+    const handleFormSubmit = async () => {
+        setDrop(true);
         try {
-            setDrop(true);  // Show loading indicator
-            // Simulate async operation or make an API call
-            await someAsyncFunction();
-            setAlert({ message: "You've done it!", color: 'success' });
-            setOpenAlert(true);
-    
-            setTimeout(() => {
-                setDrop(false); // Hide loading indicator
-                closeAddnewUser();
-                setSubmitted(true);
-            }, 1000);
-        } catch (error) {
-            setAlert({ message: 'Ooops! Something went wrong. Please refresh and retry', color: 'error' });
-            setOpenAlert(true);
+            const response = await postCustomer(customers);
+            if (response.status === 'success') {
+                setAlert((e) => ({...e, message: `You've done it!`, color: 'success' }));
+                setCustomers([]);
+
+                setTimeout(() => {
+                    {() => setSubmitted();}
+                    setOpen(false);
+                }, 1000);
+            } 
+            else {
+                setAlert((e) => ({...e, message: response.message, color: 'error' }));
+            }
         }
+        catch (error) {
+            setAlert((state) => ({...state, message: 'Adding customers failed!', color: 'error' }));
+        }
+        setOpenAlert(true);
+        setDrop(false);
     };
-    
     
     return (
         <>
@@ -303,20 +381,20 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                                 <td>{e.Category || ''}</td>
                                                 <td>{e.Email || ''}</td>
                                                 <td>{e.Destination || ''}</td>
-                                                {/* <td>
+                                                <td>
                                                     <Edit
                                                         fontSize='small' 
-                                                        onClick={() => handleEdit(e.key)} 
+                                                        onClick={() => handleEdit(e.FullName)} 
                                                         color='primary' 
                                                         sx={{ cursor: 'pointer' }} 
                                                     />
-                                                    <Delete 
+                                                    <Delete
                                                         fontSize='small' 
-                                                        onClick={() => handleDelete(e.key)} 
+                                                        onClick={() => handleDelete(e.FullName)} 
                                                         color='error' 
                                                         sx={{ cursor: 'pointer' }} 
                                                     />
-                                                </td> */}
+                                                </td>
                                             </tr>
                                         </>))}
                                     </tbody>
@@ -334,7 +412,7 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
                         ) : (
                             <div {...getRootProps()} style={{ border: '2px dashed #eee', margin: isSmallScreen ? 0 : '20px', textAlign: 'center' }}>
                                 <input {...getInputProps()} />
-                                <img src={Upload} alt='click to upload product' width="70%" height="70%" />
+                                <img src={Upload} alt='click to upload Customer' width="70%" height="70%" />
                             </div>
                         )}
                     </Grid>
@@ -352,77 +430,76 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                 <Grid container spacing={1}>
                                     <Grid item xs={6}>
                                         <FormControlLabel
-                                            label={formData.userActive === "Active" ? "Active" : "Inactive"}
+                                            label={formData.Status === "Active" ? "Active" : "Inactive"}
                                             control={
                                                 <Checkbox
                                                     onChange={changeUserStat}
                                                     color="secondary"
-                                                    name='userActive'
+                                                    name='Status'
                                                 />
                                             }
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
                                         <FormControlLabel
-                                            label={formData.userRegion === "Local" ? "Local" : "Foreign"}
+                                            label={formData.Destination === "Local" ? "Local" : "Foreign"}
                                             control={
                                                 <Checkbox
                                                     onChange={changeUserStat}
                                                     color="primary"
-                                                    name='userRegion'
+                                                    name='Destination'
                                                 />
                                             }
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
                                         <FormControlLabel
-                                            label={formData.userExemption === "Taxable" ? "Taxable" : "Exempted"}
+                                            label={formData.Category === "Taxable" ? "Taxable" : "Exempted"}
                                             control={
                                                 <Checkbox
                                                     onChange={changeUserStat}
                                                     color="error"
-                                                    name='userExemption'
+                                                    name='Category'
                                                 />
                                             }
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
                                         <FormControl fullWidth>
-                                            Rating
-                                            <Slider
-                                                min={0} 
-                                                max={5} 
-                                                defaultValue={3}
+                                            <Rating
+                                                name="Rating"
+                                                value={Number(formData.Rating)}
                                                 onChange={handleInputChange}
-                                                valueLabelDisplay='on'
-                                                name='userRating'
-                                                color='success'
+                                                precision={1}
                                             />
                                         </FormControl>
                                     </Grid>
+                                    <Grid item xs={load ? 9 : 12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                label="TIN or Ghana Card Number"
+                                                required
+                                                name="TinGhanaCard"
+                                                value={formData.TinGhanaCard}
+                                                onChange={handleInputChange}
+                                                error={!!errors.TinGhanaCard}
+                                                helperText={errors.TinGhanaCard}
+                                                onBlur={TinRequest}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                    <>{load ? (<> <Grid item xs={load ? 3 : 0}><CircularProgress size={22} color='primary'/></Grid></>) : null }</>
                                     <Grid item xs={12}>
                                         <FormControl fullWidth>
                                             <TextField
                                                 label="Full Name"
                                                 required
-                                                name="userName"
-                                                value={formData.userName}
+                                                name="FullName"
+                                                value={formData.FullName}
                                                 onChange={handleInputChange}
-                                                error={!!errors.userName}
-                                                helperText={errors.userName}
-                                            />
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                label="TIN or Ghana Card Number"
-                                                required
-                                                name="userTIN"
-                                                value={formData.userTIN}
-                                                onChange={handleInputChange}
-                                                error={!!errors.userTIN}
-                                                helperText={errors.userTIN}
+                                                error={!!errors.FullName}
+                                                helperText={errors.FullName}
+                                                disabled={!cashCustomer}
                                             />
                                         </FormControl>
                                     </Grid>
@@ -431,11 +508,11 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                             <TextField
                                                 label="Email"
                                                 required
-                                                name="userEmail"
-                                                value={formData.userEmail}
+                                                name="Email"
+                                                value={formData.Email}
                                                 onChange={handleInputChange}
-                                                error={!!errors.userEmail}
-                                                helperText={errors.userEmail}
+                                                error={!!errors.Email}
+                                                helperText={errors.Email}
                                             />
                                         </FormControl>
                                     </Grid>
@@ -444,12 +521,12 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                             <TextField
                                                 label="Telephone"
                                                 required
-                                                name="userPhone"
+                                                name="Telephone"
                                                 type="number"
-                                                value={formData.userPhone}
+                                                value={formData.Telephone}
                                                 onChange={handleInputChange}
-                                                error={!!errors.userPhone}
-                                                helperText={errors.userPhone}
+                                                error={!!errors.Telephone}
+                                                helperText={errors.Telephone}
                                             />
                                         </FormControl>
                                     </Grid>
@@ -458,8 +535,8 @@ const UploadCustomers = ({ closeAddnewUser, setSubmitted }) => {
                                             <TextField
                                                 label="Address"
                                                 required
-                                                name="userAddress"
-                                                value={formData.userAddress}
+                                                name="Address"
+                                                value={formData.Address}
                                                 onChange={handleInputChange}
                                             />
                                         </FormControl>

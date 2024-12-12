@@ -27,7 +27,7 @@ Router.get("/products", async (req, res, next) => {
     const output = await allCus_Inv_Pro();
     res.status(200).json(output);
   }
-  catch (err) { 
+  catch (err) {
     logErrorMessages("Select All customers error" + err, req.headers.keyid);
     res.status(500).send("Fetching all customers failed");
   }
@@ -140,38 +140,47 @@ Router.get("/:id", async (req, res, next) => {
 });
 
 // Post customer or supplier info addSupplier /add/new
-Router.post("/add/new", async (req, res, next) => {
-  const {
-    userEmail,
-    userActive,
-    userPhone,
-    userAddress,
-    userRegion,
-    userExemption,
-    userRating,
-    userTIN,
-    userName,
-  } = req.body;
+Router.post("/add/new", async (req, res) => {
+  const data = req.body;
 
-  const payload = [
-    userName,
-    userTIN,
-    userAddress,
-    userPhone,
-    userRegion,
-    userActive,
-    userEmail,
-    userExemption,
-    userRating,
-    generateUUID(),
-    new Date(),
-  ];
-  try {
-    const output = await addCustomer(payload);
-    res.status(200).json({ status: 'success', message: 'customer added succesfully' });
-  }
-  catch (err) {
-    logErrorMessages(err, req.headers.keyid);
+  if (data.length > 0) {
+    await Promise.all(data.map(async (user) => {
+      const {
+        Email,
+        Status,
+        Telephone,
+        Address,
+        Destination,
+        Rating,
+        TinGhanaCard,
+        FullName,
+        Category,
+      } = user;
+
+      const payload = [
+        FullName,
+        TinGhanaCard,
+        Address,
+        Telephone,
+        Destination,
+        Status,
+        Email,
+        Category,
+        Rating,
+        generateUUID(),
+        new Date(),
+      ];
+      try {
+        await addCustomer(payload);
+        res.status(200).json({ status: 'success', message: 'customer added succesfully' });
+      }
+      catch (err) {
+        logErrorMessages(err, req.headers.keyid);
+        res.status(500).send("Adding new customer failed! Please try again");
+      }
+    }));
+  } else {
+    logErrorMessages('No customers data submitted by user ', req.headers.keyid);
     res.status(500).send("Adding new customer failed! Please try again");
   }
 });

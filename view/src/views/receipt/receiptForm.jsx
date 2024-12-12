@@ -1,9 +1,10 @@
 // /* eslint-disable */
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import html2pdf from 'html2pdf.js';
 import { Button } from '@mui/material';
 import signature from "../../assets/images/signature.jpg";
 import logo from "../../assets/images/logo.webp";
+import { numberToWords } from '../../utilities/amountToWords';
 
 const InputField = ({ label, value, onChange, name, type = 'text', placeholder, error, options }) => (
   <tr>
@@ -38,6 +39,8 @@ const InputField = ({ label, value, onChange, name, type = 'text', placeholder, 
 );
 
 const ReceiptForm = ({ formData, closePopup }) => {
+  const [errors, setErrors] = useState({});
+  const printRef = useRef();
   const [form, setForm] = useState({
     amountFig: '',
     receiptDate: '',
@@ -52,8 +55,14 @@ const ReceiptForm = ({ formData, closePopup }) => {
     signatureBy: 'EBO QUANSAH',
   });
 
-  const [errors, setErrors] = useState({});
-  const printRef = useRef();
+  useEffect(() => {
+    const amountInWords = numberToWords(Math.floor(form.TotalAMount)).toUpperCase();
+    const pesewaPart = form.TotalAMount % 1 > 0 ? ` AND ${((form.TotalAMount % 1) * 100).toFixed(0)} PESEWAS` : '';
+    setForm(prevForm => ({
+      ...prevForm,
+      amountWord: `${amountInWords}${pesewaPart}`
+    }));
+  }, [form.TotalAMount]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -65,11 +74,11 @@ const ReceiptForm = ({ formData, closePopup }) => {
     const element = printRef.current;
     const docName = `${formData.CustomerName} PAYMENT RECEIPT`;
     var options = {
-      margin:       2,
-      filename:     docName,
-      image:        { type: 'jpeg', quality: 1 },
-      html2canvas:  { scale: 2 },
-      jsPDF:        { unit: 'cm', format: 'a4', orientation: 'portrait' }
+      margin: 2,
+      filename: docName,
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().set(options).from(element).save()
   };
@@ -78,8 +87,8 @@ const ReceiptForm = ({ formData, closePopup }) => {
     let newErrors = {};
     if (!form.reason) newErrors.reason = "Please provide a reason for the receipt";
     if (!form.amountWord) newErrors.amountWord = "Amount in words is required";
-    
-    if(!form.receiptDate){alert('Please choose the date'); return}
+
+    if (!form.receiptDate) { alert('Please choose the date'); return }
     else if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;

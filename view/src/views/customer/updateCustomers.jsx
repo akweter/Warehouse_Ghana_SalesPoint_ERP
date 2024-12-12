@@ -109,7 +109,7 @@ const UpdateCusNSup = ({ customer, closeAddnewUser, setSubmitted }) => {
             const response = await updateCustomer(customer.customerID, formData);
             if (response.status === 'success') {
                 setAlert({ message: `${formData.userName || formData.userEmail} updated successfully`, color: 'success' });
-                setSubmitted(true);
+                setSubmitted();
                 closeAddnewUser();
                 setFormData((e) => ({
                     ...e,

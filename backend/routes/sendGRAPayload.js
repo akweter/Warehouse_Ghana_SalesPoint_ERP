@@ -18,8 +18,13 @@ const { sampleGARResponse } = require("../utils");
 // Verify Taxpayer TIN
 Router.get("/verify/tin/:id", async (req, res) => {
     const { id } = req.params;
+    let response;
     try {
-        const response = await axios.get(`${GRA_ENDPOINT}/identification/tin/${id}`, { headers: { 'security_key': GRA_KEY } });
+        if (id.startsWith("GHA-")) {
+            response = await axios.get(`${GRA_ENDPOINT}/identification/nationalId/${id}`, { headers: { 'security_key': GRA_KEY } });
+        } else {
+            response = await axios.get(`${GRA_ENDPOINT}/identification/tin/${id}`, { headers: { 'security_key': GRA_KEY } });
+        }
         if (response.data) {
             res.status(200).json(response.data);
         }

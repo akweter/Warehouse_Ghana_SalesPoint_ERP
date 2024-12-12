@@ -22,6 +22,7 @@ const WaybillForm = ({ formData, closePopup }) => {
         receipientPhone: formData.customerPhone || '',
         deliveryName: 'AGYENIM BOATENG',
         deliveryPhone: '0594591572',
+        items: formData.products || [],
     });
     const printRef = useRef();
     const userName = `${getUserName()}`
@@ -33,7 +34,7 @@ const WaybillForm = ({ formData, closePopup }) => {
 
     const handlePDF = () => {
         const element = printRef.current;
-        const docName = `${form.receipientName}`
+        const docName = `${form.mod}-${form.receipientName}`
         html2pdf()
         .from(element)
         .save(docName);
@@ -236,8 +237,8 @@ const WaybillForm = ({ formData, closePopup }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {formData.products ? (
-                            formData.products.map((product, index) => (
+                        {form.items ? (
+                            form.items.map((product, index) => (
                                 <tr key={index}>
                                     <td>{product.itemCode}</td>
                                     <td>{product.ProductName}</td>

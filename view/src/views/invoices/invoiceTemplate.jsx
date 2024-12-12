@@ -65,11 +65,11 @@ const InvoiceTemplate = ({ data }) => {
 							<table border="1" cellSpacing="0" cellPadding="4" width="100%" color="lightgray">
 								<thead>
 									<tr>
-										<th>Description</th>
+										<th>DESCRIPTION</th>
 										<th>UOM</th>
-										<th>Qty</th>
-										<th>Price</th>
-										<th>Total</th>
+										<th>QTY</th>
+										<th>PRICE</th>
+										<th>TOTAL</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -253,9 +253,9 @@ const InvoiceTemplate = ({ data }) => {
 					</tr>
 					<tr>
 						<td><strong>BANK</strong></td>
-						<td>Ghana Commercial Bank</td>
+						<td>GHANA COMMERCIAL BANK</td>
 						<td><strong>MERCHANT </strong></td>
-						<td align="center">Ebo Jackson</td>
+						<td align="center">EBO JACKSON</td>
 					</tr>
 					<tr>
 						<td><strong>NUMBER</strong></td>
@@ -265,13 +265,13 @@ const InvoiceTemplate = ({ data }) => {
 					</tr>
 					<tr>
 						<td><strong>NAME</strong></td>
-						<td>JN-Akweter Enterprise</td>
+						<td>JN-AKWETER ENTERPRISE</td>
 						<td>0598598809</td>
 						<td align="center" rowSpan={2}><img src={signature} alt="" /></td>
 					</tr>
 					<tr>
 						<td><strong>BRANCH</strong></td>
-						<td>Accra High Street</td>
+						<td>ACCRA HIGH STREET</td>
 						<td>MTN</td>
 					</tr>
 				</table>

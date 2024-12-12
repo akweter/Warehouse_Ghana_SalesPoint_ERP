@@ -208,24 +208,34 @@ const Searches = async (prop) => {
 }
 
 // Add new custoner
-const addCustomer = async (prop) => {
+const addCustomer = async (prop) => { 
   const sql = `
-    INSERT IGNORE INTO customers(
-      C_name, 
-      C_tin,
-      C_address,  
-      C_phone,
-      C_region,
-      C_status,
-      C_email,
-      C_exempted, 
-      C_rating, 
-      C_id, 
-      C_Added_date
-    )
-    VALUES (
-      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-    )`;
+    INSERT INTO 
+      customers(
+        C_name, 
+        C_tin,
+        C_address,  
+        C_phone,
+        C_region,
+        C_status,
+        C_email,
+        C_exempted, 
+        C_rating, 
+        C_id, 
+        C_Added_date
+      )
+      VALUES (
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+      )
+    ON DUPLICATE KEY UPDATE
+      C_name = VALUES(C_name),
+      C_address = VALUES(C_address),
+      C_region = VALUES(C_region),
+      C_email = VALUES(C_email),
+      C_exempted = VALUES(C_exempted),
+      C_status = VALUES(C_status),
+      C_rating = VALUES(C_rating),
+      C_Added_date = VALUES(C_Added_date)`;
   return await executeQuery(sql, prop);
 }
 
