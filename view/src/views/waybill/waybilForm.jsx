@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState, useRef } from 'react';
 import { generateUUID } from "../../utilities/generateID";
 import logo from "../../assets/images/logo.webp";
@@ -13,7 +14,16 @@ const headerStyle = {
     color: 'white',
 }
 
+const orderTable = {
+    border: 'none',
+    width: '100%',
+    maxWidth: '150px',
+    boxSizing: 'border-box',
+}
+
 const WaybillForm = ({ formData, closePopup }) => {
+    const printRef = useRef();
+    const userName = `${getUserName()}`
     const [form, setForm] = useState({
         mod: 'DELIVERY',
         despatchDate: '',
@@ -22,16 +32,35 @@ const WaybillForm = ({ formData, closePopup }) => {
         receipientPhone: formData.customerPhone || '',
         deliveryName: 'AGYENIM BOATENG',
         deliveryPhone: '0594591572',
-        items: formData.products || [],
+        products: formData.products.map(product => ({
+            SKU: product.itemCode,
+            Description: product.ProductName,
+            Ordered: product.Quantity,
+            Delivered: product.Quantity,
+            Outstanding: 0,
+        })),
     });
-    const printRef = useRef();
-    const userName = `${getUserName()}`
 
     const handleChange = (event) => {
         const { name, value } = event.target;
         setForm({ ...form, [name]: value });
     }
 
+    const editSingleProduct = (e, index, field) => {
+        const { value } = e.target;
+        const updatedProducts = [...form.products];
+        
+        updatedProducts[index] = {
+            ...updatedProducts[index],
+            [field]: value,
+        };        
+        if (field === 'Delivered') {
+            updatedProducts[index].Outstanding = updatedProducts[index].Ordered - value;
+        }
+        setForm({ ...form, products: updatedProducts });
+    };
+
+    
     const handlePDF = () => {
         const element = printRef.current;
         const docName = `${form.mod}-${form.receipientName}`
@@ -41,23 +70,24 @@ const WaybillForm = ({ formData, closePopup }) => {
     };
 
     const handleSubmit = async () => {
-        if (!form.mod || !form.despatchDate) {
-            alert("Despatch Date cannot be empty.");
-            return;
-        }
-        try {
+        // if (!form.mod || !form.despatchDate) {
+        //     alert("Despatch Date cannot be empty.");
+        //     return;
+        // }
+        // try {
             const payload = {
                 InvoiceNumber: formData.InvoiceNumber,
                 IssuerName: userName,
                 CustomerID: formData.CustomerID,
                 ...form
             };
-            await postWaybillData(payload);
-            handlePDF();
-            closePopup();
-        } catch (error) {
-            return;
-        }
+        //     await postWaybillData(payload);
+        //     handlePDF();
+        //     closePopup();
+        // } catch (error) {
+        //     return;
+        // }
+        console.log('form',payload);
     }
 
     return (
@@ -186,7 +216,7 @@ const WaybillForm = ({ formData, closePopup }) => {
                                             <td width='30%'><strong>Recipient</strong></td>
                                             <td width='70%'>
                                                 <input
-                                                    style={{ border: 'none', outline: 'none', width: '100%' }}
+                                                    style={{ border: '1px dashed #d1d1d1', width: '100%' }}
                                                     value={form.receipientName}
                                                     onChange={handleChange}
                                                     name='receipientName'
@@ -197,7 +227,7 @@ const WaybillForm = ({ formData, closePopup }) => {
                                             <td width='30%'><strong>Telephone</strong></td>
                                             <td width='70%'>
                                                 <input
-                                                    style={{ border: 'none', outline: 'none', width: '100%' }}
+                                                    style={{ border: '1px dashed #d1d1d1', width: '100%' }}
                                                     value={form.receipientPhone}
                                                     onChange={handleChange}
                                                     name='receipientPhone'
@@ -209,7 +239,7 @@ const WaybillForm = ({ formData, closePopup }) => {
                                             <td width='30%'><strong>Address</strong></td>
                                             <td width='70%'>
                                                 <input
-                                                    style={{ border: 'none', outline: 'none', width: '100%' }}
+                                                    style={{ border: '1px dashed #d1d1d1', width: '100%' }}
                                                     value={form.receipientAddress}
                                                     onChange={handleChange}
                                                     name='receipientAddress'
@@ -237,14 +267,35 @@ const WaybillForm = ({ formData, closePopup }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {form.items ? (
-                            form.items.map((product, index) => (
+                        {form.products ? (
+                            form.products.map((product, index) => (
                                 <tr key={index}>
-                                    <td>{product.itemCode}</td>
-                                    <td>{product.ProductName}</td>
-                                    <td>{product.Quantity}</td>
-                                    <td>{product.Quantity}</td>
-                                    <td>{product.Quantity - product.Quantity}</td>
+                                    <td>{product.SKU}</td>
+                                    <td>{product.Description}</td>
+                                    <td>
+                                        <input
+                                            style={orderTable}
+                                            value={product.Ordered}
+                                            disabled
+                                        />
+                                    </td>
+                                    <td>
+                                        <input
+                                            style={orderTable}
+                                            value={product.Delivered}
+                                            onChange={(e) => editSingleProduct(e, index, 'Delivered')}
+                                            name='Delivered'
+                                            type='number'
+                                        />                                        
+                                    </td>
+                                    <td>
+                                        <input
+                                            style={orderTable}
+                                            value={product.Outstanding}
+                                            onChange={(e) => editSingleProduct(e, index, 'Outstanding')}
+                                            type="number"
+                                        />
+                                    </td>
                                 </tr>
                             ))
                         ) : (

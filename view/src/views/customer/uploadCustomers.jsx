@@ -261,7 +261,7 @@ const UploadCustomers = ({ setSubmitted }) => {
                 setCustomers([]);
 
                 setTimeout(() => {
-                    {() => setSubmitted();}
+                    ()=> setSubmitted();
                     setOpen(false);
                 }, 1000);
             } 

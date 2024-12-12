@@ -139,7 +139,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 
 	// edit selected row or for data
 	const handleEdit = (index) => {
-		const editedProduct = products.find((product) => product.key === index);
+		const editedProduct = products.find((product) => product.productName === index);
 		setSelectedProduct(editedProduct);
 		setFormData({
 			productName: editedProduct.productName,
@@ -180,9 +180,9 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 			setSelectedProduct(null);
 		}
 		else {
-			setProducts([...products, { key: Date.now(), ...formData }]);
+			setProducts([...products, { ...formData }]);
 		}
-
+ 
 		// Clear form data
 		setFormData({
 			productName: '',
@@ -200,7 +200,7 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 	// When Delete button clicked
 	const handleDelete = (index) => {
 		// Remove the item from the table based on the key
-		const updatedProducts = products.filter((product) => product.key !== index);
+		const updatedProducts = products.filter((product) => product.productName !== index);
 		setProducts(updatedProducts);
 	};
 
@@ -262,10 +262,14 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 			const response = await UpdateOrPost();
 			const result = response.status;
 			if (result === 'success') {
-				setAlert((e) => ({ ...e, message: "", color: "" }));
-				CloseDialog(false);
+				setAlert((e) => ({...e, message: `You've done it!`, color: 'success' }));
 				setProducts([]);
 				refreshPage();
+
+				setTimeout(() => {
+                    CloseDialog(false);
+                    setOpen(false);
+                },1000);
 			} else {
 				return;
 			}
@@ -373,13 +377,13 @@ const UploadCSVProducts = ({ productLine, openDialog, CloseDialog, action, refre
 													<td>
 														<Edit
 															fontSize='small' 
-															onClick={() => handleEdit(e.key)} 
+															onClick={() => handleEdit(e.productName)} 
 															color='primary' 
 															sx={{ cursor: 'pointer' }} 
 														/>
 														<Delete 
 															fontSize='small' 
-															onClick={() => handleDelete(e.key)} 
+															onClick={() => handleDelete(e.productName)} 
 															color='error' 
 															sx={{ cursor: 'pointer' }} 
 														/>

@@ -100,7 +100,11 @@ const CusNsupRow = ({ cusNsup, setSubmitted }) => {
 			</TableRow>
 
 			<Dialog open={updateDialog}>
-                    <UpdateCusNSup customer={cusNsup} closeAddnewUser={()=>setUpdateDialog(false)} setSubmitted={setSubmitted} />
+                    <UpdateCusNSup 
+						customer={cusNsup} 
+						closeAddnewUser={()=>setUpdateDialog(false)} 
+						setSubmitted={setSubmitted} 
+					/>
             </Dialog>
 		</> 
 	);
