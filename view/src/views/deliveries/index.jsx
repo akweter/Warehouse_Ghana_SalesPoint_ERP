@@ -158,16 +158,8 @@ export default function Deliveries() {
             },
             {
                 field: 'RecipientName',
-                headerName: 'Recipien tName',
+                headerName: 'Recipient',
                 description: 'Recipient Name',
-                flex: 1,
-                width: 50,
-                headerClassName: 'dataGridheader',
-            },
-            {
-                field: 'DeliveryPhone',
-                headerName: 'Delivery Phone',
-                description: 'Delivery Phone',
                 flex: 1,
                 width: 50,
                 headerClassName: 'dataGridheader',
@@ -182,7 +174,7 @@ export default function Deliveries() {
             },
             {
                 field: 'actions',
-                headerName: '',
+                headerName: 'View',
                 flex: 1,
                 sortable: false,
                 headerClassName: 'dataGridheader',
@@ -194,7 +186,7 @@ export default function Deliveries() {
             },
             {
                 field: 'receipt',
-                headerName: '',
+                headerName: 'Action',
                 flex: 1,
                 sortable: false,
                 headerClassName: 'dataGridheader',
@@ -263,11 +255,11 @@ export default function Deliveries() {
                 maxWidth="lg"
             >
                 <DialogTitle sx={{ backgroundColor: 'darkblue', display: 'flex', justifyContent: 'space-between' }}>
+                    <div/>
+                    <Typography sx={{ fontSize: '28px', color: 'white' }}>Delivery Details</Typography>
                     <IconButton onClick={handleCloseDialog} color='secondary'>
                         <Typography fontSize='1em' color='red'>Close</Typography>
                     </IconButton>
-                    <Typography sx={{ fontSize: '28px', color: 'white' }}>Delivery Details</Typography>
-                    <div/>
                 </DialogTitle>
                 <DialogContent sx={{ padding: '20px' }}>
                     <DeliveryDetails
@@ -279,7 +271,7 @@ export default function Deliveries() {
 
             <Dialog open={receiptFormDialog} fullScreen>
                 <DialogTitle sx={{ backgroundColor: 'darkblue' }}>
-                    <IconButton onClick={closeReceiptForm} color='secondary' sx={{ justifyContent: 'flex-end' }}>
+                    <IconButton onClick={closeReceiptForm} color='secondary' sx={{ textAlign: 'right' }}>
                         <Typography fontSize='1em' color='red'>Cancel</Typography>
                     </IconButton>
                 </DialogTitle>

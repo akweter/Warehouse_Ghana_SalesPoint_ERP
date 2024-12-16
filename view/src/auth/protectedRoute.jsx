@@ -1,13 +1,10 @@
-import { useEffect } from "react";
+import LogOut from "./logout";
 
 function ProtectedRoute({ children }) {
-  const logSuccess = localStorage.getItem('usrlogstat');
-  useEffect(() => {
+    const logSuccess = localStorage.getItem('usrlogstat');
     if (!logSuccess || logSuccess !== '200') {
-      window.location.href = "/auth/login"
+        LogOut();
     }
-    // return children;
-  }, [logSuccess]);
-  return logSuccess === '200' ? children : null;
+    return logSuccess === '200' ? children : null;
 }
 export default ProtectedRoute;

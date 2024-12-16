@@ -38,24 +38,20 @@ const Login = () => {
                   justifyContent="center"
                 >
                   <Grid item>
-                    <Link to="#">
-                      <Logo />
-                    </Link>
+                    <Link to="#"><Logo /></Link>
                   </Grid>
                   <Grid item xs={12}>
                     <Grid 
-                      container 
-                      direction={matchDownSM ? 'column-reverse' : 'row'} 
-                      alignItems="center" 
-                      justifyContent="center"
+                        container 
+                        direction={matchDownSM ? 'column-reverse' : 'row'} 
+                        alignItems="center" 
+                        justifyContent="center"
                     >
                       <Grid item>
                         <Stack alignItems="center" justifyContent="center">
-                          <Typography
-                            color={theme.palette.secondary.main} 
-                            gutterBottom variant={matchDownSM ? 'h3' : 'h2'}>
-                              Log In
-                          </Typography>
+                            <Typography
+                                color={theme.palette.secondary.main} 
+                                gutterBottom variant={matchDownSM ? 'h3' : 'h2'}>Log In</Typography>
                         </Stack>
                       </Grid>
                     </Grid>

@@ -1,4 +1,5 @@
 import { Button } from "@mui/material";
+import LogOut from "./logout";
 
 const styles = {
     body: {
@@ -33,7 +34,7 @@ const styles = {
                 <h2 style={{textAlign: 'center', color: 'darkblue'}}>User Activity Timeout</h2>
                 <div style={styles.linkCard}>
                     <h3 className='linkCardBody'>Oops! Your authorization is invoked</h3>
-                    <p>Please <Button variant="outlined" size="small" color="error" onClick={()=>window.location.href='/auth/logout'}>Click here</Button> to log in again</p>
+                    <p>Please <Button variant="outlined" size="small" color="error" onClick={LogOut}>Click here</Button> to log in again</p>
                 </div>
             </div>
         </div>

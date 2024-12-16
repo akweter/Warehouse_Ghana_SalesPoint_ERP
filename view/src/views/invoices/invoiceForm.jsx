@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import logo from '../../assets/images/logo.webp';
+import Screens from '../../ui-component/cardDivision';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -8,6 +10,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import CancelSharpIcon from '@mui/icons-material/CancelSharp';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
@@ -41,6 +44,11 @@ import {
     Checkbox,
     Container,
     TextareaAutosize,
+    ThemeProvider,
+    AppBar,
+    Toolbar,
+    Chip,
+    Box,
 } from '@mui/material';
 import dayjs from 'dayjs';
 
@@ -51,12 +59,22 @@ import '../../assets/css/form.css';
 import { headerPayload, itemlistPayload } from '../../views/payload/payloadStructure';
 import { AlertError } from '../../utilities/errorAlert';
 import { ShowBackDrop } from '../../utilities/backdrop';
-import { fetchAutocompleteId, postGRAInvoiceCallback, postNewGRAInvoice } from '../../apiActions/allApiCalls/invoice';
+import { checkGRAServerStatus, fetchAutocompleteId, postGRAInvoiceCallback, postNewGRAInvoice } from '../../apiActions/allApiCalls/invoice';
 import { fetchProductNameSearch } from '../../apiActions/allApiCalls/product';
 import { fetchCustomerNameSearch } from '../../apiActions/allApiCalls/customer';
 import { computeStandardTaxes } from '../../utilities/computeAllTaxes';
- 
-const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen, callBack, setCallBack }) => {
+
+const InvoiceForm = ({ 
+    quoteProducts, 
+    setSubmitted, 
+    BackdropOpen, 
+    handleCloseDialog, 
+    appBarMsg,
+    type,
+}) => {
+    const [drop, setDrop] = useState(false);
+    const [status, setStatus] = useState(false);
+    const [callback, setcallback] = useState(false);
     const [open, setOpen] = useState(false);
     const [compute, setCompute] = useState(false);
     const [cashCustomer, setCashCustomer] = useState(false);
@@ -67,6 +85,17 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
     const [header, setHeader] = useState(headerPayload);
     const [itemlists, setItemLists] = useState(itemlistPayload);
     const [alert, setAlert] = useState({ message: '', color: 'success' });
+
+    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 600);
+
+    // Set the range of display
+    useEffect(() => {
+        testServer();
+
+        const handleResize = () =>  setIsSmallScreen(window.innerWidth < 600);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // update the header and item state for qutation edit
     useEffect(() => {
@@ -159,15 +188,15 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
 
     // Make call back when the call back state is triggered from the index (main component)
     useEffect(() => {
-        if (callBack) {
+        if (callback) {
             setHeader((state) => {
                 const newState = { ...state, callback: "yes" };
                 return newState;
             });
             submitFormToGRA();
-            setCallBack(false);
+            setcallback(false);
         }
-    }, [callBack]);
+    }, [callback]);
     
     useEffect(() => {
         setUserName();
@@ -222,6 +251,17 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
         }, 1000);
     }, [compute, header]);
 
+    // Test GRA Server Up
+    const testServer = async () => {
+        try {
+            await checkGRAServerStatus();
+            setStatus(true);
+        }
+        catch (error) {
+            setStatus(false);
+        }
+    };
+
     // search product and customer information
     const fetchProductsCustomers = async() => {
         try {
@@ -256,17 +296,16 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
         const currentDate = new Date();
         const year = currentDate.getFullYear() % 100;
         const month = currentDate.getMonth() + 1;
-        const day = currentDate.getDate();
         if (!quoteProducts || quoteProducts.InvoiceNumber === "") {
             try {
                 const response = await fetchAutocompleteId();
                 const number = response[0].numList + 1;
-                const output = `WG${year}M${month}${day}${number}CSD`;
+                const output = `WG${year}M${month}${number}CSD`;
                 setHeader((state) => ({ ...state, invoiceNumber: output }));
             }
             catch (error) {
                 let num = Math.floor(Math.random() * 100) + 1;
-                const output = `WG${year}${month}${(day)}-${num}CSD`;
+                const output = `WG${year}${month}-${num}CSD`;
                 setHeader((state) => ({ ...state, invoiceNumber: output }));
             }
         }
@@ -463,7 +502,7 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
         }
         setDrop(true);
         try {
-            const data = callBack ? await postGRAInvoiceCallback(header) : await postNewGRAInvoice(header);
+            const data = callback ? await postGRAInvoiceCallback(header) : await postNewGRAInvoice(header);
             if (data.status === "error") {
                 const res = JSON.stringify(data.message);
                 setAlert((e) => ({ ...e, message: res, color: 'warning' }));
@@ -486,485 +525,535 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
     // handle alerts
     const handleClose = (event, reason) => { if (reason === 'clickaway') { return; } setOpen(false); };
 
-    return (<>
+    return (
+        <ThemeProvider theme={Screens.lightTheme}>
             { open && <AlertError open={open} alert={alert} handleClose={handleClose} /> }
             { drop && <ShowBackDrop open={drop} /> }
 
-            <Grid container spacing={2} padding={2}>
-                <Grid item order={{ xs: 2, md: 1 }} xs={12} md={6}>
-                    <Grid container spacing={2} py={3}>
-                        <Grid item xs={12} md={cashCustomer === true ? 3 : 6}>
-                            <FormControl fullWidth>
-                                <ToggleButtonGroup
-                                    fullWidth
-                                    size='small'
-                                    color={header.infoMsg === true ? "primary" : "standard"}
-                                    value={header.businessPartnerName || ""}
-                                    disabled={header.infoMsg ? true : false}
-                                    name="businessPartnerName"
-                                    onChange={CheckCashCustomer}
-                                >
-                                    <ToggleButton color="primary">Customer</ToggleButton>
-                                </ToggleButtonGroup>
-                            </FormControl>
-                        </Grid>
-                        {cashCustomer === true ?
-                            <Grid item xs={12} md={8}>
-                                <FormControl fullWidth>
-                                    <TextField
-                                        label="Cash Customer Name"
-                                        value={header.businessPartnerName}
-                                        name='businessPartnerName'
-                                        size='small'
-                                        onChange={handleMainChange}
+                <AppBar position="static" sx={{ backgroundColor: '#151B4D' }}>
+                    <Container maxWidth="xl">
+                        <Toolbar disableGutters sx={{ flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                            <img src={logo} width={60} height={40} alt='Logo' />
+                            <Typography
+                                variant = { isSmallScreen ? "h6" : "h2"}
+                                sx={{
+                                    flex: 1,
+                                    textAlign: { xs: 'center', sm: 'left' },
+                                    color: 'white',
+                                    fontSize: { xs: '1rem', sm: '1.5rem' },
+                                }}
+                            >
+                                {appBarMsg}
+                            </Typography>
+                            {type && type !== 'invoice' ? 
+                                <Box paddingRight={3} sx={{ width: { xs: '100%', sm: 'auto' }, textAlign: { xs: 'center', sm: 'right' } }}>
+                                    <Button variant="contained" color='warning' onClick={() => setcallback(true)}>
+                                        <Typography>Request callback</Typography>
+                                    </Button>
+                                </Box>
+                            : null}
+                            <Stack 
+                                direction="row" 
+                                spacing={1} sx={{ 
+                                    width: { xs: '100%', sm: 'auto' }, 
+                                    justifyContent: { xs: 'center', sm: 'flex-end' }, 
+                                    mt: { xs: 2, sm: 0 } 
+                                }}
+                            >
+                                {type && type !== 'invoice' ?
+                                    <Chip
+                                        variant="filled" 
+                                        color={status === true ? 'primary' : 'error'}
+                                        label={status === true ? 'GRA UP' : 'GRA DOWN'}
                                     />
-                                </FormControl>
-                            </Grid>
-                            :
-                            <Grid item xs={12} md={6}>
-                                <FormControl fullWidth onClick={fetchProductsCustomers}>
-                                    <Autocomplete
-                                        id="customer-search"
-                                        disabled={header.infoMsg ? true : false}
-                                        options={allSearch.customer}
-                                        loading={loading}
-                                        getOptionLabel={(option) => header.businessPartnerName !== 'Cash' ? option.customerName : ''}
-                                        onChange={(event, selecteduser) => {
-                                            if (selecteduser) {
-                                                const customerName = selecteduser.customerName;
-                                                setHeader((oldValue) => ({
-                                                    ...oldValue,
-                                                    businessPartnerName: customerName,
-                                                    businessPartnerTin: selecteduser.customerTIN,
-                                                    invCusId: selecteduser.customerID,
-                                                    userPhone: selecteduser.customerPhone,
-                                                }));
-                                            }
-                                        }}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                label="Customer Name"
-                                                variant="outlined"
-                                                color="primary"
-                                                size="small"
-                                                fullWidth
-                                                InputProps={{
-                                                    ...params.InputProps,
-                                                    endAdornment: (
-                                                        <>
-                                                            {loading ? (<CircularProgress color="primary" size={20} />) : null}
-                                                            {params.InputProps.endAdornment}
-                                                        </>
-                                                    ),
-                                                }}
-                                            />
-                                        )}
-                                    />
-                                </FormControl>
-                            </Grid>
-                        }
-                        <Grid item xs={12} md={6}>
-                            {cashCustomer === true ?
-                                <FormControl fullWidth>
-                                    <TextField
-                                        label="Customer Telephone"
-                                        value={header.userPhone}
-                                        name='userPhone'
-                                        size='small'
-                                        onChange={handleMainChange}
-                                    />
-                                </FormControl>
-                                :
-                                <FormControl fullWidth>
-                                    <InputLabel id="saleType">Sales Type</InputLabel>
-                                    <Select
-                                        labelId="saleType"
-                                        id="saleType"
-                                        label="saleType"
-                                        name="saleType"
-                                        value={header.saleType}
-                                        onChange={handleMainChange}
-                                        // disabled={header.infoMsg ? true : false}
-                                        size='small'
-                                    >
-                                        <MenuItem value='NORMAL'>Normal</MenuItem>
-                                        <MenuItem value='EXPORT'>Export</MenuItem>
-                                        <MenuItem value='RENT'>Real Estate</MenuItem>
-                                    </Select>
-                                </FormControl>
-                            }
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <FormControl fullWidth>
-                                <InputLabel id="calculationType">Invoice Type</InputLabel>
-                                <Select
-                                    labelId="calculationType"
-                                    // disabled={header.infoMsg ? true : false}
-                                    id="calculationType"
-                                    label="calculationType"
-                                    name="calculationType"
-                                    value={header.calculationType}
-                                    onChange={handleMainChange}
-                                    size='small'
-                                >
-                                    <MenuItem value='INCLUSIVE'>Inclusive</MenuItem>
-                                    <MenuItem value='EXCLUSIVE'>Exclusive</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <FormControl fullWidth>
-                                <InputLabel id="currency">Currency</InputLabel>
-                                <Select
-                                    labelId="currency"
-                                    id="currency"
-                                    label="currency"
-                                    name="currency"
-                                    size='small'
-                                    onChange={handleMainChange}
-                                    // disabled={header.infoMsg ? true : false}
-                                    value={header.currency}
-                                >
-                                    <MenuItem value='AED'>UAE Dirham (د.إ)</MenuItem>
-                                    <MenuItem value='CAD'>Canadian Dollar (CA$)</MenuItem>
-                                    <MenuItem value='CNY'>Chinese Yuan (CN¥)</MenuItem>
-                                    <MenuItem value='EUR'>Euro (€)</MenuItem>
-                                    <MenuItem value='GBP'>British Pound (£)</MenuItem>
-                                    <MenuItem value='GHS'>Ghanaian Cedi (₵)</MenuItem>
-                                    <MenuItem value='HKD'>Hong Kong Dollar (HK$)</MenuItem>
-                                    <MenuItem value='INR'>Indian Rupee (₹)</MenuItem>
-                                    <MenuItem value='JPY'>Japanese Yen (¥)</MenuItem>
-                                    <MenuItem value='LRD'>Liberian Dollar (LRD)</MenuItem>
-                                    <MenuItem value='NGN'>Nigerian Naira (₦)</MenuItem>
-                                    <MenuItem value='USD'>US Dollar ($)</MenuItem>
-                                    <MenuItem value='ZAR'>South African Rand (ZAR)</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <FormControl fullWidth>
-                                <InputLabel id="invoiceType">Transaction Type</InputLabel>
-                                <Select
-                                    labelId="invoiceType"
-                                    id="invoiceType"
-                                    label="invoiceType"
-                                    name="invoiceType"
-                                    size='small'
-                                    disabled={header.infoMsg ? true : false}
-                                    onChange={handleMainChange}
-                                    value={header.invoiceType}
-                                >
-                                    <MenuItem value='Invoice'>Official Invoice</MenuItem>
-                                    <MenuItem value='Proforma Invoice'>Proforma Invoice</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <FormControl fullWidth>
-                                <TextField
-                                    label="Exchange Rate"
-                                    type="number"
-                                    value={header.exchangeRate}
-                                    name='exchangeRate'
-                                    size='small'
-                                    onChange={handleMainChange}
-                                    // disabled={header.infoMsg ? true : false}
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <FormControl fullWidth>
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DatePicker
-                                        name="transactionDate"
-                                        value={header.transactionDate || null}
-                                        format='YYYY-MM-DD'
-                                        defaultValue={new Date()}
-                                        label="Invoice Date"
-                                        maxDate={/*|| header.invoiceType === "Proforma Invoice"*/ dayjs()}
-                                        onChange={(e) => {
-                                            const selectedDate = e.$d;
-                                            const formattedDate = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
-                                            setHeader({ ...header, transactionDate: formattedDate });
-                                        }}
-                                    />
-                                </LocalizationProvider>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <FormControl fullWidth>
-                                <TextField
-                                    label="Delivery/Shipping"
-                                    type="text"
-                                    value={header.delivery}
-                                    name='delivery'
-                                    size='small'
-                                    onChange={handleMainChange}
-                                    // disabled={header.infoMsg ? true : false}
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <FormControlLabel
-                                label="Selective Discount"
-                                control={
-                                    <Checkbox
-                                        checked={header.discountType === 'SELECTIVE'}
-                                        onChange={handleDiscountChange}
-                                        color="secondary"
-                                        inputProps={{ 'aria-label': 'Checkbox for discount type' }}
-                                    />
-                                }
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={12}>
-                            <FormControl fullWidth onClick={fetchProductsCustomers}>
-                                <Autocomplete
-                                    id="product-search"
-                                    options={allSearch.product}
-                                    loading={loading}
-                                    getOptionLabel={(option) => option.productName ? option.productName : ''}
-                                    disabled={header.calculationType ? false : true}
-                                    onChange={(event, selectedProduct) => {
-                                        if (selectedProduct) {
-                                            const newPrice = selectedProduct.unitPrice;
-                                            setItemLists((oldValue) => ({
-                                                ...oldValue,
-                                                unitPrice: newPrice,
-                                                description: selectedProduct.productName,
-                                                quantity: 1,
-                                                itemCode: selectedProduct.productID,
-                                                itemCategory: selectedProduct.taxType,
-                                                alt: selectedProduct.productIncrement,
-                                            }));
-                                        }
-                                    }}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            label="Search product or service"
-                                            variant="outlined"
-                                            size="small"
-                                            color="primary"
+                                : null}
+                                <Button onClick={handleCloseDialog} fullWidth={false} color='error' variant="contained" size='small' startIcon={<CancelSharpIcon />}>
+                                    Cancel
+                                </Button>
+                            </Stack>
+                        </Toolbar>
+                    </Container>
+                </AppBar>
+
+                <Container style={{ marginTop: isSmallScreen ? 50 : 0 }}>
+                    <Grid container spacing={2} padding={2}>
+                        <Grid item order={{ xs: 2, md: 1 }} xs={12} md={6}>
+                            <Grid container spacing={2} py={3}>
+                                <Grid item xs={12} md={cashCustomer === true ? 3 : 6}>
+                                    <FormControl fullWidth>
+                                        <ToggleButtonGroup
                                             fullWidth
-                                            key={params.itemCode}
-                                            InputProps={{
-                                                ...params.InputProps,
-                                                endAdornment: (
-                                                    <>
-                                                        {loading ? (<CircularProgress color="primary" size={20} />) : null}
-                                                        {params.InputProps.endAdornment}
-                                                    </>
-                                                ),
-                                            }}
-                                        />
-                                    )}
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} md={4}>
-                            <FormControl fullWidth>
-                                <TextField
-                                    label="Price / Rate"
-                                    type="number"
-                                    value={itemlists.unitPrice}
-                                    name='unitPrice'
-                                    size='small'
-                                    onChange={handleMainChange}
-                                    disabled={itemlists.description ? false : true}
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} md={4}>
-                            <FormControl fullWidth>
-                                <TextField
-                                    label="Quantity / Period"
-                                    type="number"
-                                    value={itemlists.quantity}
-                                    name='quantity'
-                                    size='small'
-                                    onChange={handleMainChange}
-                                    disabled={itemlists.description ? false : true}
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} md={4}>
-                            <FormControl fullWidth>
-                                <TextField
-                                    label="Discount"
-                                    type="number"
-                                    value={itemlists.discountAmount}
-                                    name='discountAmount'
-                                    size='small'
-                                    onChange={handleMainChange}
-                                    disabled={itemlists.description ? false : true}
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} md={12}>
-                            <Accordion>
-                                <AccordionSummary
-                                    expandIcon={<ExpandMoreIcon />}
-                                >
-                                    <Typography>Remarks</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <TextareaAutosize></TextareaAutosize>
-                                    <textarea
-                                        rows='100%'
-                                        cols={65}
-                                        value={header.remarks}
-                                        onChange={handleMainChange}
-                                        name='remarks'
-                                    />
-                                </AccordionDetails>
-                            </Accordion>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <FormControl fullWidth>
-                                <Stack direction="row" spacing={2}>
-                                    <Button onClick={addItemsToBasket} fullWidth color='primary' variant="contained" size='large' startIcon={<AddShoppingCartOutlinedIcon />}>
-                                        Add Item
-                                    </Button>
-                                </Stack>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <FormControl fullWidth>
-                                <Stack direction="row" spacing={2}>
-                                    <Button onClick={submitFormToGRA} fullWidth color='success' variant="contained" size='large' startIcon={<SendSharpIcon />}>
-                                        Submit
-                                    </Button>
-                                </Stack>
-                            </FormControl>
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item order={{ xs: 1, md: 2 }} xs={12} md={6}>
-                    <Grid container>
-                        <Grid item xs={12}>
-                            <Grid container>
-                                <Grid item xs={12} md={3}>
-                                    <strong>Invoice #: </strong>{header.invoiceNumber}
+                                            size='small'
+                                            color={header.infoMsg === true ? "primary" : "standard"}
+                                            value={header.businessPartnerName || ""}
+                                            disabled={header.infoMsg ? true : false}
+                                            name="businessPartnerName"
+                                            onChange={CheckCashCustomer}
+                                        >
+                                            <ToggleButton color="primary">Customer</ToggleButton>
+                                        </ToggleButtonGroup>
+                                    </FormControl>
                                 </Grid>
+                                {cashCustomer === true ?
+                                    <Grid item xs={12} md={8}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                label="Cash Customer Name"
+                                                value={header.businessPartnerName}
+                                                name='businessPartnerName'
+                                                size='small'
+                                                onChange={handleMainChange}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                    :
+                                    <Grid item xs={12} md={6}>
+                                        <FormControl fullWidth onClick={fetchProductsCustomers}>
+                                            <Autocomplete
+                                                id="customer-search"
+                                                disabled={header.infoMsg ? true : false}
+                                                options={allSearch.customer}
+                                                loading={loading}
+                                                getOptionLabel={(option) => header.businessPartnerName !== 'Cash' ? option.customerName : ''}
+                                                onChange={(event, selecteduser) => {
+                                                    if (selecteduser) {
+                                                        const customerName = selecteduser.customerName;
+                                                        setHeader((oldValue) => ({
+                                                            ...oldValue,
+                                                            businessPartnerName: customerName,
+                                                            businessPartnerTin: selecteduser.customerTIN,
+                                                            invCusId: selecteduser.customerID,
+                                                            userPhone: selecteduser.customerPhone,
+                                                        }));
+                                                    }
+                                                }}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label="Customer Name"
+                                                        variant="outlined"
+                                                        color="primary"
+                                                        size="small"
+                                                        fullWidth
+                                                        InputProps={{
+                                                            ...params.InputProps,
+                                                            endAdornment: (
+                                                                <>
+                                                                    {loading ? (<CircularProgress color="primary" size={20} />) : null}
+                                                                    {params.InputProps.endAdornment}
+                                                                </>
+                                                            ),
+                                                        }}
+                                                    />
+                                                )}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                }
                                 <Grid item xs={12} md={6}>
-                                    <strong>Customer: </strong>{header.businessPartnerName}
-                                </Grid>
-                                <Grid item xs={12} md={3}>
-                                    {
-                                        header.businessPartnerTin === 'C0000000000' ? (<>
-                                        <strong>Phone: </strong>{ header.userPhone}</>) : (<>
-                                        <strong>Tin: </strong> {header.businessPartnerTin}</>)
+                                    {cashCustomer === true ?
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                label="Customer Telephone"
+                                                value={header.userPhone}
+                                                name='userPhone'
+                                                size='small'
+                                                onChange={handleMainChange}
+                                            />
+                                        </FormControl>
+                                        :
+                                        <FormControl fullWidth>
+                                            <InputLabel id="saleType">Sales Type</InputLabel>
+                                            <Select
+                                                labelId="saleType"
+                                                id="saleType"
+                                                label="saleType"
+                                                name="saleType"
+                                                value={header.saleType}
+                                                onChange={handleMainChange}
+                                                // disabled={header.infoMsg ? true : false}
+                                                size='small'
+                                            >
+                                                <MenuItem value='NORMAL'>Normal</MenuItem>
+                                                <MenuItem value='EXPORT'>Export</MenuItem>
+                                                <MenuItem value='RENT'>Real Estate</MenuItem>
+                                            </Select>
+                                        </FormControl>
                                     }
                                 </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <FormControl fullWidth>
+                                        <InputLabel id="calculationType">Invoice Type</InputLabel>
+                                        <Select
+                                            labelId="calculationType"
+                                            // disabled={header.infoMsg ? true : false}
+                                            id="calculationType"
+                                            label="calculationType"
+                                            name="calculationType"
+                                            value={header.calculationType}
+                                            onChange={handleMainChange}
+                                            size='small'
+                                        >
+                                            <MenuItem value='INCLUSIVE'>Inclusive</MenuItem>
+                                            <MenuItem value='EXCLUSIVE'>Exclusive</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <FormControl fullWidth>
+                                        <InputLabel id="currency">Currency</InputLabel>
+                                        <Select
+                                            labelId="currency"
+                                            id="currency"
+                                            label="currency"
+                                            name="currency"
+                                            size='small'
+                                            onChange={handleMainChange}
+                                            // disabled={header.infoMsg ? true : false}
+                                            value={header.currency}
+                                        >
+                                            <MenuItem value='AED'>UAE Dirham (د.إ)</MenuItem>
+                                            <MenuItem value='CAD'>Canadian Dollar (CA$)</MenuItem>
+                                            <MenuItem value='CNY'>Chinese Yuan (CN¥)</MenuItem>
+                                            <MenuItem value='EUR'>Euro (€)</MenuItem>
+                                            <MenuItem value='GBP'>British Pound (£)</MenuItem>
+                                            <MenuItem value='GHS'>Ghanaian Cedi (₵)</MenuItem>
+                                            <MenuItem value='HKD'>Hong Kong Dollar (HK$)</MenuItem>
+                                            <MenuItem value='INR'>Indian Rupee (₹)</MenuItem>
+                                            <MenuItem value='JPY'>Japanese Yen (¥)</MenuItem>
+                                            <MenuItem value='LRD'>Liberian Dollar (LRD)</MenuItem>
+                                            <MenuItem value='NGN'>Nigerian Naira (₦)</MenuItem>
+                                            <MenuItem value='USD'>US Dollar ($)</MenuItem>
+                                            <MenuItem value='ZAR'>South African Rand (ZAR)</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <FormControl fullWidth>
+                                        <InputLabel id="invoiceType">Transaction Type</InputLabel>
+                                        <Select
+                                            labelId="invoiceType"
+                                            id="invoiceType"
+                                            label="invoiceType"
+                                            name="invoiceType"
+                                            size='small'
+                                            // disabled={header.infoMsg ? true : false}
+                                            disabled={true}
+                                            // onChange={handleMainChange}
+                                            value={type && type !== 'invoice' ? 'Invoice' : 'Proforma Invoice'}
+                                        >
+                                            <MenuItem value='Invoice'>Official Invoice</MenuItem>
+                                            <MenuItem value='Proforma Invoice'>Proforma Invoice</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            label="Exchange Rate"
+                                            type="number"
+                                            value={header.exchangeRate}
+                                            name='exchangeRate'
+                                            size='small'
+                                            onChange={handleMainChange}
+                                            // disabled={header.infoMsg ? true : false}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <FormControl fullWidth>
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            <DatePicker
+                                                name="transactionDate"
+                                                value={header.transactionDate || null}
+                                                format='YYYY-MM-DD'
+                                                defaultValue={new Date()}
+                                                label="Invoice Date"
+                                                maxDate={/*|| header.invoiceType === "Proforma Invoice"*/ dayjs()}
+                                                onChange={(e) => {
+                                                    const selectedDate = e.$d;
+                                                    const formattedDate = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+                                                    setHeader({ ...header, transactionDate: formattedDate });
+                                                }}
+                                            />
+                                        </LocalizationProvider>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            label="Delivery/Shipping"
+                                            type="text"
+                                            value={header.delivery}
+                                            name='delivery'
+                                            size='small'
+                                            onChange={handleMainChange}
+                                            // disabled={header.infoMsg ? true : false}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <FormControlLabel
+                                        label="Selective Discount"
+                                        control={
+                                            <Checkbox
+                                                checked={header.discountType === 'SELECTIVE'}
+                                                onChange={handleDiscountChange}
+                                                color="secondary"
+                                                inputProps={{ 'aria-label': 'Checkbox for discount type' }}
+                                            />
+                                        }
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={12}>
+                                    <FormControl fullWidth onClick={fetchProductsCustomers}>
+                                        <Autocomplete
+                                            id="product-search"
+                                            options={allSearch.product}
+                                            loading={loading}
+                                            getOptionLabel={(option) => option.productName ? option.productName : ''}
+                                            disabled={header.calculationType ? false : true}
+                                            onChange={(event, selectedProduct) => {
+                                                if (selectedProduct) {
+                                                    const newPrice = selectedProduct.unitPrice;
+                                                    setItemLists((oldValue) => ({
+                                                        ...oldValue,
+                                                        unitPrice: newPrice,
+                                                        description: selectedProduct.productName,
+                                                        quantity: 1,
+                                                        itemCode: selectedProduct.productID,
+                                                        itemCategory: selectedProduct.taxType,
+                                                        alt: selectedProduct.productIncrement,
+                                                    }));
+                                                }
+                                            }}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Search product or service"
+                                                    variant="outlined"
+                                                    size="small"
+                                                    color="primary"
+                                                    fullWidth
+                                                    key={params.itemCode}
+                                                    InputProps={{
+                                                        ...params.InputProps,
+                                                        endAdornment: (
+                                                            <>
+                                                                {loading ? (<CircularProgress color="primary" size={20} />) : null}
+                                                                {params.InputProps.endAdornment}
+                                                            </>
+                                                        ),
+                                                    }}
+                                                />
+                                            )}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} md={4}>
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            label="Price / Rate"
+                                            type="number"
+                                            value={itemlists.unitPrice}
+                                            name='unitPrice'
+                                            size='small'
+                                            onChange={handleMainChange}
+                                            disabled={itemlists.description ? false : true}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} md={4}>
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            label="Quantity / Period"
+                                            type="number"
+                                            value={itemlists.quantity}
+                                            name='quantity'
+                                            size='small'
+                                            onChange={handleMainChange}
+                                            disabled={itemlists.description ? false : true}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} md={4}>
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            label="Discount"
+                                            type="number"
+                                            value={itemlists.discountAmount}
+                                            name='discountAmount'
+                                            size='small'
+                                            onChange={handleMainChange}
+                                            disabled={itemlists.description ? false : true}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} md={12}>
+                                    <Accordion>
+                                        <AccordionSummary
+                                            expandIcon={<ExpandMoreIcon />}
+                                        >
+                                            <Typography>Remarks</Typography>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            <TextareaAutosize></TextareaAutosize>
+                                            <textarea
+                                                rows='100%'
+                                                cols={65}
+                                                value={header.remarks}
+                                                onChange={handleMainChange}
+                                                name='remarks'
+                                            />
+                                        </AccordionDetails>
+                                    </Accordion>
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <FormControl fullWidth>
+                                        <Stack direction="row" spacing={2}>
+                                            <Button onClick={addItemsToBasket} fullWidth color='primary' variant="contained" size='large' startIcon={<AddShoppingCartOutlinedIcon />}>
+                                                Add Item
+                                            </Button>
+                                        </Stack>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <FormControl fullWidth>
+                                        <Stack direction="row" spacing={2}>
+                                            <Button onClick={submitFormToGRA} fullWidth color='success' variant="contained" size='large' startIcon={<SendSharpIcon />}>
+                                                Submit
+                                            </Button>
+                                        </Stack>
+                                    </FormControl>
+                                </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={12} pt={2}>
-                            <TableContainer component={Paper} style={{ height: 300, width: '100%', overflowX: 'auto' }}>
-                                <Table padding='checkbox'>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell padding='checkbox' width='30%'>Description</TableCell>
-                                            <TableCell padding='checkbox' width='20%'>Quantity</TableCell>
-                                            <TableCell padding='checkbox' width='20%'>Price</TableCell>
-                                            <TableCell padding='checkbox' width='20%'>Discount</TableCell>
-                                            <TableCell padding='checkbox' width='10%'>Action</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {header.items.map((item, index) => (
-                                            <TableRow hover key={index}>
-                                                <TableCell padding='checkbox'>{item.description || item.ProductName}</TableCell>
-                                                <TableCell padding='checkbox'>{item.quantity || item.Quantity}</TableCell>
-                                                <TableCell padding='checkbox'>{item.unitPrice || item.ProductPrice}</TableCell>
-                                                <TableCell padding='checkbox'>{item.discountAmount || item.ProductDiscount}</TableCell>
-                                                <TableCell padding='checkbox'>
-                                                    <Tooltip title="Edit">
-                                                        <IconButton onClick={() => handleEdit(index)}>
-                                                            <EditIcon color='primary' />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                    <Tooltip title="Delete">
-                                                        <IconButton onClick={() => handleDelete(index)}>
-                                                            <DeleteIcon color='error' />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                            <Grid container spacing={2} pt={2}>
-                                <Grid item xs={12} md={6} padding={2}>
-                                    <Paper elevation={2}>
-                                        <Typography variant='h6'>Remarks</Typography>
-                                        <Container>{header.remarks}</Container>
-                                    </Paper>
+                        <Grid item order={{ xs: 1, md: 2 }} xs={12} md={6}>
+                            <Grid container>
+                                <Grid item xs={12}>
+                                    <Grid container>
+                                        <Grid item xs={12} md={3}>
+                                            <strong>Invoice #: </strong>{header.invoiceNumber}
+                                        </Grid>
+                                        <Grid item xs={12} md={6}>
+                                            <strong>Customer: </strong>{header.businessPartnerName}
+                                        </Grid>
+                                        <Grid item xs={12} md={3}>
+                                            {
+                                                header.businessPartnerTin === 'C0000000000' ? (<>
+                                                <strong>Phone: </strong>{ header.userPhone}</>) : (<>
+                                                <strong>Tin: </strong> {header.businessPartnerTin}</>)
+                                            }
+                                        </Grid>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={12} md={6} padding={2}>
-                                    <Paper elevation={2}>
-                                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                            <tbody>
-                                                <tr>
-                                                    <td style={{ textAlign: 'left' }} className='td_invoice'>GROSS TOTAL</td>
-                                                    <td style={{ textAlign: 'right' }} className='td_invoice'>{header.totalAmount || 0.00}</td>
-                                                </tr>
-                                                <tr className='table'>
-                                                    <td className='td_invoice'>DISOCUNT</td>
-                                                    <td className='td_invoice'>{header.discountAmount || 0.00}</td>
-                                                </tr>
-                                                <tr className='table'>
-                                                    <td className='td_invoice'>NHIL (2.5%)</td>
-                                                    <td className='td_invoice'>{header.nhil || 0.00}</td>
-                                                </tr>
-                                                <tr className='table'>
-                                                    <td className='td_invoice'>GETFUND (2.5%)</td>
-                                                    <td className='td_invoice'>{header.getfund || 0.00}</td>
-                                                </tr>
-                                                <tr className='table'>
-                                                    <td className='td_invoice'>COVID (1%)</td>
-                                                    <td className='td_invoice'>{header.covid || 0.00}</td>
-                                                </tr>
-                                                <tr className='table'>
-                                                    <td className='td_invoice'>CST (5%)</td>
-                                                    <td className='td_invoice'>{header.cst || 0.00}</td>
-                                                </tr>
-                                                <tr className='table'>
-                                                    <td className='td_invoice'>TOURISM (1%)</td>
-                                                    <td className='td_invoice'>{header.tourism || 0.00}</td>
-                                                </tr>
-                                                <tr className='table'>
-                                                    <td className='td_invoice'>VAT (15%)</td>
-                                                    <td className='td_invoice'>{header.totalVat || 0.00}</td>
-                                                </tr>
-                                                <tr
-                                                    style={{
-                                                        marginTop: '10px',
-                                                        justifyContent: 'space-between',
-                                                        fontSize: '17px',
-                                                        color: 'darkred',
-                                                    }}
-                                                >
-                                                    <td>NET TOTAL</td>
-                                                    <td>
-                                                        {header.currency || 'AMT'}: 
-                                                        { header.calculationType !== "INCLUSIVE" ?
-                                                            Number(header.totalAmount + header.totalLevy + header.totalVat - header.discountAmount) : 
-                                                            Number(header.totalAmount - header.discountAmount) || 0.00
-                                                        }
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </Paper>
+                                <Grid item xs={12} pt={2}>
+                                    <TableContainer component={Paper} style={{ height: 300, width: '100%', overflowX: 'auto' }}>
+                                        <Table padding='checkbox'>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell padding='checkbox' width='30%'>Description</TableCell>
+                                                    <TableCell padding='checkbox' width='20%'>Quantity</TableCell>
+                                                    <TableCell padding='checkbox' width='20%'>Price</TableCell>
+                                                    <TableCell padding='checkbox' width='20%'>Discount</TableCell>
+                                                    <TableCell padding='checkbox' width='10%'>Action</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {header.items.map((item, index) => (
+                                                    <TableRow hover key={index}>
+                                                        <TableCell padding='checkbox'>{item.description || item.ProductName}</TableCell>
+                                                        <TableCell padding='checkbox'>{item.quantity || item.Quantity}</TableCell>
+                                                        <TableCell padding='checkbox'>{item.unitPrice || item.ProductPrice}</TableCell>
+                                                        <TableCell padding='checkbox'>{item.discountAmount || item.ProductDiscount}</TableCell>
+                                                        <TableCell padding='checkbox'>
+                                                            <Tooltip title="Edit">
+                                                                <IconButton onClick={() => handleEdit(index)}>
+                                                                    <EditIcon color='primary' />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                            <Tooltip title="Delete">
+                                                                <IconButton onClick={() => handleDelete(index)}>
+                                                                    <DeleteIcon color='error' />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                    <Grid container spacing={2} pt={2}>
+                                        <Grid item xs={12} md={6} padding={2}>
+                                            <Paper elevation={2}>
+                                                <Typography variant='h6'>Remarks</Typography>
+                                                <Container>{header.remarks}</Container>
+                                            </Paper>
+                                        </Grid>
+                                        <Grid item xs={12} md={6} padding={2}>
+                                            <Paper elevation={2}>
+                                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td style={{ textAlign: 'left' }} className='td_invoice'>GROSS TOTAL</td>
+                                                            <td style={{ textAlign: 'right' }} className='td_invoice'>{header.totalAmount || 0.00}</td>
+                                                        </tr>
+                                                        <tr className='table'>
+                                                            <td className='td_invoice'>DISOCUNT</td>
+                                                            <td className='td_invoice'>{header.discountAmount || 0.00}</td>
+                                                        </tr>
+                                                        <tr className='table'>
+                                                            <td className='td_invoice'>NHIL (2.5%)</td>
+                                                            <td className='td_invoice'>{header.nhil || 0.00}</td>
+                                                        </tr>
+                                                        <tr className='table'>
+                                                            <td className='td_invoice'>GETFUND (2.5%)</td>
+                                                            <td className='td_invoice'>{header.getfund || 0.00}</td>
+                                                        </tr>
+                                                        <tr className='table'>
+                                                            <td className='td_invoice'>COVID (1%)</td>
+                                                            <td className='td_invoice'>{header.covid || 0.00}</td>
+                                                        </tr>
+                                                        <tr className='table'>
+                                                            <td className='td_invoice'>CST (5%)</td>
+                                                            <td className='td_invoice'>{header.cst || 0.00}</td>
+                                                        </tr>
+                                                        <tr className='table'>
+                                                            <td className='td_invoice'>TOURISM (1%)</td>
+                                                            <td className='td_invoice'>{header.tourism || 0.00}</td>
+                                                        </tr>
+                                                        <tr className='table'>
+                                                            <td className='td_invoice'>VAT (15%)</td>
+                                                            <td className='td_invoice'>{header.totalVat || 0.00}</td>
+                                                        </tr>
+                                                        <tr
+                                                            style={{
+                                                                marginTop: '10px',
+                                                                justifyContent: 'space-between',
+                                                                fontSize: '17px',
+                                                                color: 'darkred',
+                                                            }}
+                                                        >
+                                                            <td>NET TOTAL</td>
+                                                            <td>
+                                                                {header.currency || 'AMT'}: 
+                                                                { header.calculationType !== "INCLUSIVE" ?
+                                                                    Number(header.totalAmount + header.totalLevy + header.totalVat - header.discountAmount) : 
+                                                                    Number(header.totalAmount - header.discountAmount) || 0.00
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </Paper>
+                                        </Grid>
+                                    </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>
                     </Grid>
-                </Grid>
-            </Grid>
+                </Container>
+
             {/* Edit Dialog */}
             <Dialog open={openEditDialog} onClose={handleEditCancel}>
                 <DialogTitle>Edit Item</DialogTitle>
@@ -1017,7 +1106,8 @@ const InvoiceForm = ({ quoteProducts, setSubmitted, setDrop, drop, BackdropOpen,
                     <Button variant='outlined' onClick={handleEditSave} color="secondary"> Update </Button>
                 </DialogActions>
             </Dialog>
-    </>);
+        </ThemeProvider>
+    );
 }
 
 export default InvoiceForm;

@@ -1,4 +1,5 @@
 const { fetchAllDeliveries } = require("../controller/delivery");
+const { restructureWaybillOutput } = require("../utils/invoiceModifier");
 const { logErrorMessages } = require("../utils/saveLogfile");
 
 // Modules
@@ -8,7 +9,8 @@ const Router = require("express").Router();
 Router.get("/", async (req, res) => {
     try {
         const output = await fetchAllDeliveries();
-        res.status(200).json(output);
+        const modifiedOutput = restructureWaybillOutput (output);
+        return res.status(200).json(modifiedOutput);
     }
     catch (err) {
         logErrorMessages(`Error fetching deliveries ${err}`, req.headers.keyid);

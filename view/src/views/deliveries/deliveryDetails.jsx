@@ -9,6 +9,7 @@ import {
     Paper,
     Typography,
     Box,
+    TableBody,
 } from '@mui/material';
 
 const DeliveryDetails = ({ selectedRow }) => {
@@ -65,6 +66,45 @@ const DeliveryDetails = ({ selectedRow }) => {
                         </TableRow>
                     </TableHead>
                 </Table>
+
+                {/* Products table... */}
+                {Array.isArray(selectedRow.products) && selectedRow.products.length > 0 ? (
+                        <TableContainer component={Paper} sx={{ marginTop: '10px' }}>
+                            {!selectedRow.products[0].OrderedProducts ?
+                                <Typography variant='body2'>Products not delivered yet</Typography>
+                            :
+                                <Table sx={{ minWidth: 500, borderCollapse: 'collapse' }} size='small'>
+                                    <TableHead sx={{ backgroundColor: 'lightgray' }}>
+                                        <TableRow>
+                                            <TableCell variant='footer'>#</TableCell>
+                                            <TableCell variant='footer'>SKU</TableCell>
+                                            <TableCell variant='footer'>Description</TableCell>
+                                            <TableCell variant='footer'>Ordered</TableCell>
+                                            <TableCell variant='footer'>Delivered</TableCell>
+                                            <TableCell variant='footer'>Outstanding</TableCell>
+                                            {/* <TableCell variant='footer'>Category</TableCell> */}
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {selectedRow.products.map((product, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell>{index + 1}</TableCell>
+                                                <TableCell>{product.SKU || 'Unavailable'}</TableCell>
+                                                <TableCell>{product.ProductName || 'Unavailable'}</TableCell>
+                                                <TableCell>{product.OrderedProducts || 'Unavailable'}</TableCell>
+                                                <TableCell>{product.DeliveredProducts}</TableCell>
+                                                <TableCell>{product.OutstandingProducts}</TableCell>
+                                                {/* <TableCell>{product.ProductCategory || 'Unavailable'}</TableCell> */}
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            }
+                        </TableContainer>
+                    ) : (
+                        <p>Products not available</p>
+                    )
+                }
             </TableContainer>
         </Box>
     );

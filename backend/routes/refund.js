@@ -2,7 +2,7 @@ const Router = require("express").Router();
 
 // Projects
 const { logErrorMessages } = require("../utils/saveLogfile"); 
-const restructureInvoiceResult = require("../utils/invoiceModifier");
+const { restructureInvoiceResult } = require("../utils/invoiceModifier");
 const {
     cancelledRefundInvoices,
     TodayAllRefundsInvoice,

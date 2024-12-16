@@ -17,7 +17,6 @@ import { fetchQuoteInvoices } from '../../apiActions/allApiCalls/invoice';
 import { AlertError, GeneralCatchError } from '../../utilities/errorAlert';
 import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceholder';
 import WaybillForm from './waybilForm';
-import { Close } from '@mui/icons-material';
 
 // /* eslint-disable */
 export default function OrderCheckout() {
@@ -251,10 +250,9 @@ export default function OrderCheckout() {
             {notify.message ? <AlertError alert={notify} handleClose={handleClose} open={open} /> : null}
 
             <Dialog open={openDialog} fullScreen>
-                <DialogTitle sx={{ backgroundColor: 'darkblue' }}>
+                <DialogTitle sx={{ backgroundColor: 'darkblue', textAlign: 'right' }}>
                     <IconButton onClick={handleCloseDialog} color='secondary' sx={{ justifyContent: 'flex-end' }}>
-                        <Typography fontSize='1em' color='red'>Cancel</Typography> 
-                        <Close color='error' fontSize='medium'/>
+                        <Typography variant='button' fontSize='1em' color='orangered'>Close</Typography> 
                     </IconButton>
                 </DialogTitle>
                 <DialogContent sx={{ padding: '20px' }}>

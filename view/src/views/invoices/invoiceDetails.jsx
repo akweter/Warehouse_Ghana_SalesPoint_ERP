@@ -1,5 +1,5 @@
-/* eslint-disable */
-import React, { useState, useEffect } from 'react';
+// /* eslint-disable */
+import React, { useState } from 'react';
 import {
     Button,
     Dialog,
@@ -14,32 +14,17 @@ import {
     Paper,
     Typography,
     Box,
-    AppBar,
-    Toolbar,
-    Stack,
-    Chip,
     Slide,
     DialogTitle,
-    Container,
     IconButton,
 } from '@mui/material';
-import { CancelSharp } from '@mui/icons-material';
-import logo from '../../assets/images/logo.webp';
 import InvoiceForm from './invoiceForm';
 import RefundForms from '../refund/refundForm';
 
-const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, submitted, deleteQuote }) => {
-    const [drop, setDrop] = useState(false);
+const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, submitted, deleteQuote }) => {
     const [open, setOpen] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
     const [openRefDialog, setOpenRefDialog] = useState(false);
-    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 600);
-
-    useEffect(() => {
-        const handleResize = () =>  setIsSmallScreen(window.innerWidth < 600);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
 
     const handleOpen = () => { setOpen(true); handleCloseDialog() }
     const handleClose = () => { setOpen(false); }
@@ -190,6 +175,7 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, su
                     }
                 </DialogActions>
             </Dialog>
+
             <Dialog
                 fullWidth
                 maxWidth="xl"
@@ -197,44 +183,13 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, status, su
                 TransitionComponent={Slide}
                 transitionDuration={1000}
             >
-                <AppBar style={{ backgroundColor: '#151B4D' }}>
-                    <Toolbar sx={{ justifyContent: 'space-between' }}>
-                        <img src={logo} width={60} height={40} alt='Logo' />
-                        <Typography
-                            variant = { isSmallScreen ? "body1" : "h2"}
-                            sx={{
-                                flex: 1,
-                                textAlign: { xs: 'center', sm: 'left' },
-                                color: 'white',
-                                fontSize: { xs: '1rem', md: '1.5rem' },
-                            }}
-                        >
-                            Update The Quotation
-                        </Typography>
-                        <Stack
-                            direction="row" 
-                            spacing={1} sx={{ 
-                                width: { xs: '100%', sm: 'auto' }, 
-                                justifyContent: { xs: 'center', sm: 'flex-end' }, 
-                                mt: { xs: 2, sm: 0 } 
-                            }}
-                        >
-                            <Chip
-                                variant="filled" 
-                                color={status === true ? 'primary' : 'error'}
-                                label={status === true ? 'GRA UP' : 'GRA DOWN'}
-                            />
-                        </Stack>
-                        <Box>
-                            <Button onClick={handleClose} fullWidth color='error' variant="contained" size='small' startIcon={<CancelSharp />}>
-                                Cancel
-                            </Button>
-                        </Box>
-                    </Toolbar>
-                </AppBar>
-                <Container style={{ marginTop: isSmallScreen ? 60 : 0 }}>
-                    < InvoiceForm setDrop={setDrop} drop={drop} BackdropOpen={setOpen} quoteProducts={selectedRow} setSubmitted={submitted} />
-                </Container>
+                < InvoiceForm
+                    BackdropOpen={setOpen} 
+                    quoteProducts={selectedRow} 
+                    setSubmitted={submitted}
+                    handleCloseDialog={handleClose}
+                    appBarMsg={'Update Invoice Quotation'}
+                />
             </Dialog>
             <Dialog
                 fullWidth

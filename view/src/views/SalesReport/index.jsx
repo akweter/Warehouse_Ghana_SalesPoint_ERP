@@ -26,6 +26,7 @@ import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceho
 import InvoiceTemplate from '../invoices/invoiceTemplate';
 import { UseFullPayload } from '../invoices/invoiceQuotePayload';
 import { formatDate } from '../../utilities/formatDate';
+import MakeNewInvoice from '../invoices/generateInvoice';
 
 // /* eslint-disable */
 
@@ -329,9 +330,11 @@ export default function SalesReport() {
                     paddingBottom: 5,
                 }}
             >
-                <Grid item>
-                    <Typography color='white' variant='h3'>Quotatations</Typography> 
-                </Grid>
+                    <Typography color='white' variant='h3'>Quotatations</Typography>
+                    < MakeNewInvoice
+                        btnMsg={'Make Quotaion'}
+                        type={'invoice'}
+                    />
             </Grid>
             {
                 invoices.length > 0 ?

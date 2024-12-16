@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { IconButton, Box, } from '@mui/material';
-import { EditNote } from '@mui/icons-material';
+import { BorderColorRounded } from '@mui/icons-material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import UploadCSVProducts from './uploadProducts';
 
@@ -82,7 +82,7 @@ const InventoryProductsTable = ({ products, loading }) => {
                     sortable: false,
                     renderCell: (params) => (<>
                         <IconButton title='Edit product/service' onClick={() => handleEditconClick(params.row)}>
-                            <EditNote color='error' />
+                            <BorderColorRounded color='error' />
                         </IconButton>
                     </>),
                 },
@@ -166,7 +166,7 @@ const InventoryProductsTable = ({ products, loading }) => {
                 sortable: false,
                 renderCell: (params) => (<>
                     <IconButton title='Edit product/service' onClick={() => handleEditconClick(params.row)}>
-                        <EditNote color='error' />
+                        <BorderColorRounded color='error' />
                     </IconButton>
                 </>),
             }
@@ -181,11 +181,11 @@ const InventoryProductsTable = ({ products, loading }) => {
 
     return (
         <>
-            <Box sx={{ height: 500, width: '100%' }}>
+            <Box sx={{ height: 550, width: '100%' }}>
                 <DataGrid
                     rows={rows.map((row, index) => ({ ...row, id: index }))}
                     columns={columns}
-                    loading={loading ? loading : null}
+                    loading={loading || null}
                     density='compact'
                     pageSize={5}
                     disableRowSelectionOnClick={true}

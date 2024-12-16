@@ -70,24 +70,23 @@ const WaybillForm = ({ formData, closePopup }) => {
     };
 
     const handleSubmit = async () => {
-        // if (!form.mod || !form.despatchDate) {
-        //     alert("Despatch Date cannot be empty.");
-        //     return;
-        // }
-        // try {
+        if (!form.mod || !form.despatchDate) {
+            alert("Despatch Date cannot be empty.");
+            return;
+        }
+        try {
             const payload = {
                 InvoiceNumber: formData.InvoiceNumber,
                 IssuerName: userName,
                 CustomerID: formData.CustomerID,
                 ...form
             };
-        //     await postWaybillData(payload);
-        //     handlePDF();
-        //     closePopup();
-        // } catch (error) {
-        //     return;
-        // }
-        console.log('form',payload);
+            await postWaybillData(payload);
+            handlePDF();
+            closePopup();
+        } catch (error) {
+            return;
+        }
     }
 
     return (

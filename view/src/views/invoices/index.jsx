@@ -18,11 +18,11 @@ import {
     Button,
     Dialog,
     DialogTitle,
+    CircularProgress,
 } from '@mui/material';
 
 // projects
 import {
-    checkGRAServerStatus,
     deleteQuotation,
     fetchAllInvoices,
     postGRAInvoiceCallback,
@@ -37,7 +37,6 @@ import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceho
 /* eslint-disable */
 const Invoice = () => {
     const [submitted, setSubmitted] = useState(false);
-    const [status, setStatus] = useState(false);
     const [open, setOpen] = useState(false);
     const [drop, setDrop] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -53,9 +52,8 @@ const Invoice = () => {
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 600);
 
     useEffect(() => {
-        fetchData();
-        testServer();
-    }, [submitted, status]);
+        fetchData();        
+    }, [submitted]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -84,17 +82,6 @@ const Invoice = () => {
             setAlert((e) => ({ ...e, message: `Something unexpected happened with\n your connection. \n\n Please log in again if it persist.`, color: 'error' }));
             setOpen(true);
             setLoading(true);
-        }
-    };
-
-    // Test GRA Server Up
-    const testServer = async () => {
-        try {
-            await checkGRAServerStatus();
-            setStatus(true);
-        }
-        catch (error) {
-            setStatus(false);
         }
     };
 
@@ -148,11 +135,13 @@ const Invoice = () => {
                             <IconButton title='Print Invoice' onClick={() => pushPrintInvoiceData(params.row)}>
                                 <PrintIcon fontSize='small' color='error' />
                             </IconButton>
-                            {params.row.QRCode ? null : (
-                                <IconButton title='Request Call Back' onClick={() => requestCallback(params.row)}>
-                                    <Undo fontSize='medium' color='secondary' />
-                                </IconButton>
-                            )}
+                            {params.row.QRCode ? null : (<>
+                                {drop ? <CircularProgress /> : <>
+                                    <IconButton title='Request Call Back' onClick={() => requestCallback(params.row)}>
+                                        <Undo fontSize='medium' color='secondary' />
+                                    </IconButton>
+                                </>}
+                            </>)}
                         </>
                     ),
                 },
@@ -231,11 +220,13 @@ const Invoice = () => {
                         <IconButton title='Print Invoice' onClick={() => pushPrintInvoiceData(params.row)}>
                             <PrintIcon fontSize='small' color='error' />
                         </IconButton>
-                        {params.row.QRCode ? null : (
-                            <IconButton title='Request Call Back' onClick={() => requestCallback(params.row)}>
-                                <Undo fontSize='medium' color='secondary' />
-                            </IconButton>
-                        )}
+                        {params.row.QRCode ? null : (<>
+                            {drop ? <CircularProgress /> : <>
+                                <IconButton title='Request Call Back' onClick={() => requestCallback(params.row)}>
+                                    <Undo fontSize='medium' color='secondary' />
+                                </IconButton>
+                            </>}
+                        </>)}
                     </>
                 ),
             },
@@ -384,9 +375,13 @@ const Invoice = () => {
                     <Typography color='white' variant='h3'>Invoice Transactions</Typography> 
                 </Grid>
                 <Grid item>
-                    < MakeNewInvoice setSubmitted={setSubmitted} status={status} />
+                    < MakeNewInvoice 
+                        setSubmitted={setSubmitted} 
+                        btnMsg={'Create Invoice'}
+                        type={'quote'}
+                    />
                 </Grid>
-            </Grid>
+            </Grid> 
             {
                 invoices.length > 0 ?
                 <Box sx={{ height: 600, width: '100%' }}>
@@ -416,8 +411,7 @@ const Invoice = () => {
                         < InvoiceDetails 
                             selectedRow={selectedRow} 
                             openDialog={openDialog} 
-                            handleCloseDialog={handleCloseDialog} 
-                            status={status} 
+                            handleCloseDialog={handleCloseDialog}
                             submitted={setSubmitted}
                             deleteQuote={deleteQuote}
                         />
