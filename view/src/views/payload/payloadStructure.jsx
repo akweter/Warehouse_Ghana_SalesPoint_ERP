@@ -33,7 +33,7 @@ export const headerPayload = {
     flag: "INVOICE",
     calculationType: "INCLUSIVE",
     totalVat: "",
-    transactionDate: "",
+    transactionDate: new Date().toISOString().split('T')[0],
     totalAmount: "",
     voucherAmount: "",
     businessPartnerName: "",
@@ -47,7 +47,7 @@ export const headerPayload = {
     items: [],
     invCusId: "",
     remarks: "",
-    invoiceType: "Proforma Invoice",
+    invoiceType: "PROFORMA INVOICE",
     delivery: "",
     userPhone: "",
     checkdID: ""

@@ -6,6 +6,15 @@
     font-size: 18px;
 }
 
+
+.formDate{
+    width: 100%;
+    background-color: #fff;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
 .remarkNtax{
     margin-top: 5%;
     bottom: 0;

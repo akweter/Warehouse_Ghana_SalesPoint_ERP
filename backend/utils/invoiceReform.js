@@ -94,8 +94,8 @@ const updateDBWithGRAResponse = async (response) => {
         qr_code,
         num,
     ];
-    console.log('payload', payload);
-    return await updateQuotation(payload);
+    return await updateQuotation(payload);    
+    
 }
 
 // Save invoice or quotation
@@ -161,12 +161,14 @@ const saveInvoiceToDB = async (Data, responseData) => {
         return checkID;
     }
 
+    const invoiceValue = flag === "REFUND" ? "REFUND" : invoiceType
+
     const payload = [
         AutoID,
         generateCheckID(checkdID),
         userName,
         totalAmount,
-        invoiceType,
+        invoiceValue,
         calculationType,
         transactionDate,
         currency,
@@ -213,8 +215,7 @@ const saveInvoiceToDB = async (Data, responseData) => {
 
     try {
         if (invoiceType === "Invoice" && checkID !== '') {
-            const update = await updateDBWithGRAResponse(responseData);
-            console.log(update);
+            await updateDBWithGRAResponse(responseData);
         } else {
             //saving into DB invoice, refund, quotattion, quotation edit
             await AddNewInvoices(payload);
@@ -230,13 +231,13 @@ const saveInvoiceToDB = async (Data, responseData) => {
                     const result = await Promise.all(items.map(async (item) => {
                         const {
                             quantity,
-                            invProID,
+                            itemCode,
                         } = item;
                         
                         // Single product payload
                         const updateProductVoid = [
                             quantity,
-                            invProID,
+                            itemCode,
                             invoiceNumber
                         ];
                         await updateRefundProducts(updateProductVoid);

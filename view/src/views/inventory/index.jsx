@@ -26,7 +26,7 @@ import { IconArrowBarToDown, IconArrowBarToUp, IconCircleNumber0, IconListCheck,
 import UploadCSVProducts from "./uploadProducts";
 import InventoryProductsTable from './displayProducts';
 import { fetchAllProducts, fetchDashboardCardDetails } from '../../apiActions/allApiCalls/product';
-// import ProductStats from './stattistics';
+import { LoadingSpinner } from '../../ui-component/loaderAPI';
 
 const Inventory = () => {
     const [submitted, setSubmitted] = useState(false);
@@ -87,7 +87,6 @@ const Inventory = () => {
             borderRadius: 40,
         }
     }
-
     return (
         <>
             <Grid container sx={{ justifyContent: 'space-around', backgroundColor: 'darkblue', paddingTop: 1, paddingBottom: 1, }}>
@@ -118,7 +117,7 @@ const Inventory = () => {
                                             <ListItemIcon>
                                                 <IconShoppingBag color='#172094' />
                                             </ListItemIcon>
-                                            <ListItemText primary={totlalStock.length > 0 ? totlalStock[0].TotalStock : 0} />
+                                            <ListItemText primary={totlalStock && totlalStock.length > 0 ? totlalStock[0].TotalStock : 0} />
                                         </ListItem>
                                     </List>
                                     <div style={colorType('darkblue')} />
@@ -131,7 +130,7 @@ const Inventory = () => {
                                             <ListItemIcon>
                                                 <IconArrowBarToUp color='#14A437' />
                                             </ListItemIcon>
-                                            <ListItemText primary={topPerforming.length > 0 ? topPerforming.length : 0} />
+                                            <ListItemText primary={topPerforming && topPerforming.length > 0 ? topPerforming.length : 0} />
                                         </ListItem>
                                     </List>
                                     <div style={colorType('green')} />
@@ -144,7 +143,7 @@ const Inventory = () => {
                                             <ListItemIcon>
                                                 <IconListCheck color='#BFCA0C' />
                                             </ListItemIcon>
-                                            <ListItemText primary={products.length} />
+                                            <ListItemText primary={products && products.length} />
                                         </ListItem>
                                     </List>
                                     <div style={colorType('yellow')} />
@@ -157,7 +156,7 @@ const Inventory = () => {
                                             <ListItemIcon>
                                                 <IconCircleNumber0 color='#E13209' />
                                             </ListItemIcon>
-                                            <ListItemText primary={zeroStock.length > 0 ? zeroStock.length : 0} />
+                                            <ListItemText primary={zeroStock &&zeroStock.length > 0 ? zeroStock.length : 0} />
                                         </ListItem>
                                     </List>
                                     <div style={colorType('red')} />
@@ -170,7 +169,7 @@ const Inventory = () => {
                                             <ListItemIcon>
                                                 <IconArrowBarToDown color='#872222' />
                                             </ListItemIcon>
-                                            <ListItemText primary={lowStock.length > 0 ? lowStock.length : 0} />
+                                            <ListItemText primary={lowStock && lowStock.length > 0 ? lowStock.length : 0} />
                                         </ListItem>
                                     </List>
                                     <div style={colorType('brown')} />
@@ -182,10 +181,12 @@ const Inventory = () => {
             </div>
 
             <Box>
-                <InventoryProductsTable
-                    products={products}
-                    loading={loading}
-                />
+                {products.length > 0 ?
+                    <InventoryProductsTable
+                        products={products}
+                        loading={loading}
+                    /> 
+                : < LoadingSpinner />}
             </Box>
             <UploadCSVProducts
                 openDialog={open}

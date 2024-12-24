@@ -573,9 +573,7 @@ const updateQuotation = async (payload) => {
 		ysdctime = ?,
 		qr_code = ?
 	WHERE
-		Inv_Number = ?
-	AND 
-		Inv_status = 'Invoice'`;
+		Inv_Number = ?`;
 	return await executeQuery(sql, payload);
 }
 
@@ -602,12 +600,19 @@ const updateInvoiceQRCodes = async (payload) => {
 
 // Update products refunded quantity
 const updateRefundProducts = async (payload) => {
+	console.log('refunds', payload);
 	const sql = `
-		UPDATE invoice_products
-		SET Product_Refunded_Quantity = Product_Refunded_Quantity + ?
-		WHERE Product_ID = ?
-		AND InvoiceNum_ID = ?`;
-	return await executeQuery(sql, payload);
+		UPDATE 
+			invoice_products
+		SET 
+			Product_Refunded_Quantity = Product_Refunded_Quantity + ?
+		WHERE 
+			Product_ID = ?
+		AND 
+			InvoiceNum_ID = ?`;
+	const res = await executeQuery(sql, payload);
+		console.log('ref results', res);
+		return res;
 }
 
 

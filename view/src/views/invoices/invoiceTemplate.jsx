@@ -278,7 +278,7 @@ const InvoiceTemplate = ({ data }) => {
 
 				<small style={{ position: "absolute", bottom: 0, left: 0, right: 0, textAlign: "center" }}>
 					<strong>
-						{data[0].remarks ? data[0].remarks : `**This is a computer-generated invoice. Stamp not required**`}{/*data[0].InvoiceStatus*/}
+						{data[0].remarks ? data[0].remarks : `**This is electronic invoice. Stamp not required**`}{/*data[0].InvoiceStatus*/}
 					</strong>
 				</small>
 			</table>

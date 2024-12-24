@@ -58,10 +58,15 @@ import '../../assets/css/form.css';
 import { headerPayload, itemlistPayload } from '../../views/payload/payloadStructure';
 import { AlertError } from '../../utilities/errorAlert';
 import { ShowBackDrop } from '../../utilities/backdrop';
-import { checkGRAServerStatus, fetchAutocompleteId, postGRAInvoiceCallback, postNewGRAInvoice } from '../../apiActions/allApiCalls/invoice';
 import { fetchProductNameSearch } from '../../apiActions/allApiCalls/product';
 import { fetchCustomerNameSearch } from '../../apiActions/allApiCalls/customer';
 import { computeStandardTaxes } from '../../utilities/computeAllTaxes';
+import { 
+    checkGRAServerStatus, 
+    fetchAutocompleteId, 
+    postGRAInvoiceCallback, 
+    postNewGRAInvoice 
+} from '../../apiActions/allApiCalls/invoice';
 
 const InvoiceForm = ({ 
     quoteProducts, 
@@ -131,7 +136,7 @@ const InvoiceForm = ({
                 invoiceNumber: InvoiceNumber,
                 totalLevy: Number(COVID + CST, GETFund, NHIL + Tourism),
                 userName: IssuerName,
-                flag: "Proforma Invoice",
+                flag: "PROFORMA INVOICE",
                 calculationType: CalculationType,
                 totalVat: VatAmount,
                 totalAmount: TotalAmount,
@@ -144,10 +149,10 @@ const InvoiceForm = ({
                 reference: "",
                 groupReferenceId: "",
                 purchaseOrderReference: "",
-                invoiceType: "Proforma Invoice",
+                invoiceType: "PROFORMA INVOICE",
                 invCusId: CustomerID,
                 remarks: Remarks,
-                status: "Proforma Invoice",
+                status: "PROFORMA INVOICE",
                 userPhone: customerPhone,
                 delivery: "",
                 infoMsg: "quoteEdit",
@@ -188,10 +193,11 @@ const InvoiceForm = ({
     // Make call back when the call back state is triggered from the index (main component)
     useEffect(() => {
         if (callback) {
-            setHeader((state) => {
-                const newState = { ...state, callback: "yes" };
-                return newState;
-            });
+            setHeader((state) => ({
+                ...state, 
+                callback: "yes",
+                flag: "INVOICE"
+            }));
             submitFormToGRA();
             setcallback(false);
         }
@@ -299,7 +305,7 @@ const InvoiceForm = ({
             try {
                 const response = await fetchAutocompleteId();
                 const number = response[0].numList + 1;
-                const output = `W-G${year}M${month}${number}CSD`;
+                const output = `WG${year}M${month}${number}CSD`;
                 setHeader((state) => ({ ...state, invoiceNumber: output }));
             }
             catch (error) {
@@ -515,7 +521,6 @@ const InvoiceForm = ({
             }
         }
         catch (error) {
-            console.log('error',error);
             setAlert((e) => ({ ...e, message: "Invoice submission failed! Refresh and try again", color: 'error' }));
         }
         setDrop(false);
@@ -545,7 +550,7 @@ const InvoiceForm = ({
                             >
                                 {appBarMsg}
                             </Typography>
-                            {type && type !== 'invoice' ? 
+                            {header.items && header.items.length > 0 ? 
                                 <Box paddingRight={3} sx={{ width: { xs: '100%', sm: 'auto' }, textAlign: { xs: 'center', sm: 'right' } }}>
                                     <Button variant="contained" color='warning' onClick={() => setcallback(true)}>
                                         <Typography>Request callback</Typography>
@@ -740,10 +745,10 @@ const InvoiceForm = ({
                                             disabled={header.infoMsg ? true : false}
                                             onChange={handleMainChange}
                                             value={header.invoiceType}
-                                            // value={type && type !== 'invoice' ? 'Invoice' : 'Proforma Invoice'}
+                                            // value={type && type !== 'invoice' ? 'Invoice' : header.invoiceType}
                                         >
-                                            <MenuItem value='Invoice'>Official Invoice</MenuItem>
-                                            <MenuItem value='Proforma Invoice'>Proforma Invoice</MenuItem>
+                                            <MenuItem value='INVOICE'>OFFICIAL INVOICE</MenuItem>
+                                            <MenuItem value='PROFORMA INVOICE'>PROFORMA INVOICE</MenuItem>
                                         </Select>
                                     </FormControl>
                                 </Grid>
@@ -762,21 +767,20 @@ const InvoiceForm = ({
                                 </Grid>
                                 <Grid item xs={12} md={6}>
                                     <FormControl fullWidth>
-                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                            <DatePicker
-                                                name="transactionDate"
-                                                value={header.transactionDate || null}
-                                                format='YYYY-MM-DD'
-                                                defaultValue={new Date()}
-                                                label="Invoice Date"
-                                                maxDate={/*|| header.invoiceType === "Proforma Invoice"*/ dayjs()}
-                                                onChange={(e) => {
-                                                    const selectedDate = e.$d;
-                                                    const formattedDate = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
-                                                    setHeader({ ...header, transactionDate: formattedDate });
-                                                }}
-                                            />
-                                        </LocalizationProvider>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                            name="transactionDate"
+                                            value={header.transactionDate ? dayjs(header.transactionDate) : dayjs()}
+                                            inputFormat="YYYY-MM-DD"
+                                            label="Invoice Date"
+                                            maxDate={dayjs()}
+                                            onChange={(date) => {
+                                                if (date && dayjs(date).isValid()) {
+                                                setHeader({ ...header, transactionDate: dayjs(date).format('YYYY-MM-DD') });
+                                                }
+                                            }}
+                                        />
+                                    </LocalizationProvider>
                                     </FormControl>
                                 </Grid>
                                 <Grid item xs={12} md={6}>
@@ -892,7 +896,14 @@ const InvoiceForm = ({
                                 <Grid item xs={12} md={6}>
                                     <FormControl fullWidth>
                                         <Stack direction="row" spacing={2}>
-                                            <Button onClick={addItemsToBasket} fullWidth color='primary' variant="contained" size='large' startIcon={<AddShoppingCartOutlinedIcon />}>
+                                            <Button 
+                                                onClick={addItemsToBasket} 
+                                                fullWidth 
+                                                color='primary' 
+                                                variant="contained" 
+                                                size='large' 
+                                                startIcon={<AddShoppingCartOutlinedIcon />}
+                                            >
                                                 Add Item
                                             </Button>
                                         </Stack>
@@ -951,11 +962,12 @@ const InvoiceForm = ({
                                         <Table size='small'>
                                             <TableHead>
                                                 <TableRow>
-                                                    <TableCell width='55%'>Description</TableCell>
+                                                    <TableCell width='66%'>Description</TableCell>
                                                     <TableCell width='10%'>Quantity</TableCell>
                                                     <TableCell width='10%'>Price</TableCell>
                                                     <TableCell width='10%'>Discount</TableCell>
-                                                    <TableCell width='50%'>Action</TableCell>
+                                                    <TableCell width='2%'/>
+                                                    <TableCell width='2%'/>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
@@ -971,6 +983,8 @@ const InvoiceForm = ({
                                                                     <EditIcon color='info' />
                                                                 </IconButton>
                                                             </Tooltip>
+                                                        </TableCell>
+                                                        <TableCell>
                                                             <Tooltip title="Delete">
                                                                 <IconButton onClick={() => handleDelete(index)}>
                                                                     <DeleteIcon color='error' />

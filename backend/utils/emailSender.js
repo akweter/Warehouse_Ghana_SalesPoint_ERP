@@ -50,7 +50,7 @@ const userLogin = (email) => {
 	return {
 		from: EMAIL_USER,
 		to: email,
-		subject: 'Account Login | WG ERP',
+		subject: 'Warehouse Ghana ERP | Account Login',
 		html: `
 				<div style="text-align: center;">
 					<address style="font-size: 17px;">Sign In activitiy found on this account.</address>

@@ -16,15 +16,15 @@ const {
     ThisMonthTaxes,
     ThisMonthTotalInvoicenDate,
     getWaybillInvoice,
-    salesNRefundInvoices,
     deleteQuotation,
     deleteQuotationProducts,
+    salesNRefundInvoices,
 } = require("../controller/salesNinvoices");
 
 // All original GRA invoices transaction
 Router.get("/", async (req, res) => {
     try {
-        const output = await salesNRefundInvoices("Invoice", "Invoice", "Invoice", 'http');
+        const output = await salesNRefundInvoices("INVOICE", "INVOICE", "INVOICE", 'http');
         const modifiedOutput = restructureInvoiceResult(output);
         return res.status(200).json(modifiedOutput);
     }
@@ -37,12 +37,12 @@ Router.get("/", async (req, res) => {
 // Get all quote || quotaion invoices
 Router.get("/quotes", async (req, res) => {
     try {
-        const output = await salesNRefundInvoices("Proforma Invoice", "Proforma Invoice", "Proforma Invoice", 'null');
+        const output = await salesNRefundInvoices("PROFORMA INVOICE", "PROFORMA INVOICE", "PROFORMA INVOICE", 'null');
         const modifiedOutput = restructureInvoiceResult(output);
         return res.status(200).json(modifiedOutput);
     }
     catch (err) {
-        logErrorMessages(`Error fetching Proforma Invoices ${err}`, req.headers.keyid);
+        logErrorMessages(`Error fetching proforma Invoices ${err}`, req.headers.keyid);
         return res.status(500).send("Fetching quotation invoice failed. Kindly refresh");
     }
 });
@@ -50,7 +50,7 @@ Router.get("/quotes", async (req, res) => {
 // 10 recent transactions only
 Router.get("/ten", async (req, res) => {
     try {
-        const output = await salesNRefundInvoices('Invoice', 'Partial_Refund', 'Refund', 'http');
+        const output = await salesNRefundInvoices('INVOICE', 'PARTIAL_REFUND', 'REFUND', 'http');
         return res.status(200).json(output);
     }
     catch (err) {
@@ -92,7 +92,7 @@ Router.get("/waybill/:id", async (req, res) => {
         return res.status(200).json(modifiedOutput);
     }
     catch (err) {
-        logErrorMessages(`Error fetching Proforma Invoices ${JSON.stringify(err)}`, req.headers.keyid);
+        logErrorMessages(`Error fetching PROFORMA INVOICEs ${JSON.stringify(err)}`, req.headers.keyid);
         return res.status(500).send("Something unexpected happened. Kindly try again");
     }
 });

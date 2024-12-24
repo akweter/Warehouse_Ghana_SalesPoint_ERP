@@ -82,7 +82,7 @@ const InventoryProductsTable = ({ products, loading }) => {
                     sortable: false,
                     renderCell: (params) => (<>
                         <IconButton title='Edit product/service' onClick={() => handleEditconClick(params.row)}>
-                            <BorderColorRounded color='error' />
+                            <BorderColorRounded color='inherit' />
                         </IconButton>
                     </>),
                 },
@@ -166,7 +166,7 @@ const InventoryProductsTable = ({ products, loading }) => {
                 sortable: false,
                 renderCell: (params) => (<>
                     <IconButton title='Edit product/service' onClick={() => handleEditconClick(params.row)}>
-                        <BorderColorRounded color='error' />
+                        <BorderColorRounded color='info' />
                     </IconButton>
                 </>),
             }

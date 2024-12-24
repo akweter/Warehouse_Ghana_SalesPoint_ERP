@@ -282,6 +282,7 @@ export default function SalesReport() {
     }
 
     const handleQuoteToInvoiceBtnClick = (row) => {
+        setLoadQuote(row.InvoiceNumber);
         const payload = UseFullPayload(row);
         setHeader(payload);
         setOpenConfirm(true);
@@ -289,9 +290,7 @@ export default function SalesReport() {
 
     const sendPayload = async () => {
         try {
-            setLoadQuote(header.InvoiceNumber || header.invoiceNumber);
             setOpenConfirm(false);
-
             const response  = await postNewGRAInvoice(header);
             if (response && response.status !== 'error') {
                 setNotify((e) => ({ ...e, message: "Invoice submitted to GRA success!", color: 'success' }));
@@ -305,6 +304,10 @@ export default function SalesReport() {
         }
         setOpen(true);
         setLoadQuote(null);
+
+        setTimeout(() => {
+            setNotify((e) => ({ ...e, message: "", color: "" }));  
+        }, 3000);     
     }
 
     const closeConfirm = () => {
@@ -376,7 +379,7 @@ export default function SalesReport() {
                     </>
                 )
             }
-            {/* Confirm Proforma Invoice sent sent to GRA */}
+            {/* Confirm PROFORMA INVOICE sent sent to GRA */}
             <Dialog open={openConfirm} sx={{ padding: '20px' }}>
                 <DialogTitle color='darkred' variant='h3'>Confirm Submission</DialogTitle>
                 <DialogContent>

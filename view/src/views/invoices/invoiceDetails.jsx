@@ -164,12 +164,12 @@ const InvoiceDetails = ({ selectedRow, openDialog, handleCloseDialog, submitted,
                 </DialogContent>
                 <DialogActions sx={{ backgroundColor: 'darkblue', display: 'flex', justifyContent: 'flex-end', gap: 1, padding: 2 }}>
                     {
-                        selectedRow.InvoiceStatus === "Proforma Invoice" && (<>
+                        selectedRow.InvoiceStatus === "PROFORMA INVOICE" && (<>
                             <Button variant='contained' color='error' size='medium' onClick={() => setOpenDelete(true)}>Delete Quote</Button>
                             <Button variant='contained' color='warning' size='medium' onClick={handleOpen}>Update Quote</Button>
                         </>)
                     }{
-                        selectedRow.InvoiceStatus === "Invoice" && (<>                        
+                        selectedRow.InvoiceStatus === "INVOICE" && (<>                        
                             <Button variant='contained' color='warning' size='medium' onClick={() => handleRefundBtnClick()}>Refund Invoice</Button>
                         </>)
                     }

@@ -1,4 +1,4 @@
-const { logErrorMessages, logSuccessMessages, logAllMessage } = require("../utils/saveLogfile");
+const { logErrorMessages, logAllMessage } = require("../utils/saveLogfile");
 const express = require("express");
 const axios = require("axios");
 require('dotenv').config();
@@ -237,7 +237,7 @@ Router.post("/refund/cancellation", async (req, res) => {
 // make call back
 Router.post("/callback", async (req, res) => {
     const Data = req.body;
-    const { invoiceNumber, reference, flag, InvoiceNumber, Reference } = Data;
+    const { invoiceNumber, reference, status, InvoiceNumber, Reference } = Data;
 
     if (!Data || !(Array.isArray(Data.items) || Array.isArray(Data.products))) {
         return res.status(400).json({ status: 'error', message: 'Invalid payload structure', payload: Data });
@@ -245,7 +245,7 @@ Router.post("/callback", async (req, res) => {
     const cbPayload = {
         reference: reference || Reference,
         invoiceNumber: invoiceNumber || InvoiceNumber,
-        flag: flag,
+        flag: status,
     }
     try {
         const response = await axios.post(`${GRA_ENDPOINT}/invoice/callback`, cbPayload, {
@@ -255,7 +255,7 @@ Router.post("/callback", async (req, res) => {
                 'Content-Type': 'application/json'
             }
         });
-        updateDBWithGRAResponse(response.data);
+        await updateDBWithGRAResponse(response.data);        
         return res.status(200).json({ status: 'success', message: 'Callback processed successfully' });
     }
     catch (error) {

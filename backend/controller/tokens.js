@@ -2,7 +2,6 @@ const { executeQuery } = require("../database");
 
 // Save tokens to the DB
 const SaveNewTokensQuery = async (payload) => {
-    console.log('tokens', payload);
     const sql = `
         INSERT INTO 
             tokens (

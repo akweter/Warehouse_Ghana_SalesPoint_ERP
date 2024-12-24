@@ -48,7 +48,7 @@ Router.get("/", async (req, res, next) => {
 // Search customer with keywords
 Router.get("/query", async (req, res, next) => {
   const query = req.query.search;
-  const result = '%' + query + '%'
+  const result = '%'+query+'%'
   try {
     const output = await queryCustomer(result);
     res.status(200).json(output);

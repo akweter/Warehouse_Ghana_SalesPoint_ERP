@@ -418,7 +418,7 @@ const Invoice = () => {
                     </>
                 )
             }
-            {/* Confirm Proforma Invoice sent sent to GRA */}
+            {/* Confirm PROFORMA INVOICE sent sent to GRA */}
             <Dialog open={openConfirm} sx={{ padding: '20px' }}>
                 <DialogTitle color='darkred' variant='h3'>Confirm Submission</DialogTitle>
                 <DialogContent>

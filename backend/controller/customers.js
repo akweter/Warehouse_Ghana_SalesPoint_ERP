@@ -120,8 +120,7 @@ const queryCustomer = async (customer) => {
     FROM 
       customers 
     WHERE 
-      C_status  <> 'inactive' AND (C_name LIKE ?) 
-    LIMIT 10`;
+      C_status  <> 'inactive' AND (C_name LIKE ?) `;
   return await executeQuery(sql, customer);
 };
 

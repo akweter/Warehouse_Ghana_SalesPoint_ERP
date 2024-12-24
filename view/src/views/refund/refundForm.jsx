@@ -94,10 +94,10 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
                 reference: generateRandomNumber(),
                 groupReferenceId: "",
                 purchaseOrderReference: "",
-                invoiceType: "Partial_Refund",
+                invoiceType: "PARTIAL_REFUND",
                 invCusId: CustomerID,
                 remarks: Remarks,
-                status: "Partial_Refund",
+                status: "PARTIAL_REFUND",
                 checkdID: "",
                 delivery: DeliveryFee,
                 userPhone: customerPhone,
@@ -235,7 +235,6 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
         try {
             setConfirmationOpen(false);
             const data = await postRefundInvoice(header);
-            setOpen(true);
             if (data.status === 'error') {
                 setAlert((e) => ({ ...e, message: data.message, color: 'error' }));
             } else {
@@ -247,9 +246,13 @@ const RefundForms = ({ handleClose, refundInv, setSubmitted }) => {
         catch (error) {
             setAlert((e) => ({ ...e, message: 'Refunding invoice failed!', color: 'error' }));
         }
-        setDrop(true)
-        setAlert((e) => ({ ...e, message: null, color: '' }));
-        setSubmitted;
+        setOpen(true);
+        setDrop(false);
+
+        setTimeout(() => {
+            setAlert((e) => ({ ...e, message: null, color: '' }));
+            setSubmitted;
+        }, 2000);        
     }
 
     return (

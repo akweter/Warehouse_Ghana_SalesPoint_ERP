@@ -94,13 +94,13 @@ export const fetchQuoteInvoices = async () => {
 
 // Post new invoice
 export const postNewInvoice = async (data) => {
-    const endpoint = data.invoiceType === "Proforma Invoice" ? "payload/quote" : "payload/invoice";
+    const endpoint = data.invoiceType === "PROFORMA INVOICE" ? "payload/quote" : "payload/invoice";
     return await handleRequest(endpoint, 'POST', data);
 };
 
 // Post GRA new invoice
 export const postNewGRAInvoice = async (data) => {
-    const endpoint = data.invoiceType === "Proforma Invoice" ? "gra/quote" : "gra/invoice";
+    const endpoint = data.invoiceType === "PROFORMA INVOICE" ? "gra/quote" : "gra/invoice";
     return await handleRequest(endpoint, 'POST', data);
 };
 
