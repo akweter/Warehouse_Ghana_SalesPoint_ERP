@@ -51,8 +51,9 @@ export const UseFullPayload = (payload) => {
     }
     // Set header state
     const header = { calculationType: CalculationType, discountType: DiscountType, items: itemslist(products) };
-
+    
     const result = computeStandardTaxes(header);
+    
     const {
         covid,
         discountAmount,

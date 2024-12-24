@@ -43,7 +43,6 @@ import {
     FormControlLabel,
     Checkbox,
     Container,
-    TextareaAutosize,
     ThemeProvider,
     AppBar,
     Toolbar,
@@ -300,7 +299,7 @@ const InvoiceForm = ({
             try {
                 const response = await fetchAutocompleteId();
                 const number = response[0].numList + 1;
-                const output = `WG${year}M${month}${number}CSD`;
+                const output = `W-G${year}M${month}${number}CSD`;
                 setHeader((state) => ({ ...state, invoiceNumber: output }));
             }
             catch (error) {
@@ -516,6 +515,7 @@ const InvoiceForm = ({
             }
         }
         catch (error) {
+            console.log('error',error);
             setAlert((e) => ({ ...e, message: "Invoice submission failed! Refresh and try again", color: 'error' }));
         }
         setDrop(false);
@@ -575,7 +575,7 @@ const InvoiceForm = ({
                     </Container>
                 </AppBar>
 
-                <Container style={{ marginTop: isSmallScreen ? 50 : 0 }}>
+                <Box style={{ marginTop: isSmallScreen ? 50 : 0 }}>
                     <Grid container spacing={2} padding={2}>
                         <Grid item order={{ xs: 2, md: 1 }} xs={12} md={6}>
                             <Grid container spacing={2} py={3}>
@@ -737,10 +737,10 @@ const InvoiceForm = ({
                                             label="invoiceType"
                                             name="invoiceType"
                                             size='small'
-                                            // disabled={header.infoMsg ? true : false}
-                                            disabled={true}
-                                            // onChange={handleMainChange}
-                                            value={type && type !== 'invoice' ? 'Invoice' : 'Proforma Invoice'}
+                                            disabled={header.infoMsg ? true : false}
+                                            onChange={handleMainChange}
+                                            value={header.invoiceType}
+                                            // value={type && type !== 'invoice' ? 'Invoice' : 'Proforma Invoice'}
                                         >
                                             <MenuItem value='Invoice'>Official Invoice</MenuItem>
                                             <MenuItem value='Proforma Invoice'>Proforma Invoice</MenuItem>
@@ -889,25 +889,6 @@ const InvoiceForm = ({
                                         />
                                     </FormControl>
                                 </Grid>
-                                <Grid item xs={12} md={12}>
-                                    <Accordion>
-                                        <AccordionSummary
-                                            expandIcon={<ExpandMoreIcon />}
-                                        >
-                                            <Typography>Remarks</Typography>
-                                        </AccordionSummary>
-                                        <AccordionDetails>
-                                            <TextareaAutosize></TextareaAutosize>
-                                            <textarea
-                                                rows='100%'
-                                                cols={65}
-                                                value={header.remarks}
-                                                onChange={handleMainChange}
-                                                name='remarks'
-                                            />
-                                        </AccordionDetails>
-                                    </Accordion>
-                                </Grid>
                                 <Grid item xs={12} md={6}>
                                     <FormControl fullWidth>
                                         <Stack direction="row" spacing={2}>
@@ -925,6 +906,24 @@ const InvoiceForm = ({
                                             </Button>
                                         </Stack>
                                     </FormControl>
+                                </Grid>
+                                <Grid item xs={12} md={12}>
+                                    <Accordion>
+                                        <AccordionSummary
+                                            expandIcon={<ExpandMoreIcon />}
+                                        >
+                                            <Typography>Remarks</Typography>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            <textarea
+                                                rows={5}
+                                                cols={isSmallScreen ? 50 : 90}
+                                                value={header.remarks}
+                                                onChange={handleMainChange}
+                                                name='remarks'
+                                            />
+                                        </AccordionDetails>
+                                    </Accordion>
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -949,27 +948,27 @@ const InvoiceForm = ({
                                 </Grid>
                                 <Grid item xs={12} pt={2}>
                                     <TableContainer component={Paper} style={{ height: 300, width: '100%', overflowX: 'auto' }}>
-                                        <Table padding='checkbox'>
+                                        <Table size='small'>
                                             <TableHead>
                                                 <TableRow>
-                                                    <TableCell padding='checkbox' width='30%'>Description</TableCell>
-                                                    <TableCell padding='checkbox' width='20%'>Quantity</TableCell>
-                                                    <TableCell padding='checkbox' width='20%'>Price</TableCell>
-                                                    <TableCell padding='checkbox' width='20%'>Discount</TableCell>
-                                                    <TableCell padding='checkbox' width='10%'>Action</TableCell>
+                                                    <TableCell width='55%'>Description</TableCell>
+                                                    <TableCell width='10%'>Quantity</TableCell>
+                                                    <TableCell width='10%'>Price</TableCell>
+                                                    <TableCell width='10%'>Discount</TableCell>
+                                                    <TableCell width='50%'>Action</TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
                                                 {header.items.map((item, index) => (
-                                                    <TableRow hover key={index}>
-                                                        <TableCell padding='checkbox'>{item.description || item.ProductName}</TableCell>
-                                                        <TableCell padding='checkbox'>{item.quantity || item.Quantity}</TableCell>
-                                                        <TableCell padding='checkbox'>{item.unitPrice || item.ProductPrice}</TableCell>
-                                                        <TableCell padding='checkbox'>{item.discountAmount || item.ProductDiscount}</TableCell>
-                                                        <TableCell padding='checkbox'>
+                                                    <TableRow hover key={index} sx={{ padding: 0 }}>
+                                                        <TableCell component="th" scope="row">{item.description || item.ProductName}</TableCell>
+                                                        <TableCell>{item.quantity || item.Quantity}</TableCell>
+                                                        <TableCell>{item.unitPrice || item.ProductPrice}</TableCell>
+                                                        <TableCell>{item.discountAmount || item.ProductDiscount}</TableCell>
+                                                        <TableCell>
                                                             <Tooltip title="Edit">
                                                                 <IconButton onClick={() => handleEdit(index)}>
-                                                                    <EditIcon color='primary' />
+                                                                    <EditIcon color='info' />
                                                                 </IconButton>
                                                             </Tooltip>
                                                             <Tooltip title="Delete">
@@ -985,13 +984,13 @@ const InvoiceForm = ({
                                     </TableContainer>
                                     <Grid container spacing={2} pt={2}>
                                         <Grid item xs={12} md={6} padding={2}>
-                                            <Paper elevation={2}>
+                                            <Paper elevation={2} sx={{ padding: 2 }}>
                                                 <Typography variant='h6'>Remarks</Typography>
                                                 <Container>{header.remarks}</Container>
                                             </Paper>
                                         </Grid>
-                                        <Grid item xs={12} md={6} padding={2}>
-                                            <Paper elevation={2}>
+                                        <Grid item xs={12} md={6}>
+                                            <Paper elevation={2} sx={{ padding: 2 }}>
                                                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                                     <tbody>
                                                         <tr>
@@ -1052,7 +1051,7 @@ const InvoiceForm = ({
                             </Grid>
                         </Grid>
                     </Grid>
-                </Container>
+                </Box>
 
             {/* Edit Dialog */}
             <Dialog open={openEditDialog} onClose={handleEditCancel}>

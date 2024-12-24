@@ -94,6 +94,7 @@ const updateDBWithGRAResponse = async (response) => {
         qr_code,
         num,
     ];
+    console.log('payload', payload);
     return await updateQuotation(payload);
 }
 
@@ -211,69 +212,74 @@ const saveInvoiceToDB = async (Data, responseData) => {
     ];
 
     try {
-        //saving into DB invoice, refund, quotattion, quotation edit
-        await AddNewInvoices(payload);
+        if (invoiceType === "Invoice" && checkID !== '') {
+            const update = await updateDBWithGRAResponse(responseData);
+            console.log(update);
+        } else {
+            //saving into DB invoice, refund, quotattion, quotation edit
+            await AddNewInvoices(payload);
 
-        // saving cash customers to DB
-        if (businessPartnerTin === "C0000000000") {
-            await addCustomer(customerAdd);
-        }
+            // saving cash customers to DB
+            if (businessPartnerTin === "C0000000000") {
+                await addCustomer(customerAdd);
+            }
 
-        // saving invoice products
-        if (items) {
-            if (flag === 'REFUND' || flag === 'PARTIAL_REFUND') {
-                const result = await Promise.all(items.map(async (item) => {
-                    const {
-                        quantity,
-                        invProID,
-                    } = item;
-                    
-                    // Single product payload
-                    const updateProductVoid = [
-                        quantity,
-                        invProID,
-                        invoiceNumber
-                    ];
-                    await updateRefundProducts(updateProductVoid);
-                }));
-                return result;
-            } else {
-                await deleteQuotationProducts(invoiceNumber);
-                const result = await Promise.all(items.map(async (item) => {
-                    const {
-                        itemCode,
-                        unitPrice,
-                        discountAmount,
-                        quantity,
-                        invProID,
-                    } = item;
-
-                    // Generate product ID
-                    const product_ID = (id) => {
-                        let productID = null;
+            // saving invoice products
+            if (items) {
+                if (flag === 'REFUND' || flag === 'PARTIAL_REFUND') {
+                    const result = await Promise.all(items.map(async (item) => {
+                        const {
+                            quantity,
+                            invProID,
+                        } = item;
                         
-                        if (productID === null) {
-                            if (!id || id === "") {
-                                productID = generateUUID();
-                            } else {
-                                productID = id;
+                        // Single product payload
+                        const updateProductVoid = [
+                            quantity,
+                            invProID,
+                            invoiceNumber
+                        ];
+                        await updateRefundProducts(updateProductVoid);
+                    }));
+                    return result;
+                } else {
+                    await deleteQuotationProducts(invoiceNumber);
+                    const result = await Promise.all(items.map(async (item) => {
+                        const {
+                            itemCode,
+                            unitPrice,
+                            discountAmount,
+                            quantity,
+                            invProID,
+                        } = item;
+
+                        // Generate product ID
+                        const product_ID = (id) => {
+                            let productID = null;
+                            
+                            if (productID === null) {
+                                if (!id || id === "") {
+                                    productID = generateUUID();
+                                } else {
+                                    productID = id;
+                                }
                             }
+                            return productID;
                         }
-                        return productID;
-                    }
-                    // Single product payload
-                    const productPayload = [
-                        product_ID(invProID),
-                        invoiceNumber,
-                        itemCode,
-                        unitPrice,
-                        discountAmount,
-                        quantity,
-                        0,
-                    ];
-                    await saveInInvoiceProduct(productPayload);
-                }));
-                return result;
+                        // Single product payload
+                        const productPayload = [
+                            product_ID(invProID),
+                            invoiceNumber,
+                            itemCode,
+                            unitPrice,
+                            discountAmount,
+                            quantity,
+                            0,
+                        ];
+                        await saveInInvoiceProduct(productPayload);
+                    }));
+                    return result;
+                }
             }
         }
         return { status: 'success', message: 'Transaction successful' }

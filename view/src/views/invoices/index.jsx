@@ -422,9 +422,7 @@ const Invoice = () => {
             <Dialog open={openConfirm} sx={{ padding: '20px' }}>
                 <DialogTitle color='darkred' variant='h3'>Confirm Submission</DialogTitle>
                 <DialogContent>
-                    <Typography variant='body1' align='center'>
-                        You want to submit quotation to GRA?
-                    </Typography>
+                    <Typography variant='body1' align='center'>You want to submit quotation to GRA?</Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={closeConfirm} variant='outlined' color='error'>Cancel</Button>

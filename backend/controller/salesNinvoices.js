@@ -5,7 +5,7 @@ const { executeQuery } = require("../database/index");
 // Return first ten invoices
 const tenInvoices = async () => {
 	const sql = "SELECT * FROM invoice WHERE Inv_status = 'Invoice' ORDER BY Inv_ID_auto DESC LIMIT 10";
-	return await executeQuery(sql);		
+	return await executeQuery(sql);
 }
 
 
@@ -23,8 +23,8 @@ const customersMadePurchase = async () => {
 		invoice.Inv_user = customers.C_id
 	  GROUP BY 
 		C_name;
-	  `;	
-		return await executeQuery(sql);
+	  `;
+	return await executeQuery(sql);
 }
 
 
@@ -36,8 +36,8 @@ const sixMonthAverageItemsSold = async () => {
 	  JOIN invoice_products ON invoice.Inv_Number = invoice_products.InvoiceNum_ID
 	  WHERE Inv_date >= NOW() - INTERVAL 6 MONTH
 	  GROUP BY YEAR(Inv_date), MONTH(Inv_date)
-	  ORDER BY year DESC, month DESC`;	
-		return await executeQuery(sql);
+	  ORDER BY year DESC, month DESC`;
+	return await executeQuery(sql);
 }
 
 
@@ -116,7 +116,7 @@ const salesNRefundInvoices = async (a, b, c, d) => {
 	  ORDER BY
 		inv.Inv_ID_auto
 	  DESC`;
-	  return await executeQuery(sql, [a, b, c]);
+	return await executeQuery(sql, [a, b, c]);
 }
 
 
@@ -126,9 +126,9 @@ const allSalesInvNumbers = async () => {
     SELECT COUNT(*) AS numList
 	FROM invoice
 	WHERE MONTH(Inv_date) = MONTH(CURRENT_DATE())
-	AND YEAR(Inv_date) = YEAR(CURRENT_DATE())`;	
-		return await executeQuery(sql);
-	}
+	AND YEAR(Inv_date) = YEAR(CURRENT_DATE())`;
+	return await executeQuery(sql);
+}
 
 
 // Return only sales recent record
@@ -149,7 +149,7 @@ const getAllQuoteInvoices = async () => {
 		ORDER BY 
 			Inv_ID_auto 
 		DESC`;
-	}
+}
 
 
 // Fetch by Date
@@ -160,25 +160,25 @@ const getByDate = async () => {
 
 // Sum and fetch total invoice
 const getTotalInv = async () => {
-	const sql = `SELECT COUNT(*) as total_invoices FROM invoice`;	
+	const sql = `SELECT COUNT(*) as total_invoices FROM invoice`;
 	return await executeQuery(sql);
 }
 
 // Fetchs sales invoice by current day
 const getSalesCurDay = async () => {
-	const sql = `SELECT * FROM invoice WHERE Inv_status = 'Invoice' AND Inv_date = CURDATE()`;	
+	const sql = `SELECT * FROM invoice WHERE Inv_status = 'Invoice' AND Inv_date = CURDATE()`;
 	return await executeQuery(sql);
 }
 
 // Fetch by current week
 const WeekAllSalesInvoice = async () => {
-	const sql = `SELECT Inv_total_amt FROM invoice WHERE Inv_status = 'Invoice' AND WEEK(Inv_date) = WEEK(CURDATE())`;	
+	const sql = `SELECT Inv_total_amt FROM invoice WHERE Inv_status = 'Invoice' AND WEEK(Inv_date) = WEEK(CURDATE())`;
 	return await executeQuery(sql);
 }
 
 // Fetch by curent month
 const MonthAllSalesInvoice = async () => {
-	const sql = `SELECT Inv_total_amt FROM invoice WHERE Inv_status = 'Invoice' AND MONTH(Inv_date) = MONTH(CURDATE())`;	
+	const sql = `SELECT Inv_total_amt FROM invoice WHERE Inv_status = 'Invoice' AND MONTH(Inv_date) = MONTH(CURDATE())`;
 	return await executeQuery(sql);
 }
 
@@ -214,8 +214,8 @@ const ThisMonthTaxes = async () => {
 			invoice
 		WHERE
 			MONTH(Inv_date) = MONTH(CURRENT_DATE())
-			AND YEAR(Inv_date) = YEAR(CURRENT_DATE())`;	
-		return await executeQuery(sql);
+			AND YEAR(Inv_date) = YEAR(CURRENT_DATE())`;
+	return await executeQuery(sql);
 }
 
 // Total amount and date for this month
@@ -258,44 +258,44 @@ const ThisMonthTotalInvoicenDate = async () => {
 
 // Return all purchase invoice
 const refundInvoices = async () => {
-	const sql = "SELECT * FROM invoice WHERE Inv_status = 'REFUND' OR Inv_status = 'Partial_Refund' ORDER BY Inv_ID_auto DESC";	
+	const sql = "SELECT * FROM invoice WHERE Inv_status = 'REFUND' OR Inv_status = 'Partial_Refund' ORDER BY Inv_ID_auto DESC";
 	return await executeQuery(sql);
-	}
+}
 
 
 // Return all invoice numbers and their respective number of products
 const countALlrefundInvoices = async () => {
-	const sql = "SELECT * FROM invoice WHERE Inv_status IN ('REFUND', 'Partial_Refund') GROUP BY Inv_Number ORDER BY Inv_ID_auto DESC";	
+	const sql = "SELECT * FROM invoice WHERE Inv_status IN ('REFUND', 'Partial_Refund') GROUP BY Inv_Number ORDER BY Inv_ID_auto DESC";
 	return await executeQuery(sql);
-	}
+}
 
 
 // Return all invoice numbers and their respective number of products
 const allRefundedProducts = async () => {
-	const sql = "SELECT Inv_Number FROM invoice WHERE Inv_status IN ('REFUND', 'Partial_Refund') ORDER BY Inv_ID_auto DESC";	
+	const sql = "SELECT Inv_Number FROM invoice WHERE Inv_status IN ('REFUND', 'Partial_Refund') ORDER BY Inv_ID_auto DESC";
 	return await executeQuery(sql);
-	}
+}
 
 
 // Return only cancelled 
 const cancelledRefundInvoices = async () => {
-	const sql = "SELECT * FROM invoice WHERE Inv_status = 'Refund_Cancellation' ORDER BY Inv_Number DESC";	
+	const sql = "SELECT * FROM invoice WHERE Inv_status = 'Refund_Cancellation' ORDER BY Inv_Number DESC";
 	return await executeQuery(sql);
-	}
+}
 
 
 // Return all purchase invoice
 const purchaseInvoices = async () => {
-	const sql = "SELECT * FROM invoice WHERE Inv_status = 'PURCHASE' ORDER BY Inv_ID_auto  DESC";	
+	const sql = "SELECT * FROM invoice WHERE Inv_status = 'PURCHASE' ORDER BY Inv_ID_auto  DESC";
 	return await executeQuery(sql);
-	}
+}
 
 
 // Only one Invoice
 const oneInvoice = async (payload) => {
-	const sql = "SELECT * FROM invoice WHERE Inv_status = 'Invoice' AND Inv_id = ? ORDER BY Inv_ID_auto  DESC";	
+	const sql = "SELECT * FROM invoice WHERE Inv_status = 'Invoice' AND Inv_id = ? ORDER BY Inv_ID_auto  DESC";
 	return await executeQuery(sql, payload);
-	}
+}
 
 
 // Get Proforma Invoice
@@ -325,8 +325,8 @@ const getWaybillInvoice = async (id) => {
 		WHERE
 			i.Inv_Number IN (?)
 		ORDER BY
-			inv.Itm_name ASC`;	
-		return await executeQuery(sql, id);
+			inv.Itm_name ASC`;
+	return await executeQuery(sql, id);
 }
 
 // Sales Dept invoice
@@ -337,75 +337,75 @@ const Searches = async (payload) => {
 	WHERE
 		Inv_status = 'Invoice' AND (Inv_Number LIKE ? OR Inv_user LIKE ?) 
 	ORDER BY
-		Inv_id DESC`;	
-		return await executeQuery(sql, payload);
-	}
+		Inv_id DESC`;
+	return await executeQuery(sql, payload);
+}
 
 
 /******************  BEGIN POST REQUESTS *****************/
 
 // Save invoices to the DB
 const AddNewInvoices = async (payload) => {
-    const sql = `
+	const sql = `
         INSERT INTO invoice (
-			Inv_ID_auto, 
-			Inv_Check, 
-			Inv_user, 
-			Inv_total_amt, 
-			Inv_status, 
-			Inv_Calc_Type, 
-			Inv_date, currency, 
-			Inv_Sale_Type, 
-			Inv_Number, 
-			Inv_Customer_Tin, 
-			Inv_Cus_ID, 
-			Inv_discount, 
-			Inv_ext_Rate, 
-			Inv_vat, 
-			Inv_id, 
-			Inv_Reference, 
-			remarks, 
-			nhil, 
-			getfund, 
-			covid, 
-			cst, 
-			tourism, 
-			Inv_Discount_Type, 
-			ysdcid, 
-			ysdcrecnum, 
+			Inv_ID_auto,
+			Inv_Check,
+			Inv_user,
+			Inv_total_amt,
+			Inv_status,
+			Inv_Calc_Type,
+			Inv_date, currency,
+			Inv_Sale_Type,
+			Inv_Number,
+			Inv_Customer_Tin,
+			Inv_Cus_ID,
+			Inv_discount,
+			Inv_ext_Rate,
+			Inv_vat,
+			Inv_id,
+			Inv_Reference,
+			remarks,
+			nhil,
+			getfund,
+			covid,
+			cst,
+			tourism,
+			Inv_Discount_Type,
+			ysdcid,
+			ysdcrecnum,
 			ysdcintdata,
-			ysdcregsig, 
-			ysdcmrc, 
-			ysdcmrctim, 
+			ysdcregsig,
+			ysdcmrc,
+			ysdcmrctim,
 			ysdctime,
-			qr_code, 
+			qr_code,
 			Inv_delivery_fee
         ) VALUES (
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
         )
-        ON DUPLICATE KEY UPDATE 
-            Inv_user = CASE 
-				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_user) 
-				ELSE Inv_user 
+        ON DUPLICATE KEY UPDATE
+            Inv_user = CASE
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_user)
+				ELSE Inv_user
 			END,
-			Inv_total_amt = CASE 
-				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_total_amt) 
-				ELSE Inv_total_amt 
+			Inv_total_amt = CASE
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_total_amt)
+				ELSE Inv_total_amt
 			END,
 			Inv_status = VALUES(Inv_status), -- Keep the same status
-			Inv_Calc_Type = CASE 
-				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_Calc_Type) 
-				ELSE Inv_Calc_Type 
+			Inv_Calc_Type = CASE
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_Calc_Type)
+				ELSE Inv_Calc_Type
 			END,
-			Inv_date = CASE 
-				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_date) 
-				ELSE Inv_date 
+			Inv_date = CASE
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_date)
+				ELSE Inv_date
 			END,
-			currency = CASE 
-				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(currency) 
-				ELSE currency 
+			currency = CASE
+				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(currency)
+				ELSE currency
 			END,
-			Inv_Sale_Type = CASE 
+			Inv_Sale_Type = CASE
 				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_Sale_Type) 
 				ELSE Inv_Sale_Type 
 			END,
@@ -501,9 +501,9 @@ const AddNewInvoices = async (payload) => {
 			Inv_delivery_fee = CASE 
 				WHEN Inv_status <> VALUES(Inv_status) THEN VALUES(Inv_delivery_fee) 
 				ELSE Inv_delivery_fee 
-			END`;    
-        return await executeQuery(sql, payload);
-    }
+			END`;
+	return await executeQuery(sql, payload);
+}
 
 
 const saveRefundInvoice = async (payload) => {
@@ -513,13 +513,13 @@ const saveRefundInvoice = async (payload) => {
 			Inv_ID_auto, Inv_Check, Inv_user, Inv_total_amt, Inv_status, Inv_Calc_Type, Inv_date, currency, Inv_Sale_Type, Inv_Number, Inv_Customer_Tin, Inv_discount, Inv_ext_Rate, Inv_vat, Inv_id, Inv_Reference, remarks, nhil, getfund, covid, cst, tourism, Inv_Discount_Type, ysdcid, ysdcrecnum, ysdcintdata, ysdcregsig, ysdcmrc, ysdcmrctim, ysdctime, qr_code, Inv_delivery_fee
 	) VALUES(
 		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-	)`;	
-		return await executeQuery(sql, payload);
+	)`;
+	return await executeQuery(sql, payload);
 }
 
 // Save product for each invoice
 const saveInInvoiceProduct = async (payload) => {
-    const sql = `
+	const sql = `
         INSERT INTO 
             invoice_products (
                 _ID, 
@@ -538,25 +538,24 @@ const saveInInvoiceProduct = async (payload) => {
             Product_Price = VALUES(Product_Price),
             Product_Discount = VALUES(Product_Discount),
             Product_Quantity = VALUES(Product_Quantity),
-            Product_Refunded_Quantity = VALUES(Product_Refunded_Quantity)`;    
-        return await executeQuery(sql, payload);
-    }
-
+            Product_Refunded_Quantity = VALUES(Product_Refunded_Quantity)`;
+	return await executeQuery(sql, payload);
+}
 
 // update invoice products in the database
-const updateInvoiceProducts =  async (payload, productID, invoiceNum) => {
+const updateInvoiceProducts = async (payload, productID, invoiceNum) => {
 	const sql = `
 		UPDATE invoice_products
 		SET ?
 		WHERE _ID = ?
-		AND InvoiceNum_ID = ?`;	
-	  return await executeQuery(sql, [payload, productID, invoiceNum]);
+		AND InvoiceNum_ID = ?`;
+	return await executeQuery(sql, [payload, productID, invoiceNum]);
 }
 
 // Update complete invoice
 const updateInvoice_Quotation = async (invoice, checkID) => {
-	const sql = `UPDATE invoice SET ? WHERE Inv_Check = ?`;	
-	  return await executeQuery(sql, [invoice, checkID]);
+	const sql = `UPDATE invoice SET ? WHERE Inv_Check = ?`;
+	return await executeQuery(sql, [invoice, checkID]);
 }
 
 // Update quote invoice with GRA response
@@ -577,7 +576,7 @@ const updateQuotation = async (payload) => {
 		Inv_Number = ?
 	AND 
 		Inv_status = 'Invoice'`;
-		return await executeQuery(sql, payload);
+	return await executeQuery(sql, payload);
 }
 
 // update invoice with qr code
@@ -597,8 +596,8 @@ const updateInvoiceQRCodes = async (payload) => {
 	WHERE
 		Inv_Number = ?
 	AND 
-		Inv_status = ?`;	
-		return await executeQuery(sql, payload);
+		Inv_status = ?`;
+	return await executeQuery(sql, payload);
 }
 
 // Update products refunded quantity
@@ -607,15 +606,15 @@ const updateRefundProducts = async (payload) => {
 		UPDATE invoice_products
 		SET Product_Refunded_Quantity = Product_Refunded_Quantity + ?
 		WHERE Product_ID = ?
-		AND InvoiceNum_ID = ?`;	
-		return await executeQuery(sql, payload);
+		AND InvoiceNum_ID = ?`;
+	return await executeQuery(sql, payload);
 }
 
 
 // Delete products for quotation
 const deleteQuotation = async (invoiceNumber) => {
-	const sql = `DELETE FROM invoice WHERE Inv_Number = ?`;	
-	return await executeQuery(sql, invoiceNumber);		
+	const sql = `DELETE FROM invoice WHERE Inv_Number = ?`;
+	return await executeQuery(sql, invoiceNumber);
 }
 
 // Delete products from invoice products table for new entry

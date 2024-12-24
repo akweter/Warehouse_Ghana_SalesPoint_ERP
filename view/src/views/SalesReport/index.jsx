@@ -330,10 +330,11 @@ export default function SalesReport() {
                     paddingBottom: 5,
                 }}
             >
-                    <Typography color='white' variant='h3'>Quotatations</Typography>
+                    <Typography color='white' variant='h3'>Quotations</Typography>
                     < MakeNewInvoice
-                        btnMsg={'Make Quotaion'}
+                        btnMsg={'Make Quotation'}
                         type={'invoice'}
+                        setSubmitted={setSubmitted}
                     />
             </Grid>
             {
