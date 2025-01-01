@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import logo from '../../assets/images/logo.webp';
-import Screens from '../../ui-component/cardDivision';
+// import Screens from '../../ui-component/cardDivision';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -43,7 +43,7 @@ import {
     FormControlLabel,
     Checkbox,
     Container,
-    ThemeProvider,
+    // ThemeProvider,
     AppBar,
     Toolbar,
     Chip,
@@ -531,7 +531,7 @@ const InvoiceForm = ({
     const handleClose = (event, reason) => { if (reason === 'clickaway') { return; } setOpen(false); };
 
     return (
-        <ThemeProvider theme={Screens.lightTheme}>
+        <>
             { open && <AlertError open={open} alert={alert} handleClose={handleClose} /> }
             { drop && <ShowBackDrop open={drop} /> }
 
@@ -831,6 +831,30 @@ const InvoiceForm = ({
                                                     }));
                                                 }
                                             }}
+                                            renderOption={(props, option) => (
+                                                <li
+                                                    {...props}
+                                                    key={option.productID}
+                                                    style={{
+                                                        opacity: option.stockQTY > 0 ? 1 : 0.5,
+                                                        pointerEvents: option.stockQTY > 0 ? 'auto' : 'none',
+                                                        cursor: option.stockQTY > 0 ? 'pointer' : 'not-allowed',
+                                                    }}
+                                                >
+                                                    <div
+                                                        style={{
+                                                            display: 'flex',
+                                                            justifyContent: 'space-between',
+                                                            width: '100%',
+                                                        }}
+                                                    >
+                                                        <span>{option.productName}</span>
+                                                        <span style={{ fontStyle: 'italic', color: 'gray' }}>
+                                                            Stock: {option.stockQTY}
+                                                        </span>
+                                                    </div>
+                                                </li>
+                                            )}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
@@ -1119,7 +1143,7 @@ const InvoiceForm = ({
                     <Button variant='outlined' onClick={handleEditSave} color="secondary"> Update </Button>
                 </DialogActions>
             </Dialog>
-        </ThemeProvider>
+        </>
     );
 }
 

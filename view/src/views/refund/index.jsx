@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import Box from '@mui/material/Box';
+import ReactDOMServer from 'react-dom/server';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { Visibility as VisibilityIcon } from '@mui/icons-material';
+import { Print as PrintIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
 import {
     IconButton,
     Grid,
@@ -11,6 +12,7 @@ import {
 import { GeneralCatchError } from '../../utilities/errorAlert';
 import { fetchRefundInvoices } from '../../apiActions/allApiCalls/refund';
 import InvoiceDetails from '../../views/invoices/invoiceDetails';
+import InvoiceTemplate from '../invoices/invoiceTemplate';
 
 // /* eslint-disable */
 
@@ -44,8 +46,8 @@ export default function Refund() {
     }, []);
 
     const fetchData = async () => {
+        setLoading(true);
         try {
-            setLoading(true);
             const invoicesData = await fetchRefundInvoices();
             const updatedInvoices = invoicesData.map((invoice, index) => ({
                 ...invoice,
@@ -98,6 +100,9 @@ export default function Refund() {
                     renderCell: (params) => (<>
                         <IconButton title='View Refund' onClick={() => handleViewIconClick(params.row)}>
                             <VisibilityIcon fontSize='medium' color='secondary' />
+                        </IconButton>
+                        <IconButton title='Print Invoice' onClick={() =>  handlePrintIcon(params.row)}>
+                            <PrintIcon fontSize='small' color='error' />
                         </IconButton>
                     </>),
                 },
@@ -173,6 +178,9 @@ export default function Refund() {
                     <IconButton title='View Refund' onClick={() => handleViewIconClick(params.row)}>
                         <VisibilityIcon fontSize='medium' color='secondary' />
                     </IconButton>
+                    <IconButton title='Print Invoice' onClick={() =>  handlePrintIcon(params.row)}>
+                        <PrintIcon fontSize='small' color='error' />
+                    </IconButton>
                 </>),
             },
         ];
@@ -182,6 +190,23 @@ export default function Refund() {
         setSelectedRow(row);
         setOpenDialog(true);
     };
+
+    // Print invoice
+    const handlePrintIcon = (row) => {
+        const invoiceTemplateHTML = ReactDOMServer.renderToStaticMarkup(< InvoiceTemplate data={row} />);
+        const printWindow = window.open('', '_blank');
+        printWindow.document.body.innerHTML = invoiceTemplateHTML;
+        printWindow.onload = () => {
+            printWindow.print();
+
+            setTimeout(() => {
+                printWindow.onafterprint = () => {
+                    printWindow.close();
+                };
+            }, 1000);
+        };
+    }
+
 
     const handleCloseDialog = () => setOpenDialog(false);
     const getRowId = (row) => row.AutoID;

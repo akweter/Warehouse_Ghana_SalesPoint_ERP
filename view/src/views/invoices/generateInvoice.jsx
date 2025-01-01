@@ -37,7 +37,7 @@ const MakeNewInvoice = ({ setSubmitted, btnMsg, type }) => {
                 maxWidth="xl"
                 open={open}
                 TransitionComponent={Transition}
-                transitionDuration={1000}
+                transitionDuration={800}
             >
                 < InvoiceForm 
                     setSubmitted={setSubmitted} 

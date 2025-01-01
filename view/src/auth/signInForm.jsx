@@ -80,7 +80,7 @@ export default function SignInForm() {
                         if (redirectUrl === null || redirectUrl === undefined || redirectUrl === "") {
                             window.location.href = window.location.origin;
                         } else {
-                            window.location.href = `${window.location.origin}${redirectUrl}`;
+                            window.location.href = `${window.location.origin}/invoice`;
                         }                                
                     }, 100);
                 }
@@ -138,14 +138,13 @@ export default function SignInForm() {
                             />
                         </Grid>
                         <Grid item xs={12} style={{textAlign: 'center'}}>
-                            {loading ? <CircularProgress size={30}/> : <>
-                                <Button
-                                    sx={{ color: 'red', fontWeight: '500', fontSize: '16px' }}
-                                    variant='outlined'
-                                    type='submit'
-                                    onClick={handleSubmit}> Sign in
-                                </Button>
-                            </>}
+                            <Button
+                                sx={{ color: 'red', fontWeight: '500', fontSize: '16px' }}
+                                variant='outlined'
+                                disabled={loading}
+                                type='submit'
+                                onClick={handleSubmit}> {loading ? <CircularProgress size={30}/> : <> Sign in</>}
+                            </Button>
                         </Grid>
                     </Grid>
                 </Box>

@@ -1,10 +1,12 @@
 const { addCustomer } = require("../controller/customers");
+const { deductInventoryProductStock, addInventoryProductStock } = require("../controller/Inventory");
 const {
     AddNewInvoices,
     saveInInvoiceProduct,
     updateQuotation,
     deleteQuotationProducts,
     updateRefundProducts,
+    updateExistingQuote,
 } = require("../controller/salesNinvoices");
 const generateUUID = require("./generateIDs");
 
@@ -14,6 +16,7 @@ const filterFields = (obj, fieldsToRemove) => {
         Object.entries(obj).filter(([key]) => !fieldsToRemove.includes(key))
     );
 };
+
 
 // Trim the payload to GRA Standard
 const sanitizePayload = (data) => {
@@ -128,6 +131,7 @@ const saveInvoiceToDB = async (Data, responseData) => {
         userPhone,
         invCusId,
         items,
+        infoMsg,
         flag,
     } = Data;
 
@@ -214,17 +218,49 @@ const saveInvoiceToDB = async (Data, responseData) => {
     ];
 
     try {
+        // Update invoice QR code | Quotation sent for GRA QR codes
         if (invoiceType === "Invoice" && checkID !== '') {
             await updateDBWithGRAResponse(responseData);
-        } else {
-            //saving into DB invoice, refund, quotattion, quotation edit
-            await AddNewInvoices(payload);
-
-            // saving cash customers to DB
-            if (businessPartnerTin === "C0000000000") {
-                await addCustomer(customerAdd);
+            
+            // Deduct items in inventory
+            const res = await Promise.all(items.map(async (item) => {
+                const { quantity, itemCode } = item;
+                const payload = [ quantity, itemCode ];
+                await deductInventoryProductStock(payload);
+            }));
+        }
+        else {
+            // Update quote invoice or save new transation on new row
+            if (infoMsg && infoMsg === "quoteEdit") {
+                const quotationPayload = {
+                    Inv_total_amt: totalAmount,
+                    Inv_Calc_Type: calculationType,
+                    Inv_date: transactionDate,
+                    currency: currency,
+                    Inv_Sale_Type: saleType,
+                    Inv_discount: discountAmount,
+                    Inv_ext_Rate: exchangeRate,
+                    Inv_vat: totalVat,
+                    remarks: remarks,
+                    nhil: nhil,
+                    getfund: getfund,
+                    covid: covid,
+                    cst: cst,
+                    tourism: tourism,
+                    Inv_Discount_Type: discountType,
+                    Inv_delivery_fee: delivery
+                };                
+                await updateExistingQuote(quotationPayload, invoiceNumber);
             }
+            else {
+                //saving into DB invoice, refund, quotattion, quotation edit
+                await AddNewInvoices(payload);
 
+                // saving cash customers to DB
+                if (businessPartnerTin === "C0000000000") {
+                    await addCustomer(customerAdd);
+                }
+            }
             // saving invoice products
             if (items) {
                 if (flag === 'REFUND' || flag === 'PARTIAL_REFUND') {
@@ -241,6 +277,10 @@ const saveInvoiceToDB = async (Data, responseData) => {
                             invoiceNumber
                         ];
                         await updateRefundProducts(updateProductVoid);
+
+                        // Add products in inventory
+                        const payload = [ quantity, itemCode ];
+                        await addInventoryProductStock(payload)
                     }));
                     return result;
                 } else {
@@ -278,6 +318,12 @@ const saveInvoiceToDB = async (Data, responseData) => {
                             0,
                         ];
                         await saveInInvoiceProduct(productPayload);
+
+                        // if invoice deduct products from inventory db
+                        if (invoiceType === 'INVOICE') {
+                            const payload = [ quantity, itemCode ];
+                            const add = await deductInventoryProductStock(payload);
+                        }
                     }));
                     return result;
                 }

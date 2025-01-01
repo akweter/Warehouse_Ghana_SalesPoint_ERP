@@ -15,7 +15,6 @@ import {
 // projects
 import { fetchQuoteInvoices } from '../../apiActions/allApiCalls/invoice';
 import { AlertError, GeneralCatchError } from '../../utilities/errorAlert';
-import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceholder';
 import WaybillForm from './waybilForm';
 
 // /* eslint-disable */
@@ -223,29 +222,25 @@ export default function OrderCheckout() {
                     <Typography color='white' variant='h3'>Despatch Orders</Typography>
                 </Grid>
             </Grid>
-            {
-                invoices.length > 0 ?
-                    <Box sx={{ height: 600, width: '100%' }}>
-                        <DataGrid
-                            rows={rowsWithIds}
-                            columns={columns}
-                            loading={loading || null}
-                            density='compact'
-                            editMode='cell'
-                            pageSize={5}
-                            disableRowSelectionOnClick={true}
-                            slots={{ toolbar: GridToolbar }}
-                            hideFooterSelectedRowCount={true}
-                            filterMode='client'
-                            slotProps={{
-                                toolbar: {
-                                    showQuickFilter: true,
-                                },
-                            }}
-                        />
-                    </Box> :
-                    < ProductPlaceholder />
-            }
+            <Box sx={{ height: 600, width: '100%' }}>
+                <DataGrid
+                    rows={rowsWithIds}
+                    columns={columns}
+                    loading={loading || null}
+                    density='compact'
+                    editMode='cell'
+                    pageSize={5}
+                    disableRowSelectionOnClick={true}
+                    slots={{ toolbar: GridToolbar }}
+                    hideFooterSelectedRowCount={true}
+                    filterMode='client'
+                    slotProps={{
+                        toolbar: {
+                            showQuickFilter: true,
+                        },
+                    }}
+                />
+            </Box>
             {alert.message ? <GeneralCatchError alert={alert} handleClose={handleClose} open={open} /> : null}
             {notify.message ? <AlertError alert={notify} handleClose={handleClose} open={open} /> : null}
 

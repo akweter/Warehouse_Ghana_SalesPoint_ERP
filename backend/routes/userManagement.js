@@ -289,7 +289,7 @@ Router.put("/:id", async (req, res) => {
     staffID,
     address,
   } = req.body;
-
+ 
   const userData = {
     Usr_FName: fname,
     Usr_LName: lname,
@@ -302,7 +302,7 @@ Router.put("/:id", async (req, res) => {
   };
 
   try {
-    const output = await updateUser(userData, id);
+    await updateUser(userData, id);
     return res.status(200).json({ message: "success" });
   }
   catch (err) {

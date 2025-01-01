@@ -15,7 +15,6 @@ import { Visibility as VisibilityIcon } from '@mui/icons-material';
 
 // projects
 import { GeneralCatchError } from '../../utilities/errorAlert';
-import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceholder';
 import DeliveryDetails from './deliveryDetails';
 import { fetchDeliveries } from '../../apiActions/allApiCalls/deliveries';
 import ReceiptForm from '../receipt/receiptForm';
@@ -213,6 +212,7 @@ export default function Deliveries() {
 
     return (
         <div>
+            {alert.message && <GeneralCatchError alert={alert} handleClose={handleClose} open={open} />}
             <Grid container justifyContent='space-evenly'
                 style={{
                     backgroundColor: 'darkblue',
@@ -224,31 +224,25 @@ export default function Deliveries() {
                     <Typography color='white' variant='h3'>Deliveries</Typography>
                 </Grid>
             </Grid>
-            {
-                invoices.length > 0 ?
-                    <Box sx={{ height: 600, width: '100%' }}>
-                        <DataGrid
-                            rows={rowsWithIds}
-                            columns={columns}
-                            loading={loading ? loading : null}
-                            density='compact'
-                            editMode='cell'
-                            pageSize={5}
-                            disableRowSelectionOnClick={true}
-                            slots={{ toolbar: GridToolbar }}
-                            hideFooterSelectedRowCount={true}
-                            filterMode='client'
-                            slotProps={{
-                                toolbar: {
-                                    showQuickFilter: true,
-                                },
-                            }}
-                        />
-                    </Box> :
-                    < ProductPlaceholder />
-            }
-            {alert.message && <GeneralCatchError alert={alert} handleClose={handleClose} open={open} />}
-
+            <Box sx={{ height: 600, width: '100%' }}>
+                <DataGrid
+                    rows={rowsWithIds}
+                    columns={columns}
+                    loading={loading ? loading : null}
+                    density='compact'
+                    editMode='cell'
+                    pageSize={5}
+                    disableRowSelectionOnClick={true}
+                    slots={{ toolbar: GridToolbar }}
+                    hideFooterSelectedRowCount={true}
+                    filterMode='client'
+                    slotProps={{
+                        toolbar: {
+                            showQuickFilter: true,
+                        },
+                    }}
+                />
+            </Box>
             <Dialog
                 open={openDialog}
                 fullWidth

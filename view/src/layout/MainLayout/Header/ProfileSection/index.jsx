@@ -100,9 +100,7 @@ const ProfileSection = () => {
                 }}
                 icon={
                     <Avatar
-                        sx={{
-                            cursor: 'pointer'
-                        }}
+                        sx={{ cursor: 'pointer' }}
                         ref={anchorRef}
                         color="inherit"
                         onClick={handleToggle}

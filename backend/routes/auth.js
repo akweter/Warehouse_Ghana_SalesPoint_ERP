@@ -15,6 +15,7 @@ const {
 	signUpUser,
 	AddNewUser,
 	resetPassword,
+	updateUserPSD,
 } = require("../controller/userMgt");
 
 // Login
@@ -164,8 +165,9 @@ Auth.put("/psd/:id", async (req, res) => {
 	const { psd } = req.body;
 	const hashpsswd = await bcrypt.hash(psd, 12);
 	try {
+		await updateUserPSD([hashpsswd, id]);
 		logMessage(`${id} update paswword succussful`, req.headers.keyid);
-		return res.status(200).json({ message: 'success' });
+		return res.status(200).json({ status: 'success', message: `User's secret updated successfully`});
 	}
 	catch (err) {
 		logErrorMessages(`Adding user error ${JSON.stringify(err)}`, req.headers.keyid);

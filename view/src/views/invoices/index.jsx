@@ -32,7 +32,6 @@ import MakeNewInvoice from './generateInvoice';
 import InvoiceDetails from './invoiceDetails';
 import InvoiceTemplate from './invoiceTemplate';
 import { AlertError, GeneralCatchError } from '../../utilities/errorAlert';
-import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceholder';
 
 /* eslint-disable */
 const Invoice = () => {
@@ -307,7 +306,7 @@ const Invoice = () => {
     // Print invoice
     const handlePrintIcon = (row) => {
         setOpenPrintInvoice(false)
-        const invoiceTemplateHTML = renderInvoiceTemplate(row);
+        const invoiceTemplateHTML = renderInvoiceTemplate(row[0]);
         setPrintInvoice([]);
         const printWindow = window.open('', '_blank');
         printWindow.document.body.innerHTML = invoiceTemplateHTML;
@@ -381,30 +380,26 @@ const Invoice = () => {
                         type={'quote'}
                     />
                 </Grid>
-            </Grid> 
-            {
-                invoices.length > 0 ?
-                <Box sx={{ height: 600, width: '100%' }}>
-                    <DataGrid
-                        rows={rowsWithIds}
-                        columns={columns}
-                        loading={loading || null}
-                        density='compact'
-                        editMode='cell'
-                        pageSize={5}
-                        disableRowSelectionOnClick={true}
-                        slots={{ toolbar: GridToolbar }}
-                        hideFooterSelectedRowCount={true}
-                        filterMode='client'
-                        slotProps={{
-                            toolbar: {
-                                showQuickFilter: true,
-                            },
-                        }}
-                    />
-                </Box> :
-                < ProductPlaceholder />
-            }
+            </Grid>
+            <Box sx={{ height: 600, width: '100%' }}>
+                <DataGrid
+                    rows={rowsWithIds}
+                    columns={columns}
+                    loading={loading || null}
+                    density='compact'
+                    editMode='cell'
+                    pageSize={5}
+                    disableRowSelectionOnClick={true}
+                    slots={{ toolbar: GridToolbar }}
+                    hideFooterSelectedRowCount={true}
+                    filterMode='client'
+                    slotProps={{
+                        toolbar: {
+                            showQuickFilter: true,
+                        },
+                    }}
+                />
+            </Box>
             {
                 selectedRow && (
                     <>

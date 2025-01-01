@@ -1,6 +1,6 @@
+/* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import logo from '../assets/images/logo.webp';
-import '../assets/css/verifyEmail.css';
 import { fetchuserByIDPsd, updateUserPSD } from '../apiActions/allApiCalls/users';
 import {
     Box,
@@ -8,12 +8,11 @@ import {
     CircularProgress,
     FormControl,
     Grid,
-    TextField
+    TextField,
+    Typography,
 } from '@mui/material';
 import { IconExclamationMark } from '@tabler/icons';
 import { AlertError } from '../utilities/errorAlert';
-
-/* eslint-disable */
 
 const VerifyEmail = () => {
     const [userData, setUserData] = useState([]);
@@ -32,19 +31,20 @@ const VerifyEmail = () => {
             const id = window.location.pathname.split('/').pop();
             const data = await fetchuserByIDPsd(id);
             setUserData(data);
+        } catch (error) {
+            console.error(error);
         }
-        catch (error) {
-            return null;
-        }
-    }
+    };
 
     const validateField = (name, value) => {
         switch (name) {
             case 'psd':
                 const psd = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%^&*_\-+=?]).{6,}$/;
-                return psd.test(value) ? '' : 'Pasword should be alphanumeric, at least 6 character long with Uppercase and Symbol';
+                return psd.test(value)
+                    ? ''
+                    : 'Password should be alphanumeric, at least 6 characters long with an uppercase letter and a symbol';
             case 'cfmpasd':
-                    return (value !== formData.psd) ? 'Password Mismatch' : ''
+                return value !== formData.psd ? 'Password mismatch' : '';
             default:
                 return '';
         }
@@ -57,15 +57,11 @@ const VerifyEmail = () => {
         setFormData({ ...formData, [name]: value });
     };
 
-    const Alert = () =>{
-        window.alert('Issue will be reported soon!');
-    }
-
     const handleFormSubmit = async (e) => {
         e.preventDefault();
 
         const validationErrors = {};
-        Object.keys(formData).forEach(async (name) => {
+        Object.keys(formData).forEach((name) => {
             const value = formData[name];
             const error = validateField(name, value);
             if (error) {
@@ -80,121 +76,129 @@ const VerifyEmail = () => {
         try {
             setLoading(true);
             const response = await updateUserPSD(userData[0].accountId, formData);
-            setTimeout(() => {
-                if (response.message === 'success') {
-                    setAlert((e) => ({ ...e, message: `${userData[0].primaryEmail} activated`, color: 'success' }));
-                    setOpenAlert(true);
-                    setTimeout(() => {
-                        window.location.href='/';
-                    }, 500);
-                }
-                else {
-                    setLoading(false);
-                    setAlert((e) => ({ ...e, message: response.data.message, color: 'error' }));
-                }
-            }, 1000);
-        }
-        catch (error) {
-            setAlert({ message: 'Ooops! Something went wrong. Please refresh and retry', color: 'error' });
+            console.log('response', response);
+            if (response.status === 'success') {
+                setAlert({ message: `${userData[0].primaryEmail} activated successfully! Please login`, color: 'success' });
+                setOpenAlert(true);
+                setTimeout(() => {
+                    window.location.href = '/auth/login';
+                }, 4000);
+            } else {
+                setLoading(false);
+                setAlert({ message: response.data.message, color: 'error' });
+            }
+        } catch (error) {
+            setAlert({ message: 'Oops! Something went wrong. Please refresh and retry.', color: 'error' });
         }
     };
 
     return (
         <>
-            {alert.message ? (<AlertError open={openAlert} alert={alert} />) : null}
-            <div className='body'>
-                <div className='imageSection'>
-                    <a href='/'>
-                        <img src={logo} alt="Warehouse Ghana Logo" width="50" />
-                    </a>
-                    <i>Warehouse Ghana</i>
-                </div>
-                <div className='paragraph'>
-                    <h1>Verification Successful</h1>
-                    <p id='checkSpam'>Please set up your password to activate your account</p>
-                    <div id='linkCard'>
-                        {userData.length > 0 && (<>
-                            <Box>
+            {alert.message && <AlertError open={openAlert} alert={alert} />}
+            <Box
+                sx={{
+                    minHeight: '100vh',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    px: 2,
+                }}
+            >
+                <Box sx={{ textAlign: 'center', mb: 4 }}>
+                    <img src={logo} alt="Warehouse Ghana Logo" width="50" />
+                    <Typography variant="h6" sx={{ mt: 1 }}>Warehouse Ghana</Typography>
+                </Box>
+                <Typography variant="h4" gutterBottom>Verification Successful</Typography>
+                <Typography variant="body1" sx={{ mb: 4 }}>Please set up your password to activate your account.</Typography>
+
+                {userData.length > 0 && (
+                    <Box
+                        sx={{
+                            width: '100%',
+                            maxWidth: 600,
+                            p: 3,
+                            border: '1px solid #ccc',
+                            borderRadius: 2,
+                            boxShadow: 3,
+                            backgroundColor: '#fff',
+                        }}
+                    >
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        label="Username"
+                                        value={userData[0].userName || ''}
+                                        disabled
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        label="Email"
+                                        value={userData[0].primaryEmail || ''}
+                                        disabled
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        label="Password"
+                                        name="psd"
+                                        type="password"
+                                        value={formData.psd}
+                                        onChange={handleInputChange}
+                                        error={!!errors.psd}
+                                        helperText={errors.psd}
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        label="Confirm Password"
+                                        name="cfmpasd"
+                                        type="password"
+                                        onChange={handleInputChange}
+                                        error={!!errors.cfmpasd}
+                                        helperText={errors.cfmpasd}
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12}>
                                 <Grid container spacing={2}>
                                     <Grid item xs={6}>
-                                        <FormControl fullWidth>
-                                            <TextField  
-                                                label="Username"
-                                                required
-                                                value={userData[0].userName ? userData[0].userName : ""}
-                                                disabled={true}
-                                            />
-                                        </FormControl>
+                                        <Button
+                                            variant="contained"
+                                            fullWidth
+                                            color="primary"
+                                            onClick={handleFormSubmit}
+                                        >
+                                            {loading ? <CircularProgress size={24} /> : 'Proceed'}
+                                        </Button>
                                     </Grid>
                                     <Grid item xs={6}>
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                label="Email"
-                                                required
-                                                value={userData[0].primaryEmail ? userData[0].primaryEmail : ""}
-                                                disabled={true}
-                                            />
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                label="Password"
-                                                required
-                                                name="psd"
-                                                type='password'
-                                                value={formData.psd}
-                                                onChange={handleInputChange}
-                                                error={!!errors.psd}
-                                                helperText={errors.psd}
-                                            />
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                label="Confirm Password"
-                                                required
-                                                name="cfmpasd"
-                                                type='password'
-                                                onChange={handleInputChange}
-                                                error={!!errors.cfmpasd}
-                                                helperText={errors.cfmpasd}
-                                            />
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid container paddingTop={2} spacing={1}>
-                                        <Grid item xs={6}>
-                                            <Button 
-                                                variant='contained' 
-                                                fullWidth 
-                                                size='large' 
-                                                color='primary' 
-                                                onClick={handleFormSubmit}
-                                            >
-                                                {loading === true ? <CircularProgress size={27}/> : 'Proceed'}
-                                            </Button>
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <Button 
-                                                variant='contained' 
-                                                fullWidth 
-                                                size='large' 
-                                                color='error'
-                                                onClick={Alert}
-                                            >
-                                                < IconExclamationMark />Report Issue
-                                            </Button>
-                                        </Grid>
+                                        <Button
+                                            variant="contained"
+                                            fullWidth
+                                            color="error"
+                                            onClick={() => window.alert(`Kindly retry logging in`)}
+                                        >
+                                            <IconExclamationMark />
+                                            Report Issue
+                                        </Button>
                                     </Grid>
                                 </Grid>
-                            </Box>
-                        </>)}
-                    </div>
-                </div>
-            </div>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                )}
+            </Box>
         </>
     );
-}
+};
 
 export default VerifyEmail;

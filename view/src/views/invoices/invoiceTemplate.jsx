@@ -4,7 +4,7 @@ import signature from "../../assets/images/signature.jpg"
 // /* eslint-disable */
 const InvoiceTemplate = ({ data }) => {
 
-	const sortedProducts = data[0].products.slice().sort((a, b) => {
+	const sortedProducts = data.products.slice().sort((a, b) => {
 		if (a.ProductName < b.ProductName) return -1;
 		if (a.ProductName > b.ProductName) return 1;
 		return 0;
@@ -23,7 +23,10 @@ const InvoiceTemplate = ({ data }) => {
 							sales@warehouseghana.com <br />
 							+233 (0) 245152082
 						</address>
-						<h1>{data[0].InvoiceStatus === "Invoice" ? "Official Invoice" : "Official Invoice"}{/*data[0].InvoiceStatus}</h1>*/}</h1>
+						<h1>
+							{data.InvoiceStatus === "Invoice" ? "Official Invoice" : "Official Invoice"}
+							{/* {data.InvoiceStatus.charAt(0).toUpperCase() + data.InvoiceStatus.slice(1) || "Official Invoice"} */}
+						</h1>
 					</td>
 					<td><img src={logo} width={100} height={85} alt="Logo" /></td>
 				</tr>
@@ -39,17 +42,17 @@ const InvoiceTemplate = ({ data }) => {
 				</thead>
 				<tbody>
 					<tr>
-						<td>{data[0].CustomerName}</td>
+						<td>{data.CustomerName || "CASH"}</td>
 						<td>JN-AKWETER ENTERPRISE</td>
-						<td>{data[0].InvoiceNumber}</td>
+						<td>{data.InvoiceNumber}</td>
 					</tr>
 					<tr>
-						<td>{data[0].CustomerTIN === "C0000000000" ? data[0].customerPhone : data[0].CustomerTIN}</td>
+						<td>{data.CustomerTIN === "C0000000000" ? data.customerPhone : data.CustomerTIN}</td>
 						<td>P0030588901</td>
-						<td>{data[0].InvoiceDate}</td>
+						<td>{data.InvoiceDate}</td>
 					</tr>
 					<tr>
-						<td>{data[0].CustomerTIN === "C0000000000" ? null : data[0].customerPhone}</td>
+						<td>{data.CustomerTIN === "C0000000000" ? null : data.customerPhone}</td>
 						<td />
 						<td></td>
 					</tr>
@@ -60,7 +63,7 @@ const InvoiceTemplate = ({ data }) => {
 
 			<table width='100%' border={0}>
 				{
-					Array.isArray(data[0].products) && data[0].products.length > 0 ?
+					Array.isArray(data.products) && data.products.length > 0 ?
 						(
 							<table border="1" cellSpacing="0" cellPadding="4" width="100%" color="lightgray">
 								<thead>
@@ -94,55 +97,55 @@ const InvoiceTemplate = ({ data }) => {
 			<table cellSpacing="0" cellPadding="4" width="100%">
 				<thead>
 					{
-						Number(data[0].TotalAmount) !== Number(data[0].TotalAmount - data[0].InvoiceDiscount) ?
+						Number(data.TotalAmount) !== Number(data.TotalAmount - data.InvoiceDiscount) ?
 							<tr>
 								<td width="60%" />
 								<td width="20%" align="left">GROSS</td>
-								<td width="20%" >{data[0].Currency}: {Number(data[0].TotalAmount)}</td>
+								<td width="20%" >{data.Currency}: {Number(data.TotalAmount)}</td>
 							</tr> : null
 					}
 					{
-						Number(data[0].InvoiceDiscount) ?
+						Number(data.InvoiceDiscount) ?
 							<tr>
 								<td width="60%" />
 								<td width="20%" align="left">DISCOUNT</td>
-								<td width="20%" >{data[0].Currency}: {Number(data[0].InvoiceDiscount)}</td>
+								<td width="20%" >{data.Currency}: {Number(data.InvoiceDiscount)}</td>
 							</tr> : null
 					}
-					{data[0].showVAT || data[0].showVAT === "no" ? <></> : <>
+					{data.showVAT || data.showVAT === "no" ? <></> : <>
 						<tr>
 							<td width="60%" />
 							<td width="20%" align="left">GETFUND (2.5%)</td>
-							<td width="20%" >{data[0].Currency}: {data[0].GETFund}</td>
+							<td width="20%" >{data.Currency}: {data.GETFund}</td>
 						</tr>
 						<tr>
 							<td width="60%" />
 							<td width="20%" align="justify">NHIL (2.5%)</td>
-							<td width="20%">{data[0].Currency}: {data[0].NHIL}</td>
+							<td width="20%">{data.Currency}: {data.NHIL}</td>
 						</tr>
 						<tr>
 							<td width="60%" />
 							<td width="20%" align="left">COVID (1%)</td>
-							<td width="20%" >{data[0].Currency}: {data[0].COVID}</td>
+							<td width="20%" >{data.Currency}: {data.COVID}</td>
 						</tr>
-						{Number(data[0].CST) ?
+						{Number(data.CST) ?
 							(<tr>
 								<td width="60%" />
 								<td width="20%" align="left">CST (5%)</td>
-								<td width="20%" >{data[0].Currency}: {data[0].CST}</td>
+								<td width="20%" >{data.Currency}: {data.CST}</td>
 							</tr>) : null
 						}
-						{data[0].tourism ?
+						{data.tourism ?
 							(<tr>
 								<td width="60%" />
 								<td width="20%" align="left">TOURISM (1%)</td>
-								<td width="20%" >{data[0].Currency}: {data[0].Tourism}</td>
+								<td width="20%" >{data.Currency}: {data.Tourism}</td>
 							</tr>) : null
 						}
 						<tr>
 							<td width="60%" />
 							<td width="20%" align="left">VAT (15%)</td>
-							<td width="20%" >{data[0].Currency}: {data[0].VatAmount}</td>
+							<td width="20%" >{data.Currency}: {data.VatAmount}</td>
 						</tr>
 					</>}
 					<tr style={{ border: "12px" }}>
@@ -151,31 +154,31 @@ const InvoiceTemplate = ({ data }) => {
 						<td width="20%">
 							<strong>
 								{
-									data[0].CalculationType === "EXCLUSIVE" ?
-										data[0].Currency + ":" + ((
-											Number(data[0].TotalAmount) +
-											Number(data[0].VatAmount) +
-											Number(data[0].CST) +
-											Number(data[0].Tourism) +
-											Number(data[0].GETFund) +
-											Number(data[0].NHIL)
-										) - data[0].InvoiceDiscount).toFixed(2) :
-										data[0].Currency + ": " + (
-											Number(data[0].TotalAmount - data[0].InvoiceDiscount)
+									data.CalculationType === "EXCLUSIVE" ?
+										data.Currency + ":" + ((
+											Number(data.TotalAmount) +
+											Number(data.VatAmount) +
+											Number(data.CST) +
+											Number(data.Tourism) +
+											Number(data.GETFund) +
+											Number(data.NHIL)
+										) - data.InvoiceDiscount).toFixed(2) :
+										data.Currency + ": " + (
+											Number(data.TotalAmount - data.InvoiceDiscount)
 										).toFixed(2)
 								}
 							</strong>
 						</td>
 					</tr>
-					{data[0].DeliveryFee ?
+					{data.DeliveryFee ?
 						(<tr>
 							<td width="60%" />
 							<td width="20%" align="left"><i><small>SHIPPING:</small></i></td>
 							<td width="20%">
 								<small>{
-									isNaN(data[0].DeliveryFee) ?
-										<i>{data[0].DeliveryFee}</i> :
-										<i>{data[0].Currency}: {(data[0].DeliveryFee)}</i>
+									isNaN(data.DeliveryFee) ?
+										<i>{data.DeliveryFee}</i> :
+										<i>{data.Currency}: {(data.DeliveryFee)}</i>
 								}</small>
 							</td>
 						</tr>) :
@@ -184,11 +187,11 @@ const InvoiceTemplate = ({ data }) => {
 				</thead>
 			</table>
 
-			{data[0].showVAT || data[0].showVAT === "no" ? <> < br /> < br /> < br /> < br /> </> : null}
+			{data.showVAT || data.showVAT === "no" ? <> < br /> < br /> < br /> < br /> </> : null}
 
 			<table >
 				{
-					data[0].QRCode && data[0].YSDCID ? <>
+					data.QRCode && data.YSDCID ? <>
 						<table cellSpacing="0" cellPadding="4" width="100%" align="left">
 							<tbody>
 								<tr>
@@ -199,35 +202,35 @@ const InvoiceTemplate = ({ data }) => {
 								</tr>
 								<tr>
 									<td>SDC ID:</td>
-									<td>{data[0].YSDCID}</td>
+									<td>{data.YSDCID}</td>
 									<td rowSpan="7">
-										<img src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data[0].QRCode)}`} alt="qr code" width={160} height={160} />
+										<img src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data.QRCode)}`} alt="qr code" width={160} height={160} />
 									</td>
 								</tr>
 								<tr>
 									<td>Item Count:</td>
-									<td>{data[0].products.length}</td>
+									<td>{data.products.length}</td>
 								</tr>
 
 								<tr>
 									<td>Rceipt Number:</td>
-									<td>{data[0].YSDCRecNum}</td>
+									<td>{data.YSDCRecNum}</td>
 								</tr>
 								<tr>
 									<td>Timestamp:</td>
-									<td>{data[0].YSDCMRCTime}</td>
+									<td>{data.YSDCMRCTime}</td>
 								</tr>
 								<tr>
 									<td>MRC</td>
-									<td>{data[0].YSDCMRC}</td>
+									<td>{data.YSDCMRC}</td>
 								</tr>
 								<tr>
 									<td>Internal Data:</td>
-									<td>{data[0].YSDCIntData}</td>
+									<td>{data.YSDCIntData}</td>
 								</tr>
 								<tr>
 									<td>Signature</td>
-									<td>{data[0].YSDCRegSig}</td>
+									<td>{data.YSDCRegSig}</td>
 								</tr>
 							</tbody>
 						</table>
@@ -278,7 +281,7 @@ const InvoiceTemplate = ({ data }) => {
 
 				<small style={{ position: "absolute", bottom: 0, left: 0, right: 0, textAlign: "center" }}>
 					<strong>
-						{data[0].remarks ? data[0].remarks : `**This is electronic invoice. Stamp not required**`}{/*data[0].InvoiceStatus*/}
+						{data.remarks ? data.remarks : `**This is electronic invoice. Stamp not required**`}{/*data.InvoiceStatus*/}
 					</strong>
 				</small>
 			</table>

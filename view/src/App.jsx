@@ -6,17 +6,17 @@ import theme from './themes';
 import NavigationScroll from './layout/NavigationScroll';
 
 const App = () => {
-  const customization = useSelector((state) => state.customization);
-  return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme(customization)}>
-        <CssBaseline />
-        <NavigationScroll>
-        < ThemeRoutes />
-        </NavigationScroll>
-      </ThemeProvider>
-    </StyledEngineProvider>
-  );
+    const customization = useSelector((state) => state.customization);
+    return (
+        <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={theme(customization)}>
+                <CssBaseline />
+                <NavigationScroll>
+                    < ThemeRoutes />
+                </NavigationScroll>
+            </ThemeProvider>
+        </StyledEngineProvider>
+    );
 };
 
 export default App;

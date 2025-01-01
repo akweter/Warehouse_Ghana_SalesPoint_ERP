@@ -23,77 +23,332 @@ const isValidEmail = (email) => {
 
 // Activate your account
 const verifyEmail = (email, emailToken) => {
+	const userName = email.split('@')[0];
+	const emailName = userName.charAt(0).toUpperCase() + userName.slice(1);
+
 	return {
 		from: EMAIL_USER,
 		to: email,
 		subject: 'Activate Your Account',
 		html: `
-				<div style="text-align: center;">
-				<h2 style="color: #0B0F63;">One Time Verification Key</h2>
-				<img src="https://i0.wp.com/www.warehouseghana.com/wp-content/uploads/2022/10/Wg_logo-removebg-preview.png" alt="Warehouse Ghana Logo" width="70" height="50">
-				<address style="font-size: 17px;">
-					<small>Click on the button to activate your Warehouse Ghana user account</small>
-				</address>
-				<p>
-					<a target="_blank" href="${origin}/activate?key=${emailToken}" style="cursor: pointer;">
-						Activate Your Account
-					</a>
-				</p>
-				<strong style="color: red; font-size: 12px;"> Verification key expires if unused for 15 minutes.</strong>
-				</div>
+				<!DOCTYPE html>
+				<html lang="en">
+				<head>
+					<style>
+						body {
+							font-family: Arial, sans-serif;
+							background-color: #f3f3f3;
+							margin: 0;
+							padding: 0;
+						}
+
+						.email-container {
+							background-color: white;
+							width: 600px;
+							margin: 20px auto;
+							border: 1px solid #ddd;
+							border-radius: 8px;
+							overflow: hidden;
+						}
+
+						.header {
+							background-color: #f9f9f9;
+							padding: 20px;
+							text-align: center;
+						}
+
+						.header img {
+							width: 50px;
+							height: auto;
+						}
+
+						.content {
+							padding: 20px;
+							text-align: center;
+						}
+
+						.content h1 {
+							font-size: 20px;
+							color: #333;
+						}
+
+						.content p {
+							font-size: 16px;
+							color: #555;
+							line-height: 1.5;
+						}
+
+						.button {
+							display: inline-block;
+							margin-top: 20px;
+							padding: 10px 20px;
+							font-size: 16px;
+							color: white;
+							background-color: #1dd89b;
+							text-decoration: none;
+							border-radius: 5px;
+						}
+
+						.footer {
+							background-color: #f9f9f9;
+							padding: 15px;
+							text-align: center;
+							font-size: 12px;
+							color: #777;
+						}
+
+						.footer a {
+							text-decoration: none;
+							color: #555;
+							margin: 0 5px;
+						}
+
+						.footer a img {
+							width: 20px;
+							height: auto;
+							vertical-align: middle;
+						}
+					</style>
+				</head>
+				<body>
+					<div class="email-container">
+						<div class="header">
+							<img src="https://i0.wp.com/www.warehouseghana.com/wp-content/uploads/2022/10/Wg_logo-removebg-preview.png" alt="Salepoint Logo">
+						</div>
+						<div class="content">
+							<h1>Hello ${emailName}!</h1>
+							<p>Your administrator just granted your account the access to Salepoint  <br />Invoicing System. Please activate your email using the link below</p>
+							<a href="${origin}/activate?key=${emailToken}" style="background-color: #0B0F63;" class="button">Verify email</a> <br /><br />
+							<a href="${origin}/activate?key=${emailToken}" style="text-decoration: none; font-size: small;">Or click here to copy this link and paste in your browser</a>
+						</div>
+						<div class="footer">
+							<p style="color: red">This verification token will expire in 15 minutes if unused</p>
+							<p>Salepoint Solution | Made with pride</p>
+						</div>
+					</div>
+				</body>
+				</html>
 			`,
-	}
+	} 
 };
 
-// Send email for user verification
-const userLogin = (email) => {
+// Inform user about login
+const userLogin = (email) => {	
+	const userName = email.split('@')[0];
+	const emailName = userName.charAt(0).toUpperCase() + userName.slice(1);
+
 	return {
 		from: EMAIL_USER,
 		to: email,
 		subject: 'Warehouse Ghana ERP | Account Login',
 		html: `
-				<div style="text-align: center;">
-					<address style="font-size: 17px;">Sign In activitiy found on this account.</address>
-					<p style="color: #0B0F63; font-size: 15px; font-family: "Times New Roman", Times, serif;">
-						<strong><br/>
-							Kindly file a complaint to your administrator if you have not.
-						</strong>
-					</p>
-					<p>
-						<a href="mailto:it@warehouseghana.com?subject=Unknown%20login%20for%20${email}" style="cursor: pointer; text-decoration: none;">
-							<button style="background: #0B0F63; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-								File complaint
-							</button>
-						</a>			
-					</p>
-					<strong style="color: red; font-size: 12px;">Ignore this alert if everything is right</strong>
-				</div>
+				<!DOCTYPE html>
+				<html lang="en">
+				<head>
+					<style>
+						body {
+							font-family: Arial, sans-serif;
+							background-color: #f3f3f3;
+							margin: 0;
+							padding: 0;
+						}
+
+						.email-container {
+							background-color: white;
+							width: 600px;
+							margin: 20px auto;
+							border: 1px solid #ddd;
+							border-radius: 8px;
+							overflow: hidden;
+						}
+
+						.header {
+							background-color: #f9f9f9;
+							padding: 20px;
+							text-align: center;
+						}
+
+						.header img {
+							width: 50px;
+							height: auto;
+						}
+
+						.content {
+							padding: 20px;
+							text-align: center;
+						}
+
+						.content h1 {
+							font-size: 20px;
+							color: #333;
+						}
+
+						.content p {
+							font-size: 16px;
+							color: #555;
+							line-height: 1.5;
+						}
+
+						.button {
+							display: inline-block;
+							margin-top: 20px;
+							padding: 10px 20px;
+							font-size: 16px;
+							color: white;
+							background-color: #1dd89b;
+							text-decoration: none;
+							border-radius: 5px;
+						}
+
+						.footer {
+							background-color: #f9f9f9;
+							padding: 15px;
+							text-align: center;
+							font-size: 12px;
+							color: #777;
+						}
+
+						.footer a {
+							text-decoration: none;
+							color: #555;
+							margin: 0 5px;
+						}
+
+						.footer a img {
+							width: 20px;
+							height: auto;
+							vertical-align: middle;
+						}
+					</style>
+				</head>
+				<body>
+					<div class="email-container">
+						<div class="header">
+							<img src="https://i0.wp.com/www.warehouseghana.com/wp-content/uploads/2022/10/Wg_logo-removebg-preview.png" alt="Salepoint Logo">
+						</div>
+						<div class="content">
+							<h1>Hello ${emailName}!</h1>
+							<p>We noticed that you just logged into the SalesPoint Invoicing System</p>
+							<a href="mailto:it@warehouseghana.com?subject=Unknown%20login%20for%20${email}" style="text-decoration: none; font-size: small; color: red;">Click here to report to your administrator if it is not you</a>
+						</div>
+						<div class="footer">
+							<p style="font-weight: bolder;">Ignore this email alert if everything is fine</p>
+							<p>Salepoint Solution | Made with pride</p>
+						</div>
+					</div>
+				</body>
+				</html>
 			`,
 	}
 };
 
-// Send email for user verification
+// Send password reset email
 const resetPassword = (email, emailToken) => {
+	const userName = email.split('@')[0];
+	const emailName = userName.charAt(0).toUpperCase() + userName.slice(1);
+
 	return {
 		from: EMAIL_USER,
 		to: email,
 		subject: 'Reset Your Password',
 		html: `
-				<div style="text-align: center;">
-				<h2 style="color: #0B0F63;">Did you request password reset?</h2>
-				<img src="https://i0.wp.com/www.warehouseghana.com/wp-content/uploads/2022/10/Wg_logo-removebg-preview.png" alt="Warehouse Ghana Logo" width="70" height="50">
-				<address style="font-size: 17px;">
-					<small>Click on the button to change your Warehouse Ghana password</small>
-				</address>
-				<p>
-					<a target="_blank" href="${origin}/activate?key=${emailToken}" style="text-decoration: none;">
-						Reset Password
-					</a> or 
-					<a href="mailto:it@warehouseghana.com?subject=No%20password%20request%20for%20${email}" style="color: red; text-decoration: none;">
-						Make report to Admin
-					</a>
-				</p>
-				</div>
+				<!DOCTYPE html>
+				<html lang="en">
+				<head>
+					<style>
+						body {
+							font-family: Arial, sans-serif;
+							background-color: #f3f3f3;
+							margin: 0;
+							padding: 0;
+						}
+
+						.email-container {
+							background-color: white;
+							width: 600px;
+							margin: 20px auto;
+							border: 1px solid #ddd;
+							border-radius: 8px;
+							overflow: hidden;
+						}
+
+						.header {
+							background-color: #f9f9f9;
+							padding: 20px;
+							text-align: center;
+						}
+
+						.header img {
+							width: 50px;
+							height: auto;
+						}
+
+						.content {
+							padding: 20px;
+							text-align: center;
+						}
+
+						.content h1 {
+							font-size: 24px;
+							color: #333;
+						}
+
+						.content p {
+							font-size: 16px;
+							color: #555;
+							line-height: 1.5;
+						}
+
+						.button {
+							display: inline-block;
+							margin-top: 20px;
+							padding: 10px 20px;
+							font-size: 16px;
+							color: white;
+							background-color: #1dd89b;
+							text-decoration: none;
+							border-radius: 5px;
+						}
+
+						.footer {
+							background-color: #f9f9f9;
+							padding: 15px;
+							text-align: center;
+							font-size: 12px;
+							color: #777;
+						}
+
+						.footer a {
+							text-decoration: none;
+							color: #555;
+							margin: 0 5px;
+						}
+
+						.footer a img {
+							width: 20px;
+							height: auto;
+							vertical-align: middle;
+						}
+					</style>
+				</head>
+				<body>
+					<div class="email-container">
+						<div class="header">
+							<img src="https://i0.wp.com/www.warehouseghana.com/wp-content/uploads/2022/10/Wg_logo-removebg-preview.png" alt="Salepoint Logo">
+						</div>
+						<div class="content">
+							<h1>Hello ${emailName}!</h1>
+							<p>Your account made a request to reset your password</p>
+							<a href="${origin}/activate?key=${emailToken}" style="background-color: #0B0F63;" class="button">Reset Password</a> <br /><br />
+							<a href="mailto:it@warehouseghana.com?subject=No%20password%20request%20for%20${email}" style="text-decoration: none;">Or make report to your administrator</a>
+						</div>
+						<div class="footer">
+							<p style="color: red">This verification token will expire in 15 minutes if unused</p>
+							<p>Salepoint Solution | Made with pride</p>
+						</div>
+					</div>
+				</body>
+				</html>
 			`,
 	}
 };

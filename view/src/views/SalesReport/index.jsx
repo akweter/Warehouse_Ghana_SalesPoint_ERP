@@ -19,10 +19,14 @@ import {
     Dialog,
     DialogTitle
 } from '@mui/material'
-import { checkGRAServerStatus, deleteQuotation, fetchQuoteInvoices, postNewGRAInvoice } from '../../apiActions/allApiCalls/invoice';
+import { 
+    checkGRAServerStatus, 
+    deleteQuotation, 
+    fetchQuoteInvoices, 
+    postNewGRAInvoice 
+} from '../../apiActions/allApiCalls/invoice';
 import InvoiceDetails from '../invoices/invoiceDetails';
 import { AlertError, GeneralCatchError } from '../../utilities/errorAlert';
-import ProductPlaceholder from '../../ui-component/cards/Skeleton/ProductPlaceholder';
 import InvoiceTemplate from '../invoices/invoiceTemplate';
 import { UseFullPayload } from '../invoices/invoiceQuotePayload';
 import { formatDate } from '../../utilities/formatDate';
@@ -264,9 +268,9 @@ export default function SalesReport() {
     }
 
     // Print invoice
-    const handlePrintIcon = (row) => {
+    const handlePrintIcon = (row) => { 
         setOpenPrintInvoice(false)
-        const invoiceTemplateHTML = ReactDOMServer.renderToStaticMarkup(< InvoiceTemplate data={row} />);
+        const invoiceTemplateHTML = ReactDOMServer.renderToStaticMarkup(< InvoiceTemplate data={row[0]} />);
         setPrintInvoice([]);
         const printWindow = window.open('', '_blank');
         printWindow.document.body.innerHTML = invoiceTemplateHTML;
@@ -340,29 +344,25 @@ export default function SalesReport() {
                         setSubmitted={setSubmitted}
                     />
             </Grid>
-            {
-                invoices.length > 0 ?
-                <Box sx={{ height: 600, width: '100%' }}>
-                    <DataGrid
-                        rows={rowsWithIds}
-                        columns={columns}
-                        loading={loading || null}
-                        density='compact'
-                        editMode='cell'
-                        pageSize={5}
-                        disableRowSelectionOnClick={true}
-                        slots={{ toolbar: GridToolbar }}
-                        hideFooterSelectedRowCount={true}
-                        filterMode='client'
-                        slotProps={{
-                            toolbar: {
-                                showQuickFilter: true,
-                            },
-                        }}
-                    />
-                </Box> :
-                < ProductPlaceholder />
-            }
+            <Box sx={{ height: 600, width: '100%' }}>
+                <DataGrid
+                    rows={rowsWithIds}
+                    columns={columns}
+                    loading={loading || null}
+                    density='compact'
+                    editMode='cell'
+                    pageSize={5}
+                    disableRowSelectionOnClick={true}
+                    slots={{ toolbar: GridToolbar }}
+                    hideFooterSelectedRowCount={true}
+                    filterMode='client'
+                    slotProps={{
+                        toolbar: {
+                            showQuickFilter: true,
+                        },
+                    }}
+                />
+            </Box>
             {alert.message ? <GeneralCatchError alert={alert} handleClose={handleClose} open={open} /> : null}
             {notify.message ? <AlertError alert={notify} handleClose={handleClose} open={open} /> : null}
             {

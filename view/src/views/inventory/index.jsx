@@ -104,7 +104,7 @@ const Inventory = () => {
             <div>
                 <Accordion sx={{ backgroundColor: '#e2e6f9' }}>
                     <AccordionSummary expandIcon={<ExpandMore />}>
-                        <Typography sx={{ width: '33%', flexShrink: 0 }}>Inventory Status</Typography>
+                        <Typography sx={{ width: '33%', flexShrink: 0 }}></Typography>
                         <Typography sx={{ color: 'text.secondary', fontWeight: 600 }}>Click here to view the status of your stock</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
