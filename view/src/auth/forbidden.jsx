@@ -31,7 +31,7 @@ const styles = {
     return (
         <div style={styles.body}>
             <div style={styles.paragraph}>
-                <h2 style={{textAlign: 'center', color: 'darkblue'}}>User Activity Timeout</h2>
+                <h2 style={{textAlign: 'center'}}>User Activity Timeout</h2>
                 <div style={styles.linkCard}>
                     <h3 className='linkCardBody'>Oops! Your authorization is invoked</h3>
                     <p>Please <Button variant="outlined" size="small" color="error" onClick={LogOut}>Click here</Button> to log in again</p>

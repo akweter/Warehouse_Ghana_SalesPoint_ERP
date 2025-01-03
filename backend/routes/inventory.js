@@ -82,7 +82,7 @@ Router.get("/user", async (req, res) => {
 	}
 	catch (err) {
 		logErrorMessages(err, req.headers.keyid);
-		return res.status(500).send("Internal server error");
+		return res.status(500).json({ status: "error", message: "Something went wrong. Please try again" });
 	}
 });
 
@@ -95,7 +95,7 @@ Router.get("/supplier", async (req, res) => {
 	}
 	catch (err) {
 		logErrorMessages(err, req.headers.keyid);
-		return res.status(500).send("Internal server error");
+		return res.status(500).json({ status: "error", message: "Something went wrong. Please try again" });
 	}
 });
 
@@ -108,7 +108,7 @@ Router.get("/taxable", async (req, res) => {
 	}
 	catch (err) {
 		logErrorMessages(err, req.headers.keyid);
-		return res.status(500).send("Internal server error");
+		return res.status(500).json({ status: "error", message: "Something went wrong. Please try again" });
 	}
 });
 
@@ -125,7 +125,7 @@ Router.get("/date", async (req, res) => {
 	}
 	catch (err) {
 		logErrorMessages(err, req.headers.keyid);
-		return res.status(500).send("Internal server error");
+		return res.status(500).json({ status: "error", message: "Something went wrong. Please try again" });
 	}
 });
 
@@ -140,7 +140,7 @@ Router.get("/search", async (req, res) => {
 	}
 	catch (err) {
 		logErrorMessages(err, req.headers.keyid);
-		return res.status(500).send("Internal server error");
+		return res.status(500).json({ status: "error", message: "Something went wrong. Please try again" });
 	}
 });
 
@@ -153,7 +153,7 @@ Router.get("/alt/:id", async (req, res) => {
 	}
 	catch (err) {
 		logErrorMessages(err, req.headers.keyid);
-		return res.status(500).send("Internal server error");
+		return res.status(500).json({ status: "error", message: "Something went wrong. Please try again" });
 	}
 });
 
@@ -166,7 +166,7 @@ Router.get("/:id", async (req, res) => {
 	}
 	catch (err) {
 		logErrorMessages(err, req.headers.keyid);
-		return res.status(500).send("Internal server error");
+		return res.status(500).json({ status: "error", message: "Something went wrong. Please try again" });
 	}
 });
 

@@ -28,6 +28,11 @@ export const fetchuserByIDPsd = async (id) => {
     return await handleRequest(`users/${id}`, 'get');
 };
 
+// Log out from system
+export const UserLogOut = async () => {
+    return await handleRequest(`auth/logout`, 'get', );
+};
+
 /* ======================================================================================================== */
 
 // Update user details
@@ -56,3 +61,4 @@ export const sendEmailToUser = async (user) => {
 export const postNewUser = async (user) => {
     return await handleRequest(`auth/signup`, 'post', user);
 };
+

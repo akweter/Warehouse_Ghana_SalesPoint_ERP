@@ -28,6 +28,7 @@ const Refunds = require('./routes/refund');
 const Payload = require('./routes/sendPayload');
 const GRAPayload = require('./routes/sendGRAPayload');
 const Company = require('./routes/company');
+const Purchase = require('./routes/purchase');
 const UsersActions = require('./routes/activityTrails');
 const Forbidden = require('./auth/globalHeaderToken');
 const { logErrorMessages } = require('./utils/saveLogfile');
@@ -92,6 +93,7 @@ server.use('/refunds', Refunds);
 server.use('/payload', Payload);
 server.use('/gra', GRAPayload);
 server.use('/company', Company);
+server.use('/purchase', Purchase);
 server.use('/useractions', UsersActions);
 
 // Custom 404 error handling

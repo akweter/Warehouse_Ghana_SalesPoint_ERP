@@ -1,6 +1,28 @@
 export default function componentStyleOverrides(theme) {
   const bgColor = theme.colors?.grey50;
   return {
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiInputBase-input': {
+            color: theme?.text?.primary,
+            backgroundColor: theme?.background?.paper,
+            '&::placeholder': {
+              color: theme?.text?.secondary,
+            },
+          },
+          '& .MuiOutlinedInput-root': {
+            backgroundColor: theme?.background?.paper,
+            '& fieldset': {
+              borderColor: theme?.colors?.grey400,
+            },
+            '&:hover fieldset': {
+              borderColor: theme?.colors?.primaryLight,
+            },
+          },
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {

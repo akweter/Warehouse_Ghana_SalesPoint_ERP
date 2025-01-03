@@ -90,6 +90,11 @@ export const fetchQuoteInvoices = async () => {
     return await handleRequest('invoices/quotes', 'GET');
 };
 
+// Receipt printed
+export const receiptPrinted = async (data) => {
+    return await handleRequest('invoices/receipt', 'POST', data);
+};
+
 /* ------------    POST REQUEST     -------------------*/
 
 // Post new invoice

@@ -13,7 +13,7 @@ Router.get("/", async (req, res) => {
         return res.status(200).json(modifiedOutput);
     }
     catch (err) {
-        logErrorMessages(`Error fetching deliveries ${err}`, req.headers.keyid);
+        logErrorMessages(`Error: fetching deliveries failed ${JSON.stringify(err)}`, req.headers.keyid);
         res.status(500).send({status: 'error', message: "Operations failed. Kindly refresh"});
     }
 });

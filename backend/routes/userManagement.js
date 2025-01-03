@@ -2,7 +2,7 @@
 const Router = require("express").Router();
 
 // Projects
-const { logErrorMessages } = require("../utils/saveLogfile");
+const { logErrorMessages, logAllMessage } = require("../utils/saveLogfile");
 const {
   oneUser,
   allUsers,
@@ -303,7 +303,8 @@ Router.put("/:id", async (req, res) => {
 
   try {
     await updateUser(userData, id);
-    return res.status(200).json({ message: "success" });
+    logAllMessage(`User ${userData.Usr_name} updated successfully`, req.headers.keyid);
+    res.status(200).json({ message: "success" });
   }
   catch (err) {
     logErrorMessages(err, req.headers.keyid);
@@ -318,11 +319,12 @@ Router.put("/status/:id", async (req, res) => {
   const userStat = Usr_status === 'active' ? 'inactive' : 'active';
   const data = [userStat, id];
   try {
-    const output = await updateUserStatus(data);
-    return res.status(200).json({ message: "success" });
+    await updateUserStatus(data);
+    logAllMessage(`User status updated for user ${id}`, req.headers.keyid)
+    res.status(200).json({ status: "success", message: "User status updated" });
   } catch (err) {
-    logErrorMessages(err, req.headers.keyid);
-    res.status(500).json({ message: "Internal server error" });
+    logErrorMessages(JSON.stringify(err), req.headers.keyid);
+    res.status(500).json({ status: "error", message: "Something went wrong. Please retry" });
   }
 });
 

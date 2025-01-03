@@ -1,5 +1,5 @@
 const Router = require("express").Router();
-const { logErrorMessages } = require("../utils/saveLogfile");
+const { logErrorMessages, logAllMessage } = require("../utils/saveLogfile");
 
 const { getCompanyData, AddCompanyInfo } = require("../controller/postQuesrries");
 
@@ -10,7 +10,7 @@ Router.get("/", async (req, res) => {
         return res.status(200).json({ status: "success", data: data });
     }
     catch (err) {
-        logErrorMessages("Adding company Data failed" + err, req.headers.keyid);
+        logErrorMessages("Error: fetching company Data failed" + err, req.headers.keyid);
         return res.status(500).json({ message: `Adding ${username} failed!` });
     }
 });
@@ -42,10 +42,11 @@ Router.post("/:id", async (req, res) => {
 
     try {
         await AddCompanyInfo(comData);
+        logAllMessage(`Success: Company Data added`, req.headers.keyid);
         return res.status(200).json({ message: "success" });
     }
     catch (err) {
-        logErrorMessages("Adding company Data failed" + JSON.stringify(err), req.headers.keyid);
+        logErrorMessages(`Error: Adding company Data failed ${JSON.stringify(err)}`, req.headers.keyid);
         return res.status(500).json({ message: `Adding ${username} failed!` });
     }
 });

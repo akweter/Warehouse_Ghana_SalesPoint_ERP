@@ -1,7 +1,7 @@
 const Router = require("express").Router();
 
 // Projects
-const { logErrorMessages } = require("../utils/saveLogfile");
+const { logErrorMessages, logAllMessage } = require("../utils/saveLogfile");
 const { restructureInvoiceResult } = require("../utils/invoiceModifier");
 const {
     oneInvoice,
@@ -20,6 +20,7 @@ const {
     deleteQuotationProducts,
     salesNRefundInvoices,
 } = require("../controller/salesNinvoices");
+const generateUUID = require("../utils/generateIDs");
 
 // All original GRA invoices transaction
 Router.get("/", async (req, res) => {
@@ -29,7 +30,7 @@ Router.get("/", async (req, res) => {
         return res.status(200).json(modifiedOutput);
     }
     catch (err) {
-        logErrorMessages(`Error fetching all invoices: ${err}`, req.headers.keyid);
+        logErrorMessages(`Error: fetching all invoices failed: ${err}`, req.headers.keyid);
         res.status(500).json({ status: "error", message: "Operations failed. Kindly refresh" });
     }
 });
@@ -42,7 +43,7 @@ Router.get("/quotes", async (req, res) => {
         return res.status(200).json(modifiedOutput);
     }
     catch (err) {
-        logErrorMessages(`Error fetching proforma Invoices ${err}`, req.headers.keyid);
+        logErrorMessages(`Error: fetching proforma Invoices failed: ${err}`, req.headers.keyid);
         return res.status(500).send("Fetching quotation invoice failed. Kindly refresh");
     }
 });
@@ -54,7 +55,7 @@ Router.get("/ten", async (req, res) => {
         return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching tenInvoices: ${err}`, req.headers.keyid);
+        logErrorMessages(`Error: fetching tenInvoices failed: ${err}`, req.headers.keyid);
         res.status(500).json({ status: "error", message: "Operations failed. Kindly refresh" });
     }
 });
@@ -66,7 +67,7 @@ Router.get("/number", async (req, res) => {
         return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching allSalesInvNumbers: ${err}`, req.headers.keyid);
+        logErrorMessages(`Error: fetching allSalesInvNumbers failed: ${err}`, req.headers.keyid);
         res.status(500).json({ status: "error", message: "Operations failed. Kindly refresh" });
     }
 });
@@ -78,7 +79,7 @@ Router.get("/sales", async (req, res) => {
         return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching today sales invoices ${err}`, req.headers.keyid);
+        logErrorMessages(`Error: fetching today sales invoices failed: ${err}`, req.headers.keyid);
         res.status(500).json({ status: "error", message: "Operations failed. Kindly refresh" });
     }
 });
@@ -92,7 +93,7 @@ Router.get("/waybill/:id", async (req, res) => {
         return res.status(200).json(modifiedOutput);
     }
     catch (err) {
-        logErrorMessages(`Error fetching PROFORMA INVOICEs ${JSON.stringify(err)}`, req.headers.keyid);
+        logErrorMessages(`Error: fetching PROFORMA INVOICEs failed: ${JSON.stringify(err)}`, req.headers.keyid);
         return res.status(500).send("Something unexpected happened. Kindly try again");
     }
 });
@@ -104,7 +105,7 @@ Router.get("/tax/month", async (req, res) => {
         return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching this month taxes ${err}`, req.headers.keyid);
+        logErrorMessages(`Error: fetching this month taxes failed: ${err}`, req.headers.keyid);
         res.status(500).json({ status: "error", message: "Operations failed. Kindly refresh" });
     }
 });
@@ -116,7 +117,7 @@ Router.get("/day/invoice", async (req, res) => {
         return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching this month taxes ${err}`, req.headers.keyid);
+        logErrorMessages(`Error: fetching this month taxes failed: ${err}`, req.headers.keyid);
         res.status(500).json({ status: "error", message: "Operations failed. Kindly refresh" });
     }
 });
@@ -128,7 +129,7 @@ Router.get("/today/sales", async (req, res) => {
         return res.status(200).json(output);
     }
     catch (error) {
-        logErrorMessages(`Error fetching today sales invoices ${err}`, req.headers.keyid);
+        logErrorMessages(`Error: fetching today sales invoices failed: ${err}`, req.headers.keyid);
         res.status(500).json({ status: "error", message: "Operations failed. Kindly refresh" });
     }
 });
@@ -140,7 +141,7 @@ Router.get("/week/sales", async (req, res) => {
         return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching week sales invoices ${err}`, req.headers.keyid);
+        logErrorMessages(`Error: fetching week sales invoices failed: ${err}`, req.headers.keyid);
         res.status(500).json({ status: "error", message: "Operations failed. Kindly refresh" });
     }
 });
@@ -152,7 +153,7 @@ Router.get("/month/sales", async (req, res) => {
         return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching month sales invoices ${err}`, req.headers.keyid);
+        logErrorMessages(`Error: fetching month sales invoices failed: ${err}`, req.headers.keyid);
         res.status(500).json({ status: "error", message: "Operations failed. Kindly refresh" });
     }
 });
@@ -164,7 +165,7 @@ Router.get("/year/sales", async (req, res) => {
         return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching year sales today invoices ${err}`, req.headers.keyid);
+        logErrorMessages(`Error: fetching year sales today invoices failed: ${err}`, req.headers.keyid);
         res.status(500).json({ status: "error", message: "Operations failed. Kindly refresh" });
     }
 });
@@ -176,11 +177,36 @@ Router.get("/purchase", async (req, res) => {
         return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching purchase invoices: ${err}`, req.headers.keyid);
+        logErrorMessages(`Error: fetching purchase invoices failed: ${err}`, req.headers.keyid);
         res.status(500).json({ status: "error", message: "Operations failed. Kindly refresh" });
     }
 });
 
+// receipt printed
+Router.post("/receipt", async (req, res) => {
+    const {
+        amountFig,
+        receiptDate,
+        TotalAMount,
+        receipientAddress,
+        receipientPhone,
+        amountWord,
+        reason,
+        modeOfPayment,
+        paymentID,
+        repTelephone,
+        signatureBy,
+    } = req.body;
+    const ID = generateUUID();
+    try {
+        await logAllMessage(`Receipt number (${ID}) Printed`, req.headers.keyid);
+        res.status(200).json({ status: "success", message: "success printing receipt" });
+    }
+    catch (err) {
+        logErrorMessages(`Error: saving printed receipt`, req.headers.keyid);
+        res.status(500).json({ status: "error", message: "Something went wrong" });
+    }
+});
 // Search Invoice
 Router.get("/search", async (req, res) => {
     const query = req.query.q;
@@ -190,8 +216,8 @@ Router.get("/search", async (req, res) => {
         return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error searching through invoices: ${err}`, req.headers.keyid);
-        return res.status(500).send("Internal server error");
+        logErrorMessages(`Error: searching through invoices failed: ${err}`, req.headers.keyid);
+        return res.status(500).json({ status: "error", message: "Something went wrong. Please try again" });
     }
 });
 
@@ -203,8 +229,8 @@ Router.get("/:id", async (req, res) => {
         return res.status(200).json(output);
     }
     catch (err) {
-        logErrorMessages(`Error fetching invoice with id: ${userID}, Error: ${err}`, req.headers.keyid);
-        return res.status(500).send("Internal server error");
+        logErrorMessages(`Error: fetching invoice with id failed: ${userID}, Error: ${err}`, req.headers.keyid);
+        return res.status(500).json({ status: "error", message: "Something went wrong. Please try again" });
     }
 });
 
@@ -216,6 +242,7 @@ Router.delete("/quote/del/:id", async (req, res) => {
         if (output) {
             await deleteQuotationProducts(id);
         }
+        logAllMessage(`Sucess: Quotation invoice removed: ${err}`, req.headers.keyid);
         res.status(200).json({ message: `Transaction: ${id} removed!` });
     }
     catch (error) {

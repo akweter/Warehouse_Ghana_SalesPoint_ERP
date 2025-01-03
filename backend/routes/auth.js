@@ -6,7 +6,7 @@ const { origin } = process.env;
 
 // Projects
 const generateUUID = require("../utils/generateIDs");
-const { logMessage, logErrorMessages, logSuccessMessages } = require('../utils/saveLogfile');
+const { logMessage, logErrorMessages, logSuccessMessages, logAllMessage } = require('../utils/saveLogfile');
 const { generateJWTToken, saveToken_SendEmail, } = require("../utils/tokenActions");
 const { Myip } = require('../utils/userIPData');
 const { sendVerificationEmail } = require("../utils/emailSender");
@@ -71,13 +71,14 @@ Auth.post("/login", async (req, res, next) => {
 								}
 								else {
 									await sendVerificationEmail(userEmail, emailToken, type = null, e.Usr_id)
-										.then((response) => {
-											res.status(200).send(response);
-										})
-										.catch((err) => {
-											logErrorMessages(JSON.stringify(err), e.Usr_id);
-											res.send({ status: 'error', message: `Failed to send account activation email to ${userEmail}` });
-										});
+									.then((response) => {
+										logAllMessage("user sign in", e.Usr_id)
+										res.status(200).send(response);
+									})
+									.catch((err) => {
+										logErrorMessages(`Failed to send account activation email ${JSON.stringify(err)}`, e.Usr_id);
+										res.send({ status: 'error', message: `Failed to send account activation email to ${userEmail}` });
+									});
 								}
 							}
 							else {
@@ -146,11 +147,11 @@ Auth.post("/signup", async (req, res) => {
 			];
 
 			await AddNewUser(Vals)
-				.then( async() => {
-					logSuccessMessages(`New User Added: ${username}, ${userEmail}`, req.headers.keyid);
-					await saveToken_SendEmail(userEmail, username, req, type = null, req.headers.keyid);
-					res.status(200).json({status: 'success', message: 'Adding user successful'});
-				});
+			.then( async() => {
+				logSuccessMessages(`New User Added: ${username}, ${userEmail}`, req.headers.keyid);
+				await saveToken_SendEmail(userEmail, username, req, type = null, req.headers.keyid);
+				res.status(200).json({status: 'success', message: 'Adding user successful'});
+			});
 		}
 	}
 	catch (err) {
@@ -166,7 +167,7 @@ Auth.put("/psd/:id", async (req, res) => {
 	const hashpsswd = await bcrypt.hash(psd, 12);
 	try {
 		await updateUserPSD([hashpsswd, id]);
-		logMessage(`${id} update paswword succussful`, req.headers.keyid);
+		logMessage(`User ID: ${id} successfully updated password`, req.headers.keyid);
 		return res.status(200).json({ status: 'success', message: `User's secret updated successfully`});
 	}
 	catch (err) {
@@ -194,5 +195,16 @@ Auth.post("/sendemail", async (req, res) => {
 		res.status(500).json({ status: 'error', message: 'Oops something went wrong' });
 	});	
 });
+
+// Send verification email
+Auth.get("/logout", async (req, res) => {
+	try {
+		await logAllMessage(`User account sign out`, req.headers.keyid);
+		res.status(200).json({ status: 'success', message: "logout" });
+	} catch (error) {
+		res.status(500).json({ status: 'error', message: "could not logout" });
+	}
+});
+
 
 module.exports = Auth;

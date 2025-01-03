@@ -60,6 +60,7 @@
     "@woocommerce/woocommerce-rest-api": "^1.0.1",
     "apexcharts": "^3.35.3",
     "axios": "^1.5.1",
+    "clipboard-polyfill": "^4.1.1",
     "dayjs": "^1.11.10",
     "depcheck": "^1.4.6",
     "dotenv": "^16.4.1",

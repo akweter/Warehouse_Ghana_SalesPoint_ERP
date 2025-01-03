@@ -2,7 +2,7 @@
 const Router = require("express").Router();
 
 // Projects
-const { logErrorMessages } = require("../utils/saveLogfile");
+const { logErrorMessages, logAllMessage } = require("../utils/saveLogfile");
 const generateUUID = require("../utils/generateIDs");
 
 // controller
@@ -172,10 +172,11 @@ Router.post("/add/new", async (req, res) => {
       ];
       try {
         await addCustomer(payload);
+        logAllMessage("success: customer added", req.headers.keyid);
         res.status(200).json({ status: 'success', message: 'customer added succesfully' });
       }
       catch (err) {
-        logErrorMessages(err, req.headers.keyid);
+        logErrorMessages(JSON.stringify(err), req.headers.keyid);
         res.status(500).send("Adding new customer failed! Please try again");
       }
     }));
@@ -213,6 +214,7 @@ Router.put("/update/:id", async (req, res) => {
   };
   try {
     await updateCustomer(userData, id);
+    logAllMessage("customer updated successfully", req.headers.keyid);
     res.status(200).json({ status: 'success', message: "customer updated successfully" });
   }
   catch (err) {

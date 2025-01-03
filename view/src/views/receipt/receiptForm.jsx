@@ -5,6 +5,7 @@ import { Button } from '@mui/material';
 import signature from "../../assets/images/signature.jpg";
 import logo from "../../assets/images/logo.webp";
 import { numberToWords } from '../../utilities/amountToWords';
+import { receiptPrinted } from '../../apiActions/allApiCalls/invoice';
 
 const InputField = ({ label, value, onChange, name, type = 'text', placeholder, error, options }) => (
     <tr>
@@ -70,7 +71,7 @@ const ReceiptForm = ({ formData, closePopup }) => {
         setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
     }
 
-    const handlePDF = () => {
+    const handlePDF = async() => {
         const element = printRef.current;
         const docName = `${formData.CustomerName} PAYMENT RECEIPT`;
         var options = {
@@ -94,8 +95,9 @@ const ReceiptForm = ({ formData, closePopup }) => {
             return;
         }
         try {
-            handlePDF();
-            closePopup();
+            await handlePDF();
+            await receiptPrinted(form);
+            await closePopup();
         } catch (error) {
             setErrors({ form: 'An error occurred while generating the receipt' });
         }

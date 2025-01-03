@@ -1,7 +1,7 @@
 // Modules
 const Router = require("express").Router();
 
-const { logErrorMessages } = require("../utils/saveLogfile");
+const { logErrorMessages, logAllMessage } = require("../utils/saveLogfile");
 const { saveNewWayBill, saveWaybillProducts, checkBillProducts, updateWaybillProducts } = require('../controller/waybill');
 const generateUUID = require("../utils/generateIDs");
 
@@ -66,6 +66,7 @@ Router.post("/", async (req, res) => {
                 }));
             }
         });
+        logAllMessage(`Success saving waybill`,  req.headers.keyid);
         return res.status(200).json({ status: 'success', message: 'success saving waybill data' });
     }
     catch (err) {

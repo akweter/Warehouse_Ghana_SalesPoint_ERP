@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import Box from '@mui/material/Box';
 import ReactDOMServer from 'react-dom/server';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { Print as PrintIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
@@ -7,6 +6,7 @@ import {
     IconButton,
     Grid,
     Typography,
+    Box,
 } from '@mui/material';
 
 import { GeneralCatchError } from '../../utilities/errorAlert';
@@ -213,6 +213,9 @@ export default function Refund() {
 
     return (
         <div>
+            {
+                alert.message ? <GeneralCatchError alert={alert} open={openGeneralCatch} /> : null
+            }
             <Grid container sx={{ justifyContent: 'space-around', backgroundColor: 'darkblue', paddingTop: 1, paddingBottom: 1, }}>
                 <Typography color='white' variant='h3'>Refund Transactions</Typography>
             </Grid>
@@ -234,9 +237,6 @@ export default function Refund() {
                         },
                     }}
                 />
-                {
-                    alert.message ? <GeneralCatchError alert={alert} open={openGeneralCatch} /> : null
-                }
                 {
                     selectedRow && (<>< InvoiceDetails selectedRow={selectedRow} openDialog={openDialog} handleCloseDialog={handleCloseDialog} /></>)
                 }

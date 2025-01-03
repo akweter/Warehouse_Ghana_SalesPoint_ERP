@@ -122,12 +122,13 @@ Router.post("/refund", async (req, res) => {
     const sanitizedPayload = sanitizePayload(Data);
     // logSuccessMessages(sanitizedPayload, req.headers.keyid);
     try {
-        const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, { 
+        const response = await axios.post(`${GRA_ENDPOINT}/invoice`, sanitizedPayload, {
             headers: { 'security_key': GRA_KEY }, 
             timeout: 10000});
         if (response && response.status === 200) {
             if (response.data.response.status) {
                 await saveInvoiceToDB(Data, response.data);
+                await logAllMessage("Refund transaction success", req.headers.keyid);
                 res.status(200).json({ status: "success", message: "Refund transaction success" });
             }
             else {
@@ -151,7 +152,7 @@ Router.post("/refund", async (req, res) => {
             logErrorMessages(`Refund failed: ${errorMessage}`, req.headers.keyid);
             return res.json({ status: 'error', message: errorMessage });
         } else {
-            logErrorMessages(`Request to GRA backend failed: ${error.message || error}`, req.headers.keyid);
+            await logErrorMessages(`Request to GRA backend failed: ${error.message || error}`, req.headers.keyid);
             return res.status(500).json({ status: 'error', message: 'Refund failed! Please retry.' });
         }
     }
@@ -256,6 +257,7 @@ Router.post("/callback", async (req, res) => {
             }
         });
         await updateDBWithGRAResponse(response.data);        
+        logAllMessage("Callback processed successfully", req.headers.keyid);
         return res.status(200).json({ status: 'success', message: 'Callback processed successfully' });
     }
     catch (error) {

@@ -531,7 +531,7 @@ const InvoiceForm = ({
     const handleClose = (event, reason) => { if (reason === 'clickaway') { return; } setOpen(false); };
 
     return (
-        <>
+        <Box>
             { open && <AlertError open={open} alert={alert} handleClose={handleClose} /> }
             { drop && <ShowBackDrop open={drop} /> }
 
@@ -1143,7 +1143,7 @@ const InvoiceForm = ({
                     <Button variant='outlined' onClick={handleEditSave} color="secondary"> Update </Button>
                 </DialogActions>
             </Dialog>
-        </>
+        </Box>
     );
 }
 

@@ -9,7 +9,8 @@ import {
     Typography,
     Dialog,
     DialogTitle,
-    Button
+    Button,
+    Paper
 } from '@mui/material';
 import { Visibility as VisibilityIcon } from '@mui/icons-material';
 
@@ -211,17 +212,16 @@ export default function Deliveries() {
     };
 
     return (
-        <div>
+        <Paper>
             {alert.message && <GeneralCatchError alert={alert} handleClose={handleClose} open={open} />}
             <Grid container justifyContent='space-evenly'
                 style={{
-                    backgroundColor: 'darkblue',
                     paddingTop: 5,
                     paddingBottom: 5,
                 }}
             >
                 <Grid item>
-                    <Typography color='white' variant='h3'>Deliveries</Typography>
+                    <Typography variant='h3'>Deliveries</Typography>
                 </Grid>
             </Grid>
             <Box sx={{ height: 600, width: '100%' }}>
@@ -276,6 +276,6 @@ export default function Deliveries() {
                     />
                 </DialogContent>
             </Dialog>
-        </div>
+        </Paper>
     );
 }
